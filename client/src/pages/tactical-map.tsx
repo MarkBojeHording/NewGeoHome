@@ -2045,6 +2045,8 @@ export default function InteractiveTacticalMap() {
   const [newBaseModal, setNewBaseModal] = useState({ x: 0, y: 0, visible: false })
   const [modalType, setModalType] = useState('friendly')
   const [editingLocation, setEditingLocation] = useState(null)
+  const [showReportPanel, setShowReportPanel] = useState(false)
+  const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
   
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
