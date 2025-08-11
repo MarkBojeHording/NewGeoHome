@@ -1167,6 +1167,92 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
   )
 }
 
+// Base Report Preview Component
+const BaseReportPreview = ({ report, onClick }) => {
+  const getReportIcon = (reportType) => {
+    switch (reportType) {
+      case 'Base Raided':
+        return (
+          <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 2L3 7v11a1 1 0 001 1h3v-6h6v6h3a1 1 0 001-1V7l-7-5z"/>
+            <path d="M8 13h4v4H8z" fill="currentColor" opacity="0.6"/>
+          </svg>
+        )
+      case 'MLRS\'d':
+        return (
+          <svg className="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+          </svg>
+        )
+      case 'Enemy built in':
+        return (
+          <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+          </svg>
+        )
+      case 'We grubbed':
+        return (
+          <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.242.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-1.092a4.535 4.535 0 001.676-.662C13.398 12.766 14 11.991 14 11c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 8.092V6.151c.391.127.68.317.843.504a1 1 0 101.51-1.31c-.562-.649-1.413-1.076-2.353-1.253V5z" clipRule="evenodd"/>
+          </svg>
+        )
+      case 'Caught moving loot':
+        return (
+          <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm-3 3a1 1 0 100 2h.01a1 1 0 100-2H10zm-4 1a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1zm1-4a1 1 0 100 2h.01a1 1 0 100-2H7zm2 1a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm4-4a1 1 0 100 2h.01a1 1 0 100-2H13zM9 9a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zM7 8a1 1 0 000 2h.01a1 1 0 000-2H7z" clipRule="evenodd"/>
+          </svg>
+        )
+      default:
+        return (
+          <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+          </svg>
+        )
+    }
+  }
+
+  return (
+    <div
+      onClick={onClick}
+      className="w-full bg-gray-700 hover:bg-gray-600 rounded-lg p-3 cursor-pointer transition-colors border border-gray-600 hover:border-gray-500"
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          {getReportIcon(report.baseReportType)}
+          <span className="text-gray-200 text-sm font-medium">{report.baseReportType}</span>
+        </div>
+        <span className="text-gray-400 text-xs">{report.reportTime}</span>
+      </div>
+      
+      <div className="flex items-center gap-2">
+        {/* Screenshot preview placeholder */}
+        {report.screenshots && report.screenshots.length > 0 && (
+          <div className="w-8 h-6 bg-gray-600 rounded flex items-center justify-center">
+            <svg className="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
+            </svg>
+          </div>
+        )}
+        
+        {/* Notes indicator */}
+        {report.notes && report.notes.trim() && (
+          <div className="w-4 h-4 bg-yellow-500 rounded flex items-center justify-center">
+            <svg className="w-3 h-3 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+            </svg>
+          </div>
+        )}
+        
+        {/* Time ago indicator */}
+        <span className="text-gray-500 text-xs ml-auto">
+          {new Date(report.timestamp).toLocaleDateString()}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 const BaseModal = ({ 
   modal, 
   modalType, 
@@ -1174,7 +1260,9 @@ const BaseModal = ({
   locations,
   onSave,
   onCancel,
-  onDelete
+  onDelete,
+  reportLibrary,
+  addToReportLibrary
 }) => {
   const [formData, setFormData] = useState({
     type: modalType === 'friendly' ? 'friendly-main' : modalType === 'enemy' ? 'enemy-small' : modalType === 'base-report' ? 'base-report' : 'report-pvp',
@@ -1293,22 +1381,41 @@ const BaseModal = ({
     return filtered.sort((a, b) => a.coord.localeCompare(b.coord))
   }, [getMainBasesWithInfo])
   
+  // Get reports for a specific base
+  const getBaseReports = useCallback((baseId) => {
+    if (!baseId) return []
+    return reportLibrary.filter(report => 
+      report.type === 'base-report' && report.locationId === baseId
+    )
+  }, [reportLibrary])
+
+  // Open full report for viewing/editing
+  const openFullReport = useCallback((report) => {
+    // This would open the report in full view mode
+    console.log('Opening full report:', report)
+    // TODO: Implement full report view modal
+  }, [])
+
   const handleSave = () => {
     // Handle base report creation
     if (modalType === 'base-report') {
       const reportData = {
+        id: Date.now().toString(),
         type: 'base-report',
         baseReportType: formData.baseReportType,
-        reportTime: new Date().toLocaleTimeString(),
+        reportTime: formData.reportTime,
         reportOutcome: 'neutral',
         notes: formData.notes,
         baseType: editingLocation?.type || 'unknown',
         locationId: editingLocation?.id,
-        baseName: editingLocation?.name || 'Unknown Base'
+        baseName: editingLocation?.name || 'Unknown Base',
+        timestamp: new Date().toISOString(),
+        screenshots: [] // Placeholder for screenshots
       }
       
-      // Create the report and store in library
-      console.log('Creating base report:', reportData)
+      // Add to report library using the central storage
+      addToReportLibrary(reportData)
+      console.log('Created base report:', reportData)
       onCancel() // Close modal after creating report
       return
     }
@@ -1948,18 +2055,29 @@ const BaseModal = ({
             <div className="p-4 h-full flex flex-col">
               <h3 className="text-white font-bold mb-4">Base Reports</h3>
               
-              {/* List of reports for this base */}
-              <div className="flex-1 overflow-y-auto mb-4">
-                <div className="space-y-2">
-                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
-                  {/* Reports will be listed here */}
-                </div>
+              {/* Base Report Previews */}
+              <div className="flex-1 overflow-y-auto space-y-2">
+                {getBaseReports(editingLocation?.id).length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="text-gray-500 mb-2">
+                      <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-400 text-sm">No reports for this base yet</p>
+                  </div>
+                ) : (
+                  getBaseReports(editingLocation?.id)
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .map((report, index) => (
+                      <BaseReportPreview 
+                        key={`${report.id}-${index}`}
+                        report={report}
+                        onClick={() => openFullReport(report)}
+                      />
+                    ))
+                )}
               </div>
-              
-              {/* Create Report Button */}
-              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
-                Create New Report
-              </button>
             </div>
           </div>
         )}
@@ -2202,6 +2320,11 @@ export default function InteractiveTacticalMap() {
   const getLocationReports = useCallback((locationId) => {
     return reportLibrary.filter(report => report.locationId === locationId)
   }, [reportLibrary])
+
+  // Add report to library (for use in BaseModal)
+  const addToReportLibrary = useCallback((reportData) => {
+    setReportLibrary(prev => [...prev, reportData])
+  }, [])
   
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
@@ -2526,6 +2649,8 @@ export default function InteractiveTacticalMap() {
             onSave={handleSaveBase}
             onCancel={handleCancel}
             onDelete={handleDeleteLocation}
+            reportLibrary={reportLibrary}
+            addToReportLibrary={addToReportLibrary}
           />
         )}
       </div>
