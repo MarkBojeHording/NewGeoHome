@@ -2,6 +2,18 @@
 
 This is a Rust-themed tactical map and raid calculator application built with React, TypeScript, and Node.js. The primary purpose is to provide players with an interactive tactical planning tool featuring an interactive map interface and comprehensive raid cost calculations for different material types. The application appears to be a specialized gaming utility focused on strategic planning and resource management.
 
+## Current Features
+
+### Primary Map Feature (2376 lines - main tactical planning interface)
+- Interactive tactical map with zoom/pan controls
+- Base placement system (friendly/enemy bases with different types)
+- Rocket calculator with material cost calculations
+- Timer system for tracking raid countdowns
+- Location action menus and editing capabilities
+- Report tracking system for raid outcomes
+- Grid coordinate system with automatic naming
+- Decay calculator for base materials
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
