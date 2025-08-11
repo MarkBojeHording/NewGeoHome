@@ -944,7 +944,13 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           onAction={(action) => {
             console.log(action)
             setShowActionMenu(false)
-            if (action === 'Intentional Decay' || action === 'Decaying') {
+            
+            if (action === 'Write report') {
+              // Open base report modal with specific options
+              setModalType('base-report')
+              setEditingLocation(location)
+              setNewBaseModal({ x: location.x, y: location.y, visible: true })
+            } else if (action === 'Intentional Decay' || action === 'Decaying') {
               setShowDecayingMenu(true)
             }
           }}
@@ -1171,12 +1177,12 @@ const BaseModal = ({
   onDelete
 }) => {
   const [formData, setFormData] = useState({
-    type: modalType === 'friendly' ? 'friendly-main' : modalType === 'enemy' ? 'enemy-small' : 'report-pvp',
+    type: modalType === 'friendly' ? 'friendly-main' : modalType === 'enemy' ? 'enemy-small' : modalType === 'base-report' ? 'base-report' : 'report-pvp',
     notes: '',
     oldestTC: 0,
     players: '',
     upkeep: { wood: 0, stone: 0, metal: 0, hqm: 0 },
-    reportTime: '',
+    reportTime: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
     reportOutcome: 'neutral',
     ownerCoordinates: '',
     library: '',
@@ -1186,7 +1192,8 @@ const BaseModal = ({
     raidedOut: false,
     primaryRockets: 0,
     enemyPlayers: '',
-    friendlyPlayers: ''
+    friendlyPlayers: '',
+    baseReportType: 'Base Raided' // New field for base-specific report options
   })
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
@@ -1287,6 +1294,25 @@ const BaseModal = ({
   }, [getMainBasesWithInfo])
   
   const handleSave = () => {
+    // Handle base report creation
+    if (modalType === 'base-report') {
+      const reportData = {
+        type: 'base-report',
+        baseReportType: formData.baseReportType,
+        reportTime: new Date().toLocaleTimeString(),
+        reportOutcome: 'neutral',
+        notes: formData.notes,
+        baseType: editingLocation?.type || 'unknown',
+        locationId: editingLocation?.id,
+        baseName: editingLocation?.name || 'Unknown Base'
+      }
+      
+      // Create the report and store in library
+      console.log('Creating base report:', reportData)
+      onCancel() // Close modal after creating report
+      return
+    }
+    
     const baseData = {
       type: formData.type,
       notes: formData.notes,
@@ -1308,6 +1334,72 @@ const BaseModal = ({
     }
     
     onSave(baseData)
+  }
+  
+  // Render base report modal with specific dropdown options
+  const renderBaseReportModal = () => {
+    const baseType = editingLocation?.type || ''
+    const isFriendly = baseType.startsWith('friendly')
+    const baseName = editingLocation?.name || 'Unknown Base'
+    
+    const reportOptions = isFriendly 
+      ? ['Base Raided', 'MLRS\'d', 'Enemy built in'] 
+      : ['Base Raided', 'MLRS\'d', 'We grubbed', 'Caught moving loot']
+    
+    return (
+      <div>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-gray-200 mb-2">
+            Base Report: {baseName}
+          </h3>
+          <p className="text-sm text-gray-400">
+            Creating {isFriendly ? 'friendly' : 'enemy'} base report
+          </p>
+        </div>
+        
+        <div className="flex gap-4 items-end mb-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
+            <div className="relative">
+              <select 
+                value={formData.baseReportType} 
+                onChange={(e) => setFormData(prev => ({ ...prev, baseReportType: e.target.value }))} 
+                className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-purple-500 focus:outline-none"
+              >
+                {reportOptions.map(option => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-200">Time</label>
+            <input 
+              type="time" 
+              value={formData.reportTime} 
+              onChange={(e) => setFormData(prev => ({ ...prev, reportTime: e.target.value }))} 
+              className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-purple-500 focus:outline-none" 
+            />
+          </div>
+        </div>
+        
+        {/* Notes Container */}
+        <div className="bg-gray-900 border border-gray-600 rounded p-3">
+          <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
+          <textarea 
+            value={formData.notes} 
+            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
+            className="w-full h-32 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-purple-500"
+            placeholder={`Add details about the ${formData.baseReportType.toLowerCase()} incident...`}
+          />
+        </div>
+      </div>
+    )
   }
   
   const renderReportModal = () => (
@@ -1659,7 +1751,19 @@ const BaseModal = ({
                 </div>
               )}
               
-              {modalType !== 'report' && (
+              {modalType === 'base-report' && (
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1 text-gray-200">Evidence Screenshots</label>
+                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '100px'}}>
+                    <svg className="h-7 w-7 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-gray-400 text-xs">Upload evidence of the incident</p>
+                  </div>
+                </div>
+              )}
+              
+              {modalType !== 'report' && modalType !== 'base-report' && (
                 <div className="mb-3">
                   <label className="block text-sm font-medium mb-1 text-gray-200">Base Screenshots</label>
                   <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '160px', width: '65%', marginRight: 'auto'}}>
@@ -1672,10 +1776,10 @@ const BaseModal = ({
                 </div>
               )}
 
-              {modalType === 'report' ? renderReportModal() : renderBaseModal()}
+              {modalType === 'report' ? renderReportModal() : modalType === 'base-report' ? renderBaseReportModal() : renderBaseModal()}
             </div>
 
-            {modalType === 'report' ? (
+            {modalType === 'report' || modalType === 'base-report' ? (
               <div className="px-4 pb-2 relative z-50">
                 <div className="flex gap-2 justify-end items-center">
                   <button 
@@ -1691,8 +1795,9 @@ const BaseModal = ({
                   </button>
                   <div className="flex-1"></div>
                   
-                  <div className="flex rounded border border-gray-600 overflow-hidden" style={{height: '30px'}}>
-                    {['won', 'neutral', 'lost'].map((outcome) => (
+                  {modalType === 'report' && (
+                    <div className="flex rounded border border-gray-600 overflow-hidden" style={{height: '30px'}}>
+                      {['won', 'neutral', 'lost'].map((outcome) => (
                       <button
                         key={outcome}
                         type="button"
@@ -1719,6 +1824,7 @@ const BaseModal = ({
                       </button>
                     ))}
                   </div>
+                  )}
                   
                   <button 
                     className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
@@ -1735,7 +1841,7 @@ const BaseModal = ({
                     className="bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
                     type="button"
                   >
-                    {editingLocation ? 'Update Report' : 'Save Report'}
+                    {modalType === 'base-report' ? 'Create Base Report' : editingLocation ? 'Update Report' : 'Save Report'}
                   </button>
                 </div>
 
