@@ -1165,7 +1165,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
 }
 
 // Base Report Preview Component
-const BaseReportPreview = ({ report, onClick }) => {
+const BaseReportPreview = ({ report, onClick, onEdit }) => {
   const getReportIcon = (reportType) => {
     switch (reportType) {
       case 'Base Raided':
@@ -1210,41 +1210,58 @@ const BaseReportPreview = ({ report, onClick }) => {
   }
 
   return (
-    <div
-      onClick={onClick}
-      className="w-full bg-gray-700 hover:bg-gray-600 rounded-lg p-3 cursor-pointer transition-colors border border-gray-600 hover:border-gray-500"
-    >
+    <div className="w-full bg-gray-700 rounded-lg p-3 transition-colors border border-gray-600 hover:border-gray-500">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           {getReportIcon(report.baseReportType)}
           <span className="text-gray-200 text-sm font-medium">{report.baseReportType}</span>
         </div>
-        <span className="text-gray-400 text-xs">{report.reportTime}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-gray-400 text-xs">{report.reportTime}</span>
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit && onEdit(report);
+            }}
+            className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors"
+            data-testid="button-edit-report"
+          >
+            Edit
+          </button>
+        </div>
       </div>
       
-      <div className="flex items-center gap-2">
-        {/* Screenshot preview placeholder */}
-        {report.screenshots && report.screenshots.length > 0 && (
-          <div className="w-8 h-6 bg-gray-600 rounded flex items-center justify-center">
-            <svg className="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
-            </svg>
-          </div>
-        )}
-        
-        {/* Notes indicator */}
-        {report.notes && report.notes.trim() && (
-          <div className="w-4 h-4 bg-yellow-500 rounded flex items-center justify-center">
-            <svg className="w-3 h-3 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
-            </svg>
-          </div>
-        )}
-        
-        {/* Time ago indicator */}
-        <span className="text-gray-500 text-xs ml-auto">
-          {new Date(report.timestamp).toLocaleDateString()}
-        </span>
+      <div 
+        onClick={onClick}
+        className="cursor-pointer hover:bg-gray-600 rounded p-1 -m-1 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          {/* Screenshot preview placeholder */}
+          {report.screenshots && report.screenshots.length > 0 && (
+            <div className="w-8 h-6 bg-gray-600 rounded flex items-center justify-center">
+              <svg className="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
+              </svg>
+            </div>
+          )}
+          
+          {/* Notes indicator */}
+          {report.notes && report.notes.trim() && (
+            <div className="w-4 h-4 bg-yellow-500 rounded flex items-center justify-center">
+              <svg className="w-3 h-3 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+              </svg>
+            </div>
+          )}
+          
+          {/* Date without year */}
+          <span className="text-gray-500 text-xs ml-auto">
+            {new Date(report.timestamp).toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric'
+            })}
+          </span>
+        </div>
       </div>
     </div>
   )
@@ -1254,12 +1271,14 @@ const BaseModal = ({
   modal, 
   modalType, 
   editingLocation,
+  editingReport,
   locations,
   onSave,
   onCancel,
   onDelete,
   reportLibrary,
-  addToReportLibrary
+  addToReportLibrary,
+  updateReportLibrary
 }) => {
   const [formData, setFormData] = useState({
     type: modalType === 'friendly' ? 'friendly-main' : modalType === 'enemy' ? 'enemy-small' : modalType === 'base-report' ? 'base-report' : 'report-pvp',
@@ -1302,7 +1321,28 @@ const BaseModal = ({
   
   // Initialize form data when editing
   useEffect(() => {
-    if (editingLocation) {
+    if (editingReport) {
+      // Editing an existing report
+      setFormData({
+        type: editingReport.baseType,
+        notes: editingReport.notes || '',
+        oldestTC: 0,
+        players: '',
+        upkeep: { wood: 0, stone: 0, metal: 0, hqm: 0 },
+        reportTime: editingReport.reportTime || '',
+        reportOutcome: editingReport.reportOutcome || 'neutral',
+        ownerCoordinates: '',
+        library: '',
+        youtube: '',
+        roofCamper: false,
+        hostileSamsite: false,
+        raidedOut: false,
+        primaryRockets: 0,
+        enemyPlayers: '',
+        friendlyPlayers: '',
+        baseReportType: editingReport.baseReportType || 'Base Raided'
+      })
+    } else if (editingLocation) {
       setFormData({
         type: editingLocation.type,
         notes: editingLocation.notes || '',
@@ -1319,7 +1359,8 @@ const BaseModal = ({
         raidedOut: editingLocation.raidedOut || false,
         primaryRockets: editingLocation.primaryRockets || 0,
         enemyPlayers: editingLocation.enemyPlayers || '',
-        friendlyPlayers: editingLocation.friendlyPlayers || ''
+        friendlyPlayers: editingLocation.friendlyPlayers || '',
+        baseReportType: modalType === 'base-report' ? 'Base Raided' : ''
       })
     } else if (modalType === 'report') {
       const now = new Date()
@@ -1328,7 +1369,7 @@ const BaseModal = ({
         reportTime: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
       }))
     }
-  }, [editingLocation, modalType])
+  }, [editingLocation, editingReport, modalType])
   
   const getMainBases = useCallback(() => {
     const bases = locations.filter(loc => 
@@ -1393,27 +1434,62 @@ const BaseModal = ({
     // TODO: Implement full report view modal
   }, [])
 
+  // Edit base report
+  const editBaseReport = useCallback((report) => {
+    // Convert the report back to a location-like object for editing
+    const reportLocation = {
+      id: report.locationId,
+      name: report.baseName,
+      type: report.baseType,
+      notes: report.notes,
+      reportTime: report.reportTime,
+    }
+    
+    setEditingLocation(reportLocation)
+    setModalType('base-report')
+    setEditingReport(report) // Set the report being edited
+    setShowReportPanel(false) // Close report panel
+  }, [])
+
+
+
   const handleSave = () => {
-    // Handle base report creation
+    // Handle base report creation or updating
     if (modalType === 'base-report') {
-      const reportData = {
-        id: Date.now().toString(),
-        type: 'base-report',
-        baseReportType: formData.baseReportType,
-        reportTime: formData.reportTime,
-        reportOutcome: 'neutral',
-        notes: formData.notes,
-        baseType: editingLocation?.type || 'unknown',
-        locationId: editingLocation?.id,
-        baseName: editingLocation?.name || 'Unknown Base',
-        timestamp: new Date().toISOString(),
-        screenshots: [] // Placeholder for screenshots
+      if (editingReport) {
+        // Update existing report
+        const updatedReport = {
+          ...editingReport,
+          baseReportType: formData.baseReportType,
+          reportTime: formData.reportTime,
+          reportOutcome: formData.reportOutcome,
+          notes: formData.notes,
+          timestamp: editingReport.timestamp // Keep original timestamp
+        }
+        
+        updateReportLibrary(updatedReport)
+        console.log('Updated base report:', updatedReport)
+      } else {
+        // Create new report
+        const reportData = {
+          id: Date.now().toString(),
+          type: 'base-report',
+          baseReportType: formData.baseReportType,
+          reportTime: formData.reportTime,
+          reportOutcome: 'neutral',
+          notes: formData.notes,
+          baseType: editingLocation?.type || 'unknown',
+          locationId: editingLocation?.id,
+          baseName: editingLocation?.name || 'Unknown Base',
+          timestamp: new Date().toISOString(),
+          screenshots: [] // Placeholder for screenshots
+        }
+        
+        addToReportLibrary(reportData)
+        console.log('Created base report:', reportData)
       }
       
-      // Add to report library using the central storage
-      addToReportLibrary(reportData)
-      console.log('Created base report:', reportData)
-      onCancel() // Close modal after creating report
+      onCancel() // Close modal after creating/updating report
       return
     }
     
@@ -2054,7 +2130,6 @@ const BaseModal = ({
               
               {/* Base Report Previews */}
               <div className="flex-1 overflow-y-auto space-y-2">
-                {console.log('Debug - editingLocation?.id:', editingLocation?.id, 'reportLibrary:', reportLibrary, 'getBaseReports result:', getBaseReports(editingLocation?.id))}
                 {getBaseReports(editingLocation?.id).length === 0 ? (
                   <div className="text-center py-8">
                     <div className="text-gray-500 mb-2">
@@ -2072,6 +2147,7 @@ const BaseModal = ({
                         key={`${report.id}-${index}`}
                         report={report}
                         onClick={() => openFullReport(report)}
+                        onEdit={editBaseReport}
                       />
                     ))
                 )}
@@ -2214,6 +2290,7 @@ export default function InteractiveTacticalMap() {
   const [newBaseModal, setNewBaseModal] = useState({ x: 0, y: 0, visible: false })
   const [modalType, setModalType] = useState('friendly')
   const [editingLocation, setEditingLocation] = useState(null)
+  const [editingReport, setEditingReport] = useState(null)
   const [showReportPanel, setShowReportPanel] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
   
@@ -2341,6 +2418,7 @@ export default function InteractiveTacticalMap() {
   const handleCancel = useCallback(() => {
     setNewBaseModal(prev => ({ ...prev, visible: false }))
     setEditingLocation(null)
+    setEditingReport(null)
     setShowReportPanel(false)
     setShowAdvancedPanel(false)
   }, [])
@@ -2595,12 +2673,14 @@ export default function InteractiveTacticalMap() {
             modal={newBaseModal}
             modalType={modalType}
             editingLocation={editingLocation}
+            editingReport={editingReport}
             locations={locations}
             onSave={handleSaveBase}
             onCancel={handleCancel}
             onDelete={handleDeleteLocation}
             reportLibrary={reportLibrary}
             addToReportLibrary={addToReportLibrary}
+            updateReportLibrary={updateReportLibrary}
           />
         )}
       </div>
