@@ -2048,6 +2048,55 @@ export default function InteractiveTacticalMap() {
   const [showReportPanel, setShowReportPanel] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
   
+  // Central Report Library - Hidden storage for all reports
+  const [reportLibrary, setReportLibrary] = useState([])
+  const [reportCounter, setReportCounter] = useState(1)
+  
+  // Report type options for different contexts
+  const getReportOptions = useCallback((reportContext, baseType) => {
+    const commonOptions = ['Base Raided', 'MLRS\'d']
+    
+    if (reportContext === 'general') {
+      return ['PvP', 'Raid', 'MLRS', 'Heli', 'Bradley', 'Cargo', 'Oil Rig', 'Other']
+    }
+    
+    if (reportContext === 'base') {
+      if (baseType?.startsWith('friendly')) {
+        return [...commonOptions, 'Enemy built in']
+      } else if (baseType?.startsWith('enemy')) {
+        return [...commonOptions, 'We grubbed', 'Caught moving loot']
+      }
+    }
+    
+    return commonOptions
+  }, [])
+  
+  // Create new report and store in library
+  const createReport = useCallback((reportData, reportType, locationId = null, baseType = null) => {
+    const newReport = {
+      id: `report_${reportCounter}`,
+      type: reportType, // 'general', 'base'
+      locationId: locationId,
+      baseType: baseType,
+      reportOption: reportData.reportOption || reportData.type,
+      time: reportData.reportTime || new Date().toLocaleString(),
+      outcome: reportData.reportOutcome || 'neutral',
+      notes: reportData.notes || '',
+      players: reportData.players || reportData.enemyPlayers || reportData.friendlyPlayers || '',
+      createdAt: Date.now(),
+      ...reportData
+    }
+    
+    setReportLibrary(prev => [...prev, newReport])
+    setReportCounter(prev => prev + 1)
+    return newReport
+  }, [reportCounter])
+  
+  // Get reports for a specific location
+  const getLocationReports = useCallback((locationId) => {
+    return reportLibrary.filter(report => report.locationId === locationId)
+  }, [reportLibrary])
+  
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
   const { zoom, setZoom, pan, isDragging, setIsDragging, isDraggingRef, dragStartRef, hasDraggedRef } = useMapInteraction()
