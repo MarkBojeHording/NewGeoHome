@@ -1278,7 +1278,7 @@ const BaseModal = ({
     primaryRockets: 0,
     enemyPlayers: '',
     friendlyPlayers: '',
-    baseReportType: 'Base Raided' // New field for base-specific report options
+    baseReportType: modalType === 'base-report' ? 'Base Raided' : '' // Initialize properly for base-report mode
   })
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
@@ -1499,7 +1499,7 @@ const BaseModal = ({
             value={formData.notes} 
             onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
             className="w-full h-32 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-purple-500"
-            placeholder={`Add details about the ${formData.baseReportType.toLowerCase()} incident...`}
+            placeholder={`Add details about the ${(formData.baseReportType || 'incident').toLowerCase()} incident...`}
           />
         </div>
       </div>
