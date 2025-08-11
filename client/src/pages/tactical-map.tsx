@@ -879,7 +879,7 @@ const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
   </div>
 )
 
-const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer }) => {
+const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReportModal }) => {
   const [showActionMenu, setShowActionMenu] = useState(false)
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
@@ -946,10 +946,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             setShowActionMenu(false)
             
             if (action === 'Write report') {
-              // Open base report modal with specific options
-              setModalType('base-report')
-              setEditingLocation(location)
-              setNewBaseModal({ x: location.x, y: location.y, visible: true })
+              onOpenReportModal(location)
             } else if (action === 'Intentional Decay' || action === 'Decaying') {
               setShowDecayingMenu(true)
             }
@@ -2628,6 +2625,11 @@ export default function InteractiveTacticalMap() {
               onSelectLocation={setSelectedLocation}
               locationTimers={locationTimers}
               onAddTimer={handleAddTimer}
+              onOpenReportModal={(location) => {
+                setModalType('base-report')
+                setEditingLocation(location)
+                setNewBaseModal({ x: location.x, y: location.y, visible: true })
+              }}
             />
           )}
         </div>
