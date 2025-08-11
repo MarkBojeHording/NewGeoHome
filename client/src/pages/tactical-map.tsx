@@ -1277,8 +1277,7 @@ const BaseModal = ({
   onCancel,
   onDelete,
   reportLibrary,
-  addToReportLibrary,
-  updateReportLibrary
+  addToReportLibrary
 }) => {
   const [formData, setFormData] = useState({
     type: modalType === 'friendly' ? 'friendly-main' : modalType === 'enemy' ? 'enemy-small' : modalType === 'base-report' ? 'base-report' : 'report-pvp',
@@ -1450,6 +1449,8 @@ const BaseModal = ({
     setEditingReport(report) // Set the report being edited
     setShowReportPanel(false) // Close report panel
   }, [])
+
+
 
 
 
@@ -2347,6 +2348,15 @@ export default function InteractiveTacticalMap() {
   const addToReportLibrary = useCallback((reportData) => {
     setReportLibrary(prev => [...prev, reportData])
   }, [])
+
+  // Update existing report in library
+  const updateReportLibrary = useCallback((updatedReport) => {
+    setReportLibrary(prev => 
+      prev.map(report => 
+        report.id === updatedReport.id ? updatedReport : report
+      )
+    )
+  }, [])
   
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
@@ -2680,7 +2690,6 @@ export default function InteractiveTacticalMap() {
             onDelete={handleDeleteLocation}
             reportLibrary={reportLibrary}
             addToReportLibrary={addToReportLibrary}
-            updateReportLibrary={updateReportLibrary}
           />
         )}
       </div>
