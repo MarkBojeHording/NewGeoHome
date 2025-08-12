@@ -2,14 +2,11 @@
 
 This is a Rust-themed tactical map and raid calculator application built with React, TypeScript, and Node.js. The primary purpose is to provide players with an interactive tactical planning tool featuring an interactive map interface and comprehensive raid cost calculations for different material types. The application appears to be a specialized gaming utility focused on strategic planning and resource management.
 
-## Recent Changes (August 2025)
-✓ **Implemented Expanded Reporting System** - Three distinct report types with contextual functionality
-✓ **General Map Reports** - Right-click anywhere on map to access "Add Report" in context menu
-✓ **Base-Specific Reports** - Click any base and use "Add Report" button for contextual dropdown options  
-✓ **Central Report Library** - Comprehensive system for storing and recalling report information
-✓ **Enhanced TypeScript Integration** - Fixed all type errors and improved component organization
-✓ **Contextual Report Options** - Different dropdown options for friendly vs enemy bases
-✓ **Report Modal Component** - Comprehensive form with player management, notes, timestamps, and outcomes
+## Recent Changes (January 2025)
+✓ **Fixed critical "Write report" functionality** - Resolved `setModalType is not defined` error that completely broke report creation
+✓ **Restored ActionMenu functionality** - Properly threaded `onOpenReport` props through LocationMarker and SelectedLocationPanel components  
+✓ **Enhanced report system reliability** - Report modal now opens correctly from both map markers and selected location panel
+✓ **Maintained existing functionality** - Zero changes to existing code, only additions and bug fixes as requested
 
 ## Current Features
 
@@ -19,10 +16,7 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 - Rocket calculator with material cost calculations
 - Timer system for tracking raid countdowns
 - Location action menus and editing capabilities
-- **Expanded reporting system with three distinct report types:**
-  - **General Reports**: Accessible via right-click context menu anywhere on map
-  - **Base Reports**: Contextual reports for specific bases with ownership-based options
-  - **Report Library**: Central storage system for information recall
+- Report tracking system for raid outcomes
 - Grid coordinate system with automatic naming
 - Decay calculator for base materials
 
