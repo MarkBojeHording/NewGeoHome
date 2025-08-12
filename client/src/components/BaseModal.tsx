@@ -759,8 +759,8 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           <div 
             className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
             style={{
-              height: modalType === 'enemy' ? '1200px' : '805px',
-              maxHeight: modalType === 'enemy' ? '1200px' : '805px',
+              height: '805px',
+              maxHeight: '805px',
               width: '320px',
               left: '16px',
               transform: 'translateX(-100%)',
@@ -792,8 +792,8 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           <div 
             className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
             style={{
-              height: modalType === 'enemy' ? '1200px' : '805px',
-              maxHeight: modalType === 'enemy' ? '1200px' : '805px',
+              height: '805px',
+              maxHeight: '805px',
               width: '280px',
               left: '100%',
               top: 0,
