@@ -269,7 +269,23 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               }} 
               className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
             >
-              <option value="report-pvp">PVP General</option>
+              {modalType === "base-report" ? (
+                  <>
+                    <option value="base-raided">Base Raided</option>
+                    <option value="base-mlrsd">MLRSd</option>
+                    {editingLocation?.type?.startsWith("friendly") && (
+                      <option value="enemy-built-in">Enemy built in</option>
+                    )}
+                    {editingLocation?.type?.startsWith("enemy") && (
+                      <>
+                        <option value="we-grubbed">We grubbed</option>
+                        <option value="caught-moving-loot">Caught moving loot</option>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <option value="report-pvp">PVP General</option>
               <option value="report-spotted">Spotted Enemy</option>
               <option value="report-bradley">Countered/Took Bradley/Heli</option>
               <option value="report-oil">Countered/Took Oil/Cargo</option>
