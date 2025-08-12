@@ -4,16 +4,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import TacticalMap from "@/pages/tactical-map";
-import SimpleTacticalMap from "@/pages/simple-tactical-map";
-import TestPage from "@/pages/test-page";
+import TacticalMapWorking from "@/pages/tactical-map-working";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/test" component={TestPage}/>
       <Route path="/full" component={TacticalMap}/>
-      <Route path="/" component={SimpleTacticalMap}/>
+      <Route path="/" component={TacticalMapWorking}/>
       <Route component={NotFound} />
     </Switch>
   );
