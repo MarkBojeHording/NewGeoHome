@@ -63,6 +63,139 @@ const MATERIAL_LABELS = {
   hqm: "HQM"
 }
 
+// ============= ROCKET CALCULATOR CONSTANTS =============
+const SLIDER_DESCRIPTIONS = {
+  75: "Will panic with doors open",
+  100: "Potato",
+  150: "Normal defender",
+  200: "Good PVPers",
+  250: "Probably cheating"
+}
+
+const RAID_MULTIPLIERS = {
+  sheetMetal: 1,
+  wood: 2,
+  garage: 3,
+  stone: 4,
+  metal: 8,
+  hqm: 15
+}
+
+// ============= ROCKET CALCULATOR UTILITY FUNCTIONS =============
+const calculateRocketAmmo = (rocketCount, isPrimary, modifier = 150) => {
+  if (isPrimary) {
+    const adjustedRockets = rocketCount > 12 ? 6 + Math.floor((rocketCount - 12) / 8) * 3 : rocketCount
+    const hv = adjustedRockets * 1
+    const incin = Math.floor(rocketCount / 20)
+    const explo = 10 + (rocketCount * 6)
+    return { rockets: adjustedRockets, hv, incin, explo }
+  } else {
+    const baseRockets = Math.min(rocketCount, 4)
+    const extraRockets = Math.max(0, rocketCount - 4)
+    const adjustedRockets = baseRockets + Math.floor(extraRockets * (modifier / 100))
+    const hv = 9 + Math.floor(adjustedRockets / 6) * 3
+    const incin = Math.floor(adjustedRockets / 12)
+    const explo = 10 + (rocketCount * 6)
+    return { rockets: adjustedRockets, hv, incin, explo }
+  }
+}
+
+// ============= ROCKET CALCULATOR SECTION COMPONENT =============
+const RocketCalculatorSection = ({ 
+  primaryRockets, 
+  onPrimaryRocketsChange, 
+  showCalculatorModal, 
+  calculatorPosition, 
+  onToggleCalculator, 
+  onCloseCalculator 
+}) => {
+  const [rocketSlider, setRocketSlider] = useState(150)
+  const [secondaryRockets, setSecondaryRockets] = useState(0)
+  
+  const primaryAmmo = useMemo(() => calculateRocketAmmo(primaryRockets, true), [primaryRockets])
+  const secondaryAmmo = useMemo(() => calculateRocketAmmo(secondaryRockets, false, rocketSlider), [secondaryRockets, rocketSlider])
+
+  return (
+    <div className="mb-3">
+      <div className="flex items-center gap-2 mb-2">
+        <label className="block text-sm font-medium text-gray-200">Primary Rockets</label>
+        <button 
+          onClick={onToggleCalculator}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1"
+        >
+          <Calculator className="h-3 w-3" />
+          Calc
+        </button>
+      </div>
+      
+      <input 
+        type="number" 
+        value={primaryRockets} 
+        onChange={(e) => onPrimaryRocketsChange(Math.max(0, parseInt(e.target.value) || 0))}
+        className="w-full px-2 py-1.5 bg-gray-600 border border-gray-500 rounded text-gray-200 focus:border-blue-500 focus:outline-none"
+        min="0"
+        placeholder="Number of rockets needed"
+      />
+
+      {showCalculatorModal && (
+        <div 
+          className="fixed bg-gray-800 border border-gray-600 rounded-lg shadow-xl p-4 z-50"
+          style={{ 
+            left: calculatorPosition.x, 
+            top: calculatorPosition.y,
+            width: '320px'
+          }}
+        >
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-white font-bold">Rocket Calculator</h3>
+            <button onClick={onCloseCalculator} className="text-gray-400 hover:text-white">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm text-gray-300">Primary Base Rockets: {primaryRockets}</label>
+              <div className="text-xs text-gray-400 mt-1">
+                Rockets: {primaryAmmo.rockets} | HV: {primaryAmmo.hv} | Incin: {primaryAmmo.incin} | Explo: {primaryAmmo.explo}
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-gray-300">Secondary Rockets: {secondaryRockets}</label>
+              <input 
+                type="range" 
+                min="0" 
+                max="50" 
+                value={secondaryRockets}
+                onChange={(e) => setSecondaryRockets(parseInt(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-400 mt-1">
+                Rockets: {secondaryAmmo.rockets} | HV: {secondaryAmmo.hv} | Incin: {secondaryAmmo.incin} | Explo: {secondaryAmmo.explo}
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm text-gray-300">Defender Quality: {rocketSlider}%</label>
+              <input 
+                type="range" 
+                min="75" 
+                max="250" 
+                step="25"
+                value={rocketSlider}
+                onChange={(e) => setRocketSlider(parseInt(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-400">{SLIDER_DESCRIPTIONS[rocketSlider]}</div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ============= RAIDED OUT PROMPT COMPONENT =============
 const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style={{ zIndex: 10000 }}>
