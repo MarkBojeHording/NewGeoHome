@@ -947,8 +947,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             setShowActionMenu(false)
             if (action === 'Intentional Decay' || action === 'Decaying') {
               setShowDecayingMenu(true)
-            } else if (action === "Write report" || action === "Schedule Raid") {
-              onEdit(location)
             }
           }}
         />
