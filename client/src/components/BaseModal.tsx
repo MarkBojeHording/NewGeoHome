@@ -384,14 +384,14 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
         )}
         
         {modalType === 'enemy' && (
-          <div className="border border-gray-600 rounded-lg bg-gray-700 mb-3 relative">
+          <div className="border border-gray-600 rounded-lg bg-gray-700 mb-2 relative">
             <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Heat Map</label>
             <div className="p-2 pt-3">
               <div className="flex gap-1">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                   <div key={day} className="flex-1">
                     <div className="text-[10px] text-gray-400 text-center">{day}</div>
-                    <div className="bg-gray-800 rounded" style={{height: '160px', position: 'relative'}}>
+                    <div className="bg-gray-800 rounded" style={{height: '120px', position: 'relative'}}>
                     </div>
                   </div>
                 ))}
@@ -576,7 +576,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               </div>
             </div>
             
-            <div className="flex-1 px-4 pt-4 space-y-3 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
+            <div className="flex-1 px-4 pt-4 space-y-2 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
                 <div className="mb-3">
                   <label className="block text-sm font-medium mb-1 text-gray-200">Report Screenshots</label>
