@@ -3,8 +3,8 @@ import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } 
 import BaseModal from '../components/BaseModal'
 import ReportModal from '../components/ReportModal'
 import ContextMenu from '../components/ContextMenu'
-import type { Location, LocationTimers, Timer, ModalState, ContextMenu as ContextMenuType, BaseType } from '../../shared/location-schema'
-import type { Report, ReportLibrary, GeneralReport, BaseReport, GeneralReportType, BaseReportType } from '../../shared/report-schema'
+import type { Location, LocationTimers, Timer, ModalState, ContextMenu as ContextMenuType, BaseType } from '../../../shared/location-schema'
+import type { Report, ReportLibrary, GeneralReport, BaseReport, GeneralReportType, BaseReportType } from '../../../shared/report-schema'
 
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
