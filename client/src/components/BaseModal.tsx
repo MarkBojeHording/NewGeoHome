@@ -477,6 +477,7 @@ const BaseModal = ({
     }
   }
 
+  console.log('BaseModal render check:', { modalVisible: modal.visible, modalType, modal })
   if (!modal.visible) return null
 
   return (
