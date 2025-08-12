@@ -575,7 +575,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               </div>
             </div>
             
-            <div className="px-4 pt-4 space-y-2 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
+            <div className="px-4 pt-4 space-y-2 text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
                 <div className="mb-3">
                   <label className="block text-sm font-medium mb-1 text-gray-200">Report Screenshots</label>
