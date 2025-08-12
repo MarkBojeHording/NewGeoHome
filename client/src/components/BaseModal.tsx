@@ -1,88 +1,232 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } from "lucide-react"
-import { RocketCalculatorSection } from './RocketCalculator'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { Calculator, X, Flame, Eye, Building2, Zap } from 'lucide-react'
 
-// ============= CONSTANTS =============
-const LABELS = {
-  "friendly-main": "Main",
-  "friendly-flank": "Flank", 
-  "friendly-farm": "Farm",
-  "friendly-boat": "Boat",
-  "friendly-garage": "Garage",
-  "enemy-small": "Small",
-  "enemy-medium": "Medium",
-  "enemy-large": "Large",
-  "enemy-flank": "Flank",
-  "enemy-tower": "Tower",
-  "enemy-farm": "Farm",
-  "enemy-decaying": "Decaying",
-  "report-pvp": "PvP",
-  "report-heli": "Heli",
-  "report-bradley": "Bradley"
+// RocketCalculator constants and functions
+const SLIDER_DESCRIPTIONS = {
+  75: "Will panic with doors open",
+  100: "Potato",
+  150: "Normal defender",
+  200: "Good PVPers",
+  250: "Probably cheating"
 }
 
-const ICON_MAP = {
-  "friendly-main": Home,
-  "friendly-flank": Shield,
-  "friendly-farm": Wheat,
-  "friendly-boat": Castle,
-  "friendly-garage": Castle,
-  "enemy-small": Tent,
-  "enemy-medium": Castle,
-  "enemy-large": Shield,
-  "enemy-flank": Shield,
-  "enemy-tower": Castle,
-  "enemy-farm": Wheat,
-  "enemy-decaying": Castle,
-  "report-pvp": Shield,
-  "report-heli": Shield,
-  "report-bradley": Shield
+const RAID_MULTIPLIERS = {
+  sheetMetal: 1,
+  wood: 2,
+  garage: 3,
+  stone: 4,
+  metal: 8,
+  hqm: 15
 }
 
-const getColor = (type) => {
-  if (type.startsWith("friendly")) return "text-green-400"
-  if (type.startsWith("enemy")) return "text-red-400"
-  return "text-yellow-400"
+const calculateRocketAmmo = (rocketCount, isPrimary, modifier = 150) => {
+  if (isPrimary) {
+    const adjustedRockets = rocketCount > 12 ? 6 + Math.floor((rocketCount - 12) / 8) * 3 : rocketCount
+    const hv = adjustedRockets * 1
+    const incin = Math.floor(rocketCount / 20)
+    const explo = 10 + (rocketCount * 6)
+    return { rockets: adjustedRockets, hv, incin, explo }
+  } else {
+    const baseRockets = Math.min(rocketCount, 4)
+    const extraRockets = Math.max(0, rocketCount - 4)
+    const adjustedRockets = baseRockets + Math.floor(extraRockets * (modifier / 100))
+    const hv = 9 + Math.floor(adjustedRockets / 6) * 3
+    const incin = Math.floor(adjustedRockets / 12)
+    const explo = 10 + (rocketCount * 6)
+    return { rockets: adjustedRockets, hv, incin, explo }
+  }
 }
 
-const getIcon = (type) => {
-  const Icon = ICON_MAP[type] || MapPin
-  return <Icon className="h-3 w-3" />
-}
-
-const MATERIAL_ICONS = {
-  wood: "🪵",
-  stone: "🪨",
-  metal: "🔩",
-  hqm: "⚙️"
-}
-
-const MATERIAL_LABELS = {
-  wood: "Wood",
-  stone: "Stone",
-  metal: "Metal",
-  hqm: "HQM"
-}
-
-
-
-// ============= RAIDED OUT PROMPT COMPONENT =============
-const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style={{ zIndex: 10000 }}>
-    <div className="bg-gradient-to-b from-gray-700 to-gray-800 rounded-xl border border-gray-600 p-6 max-w-sm">
-      <h3 className="text-white font-bold mb-4">Confirm Raided Out</h3>
-      <p className="text-gray-300 mb-6">Mark this base as raided out?</p>
-      <div className="flex gap-3">
-        <button onClick={onConfirm} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-          Confirm
-        </button>
-        <button onClick={onCancel} className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
-          Cancel
-        </button>
+const CalculatorModal = ({ position, onClose, onCalculate }) => {
+  const [values, setValues] = useState({
+    sheetMetal: 0, wood: 0, garage: 0, stone: 0, metal: 0, hqm: 0
+  })
+  
+  const handleChange = (type, value) => {
+    const numValue = Math.min(99, Math.max(0, Number(value) || 0))
+    const newValues = { ...values, [type]: numValue }
+    setValues(newValues)
+    
+    let total = 0
+    Object.keys(newValues).forEach(key => {
+      total += newValues[key] * RAID_MULTIPLIERS[key]
+    })
+    onCalculate(total)
+  }
+  
+  const items = [
+    { key: 'sheetMetal', label: 'Sheet Metal Door' },
+    { key: 'wood', label: 'Wood Wall/High Wall' },
+    { key: 'garage', label: 'Garage Door/Window' },
+    { key: 'stone', label: 'Stone Wall/High Wall' },
+    { key: 'metal', label: 'Metal Wall' },
+    { key: 'hqm', label: 'HQM Wall' }
+  ]
+  
+  return (
+    <div 
+      className="fixed pointer-events-none" 
+      style={{ zIndex: 99999, left: position.x + 'px', top: position.y + 'px' }}
+    >
+      <div className="bg-gray-800 rounded-lg shadow-2xl border-2 border-gray-600 p-4 w-96 pointer-events-auto" style={{boxShadow: '0 25px 60px rgba(0, 0, 0, 0.9)'}}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-bold text-white">Raid Calculator</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-200 transition-colors">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-6 gap-2">
+          {items.map((item) => (
+            <div key={item.key} className="text-center">
+              <label className="block text-[10px] font-medium text-gray-300 mb-1 h-6 leading-tight">
+                {item.label}
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={values[item.key]}
+                  onChange={(e) => handleChange(item.key, e.target.value)}
+                  className="w-full pl-1 pr-6 py-1 bg-gray-700 border border-gray-600 rounded text-center text-white font-bold text-sm focus:border-blue-500 focus:outline-none"
+                  min="0"
+                  max="99"
+                  placeholder="0"
+                />
+                <div className="absolute right-0.5 top-0.5 bottom-0.5 flex flex-col" style={{width: '14px'}}>
+                  <button
+                    type="button"
+                    onClick={() => handleChange(item.key, Math.min(99, (values[item.key] || 0) + 1))}
+                    className="flex items-center justify-center h-1/2 bg-gray-600 hover:bg-gray-500 rounded-t text-gray-300 transition-colors border-b border-gray-700"
+                    style={{fontSize: '8px', lineHeight: '0'}}
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleChange(item.key, Math.max(0, (values[item.key] || 0) - 1))}
+                    className="flex items-center justify-center h-1/2 bg-gray-600 hover:bg-gray-500 rounded-b text-gray-300 transition-colors"
+                    style={{fontSize: '8px', lineHeight: '0'}}
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
+              <div className="text-[10px] text-gray-500 mt-0.5">×{RAID_MULTIPLIERS[item.key]}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
+
+export const RocketCalculatorSection = ({ 
+  primaryRockets, 
+  onPrimaryRocketsChange,
+  showCalculatorModal,
+  calculatorPosition,
+  onToggleCalculator,
+  onCloseCalculator
+}) => {
+  const [onlineRaidModifier, setOnlineRaidModifier] = useState(150)
+  const [showSliderTooltip, setShowSliderTooltip] = useState(false)
+  
+  const ammo = useMemo(() => calculateRocketAmmo(primaryRockets, true), [primaryRockets])
+  const onlineAmmo = useMemo(() => calculateRocketAmmo(primaryRockets, false, onlineRaidModifier), [primaryRockets, onlineRaidModifier])
+  
+  return (
+    <>
+      <div className="border border-gray-600 rounded-lg p-0 bg-gray-700 mb-3 relative">
+        <button 
+          className={`absolute top-1 right-1 rounded p-0.5 transition-colors cursor-pointer ${
+            showCalculatorModal ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-gray-600'
+          }`}
+          onClick={onToggleCalculator}
+          type="button"
+        >
+          <Calculator className={`h-5 w-5 ${showCalculatorModal ? 'text-white' : 'text-blue-500'}`} />
+        </button>
+        <div className="px-1">
+          <div className="flex items-center gap-1">
+            <label className="text-[10px] font-medium text-gray-300 mr-1" style={{margin: '3px'}}>Primary Raid</label>
+            <div className="flex gap-1 text-center">
+              <div className="flex flex-col items-center">
+                <div className="text-[9px] font-medium text-gray-400">Rocket</div>
+                <input 
+                  type="number" 
+                  value={primaryRockets} 
+                  onChange={(e) => onPrimaryRocketsChange(Math.min(999, Math.max(0, Number(e.target.value))))} 
+                  className="w-full px-0 py-0 bg-gray-600 border border-gray-500 rounded text-xs font-bold text-center text-gray-200 focus:border-blue-500 focus:outline-none" 
+                  min="0" 
+                  max="999" 
+                  style={{width: '32px', fontSize: '10px'}} 
+                />
+              </div>
+              {['HV', 'Incin', 'Explo'].map((type, i) => (
+                <div key={type} className="flex flex-col items-center">
+                  <div className="text-[9px] font-medium text-gray-400">{type}</div>
+                  <div className="w-full px-0.5 py-0 bg-gray-600 rounded text-xs font-bold text-center text-gray-200" style={{width: '32px', fontSize: '10px'}}>
+                    {[ammo.hv, ammo.incin, ammo.explo][i]}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <div className="px-1 pb-1">
+          <div className="flex items-center gap-1 relative">
+            <label className="text-[10px] font-medium text-gray-300 mr-1">Online</label>
+            <div className="flex-1 px-1 relative">
+              <input
+                type="range"
+                min={75}
+                max={250}
+                value={onlineRaidModifier}
+                onChange={(e) => setOnlineRaidModifier(Number(e.target.value))}
+                onMouseEnter={() => setShowSliderTooltip(true)}
+                onMouseLeave={() => setShowSliderTooltip(false)}
+                className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb"
+                style={{
+                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((onlineRaidModifier - 75) / (250 - 75)) * 100}%, #4b5563 ${((onlineRaidModifier - 75) / (250 - 75)) * 100}%, #4b5563 100%)`
+                }}
+              />
+              {showSliderTooltip && (
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-gray-200 text-xs px-2 py-1 rounded whitespace-nowrap border border-gray-600">
+                  {SLIDER_DESCRIPTIONS[onlineRaidModifier] || `${onlineRaidModifier}%`}
+                </div>
+              )}
+            </div>
+            <div className="flex gap-1 text-center">
+              <div className="flex flex-col items-center">
+                <div className="text-[9px] font-medium text-gray-400">Rocket</div>
+                <div className="w-full px-0.5 py-0 bg-gray-600 rounded text-xs font-bold text-center text-gray-200" style={{width: '32px', fontSize: '10px'}}>
+                  {onlineAmmo.rockets}
+                </div>
+              </div>
+              {['HV', 'Incin', 'Explo'].map((type, i) => (
+                <div key={type} className="flex flex-col items-center">
+                  <div className="text-[9px] font-medium text-gray-400">{type}</div>
+                  <div className="w-full px-0.5 py-0 bg-gray-600 rounded text-xs font-bold text-center text-gray-200" style={{width: '32px', fontSize: '10px'}}>
+                    {[onlineAmmo.hv, onlineAmmo.incin, onlineAmmo.explo][i]}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {showCalculatorModal && (
+        <CalculatorModal
+          position={calculatorPosition}
+          onClose={onCloseCalculator}
+          onCalculate={onPrimaryRocketsChange}
+        />
+      )}
+    </>
+  )
+}
 
 const BaseModal = ({ 
   modal, 
@@ -209,124 +353,165 @@ const BaseModal = ({
     return filtered.sort((a, b) => a.coord.localeCompare(b.coord))
   }, [getMainBasesWithInfo])
 
-const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
-  const rows = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  const cols = 30
-  const row = Math.floor(y / (100 / rows.length))
-  const col = Math.floor(x / (100 / cols)) + 1
-  const baseName = rows[Math.min(row, rows.length - 1)] + col.toString().padStart(2, "0")
-  
-  const existing = locations.filter(loc => 
-    loc.id !== excludeId && loc.name.startsWith(baseName)
-  ).length
-  
-  return existing > 0 ? `${baseName}(${existing + 1})` : baseName
-}, [])
-
-  
-  const handleSave = () => {
-    const baseData = {
-      type: formData.type,
-      notes: formData.notes,
-      description: LABELS[formData.type] || formData.type,
-      upkeep: modalType === 'friendly' ? formData.upkeep : undefined,
-      time: modalType === 'report' ? formData.reportTime : undefined,
-      outcome: modalType === 'report' ? formData.reportOutcome : undefined,
-      enemyPlayers: modalType === 'report' ? formData.enemyPlayers : undefined,
-      friendlyPlayers: modalType === 'report' ? formData.friendlyPlayers : undefined,
-      isMainBase: modalType === 'enemy' ? true : undefined,
-      oldestTC: modalType === 'enemy' && formData.oldestTC > 0 ? formData.oldestTC : undefined,
-      ownerCoordinates: (formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') ? formData.ownerCoordinates : undefined,
-      library: modalType === 'enemy' ? formData.library : undefined,
-      youtube: modalType === 'enemy' ? formData.youtube : undefined,
-      roofCamper: modalType === 'enemy' ? formData.roofCamper : undefined,
-      hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
-      raidedOut: modalType === 'enemy' ? formData.raidedOut : undefined,
-      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined
+  const getGridCoordinate = (x, y, existingLocations, excludeId) => {
+    const gridSize = 40
+    const gridX = Math.floor(x / gridSize)
+    const gridY = Math.floor(y / gridSize)
+    
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    const baseCoord = `${letters[gridY % 26]}${gridX}`
+    
+    // Check for conflicts with existing locations
+    const coordsInUse = new Set(
+      existingLocations
+        .filter(loc => loc.id !== excludeId) // Exclude current location when editing
+        .map(loc => loc.name.split('(')[0])
+    )
+    
+    if (!coordsInUse.has(baseCoord)) {
+      return baseCoord
     }
     
-    onSave(baseData)
+    // Find next available coordinate
+    for (let i = 1; i <= 99; i++) {
+      const newCoord = `${baseCoord}${i}`
+      if (!coordsInUse.has(newCoord)) {
+        return newCoord
+      }
+    }
+    
+    return baseCoord
   }
-  
+
+  const getIcon = (type) => {
+    const iconClass = "h-4 w-4"
+    switch(type) {
+      case 'friendly-main': return <Building2 className={iconClass} />
+      case 'friendly-flank': return <Zap className={iconClass} />
+      case 'friendly-farm': return <span className="text-xs font-bold">F</span>
+      case 'friendly-boat': return <span className="text-xs font-bold">B</span>
+      case 'friendly-garage': return <span className="text-xs font-bold">G</span>
+      case 'enemy-small': return <Building2 className={iconClass} />
+      case 'enemy-medium': return <Building2 className={iconClass} />
+      case 'enemy-large': return <Building2 className={iconClass} />
+      case 'enemy-flank': return <Zap className={iconClass} />
+      case 'enemy-tower': return <span className="text-xs font-bold">T</span>
+      case 'enemy-farm': return <span className="text-xs font-bold">F</span>
+      case 'enemy-decaying': return <span className="text-xs font-bold">D</span>
+      case 'report-pvp': return <Flame className={iconClass} />
+      case 'report-raid': return <span className="text-xs font-bold">R</span>
+      case 'report-general': return <Eye className={iconClass} />
+      default: return <Building2 className={iconClass} />
+    }
+  }
+
+  const getColor = (type) => {
+    switch(type) {
+      case 'friendly-main': return 'text-green-400'
+      case 'friendly-flank': return 'text-green-300'
+      case 'friendly-farm': return 'text-green-600'
+      case 'friendly-boat': return 'text-blue-400'
+      case 'friendly-garage': return 'text-gray-400'
+      case 'enemy-small': return 'text-red-500'
+      case 'enemy-medium': return 'text-red-400'
+      case 'enemy-large': return 'text-red-300'
+      case 'enemy-flank': return 'text-orange-400'
+      case 'enemy-tower': return 'text-purple-400'
+      case 'enemy-farm': return 'text-yellow-400'
+      case 'enemy-decaying': return 'text-gray-500'
+      case 'report-pvp': return 'text-red-400'
+      case 'report-raid': return 'text-orange-400'
+      case 'report-general': return 'text-blue-400'
+      default: return 'text-gray-400'
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    
+    const coordinate = editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)
+    
+    const newLocation = {
+      id: editingLocation ? editingLocation.id : Date.now(),
+      x: modal.x,
+      y: modal.y,
+      type: formData.type,
+      name: coordinate,
+      notes: formData.notes,
+      oldestTC: formData.oldestTC,
+      time: formData.reportTime,
+      outcome: formData.reportOutcome,
+      ownerCoordinates: formData.ownerCoordinates,
+      library: formData.library,
+      youtube: formData.youtube,
+      roofCamper: formData.roofCamper,
+      hostileSamsite: formData.hostileSamsite,
+      raidedOut: formData.raidedOut,
+      primaryRockets: formData.primaryRockets,
+      upkeep: formData.upkeep,
+      enemyPlayers: formData.enemyPlayers,
+      friendlyPlayers: formData.friendlyPlayers
+    }
+    
+    onSave(newLocation)
+  }
+
   const renderReportModal = () => (
-    <div>
-      <div className="flex gap-4 items-end mb-4">
-        <div className="flex-1">
-          <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
-          <div className="relative">
-            <select 
-              value={formData.type} 
-              onChange={(e) => {
-                const newType = e.target.value
-                setFormData(prev => ({ 
-                  ...prev, 
-                  type: newType,
-                  reportOutcome: newType === 'report-farming' ? 'lost' : newType === 'report-loaded' ? 'won' : 'neutral'
-                }))
-              }} 
-              className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
-            >
-              <option value="report-pvp">PVP General</option>
-              <option value="report-spotted">Spotted Enemy</option>
-              <option value="report-bradley">Countered/Took Bradley/Heli</option>
-              <option value="report-oil">Countered/Took Oil/Cargo</option>
-              <option value="report-monument">Big Score/Fight at Monument</option>
-              <option value="report-farming">Killed While Farming</option>
-              <option value="report-loaded">Killed Loaded Enemy</option>
-              <option value="report-raid">Countered Raid</option>
-            </select>
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-              <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
-                {getIcon(formData.type)}
-              </div>
-              <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-200">Time</label>
-          <input 
-            type="time" 
-            value={formData.reportTime} 
-            onChange={(e) => setFormData(prev => ({ ...prev, reportTime: e.target.value }))} 
-            className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
+    <div className="grid grid-cols-2 gap-4 h-96">
+      {/* Enemy Players */}
+      <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col">
+        <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
+        <div className="flex-1 overflow-y-auto">
+          <textarea 
+            value={formData.enemyPlayers}
+            onChange={(e) => setFormData(prev => ({ ...prev, enemyPlayers: e.target.value }))}
+            className="w-full h-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-red-500"
+            placeholder="List enemy players..."
           />
         </div>
       </div>
       
-      {/* Enemy and Friendly Player Containers */}
-      <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
-        {/* Enemy Players */}
-        <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col">
-          <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
-          <div className="flex-1 overflow-y-auto">
-            <textarea 
-              value={formData.enemyPlayers}
-              onChange={(e) => setFormData(prev => ({ ...prev, enemyPlayers: e.target.value }))}
-              className="w-full h-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-red-500"
-              placeholder="List enemy players..."
-            />
-          </div>
+      {/* Friendly Players */}
+      <div className="flex-1 bg-gray-900 border border-green-500 rounded p-3 flex flex-col">
+        <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
+        <div className="flex-1 overflow-y-auto">
+          <textarea 
+            value={formData.friendlyPlayers}
+            onChange={(e) => setFormData(prev => ({ ...prev, friendlyPlayers: e.target.value }))}
+            className="w-full h-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-green-500"
+            placeholder="List friendly players..."
+          />
+        </div>
+      </div>
+      
+      {/* Report Time and Outcome */}
+      <div className="col-span-2 grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">Report Time</label>
+          <input 
+            type="time" 
+            value={formData.reportTime} 
+            onChange={(e) => setFormData(prev => ({ ...prev, reportTime: e.target.value }))} 
+            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
+          />
         </div>
         
-        {/* Friendly Players */}
-        <div className="flex-1 bg-gray-900 border border-green-500 rounded p-3 flex flex-col">
-          <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
-          <div className="flex-1 overflow-y-auto">
-            <textarea 
-              value={formData.friendlyPlayers}
-              onChange={(e) => setFormData(prev => ({ ...prev, friendlyPlayers: e.target.value }))}
-              className="w-full h-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-green-500"
-              placeholder="List friendly players..."
-            />
-          </div>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">Outcome</label>
+          <select 
+            value={formData.reportOutcome} 
+            onChange={(e) => setFormData(prev => ({ ...prev, reportOutcome: e.target.value }))} 
+            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none"
+          >
+            <option value="victory">Victory</option>
+            <option value="defeat">Defeat</option>
+            <option value="neutral">Neutral/Ongoing</option>
+          </select>
         </div>
       </div>
       
       {/* Notes Container */}
-      <div className="bg-gray-900 border border-gray-600 rounded p-3">
+      <div className="col-span-2 bg-gray-900 border border-gray-600 rounded p-3">
         <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
         <textarea 
           value={formData.notes} 
@@ -341,64 +526,42 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
   const renderBaseModal = () => (
     <div className="grid grid-cols-5 gap-4">
       <div className="col-span-2 flex flex-col">
-        <label className="block text-sm font-medium mb-1 text-gray-200">Base Type</label>
-        <div className="relative mb-3">
-          <select 
-            value={formData.type} 
-            onChange={(e) => {
-              const newType = e.target.value
-              setFormData(prev => ({
-                ...prev,
-                type: newType,
-                ownerCoordinates: (newType !== 'enemy-farm' && newType !== 'enemy-flank' && newType !== 'enemy-tower') ? '' : prev.ownerCoordinates
-              }))
-            }} 
-            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
-          >
-            {modalType === 'friendly' && (
-              <>
+        {modalType === 'friendly' && (
+          <>
+            <label className="block text-sm font-medium mb-1 text-gray-200">Base Type</label>
+            <div className="relative mb-3">
+              <select 
+                value={formData.type} 
+                onChange={(e) => {
+                  const newType = e.target.value
+                  setFormData(prev => ({
+                    ...prev,
+                    type: newType,
+                    ownerCoordinates: (newType !== 'enemy-farm' && newType !== 'enemy-flank' && newType !== 'enemy-tower') ? '' : prev.ownerCoordinates
+                  }))
+                }} 
+                className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+              >
                 <option value="friendly-main">Friendly Main Base</option>
                 <option value="friendly-flank">Friendly Flank Base</option>
                 <option value="friendly-farm">Friendly Farm</option>
                 <option value="friendly-boat">Boat Base</option>
                 <option value="friendly-garage">Garage</option>
-              </>
-            )}
-            {modalType === 'enemy' && (
-              <>
-                <option value="enemy-small">Main Small</option>
-                <option value="enemy-medium">Main Medium</option>
-                <option value="enemy-large">Main Large</option>
-                <option value="enemy-flank">Flank Base</option>
-                <option value="enemy-tower">Tower</option>
-                <option value="enemy-farm">Farm</option>
-                <option value="enemy-decaying">Decaying Base</option>
-              </>
-            )}
-          </select>
-          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-            <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
-              {getIcon(formData.type)}
+              </select>
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
+                <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+                  {getIcon(formData.type)}
+                </div>
+                <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
             </div>
-            <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-        
-        {modalType === 'enemy' && (
-          <RocketCalculatorSection
-            primaryRockets={formData.primaryRockets}
-            onPrimaryRocketsChange={(value) => setFormData(prev => ({ ...prev, primaryRockets: value }))}
-            showCalculatorModal={showRocketCalculator}
-            calculatorPosition={rocketCalculatorPosition}
-            onToggleCalculator={handleToggleRocketCalculator}
-            onCloseCalculator={() => setShowRocketCalculator(false)}
-          />
+          </>
         )}
         
         <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
-        <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
+        <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '280px' : '300px'}}>
           <textarea 
             value={formData.players} 
             onChange={(e) => setFormData(prev => ({ ...prev, players: e.target.value }))} 
@@ -451,6 +614,54 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           </div>
         )}
         
+        {modalType === 'enemy' && (
+          <div className="flex gap-3 mb-3">
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-1 text-gray-200">Base Type</label>
+              <div className="relative">
+                <select 
+                  value={formData.type} 
+                  onChange={(e) => {
+                    const newType = e.target.value
+                    setFormData(prev => ({
+                      ...prev,
+                      type: newType,
+                      ownerCoordinates: (newType !== 'enemy-farm' && newType !== 'enemy-flank' && newType !== 'enemy-tower') ? '' : prev.ownerCoordinates
+                    }))
+                  }} 
+                  className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-8 text-gray-200 focus:border-blue-500 focus:outline-none"
+                >
+                  <option value="enemy-small">Main Small</option>
+                  <option value="enemy-medium">Main Medium</option>
+                  <option value="enemy-large">Main Large</option>
+                  <option value="enemy-flank">Flank Base</option>
+                  <option value="enemy-tower">Tower</option>
+                  <option value="enemy-farm">Farm</option>
+                  <option value="enemy-decaying">Decaying Base</option>
+                </select>
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
+                  <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+                    {getIcon(formData.type)}
+                  </div>
+                  <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div className="flex-1">
+              <RocketCalculatorSection
+                primaryRockets={formData.primaryRockets}
+                onPrimaryRocketsChange={(value) => setFormData(prev => ({ ...prev, primaryRockets: value }))}
+                showCalculatorModal={showRocketCalculator}
+                calculatorPosition={rocketCalculatorPosition}
+                onToggleCalculator={handleToggleRocketCalculator}
+                onCloseCalculator={() => setShowRocketCalculator(false)}
+              />
+            </div>
+          </div>
+        )}
+        
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-200">Notes</label>
           <textarea 
@@ -494,22 +705,19 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                   {showOwnerSuggestions && getFilteredSuggestions(formData.ownerCoordinates).length > 0 && (
                     <div className="absolute w-full mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg max-h-32 overflow-auto left-0 right-0" style={{minWidth: '120px', zIndex: 70}}>
                       {getFilteredSuggestions(formData.ownerCoordinates).map((suggestion, index) => (
-                        <button
+                        <div
                           key={index}
-                          type="button"
-                          onMouseDown={(e) => e.preventDefault()}
+                          className="px-2 py-1 hover:bg-gray-700 cursor-pointer text-sm text-gray-200 flex items-center justify-between"
                           onClick={() => {
                             setFormData(prev => ({ ...prev, ownerCoordinates: suggestion.coord }))
                             setShowOwnerSuggestions(false)
-                            ownerInputRef.current?.focus()
                           }}
-                          className="flex items-center gap-2 w-full text-left px-2 py-1 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
                         >
-                          <div className={`${getColor(suggestion.type)} flex-shrink-0 scale-75`}>
-                            {getIcon(suggestion.type)}
-                          </div>
                           <span>{suggestion.coord}</span>
-                        </button>
+                          <span className={`text-xs ${getColor(suggestion.type)}`}>
+                            {suggestion.type.includes('friendly') ? 'F' : 'E'}
+                          </span>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -518,458 +726,58 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
             </>
           )}
           
-          {modalType !== 'enemy' && (
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
+          {modalType === 'friendly' && (
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-green-600 rounded-lg px-3 py-1.5 border-2 border-green-500 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
               <span className="text-white font-mono font-bold text-3xl">
-                {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
+                {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)}
               </span>
             </div>
           )}
-
-          <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
-            <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
-              <div className="flex items-center justify-between">
-                {modalType === 'enemy' && (
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
-                    <div className="flex gap-2 flex-wrap">
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.roofCamper} 
-                          onChange={(e) => setFormData(prev => ({ ...prev, roofCamper: e.target.checked }))}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                        />
-                        <span>Roof Camper</span>
-                      </label>
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.hostileSamsite} 
-                          onChange={(e) => setFormData(prev => ({ ...prev, hostileSamsite: e.target.checked }))}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                        />
-                        <span>Hostile Samsite</span>
-                      </label>
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.raidedOut} 
-                          onChange={(e) => {
-                            if (!formData.raidedOut && e.target.checked) {
-                              setShowRaidedOutPrompt(true)
-                            } else {
-                              setFormData(prev => ({ ...prev, raidedOut: false }))
-                            }
-                          }}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                        />
-                        <span>Raided Out</span>
-                      </label>
-                    </div>
-                  </div>
-                )}
-                {modalType !== 'enemy' && <div></div>}
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    onCancel()
-                  }} 
-                  className="text-gray-400 hover:text-gray-200 cursor-pointer"
-                  type="button"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+          
+          {modalType === 'report' && (
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-blue-600 rounded-lg px-3 py-1.5 border-2 border-blue-500 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
+              <span className="text-white font-mono font-bold text-3xl">
+                {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)}
+              </span>
             </div>
-            
-            <div className="flex-1 px-4 pt-4 space-y-3 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
-              {modalType === 'report' && (
-                <div className="mb-3">
-                  <label className="block text-sm font-medium mb-1 text-gray-200">Report Screenshots</label>
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '100px'}}>
-                    <svg className="h-7 w-7 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <p className="text-gray-400 text-xs">Click to upload screenshots</p>
-                  </div>
-                </div>
-              )}
-              
-              {modalType !== 'report' && (
-                <div className="mb-3">
-                  <label className="block text-sm font-medium mb-1 text-gray-200">Base Screenshots</label>
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '160px', width: '65%', marginRight: 'auto'}}>
-                    <svg className="h-9 w-9 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <p className="text-gray-400 text-sm">Click to upload screenshots or drag and drop</p>
-                    <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
-                  </div>
-                </div>
-              )}
-
+          )}
+          
+          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-4xl border-2 border-gray-600 shadow-2xl" style={{minHeight: '500px'}}>
+            <form onSubmit={handleSubmit} className="space-y-4">
               {modalType === 'report' ? renderReportModal() : renderBaseModal()}
-            </div>
-
-            {modalType === 'report' ? (
-              <div className="px-4 pb-2 relative z-50">
-                <div className="flex gap-2 justify-end items-center">
-                  <button 
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      onCancel()
-                    }} 
-                    className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+              
+              <div className="flex justify-between items-center pt-4 border-t border-gray-600">
+                <div className="flex gap-2">
+                  {editingLocation && (
+                    <button
+                      type="button"
+                      onClick={() => onDelete(editingLocation.id)}
+                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+                
+                <div className="flex gap-2">
+                  <button
                     type="button"
+                    onClick={onCancel}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
                   >
                     Cancel
                   </button>
-                  <div className="flex-1"></div>
-                  
-                  <div className="flex rounded border border-gray-600 overflow-hidden" style={{height: '30px'}}>
-                    {['won', 'neutral', 'lost'].map((outcome) => (
-                      <button
-                        key={outcome}
-                        type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, reportOutcome: outcome }))}
-                        className={`px-2 flex items-center justify-center transition-all cursor-pointer ${
-                          outcome === 'neutral' ? 'border-l border-r border-gray-600' : ''
-                        } ${
-                          formData.reportOutcome === outcome 
-                            ? outcome === 'won' ? 'bg-green-500 text-white' : outcome === 'lost' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'
-                            : outcome === 'won' ? 'bg-gray-700 text-green-400 hover:bg-gray-600' : outcome === 'lost' ? 'bg-gray-700 text-red-400 hover:bg-gray-600' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-                        }`}
-                      >
-                        {outcome === 'won' ? (
-                          <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 111.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
-                          </svg>
-                        ) : outcome === 'lost' ? (
-                          <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M4.28 3.22a.75.75 0 00-1.06 1.06L6.94 8l-3.72 3.72a.75.75 0 101.06 1.06L8 9.06l3.72 3.72a.75.75 0 101.06-1.06L9.06 8l3.72-3.72a.75.75 0 00-1.06-1.06L8 6.94 4.28 3.22z"/>
-                          </svg>
-                        ) : (
-                          <span className="text-sm font-bold">?</span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                  
-                  <button 
-                    className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
-                    type="button"
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                   >
-                    Advanced
-                  </button>
-                  <button 
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      handleSave()
-                    }} 
-                    className="bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
-                    type="button"
-                  >
-                    {editingLocation ? 'Update Report' : 'Save Report'}
+                    {editingLocation ? 'Update' : 'Save'}
                   </button>
                 </div>
-
-                {editingLocation && (
-                  <div className="flex justify-end mt-2">
-                    <button 
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        onDelete()
-                      }} 
-                      className="text-red-600 hover:text-red-700 text-sm cursor-pointer"
-                      type="button"
-                    >
-                      Delete Report
-                    </button>
-                  </div>
-                )}
               </div>
-            ) : (
-              <div className="px-4 pb-2 relative z-50">
-                <div className="flex justify-between">
-                  <button 
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setShowReportPanel(!showReportPanel)
-                    }} 
-                    className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1.5 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
-                    type="button"
-                  >
-                    Report {showReportPanel ? '◄' : ''}
-                  </button>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleSave()
-                      }} 
-                      className="bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
-                      type="button"
-                    >
-                      {editingLocation ? 'Update' : 'Save'}
-                    </button>
-                    <button 
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        onCancel()
-                      }} 
-                      className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
-                      type="button"
-                    >
-                      Cancel
-                    </button>
-                    {modalType === 'enemy' && (
-                      <button 
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          setShowAdvancedPanel(!showAdvancedPanel)
-                        }} 
-                        className="bg-purple-600 text-white py-1.5 px-3 rounded-md hover:bg-purple-700 transition-colors font-medium text-sm cursor-pointer"
-                        type="button"
-                      >
-                        Advanced
-                      </button>
-                    )}
-                    {editingLocation && (
-                      <button 
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          onDelete()
-                        }} 
-                        className="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 transition-colors font-medium text-sm cursor-pointer"
-                        type="button"
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
+            </form>
           </div>
         </div>
-        
-        {/* Report Panel */}
-        {showReportPanel && (
-          <div 
-            className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
-            style={{
-              height: '95vh',
-              maxHeight: '805px',
-              width: '320px',
-              left: '16px',
-              transform: 'translateX(-100%)',
-              top: 0,
-              zIndex: 45
-            }}
-          >
-            <div className="p-4 h-full flex flex-col">
-              <h3 className="text-white font-bold mb-4">Base Reports</h3>
-              
-              {/* List of reports for this base */}
-              <div className="flex-1 overflow-y-auto mb-4">
-                <div className="space-y-2">
-                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
-                  {/* Reports will be listed here */}
-                </div>
-              </div>
-              
-              {/* Create Report Button */}
-              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
-                Create New Report
-              </button>
-            </div>
-          </div>
-        )}
-        
-        {/* Advanced Panel */}
-        {modalType === 'enemy' && showAdvancedPanel && (
-          <div 
-            className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
-            style={{
-              height: '95vh',
-              maxHeight: '805px',
-              width: '280px',
-              left: '100%',
-              top: 0,
-              marginLeft: '10px',
-              zIndex: 45
-            }}
-          >
-            <div className="p-4" style={{ height: '100%', overflowY: 'auto' }}>
-              <div className="bg-gray-900 rounded-lg p-4">
-                <h3 className="text-white font-bold mb-4">Advanced Settings</h3>
-                
-                <div className="flex flex-col items-center">
-                  <label className="block text-sm font-medium mb-1 text-gray-200">Oldest TC</label>
-                  <input 
-                    type="number" 
-                    value={formData.oldestTC || ''} 
-                    onChange={(e) => setFormData(prev => ({ ...prev, oldestTC: Math.min(360, Math.max(0, Number(e.target.value) || 0)) }))} 
-                    className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
-                    min="0" 
-                    max="360" 
-                    style={{width: '60px'}}
-                    placeholder="0"
-                  />
-                  
-                  {/* TC Orientation Display */}
-                  <div className="mt-4">
-                    <div className="relative bg-gray-800 rounded-lg p-4" style={{width: '120px', height: '120px'}}>
-                      <svg width="120" height="120" viewBox="0 0 120 120" className="absolute inset-0">
-                        {/* Center dot */}
-                        <circle cx="60" cy="60" r="2" fill="#4B5563" />
-                        
-                        {/* Direction line */}
-                        {formData.oldestTC > 0 && (
-                          <>
-                            <line
-                              x1="60"
-                              y1="60"
-                              x2={60 + 40 * Math.cos((formData.oldestTC + 180 - 90) * Math.PI / 180)}
-                              y2={60 + 40 * Math.sin((formData.oldestTC + 180 - 90) * Math.PI / 180)}
-                              stroke="#3B82F6"
-                              strokeWidth="2"
-                            />
-                            
-                            {/* Triangle at end of line */}
-                            <g transform={`translate(${60 + 40 * Math.cos((formData.oldestTC + 180 - 90) * Math.PI / 180)}, ${60 + 40 * Math.sin((formData.oldestTC + 180 - 90) * Math.PI / 180)}) rotate(${formData.oldestTC + 180})`}>
-                              <path
-                                d="M -4 -4 L 4 -4 L 0 4 Z"
-                                fill="#3B82F6"
-                              />
-                            </g>
-                          </>
-                        )}
-                      </svg>
-                      
-                      {/* Base icon in center */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="bg-gray-700 rounded-full p-0.5 shadow-md border border-gray-600">
-                          <div className={getColor(formData.type)}>
-                            {getIcon(formData.type)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {formData.oldestTC > 0 && (
-                    <div className="text-xs text-gray-400 text-center mt-2">
-                      TC facing: {formData.oldestTC}° → Line pointing: {(formData.oldestTC + 180) % 360}°
-                    </div>
-                  )}
-                  
-                  {/* Library Dropdown */}
-                  <div className="w-full mt-6">
-                    <label className="block text-sm font-medium mb-1 text-gray-200">Library</label>
-                    <select 
-                      value={formData.library}
-                      onChange={(e) => setFormData(prev => ({ ...prev, library: e.target.value }))}
-                      className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none appearance-none"
-                    >
-                      <option value="">Select...</option>
-                    </select>
-                  </div>
-                  
-                  {/* YouTube Video Input */}
-                  <div className="w-full mt-4 mb-4">
-                    <label className="block text-sm font-medium mb-1 text-gray-200">YouTube Video</label>
-                    <input 
-                      type="text" 
-                      value={formData.youtube}
-                      onChange={(e) => setFormData(prev => ({ ...prev, youtube: e.target.value }))}
-                      placeholder="Enter YouTube URL..."
-                      className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Report Panel - Debug Version */}
-        {showReportPanel && (
-          <div 
-            className="bg-red-800 rounded-lg shadow-xl border-4 border-yellow-500 absolute"
-            style={{
-              height: '95vh',
-              maxHeight: '805px',
-              width: '320px',
-              left: '16px',
-              transform: 'translateX(-100%)',
-              top: 0,
-              zIndex: 9999
-            }}
-          >
-            <div className="p-4 h-full flex flex-col">
-              <h3 className="text-white font-bold mb-4 text-xl">REPORT PANEL IS VISIBLE</h3>
-              <p className="text-white mb-2">Modal Type: {modalType}</p>
-              <p className="text-white mb-4">If you see this, the panel is working!</p>
-              
-              {/* Enemy and Friendly Player Containers Side by Side */}
-              <div className="flex gap-3 flex-1 mb-4">
-                {/* Enemy Players - Left Side */}
-                <div className="w-1/2 bg-gray-900 border-2 border-red-500 rounded p-3 flex flex-col">
-                  <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
-                  <div className="flex-1 overflow-y-auto">
-                    <p className="text-xs text-gray-500">No enemies reported</p>
-                  </div>
-                </div>
-                
-                {/* Friendly Players - Right Side */}
-                <div className="w-1/2 bg-gray-900 border-2 border-green-500 rounded p-3 flex flex-col">
-                  <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
-                  <div className="flex-1 overflow-y-auto">
-                    <p className="text-xs text-gray-500">No friendlies reported</p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Notes Container - Bottom */}
-              <div className="bg-gray-900 border-2 border-gray-600 rounded p-3 h-32">
-                <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
-                <textarea 
-                  className="w-full h-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 resize-none focus:outline-none focus:border-blue-500"
-                  placeholder="Enter notes..."
-                />
-              </div>
-              
-              {/* Create Report Button */}
-              <button className="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
-                Create New Report
-              </button>
-            </div>
-          </div>
-        )}
-        
-        {showRaidedOutPrompt && (
-          <RaidedOutPrompt 
-            onConfirm={() => {
-              setShowRaidedOutPrompt(false)
-              setFormData(prev => ({ ...prev, raidedOut: true }))
-            }}
-            onCancel={() => {
-              setShowRaidedOutPrompt(false)
-              setFormData(prev => ({ ...prev, raidedOut: true }))
-            }}
-          />
-        )}
       </div>
     </div>
   )
