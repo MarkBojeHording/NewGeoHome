@@ -485,7 +485,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
             </div>
           )}
 
-          <div className="bg-gray-800 rounded-lg shadow-xl w-full mx-4 border border-gray-700 flex flex-col relative" style={{maxWidth: modalType === 'enemy' ? '832px' : '768px', maxHeight: modalType === 'enemy' ? '926px' : '805px', zIndex: 50}}>
+          <div className="bg-gray-800 rounded-lg shadow-xl w-full mx-4 border border-gray-700 flex flex-col relative" style={{maxWidth: modalType === 'enemy' ? '832px' : '768px', maxHeight: modalType === 'enemy' ? '1020px' : '805px', zIndex: 50}}>
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
