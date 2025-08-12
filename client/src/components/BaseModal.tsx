@@ -162,6 +162,7 @@ const BaseModal = ({
   }, [editingLocation, modalType])
   
   const getMainBases = useCallback(() => {
+    if (!locations || !Array.isArray(locations)) return []
     const bases = locations.filter(loc => 
       !loc.type.includes('farm') && 
       !loc.type.includes('flank') && 
@@ -176,6 +177,7 @@ const BaseModal = ({
   }, [locations])
   
   const getMainBasesWithInfo = useCallback(() => {
+    if (!locations || !Array.isArray(locations)) return new Map()
     const bases = locations.filter(loc => 
       !loc.type.includes('farm') && 
       !loc.type.includes('flank') && 
@@ -216,6 +218,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
   const col = Math.floor(x / (100 / cols)) + 1
   const baseName = rows[Math.min(row, rows.length - 1)] + col.toString().padStart(2, "0")
   
+  if (!locations || !Array.isArray(locations)) return baseName
   const existing = locations.filter(loc => 
     loc.id !== excludeId && loc.name.startsWith(baseName)
   ).length
