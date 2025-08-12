@@ -163,8 +163,8 @@ export const RocketCalculatorSection = ({
         </button>
         <div className="px-1">
           <div className="flex items-center gap-1">
-            <label className="text-[10px] font-medium text-gray-300 mr-1">Primary Raid</label>
-            <div className="flex gap-1 text-center">
+            <label className="text-[10px] font-medium text-gray-300 mr-2">Primary Raid</label>
+            <div className="flex gap-0 text-center">
               <div className="flex flex-col items-center">
                 <div className="text-[9px] font-medium text-gray-400">Rocket</div>
                 <input 
@@ -191,8 +191,8 @@ export const RocketCalculatorSection = ({
 
         <div className="mt-1 px-1 pb-0">
           <div className="flex items-center gap-1">
-            <label className="text-[10px] font-medium text-gray-300 mr-1">Online Raid</label>
-            <div className="flex gap-1 text-center">
+            <label className="text-[10px] font-medium text-gray-300 mr-2">Online Raid</label>
+            <div className="flex gap-0 text-center">
               <div className="flex flex-col items-center">
                 <div className="text-[9px] font-medium text-gray-400">Rocket</div>
                 <div className="w-full px-0.5 py-0 bg-gray-600 rounded text-xs font-bold text-center text-gray-200" style={{width: '32px', fontSize: '10px'}}>
