@@ -1234,17 +1234,10 @@ export default function InteractiveTacticalMap() {
                   onRemoveTimer={(timerId) => handleRemoveTimer(location.id, timerId)}
                   getOwnedBases={getOwnedBases}
                   onOpenReport={(location) => {
-                    // Add base report to existing locations as a report marker
-                    const reportLocation = {
-                      id: Date.now(),
-                      x: location.x,
-                      y: location.y,
-                      name: `${location.name} Report`,
-                      type: `report-base-${location.type}`,
-                      coordinates: location.coordinates,
-                      baseType: location.type
-                    }
-                    setLocations(prev => [...prev, reportLocation])
+                    // Open report modal for this base instead of creating new marker
+                    setEditingLocation(location)
+                    setModalType('report')
+                    setNewBaseModal({ visible: true, x: location.x, y: location.y })
                   }}
                 />
               ))}
@@ -1260,17 +1253,10 @@ export default function InteractiveTacticalMap() {
               locationTimers={locationTimers}
               onAddTimer={handleAddTimer}
               onOpenReport={(location) => {
-                // Add base report to existing locations as a report marker  
-                const reportLocation = {
-                  id: Date.now(),
-                  x: location.x,
-                  y: location.y,
-                  name: `${location.name} Report`,
-                  type: `report-base-${location.type}`,
-                  coordinates: location.coordinates,
-                  baseType: location.type
-                }
-                setLocations(prev => [...prev, reportLocation])
+                // Open report modal for this base instead of creating new marker
+                setEditingLocation(location)
+                setModalType('report')
+                setNewBaseModal({ visible: true, x: location.x, y: location.y })
               }}
             />
           )}
