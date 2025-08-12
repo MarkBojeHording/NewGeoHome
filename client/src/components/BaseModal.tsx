@@ -410,7 +410,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           </div>
         )}
         
-        <div className="w-2/3 mb-3">
+        <div className="w-1/3 mb-3">
           <label className="block text-sm font-medium mb-0.5 text-gray-200">Base Type</label>
           <div className="relative">
             <select 
