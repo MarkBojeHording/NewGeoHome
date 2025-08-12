@@ -527,7 +527,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                         <span>Raided Out</span>
                       </label>
                     </div>
-                    <div className="flex-shrink-0 ml-4" style={{width: "200px"}}>
+                    <div className="flex-shrink-0 ml-4" style={{width: "100px"}}>
                       <div className="relative">
                         <select 
                           value={formData.type} 
