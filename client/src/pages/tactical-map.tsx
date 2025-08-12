@@ -41,7 +41,12 @@ const LABELS = {
   'report-monument': 'Big Score/Fight at Monument',
   'report-farming': 'Killed While Farming',
   'report-loaded': 'Killed Loaded Enemy',
-  'report-raid': 'Countered Raid'
+  'report-raid': 'Countered Raid',
+  'report-base-raided': 'Base Raided',
+  'report-base-mlrsd': 'MLRS\'d',
+  'report-base-grubbed': 'We grubbed',
+  'report-base-caught-loot': 'Caught moving loot',
+  'report-base-enemy-built': 'Enemy built in'
 }
 
 const DECAY_TIMES = {

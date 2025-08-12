@@ -277,6 +277,11 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               <option value="report-farming">Killed While Farming</option>
               <option value="report-loaded">Killed Loaded Enemy</option>
               <option value="report-raid">Countered Raid</option>
+              <option value="report-base-raided">Base Raided</option>
+              <option value="report-base-mlrsd">MLRS'd</option>
+              <option value="report-base-grubbed">We grubbed</option>
+              <option value="report-base-caught-loot">Caught moving loot</option>
+              <option value="report-base-enemy-built">Enemy built in</option>
             </select>
             <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
               <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
