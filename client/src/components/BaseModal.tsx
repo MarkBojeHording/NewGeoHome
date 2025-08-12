@@ -527,6 +527,38 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                         <span>Raided Out</span>
                       </label>
                     </div>
+                    <div className="flex-shrink-0 ml-4" style={{width: "200px"}}>
+                      <div className="relative">
+                        <select 
+                          value={formData.type} 
+                          onChange={(e) => {
+                            const newType = e.target.value
+                            setFormData(prev => ({
+                              ...prev,
+                              type: newType,
+                              ownerCoordinates: (newType !== "enemy-farm" && newType !== "enemy-flank" && newType !== "enemy-tower") ? "" : prev.ownerCoordinates
+                            }))
+                          }} 
+                          className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-10 text-gray-200 focus:border-blue-500 focus:outline-none text-xs"
+                        >
+                          <option value="enemy-small">Main Small</option>
+                          <option value="enemy-medium">Main Medium</option>
+                          <option value="enemy-large">Main Large</option>
+                          <option value="enemy-flank">Flank Base</option>
+                          <option value="enemy-tower">Tower</option>
+                          <option value="enemy-farm">Farm</option>
+                          <option value="enemy-decaying">Decaying Base</option>
+                        </select>
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
+                          <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600 scale-75`}>
+                            {getIcon(formData.type)}
+                          </div>
+                          <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
                 {modalType !== 'enemy' && <div></div>}
