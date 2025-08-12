@@ -1216,6 +1216,7 @@ export default function InteractiveTacticalMap() {
       const y = ((clickY - centerY - pan.y) / zoom + centerY) / rect.height * 100
       if (x >= 0 && x <= 100 && y >= 0 && y <= 100) {
         setContextMenu({ x: e.clientX, y: e.clientY, visible: true })
+        console.log("Context menu should be visible at:", e.clientX, e.clientY)
         setNewBaseModal({ x, y, visible: false })
       }
     }
@@ -1226,6 +1227,7 @@ export default function InteractiveTacticalMap() {
     setEditingLocation(null)
     setEditingReport(null)
     setModalType(type)
+    console.log("Modal type set to:", type, "Modal should be visible:", true)
     setNewBaseModal(prev => ({ ...prev, visible: true }))
   }, [])
   
