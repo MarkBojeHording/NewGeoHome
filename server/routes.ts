@@ -105,7 +105,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/report-templates/:type", async (req, res) => {
     try {
       const { type } = req.params;
-      const template = await storage.getReportTemplateByType(type);
+      const { baseType } = req.query;
+      const template = await storage.getReportTemplateByType(type, baseType as string);
       if (!template) {
         return res.status(404).json({ error: "Template not found" });
       }

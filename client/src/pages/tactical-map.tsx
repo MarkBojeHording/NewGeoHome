@@ -922,7 +922,8 @@ export default function InteractiveTacticalMap() {
   const [reportModalData, setReportModalData] = useState({
     locationName: null,
     locationCoords: null,
-    reportType: 'general'
+    reportType: 'general',
+    baseType: null
   })
   
   // Add report to library (for use in BaseModal)
@@ -1238,7 +1239,8 @@ export default function InteractiveTacticalMap() {
                     setReportModalData({
                       locationName: location.name,
                       locationCoords: location.coordinates,
-                      reportType: location.type.startsWith('enemy') ? 'base' : 'general'
+                      reportType: 'base',
+                      baseType: location.type
                     })
                     setShowReportModal(true)
                   }}
@@ -1259,7 +1261,8 @@ export default function InteractiveTacticalMap() {
                 setReportModalData({
                   locationName: location.name,
                   locationCoords: location.coordinates,
-                  reportType: location.type.startsWith('enemy') ? 'base' : 'general'
+                  reportType: 'base',
+                  baseType: location.type
                 })
                 setShowReportModal(true)
               }}
@@ -1296,6 +1299,7 @@ export default function InteractiveTacticalMap() {
           locationName={reportModalData.locationName}
           locationCoords={reportModalData.locationCoords}
           reportType={reportModalData.reportType}
+          baseType={reportModalData.baseType}
         />
       </div>
     </div>

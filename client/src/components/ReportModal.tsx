@@ -9,6 +9,7 @@ interface ReportModalProps {
   locationName?: string;
   locationCoords?: string;
   reportType?: string;
+  baseType?: string;
   editingReport?: any;
 }
 
@@ -44,6 +45,7 @@ export default function ReportModal({
   locationName,
   locationCoords,
   reportType = "general",
+  baseType,
   editingReport,
 }: ReportModalProps) {
   const [formData, setFormData] = useState<ReportFormData>({
@@ -63,7 +65,16 @@ export default function ReportModal({
 
   // Fetch template for the report type
   const { data: template, isLoading } = useQuery<ReportTemplate>({
-    queryKey: ["/api/report-templates", reportType],
+    queryKey: ["/api/report-templates", reportType, baseType],
+    queryFn: async () => {
+      let url = `/api/report-templates/${reportType}`;
+      if (baseType) {
+        url += `?baseType=${encodeURIComponent(baseType)}`;
+      }
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch template');
+      return response.json();
+    },
     enabled: isVisible && !!reportType,
   });
 
