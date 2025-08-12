@@ -172,7 +172,7 @@ const BaseModal = ({
       !loc.type.startsWith('report')
     ).map(loc => loc.name.split('(')[0])
     
-    return [...new Set(bases)]
+    return Array.from(new Set(bases))
   }, [locations])
   
   const getMainBasesWithInfo = useCallback(() => {
