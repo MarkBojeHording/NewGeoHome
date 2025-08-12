@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } from 'lucide-react'
 import BaseModal from '../components/BaseModal'
+import ReportModal from '../components/ReportModal'
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
   COLS: 32,
@@ -916,6 +917,14 @@ export default function InteractiveTacticalMap() {
   const [showReportPanel, setShowReportPanel] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
   
+  // New Report System State
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [reportModalData, setReportModalData] = useState({
+    locationName: null,
+    locationCoords: null,
+    reportType: 'general'
+  })
+  
   // Add report to library (for use in BaseModal)
   const addToReportLibrary = useCallback((reportData) => {
     setReportLibrary(prev => [...prev, reportData])
@@ -1226,9 +1235,12 @@ export default function InteractiveTacticalMap() {
                   onRemoveTimer={(timerId) => handleRemoveTimer(location.id, timerId)}
                   getOwnedBases={getOwnedBases}
                   onOpenReport={(location) => {
-                    setModalType('report')
-                    setNewBaseModal({ visible: true, x: location.x, y: location.y })
-                    setEditingLocation(location)
+                    setReportModalData({
+                      locationName: location.name,
+                      locationCoords: location.coordinates,
+                      reportType: location.type.startsWith('enemy') ? 'base' : 'general'
+                    })
+                    setShowReportModal(true)
                   }}
                 />
               ))}
@@ -1244,9 +1256,12 @@ export default function InteractiveTacticalMap() {
               locationTimers={locationTimers}
               onAddTimer={handleAddTimer}
               onOpenReport={(location) => {
-                setModalType('report')
-                setNewBaseModal({ visible: true, x: location.x, y: location.y })
-                setEditingLocation(location)
+                setReportModalData({
+                  locationName: location.name,
+                  locationCoords: location.coordinates,
+                  reportType: location.type.startsWith('enemy') ? 'base' : 'general'
+                })
+                setShowReportModal(true)
               }}
             />
           )}
@@ -1275,6 +1290,13 @@ export default function InteractiveTacticalMap() {
             updateReportLibrary={updateReportLibrary}
           />
         )}
+        <ReportModal
+          isVisible={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          locationName={reportModalData.locationName}
+          locationCoords={reportModalData.locationCoords}
+          reportType={reportModalData.reportType}
+        />
       </div>
     </div>
   )
