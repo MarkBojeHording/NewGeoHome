@@ -256,7 +256,7 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
   )
 }
 
-const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, getOwnedBases }) => {
+const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, getOwnedBases, onOpenReport }) => {
   const ownedBases = getOwnedBases(location.name)
   
   return (
@@ -683,9 +683,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               setShowDecayingMenu(true)
             }
              else if (action === 'Write report') {
-              setModalType('report')
-              setNewBaseModal({ visible: true, x: location.x, y: location.y })
-              setEditingLocation(location)
+              onOpenReport(location)
             }
           }}
         />
@@ -1226,6 +1224,11 @@ export default function InteractiveTacticalMap() {
                   timers={locationTimers[location.id]}
                   onRemoveTimer={(timerId) => handleRemoveTimer(location.id, timerId)}
                   getOwnedBases={getOwnedBases}
+                  onOpenReport={(location) => {
+                    setModalType('report')
+                    setNewBaseModal({ visible: true, x: location.x, y: location.y })
+                    setEditingLocation(location)
+                  }}
                 />
               ))}
             </div>
