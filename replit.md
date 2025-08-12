@@ -14,7 +14,7 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 - Grid coordinate system with automatic naming
 - Decay calculator for base materials
 
-### Sophisticated BaseModal Component (875 lines - fully restored)
+### Sophisticated BaseModal Component (875 lines - fully restored and optimized)
 - Complete rocket calculator with primary/secondary calculations
 - Defender quality slider with descriptive feedback
 - Advanced ammo calculations (rockets, HV, incendiary, explosive)
@@ -24,6 +24,8 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 - Interactive calculator modal with position tracking
 - Grid coordinate auto-generation system
 - Heat map integration and advanced panel functionality
+- Optimized layout with eliminated dead space and precise spacing controls
+- Enhanced enemy modal dimensions (832px width × 1200px height) for scroll-free operation
 
 # User Preferences
 
