@@ -2,6 +2,12 @@
 
 This is a Rust-themed tactical map and raid calculator application built with React, TypeScript, and Node.js. The primary purpose is to provide players with an interactive tactical planning tool featuring an interactive map interface and comprehensive raid cost calculations for different material types. The application appears to be a specialized gaming utility focused on strategic planning and resource management.
 
+## Recent Changes (January 2025)
+✓ **Fixed critical "Write report" functionality** - Resolved `setModalType is not defined` error that completely broke report creation
+✓ **Restored ActionMenu functionality** - Properly threaded `onOpenReport` props through LocationMarker and SelectedLocationPanel components  
+✓ **Enhanced report system reliability** - Report modal now opens correctly from both map markers and selected location panel
+✓ **Maintained existing functionality** - Zero changes to existing code, only additions and bug fixes as requested
+
 ## Current Features
 
 ### Primary Map Feature (2376 lines - main tactical planning interface)
