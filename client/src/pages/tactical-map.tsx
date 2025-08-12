@@ -947,6 +947,8 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             setShowActionMenu(false)
             if (action === 'Intentional Decay' || action === 'Decaying') {
               setShowDecayingMenu(true)
+            } else if (action === "Write report" || action === "Schedule Raid") {
+              onEdit(location)
             }
           }}
         />
@@ -1175,6 +1177,8 @@ export default function InteractiveTacticalMap() {
   // Central Report Library - Hidden storage for all reports
   const [reportLibrary, setReportLibrary] = useState([])
   const [reportCounter, setReportCounter] = useState(1)
+  const [showReportPanel, setShowReportPanel] = useState(false)
+  const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
   
   // Add report to library (for use in BaseModal)
   const addToReportLibrary = useCallback((reportData) => {
