@@ -411,8 +411,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           />
         )}
         
-        <div>
-          <label className="block text-sm font-medium mb-0.5 text-gray-200">Notes</label>
+        <div style={{marginTop: '4px'}}>
           <textarea 
             value={formData.notes} 
             onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
