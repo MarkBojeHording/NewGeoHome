@@ -576,7 +576,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               </div>
             </div>
             
-            <div className="flex-1 px-4 pt-4 space-y-2 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
+            <div className="flex-1 px-4 pt-2 space-y-2 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '16px' : '8px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
                 <div className="mb-3">
                   <label className="block text-sm font-medium mb-1 text-gray-200">Report Screenshots</label>
@@ -686,7 +686,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                 )}
               </div>
             ) : (
-              <div className="px-4 pb-2 relative z-50">
+              <div className="px-4 pb-1 relative z-50">
                 <div className="flex justify-between">
                   <button 
                     onClick={(e) => {
