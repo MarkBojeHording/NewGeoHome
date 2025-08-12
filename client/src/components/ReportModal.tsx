@@ -9,6 +9,7 @@ interface ReportModalProps {
   locationName?: string;
   locationCoords?: string;
   reportType?: string;
+  baseType?: string; // 'friendly' or 'enemy'
   editingReport?: any;
 }
 
@@ -44,6 +45,7 @@ export default function ReportModal({
   locationName,
   locationCoords,
   reportType = "general",
+  baseType,
   editingReport,
 }: ReportModalProps) {
   const [formData, setFormData] = useState<ReportFormData>({
@@ -173,6 +175,25 @@ export default function ReportModal({
     }));
   };
 
+  const getBaseSpecificOptions = (fieldName: string, originalOptions: string[]) => {
+    if (fieldName === "action" && reportType === "base" && originalOptions) {
+      // Base-specific filtering based on base type
+      const commonOptions = ["Base Raided", "MLRS'd"];
+      const friendlyOnlyOptions = ["Enemy built in"];
+      const enemyOnlyOptions = ["We grubbed", "Caught moving loot"];
+
+      if (baseType === "friendly") {
+        return [...commonOptions, ...friendlyOnlyOptions];
+      } else if (baseType === "enemy") {
+        return [...commonOptions, ...enemyOnlyOptions];
+      } else {
+        // If baseType is unknown, show all options
+        return originalOptions;
+      }
+    }
+    return originalOptions;
+  };
+
   const renderField = (field: any) => {
     const value = formData.content[field.name] || "";
     
@@ -200,6 +221,7 @@ export default function ReportModal({
         );
       
       case "select":
+        const options = getBaseSpecificOptions(field.name, field.options);
         return (
           <select
             value={value}
@@ -208,9 +230,9 @@ export default function ReportModal({
             required={field.required}
           >
             <option value="">Select {field.label}</option>
-            {field.options?.map((option: string) => (
+            {options?.map((option: string) => (
               <option key={option} value={option}>
-                {option.charAt(0).toUpperCase() + option.slice(1)}
+                {option}
               </option>
             ))}
           </select>
