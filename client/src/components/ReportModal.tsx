@@ -9,7 +9,6 @@ interface ReportModalProps {
   locationName?: string;
   locationCoords?: string;
   reportType?: string;
-  baseType?: string; // 'friendly' or 'enemy'
   editingReport?: any;
 }
 
@@ -45,7 +44,6 @@ export default function ReportModal({
   locationName,
   locationCoords,
   reportType = "general",
-  baseType,
   editingReport,
 }: ReportModalProps) {
   const [formData, setFormData] = useState<ReportFormData>({
@@ -175,32 +173,6 @@ export default function ReportModal({
     }));
   };
 
-  const getBaseSpecificOptions = (fieldName: string, originalOptions: string[]) => {
-    if (fieldName === "action" && reportType === "base" && originalOptions) {
-      // Base-specific filtering based on base type
-      const commonOptions = ["Base Raided", "MLRS'd"];
-      const friendlyOnlyOptions = ["Enemy built in"];
-      const enemyOnlyOptions = ["We grubbed", "Caught moving loot"];
-
-      console.log("Base report filtering - baseType:", baseType, "fieldName:", fieldName);
-      
-      if (baseType === "friendly") {
-        const filteredOptions = [...commonOptions, ...friendlyOnlyOptions];
-        console.log("Friendly base options:", filteredOptions);
-        return filteredOptions;
-      } else if (baseType === "enemy") {
-        const filteredOptions = [...commonOptions, ...enemyOnlyOptions];
-        console.log("Enemy base options:", filteredOptions);
-        return filteredOptions;
-      } else {
-        // If baseType is unknown, show all options
-        console.log("Unknown base type, showing all options:", originalOptions);
-        return originalOptions;
-      }
-    }
-    return originalOptions;
-  };
-
   const renderField = (field: any) => {
     const value = formData.content[field.name] || "";
     
@@ -228,7 +200,6 @@ export default function ReportModal({
         );
       
       case "select":
-        const options = getBaseSpecificOptions(field.name, field.options);
         return (
           <select
             value={value}
@@ -237,9 +208,9 @@ export default function ReportModal({
             required={field.required}
           >
             <option value="">Select {field.label}</option>
-            {options?.map((option: string) => (
+            {field.options?.map((option: string) => (
               <option key={option} value={option}>
-                {option}
+                {option.charAt(0).toUpperCase() + option.slice(1)}
               </option>
             ))}
           </select>
@@ -307,21 +278,6 @@ export default function ReportModal({
                 <option value="raid">Raid Report</option>
               </select>
             </div>
-
-            {/* Base Type Info Display */}
-            {reportType === "base" && baseType && (
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Base Type
-                </label>
-                <input
-                  type="text"
-                  value={baseType === "friendly" ? "Friendly Base" : "Enemy Base"}
-                  readOnly
-                  className="w-full p-2 border border-gray-600 rounded bg-gray-700 text-gray-300"
-                />
-              </div>
-            )}
 
             {/* Basic Fields */}
             <div>

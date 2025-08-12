@@ -922,8 +922,7 @@ export default function InteractiveTacticalMap() {
   const [reportModalData, setReportModalData] = useState({
     locationName: null,
     locationCoords: null,
-    reportType: 'general',
-    baseType: null
+    reportType: 'general'
   })
   
   // Add report to library (for use in BaseModal)
@@ -1236,11 +1235,12 @@ export default function InteractiveTacticalMap() {
                   onRemoveTimer={(timerId) => handleRemoveTimer(location.id, timerId)}
                   getOwnedBases={getOwnedBases}
                   onOpenReport={(location) => {
-                    // Set up base report modal
-                    const reportType = location.type.startsWith('enemy') || location.type.startsWith('friendly') ? 'base-report' : 'report';
-                    setModalType(reportType);
-                    setEditingLocation(location);
-                    setNewBaseModal({ x: 400, y: 300, visible: true });
+                    setReportModalData({
+                      locationName: location.name,
+                      locationCoords: location.coordinates,
+                      reportType: location.type.startsWith('enemy') ? 'base' : 'general'
+                    })
+                    setShowReportModal(true)
                   }}
                 />
               ))}
@@ -1256,11 +1256,12 @@ export default function InteractiveTacticalMap() {
               locationTimers={locationTimers}
               onAddTimer={handleAddTimer}
               onOpenReport={(location) => {
-                // Set up base report modal
-                const reportType = location.type.startsWith('enemy') || location.type.startsWith('friendly') ? 'base-report' : 'report';
-                setModalType(reportType);
-                setEditingLocation(location);
-                setNewBaseModal({ x: 400, y: 300, visible: true });
+                setReportModalData({
+                  locationName: location.name,
+                  locationCoords: location.coordinates,
+                  reportType: location.type.startsWith('enemy') ? 'base' : 'general'
+                })
+                setShowReportModal(true)
               }}
             />
           )}
@@ -1289,7 +1290,13 @@ export default function InteractiveTacticalMap() {
             updateReportLibrary={updateReportLibrary}
           />
         )}
-
+        <ReportModal
+          isVisible={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          locationName={reportModalData.locationName}
+          locationCoords={reportModalData.locationCoords}
+          reportType={reportModalData.reportType}
+        />
       </div>
     </div>
   )

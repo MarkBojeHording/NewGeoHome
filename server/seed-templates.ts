@@ -19,10 +19,15 @@ const standardTemplates = [
     reportType: "base",
     template: {
       fields: [
-        { name: "action", type: "select", label: "Action", options: ["Base Raided", "MLRS'd", "Enemy built in", "We grubbed", "Caught moving loot"], required: true },
+        { name: "title", type: "text", label: "Report Title", required: true },
+        { name: "baseType", type: "select", label: "Base Type", options: ["friendly", "enemy", "neutral"], required: true },
+        { name: "baseStatus", type: "select", label: "Base Status", options: ["active", "raided", "decaying", "abandoned"], required: true },
         { name: "description", type: "textarea", label: "Description", required: true },
-        { name: "playersInvolved", type: "number", label: "Players Involved", required: false },
-        { name: "lootValue", type: "text", label: "Loot/Resources", required: false }
+        { name: "lootEstimate", type: "textarea", label: "Estimated Loot", required: false },
+        { name: "defenses", type: "textarea", label: "Defenses Observed", required: false },
+        { name: "raidCost", type: "textarea", label: "Estimated Raid Cost", required: false },
+        { name: "priority", type: "select", label: "Priority", options: ["low", "medium", "high", "critical"], required: true },
+        { name: "tags", type: "tags", label: "Tags", required: false }
       ]
     }
   },
