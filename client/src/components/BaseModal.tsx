@@ -345,16 +345,6 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
     <div className="grid grid-cols-5 gap-4">
       <div className="col-span-2 flex flex-col">
         
-        {modalType === 'enemy' && (
-          <RocketCalculatorSection
-            primaryRockets={formData.primaryRockets}
-            onPrimaryRocketsChange={(value) => setFormData(prev => ({ ...prev, primaryRockets: value }))}
-            showCalculatorModal={showRocketCalculator}
-            calculatorPosition={rocketCalculatorPosition}
-            onToggleCalculator={handleToggleRocketCalculator}
-            onCloseCalculator={() => setShowRocketCalculator(false)}
-          />
-        )}
         
         <label className="block text-sm font-medium mb-0.5 text-gray-200">Base owners</label>
         <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
@@ -410,51 +400,66 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           </div>
         )}
         
-        <div className="w-1/3 mb-3">
-          <label className="block text-sm font-medium mb-0.5 text-gray-200">Base Type</label>
-          <div className="relative">
-            <select 
-              value={formData.type} 
-              onChange={(e) => {
-                const newType = e.target.value
-                setFormData(prev => ({
-                  ...prev,
-                  type: newType,
-                  ownerCoordinates: (newType !== 'enemy-farm' && newType !== 'enemy-flank' && newType !== 'enemy-tower') ? '' : prev.ownerCoordinates
-                }))
-              }} 
-              className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
-            >
-              {modalType === 'friendly' && (
-                <>
-                  <option value="friendly-main">Friendly Main Base</option>
-                  <option value="friendly-flank">Friendly Flank Base</option>
-                  <option value="friendly-farm">Friendly Farm</option>
-                  <option value="friendly-boat">Boat Base</option>
-                  <option value="friendly-garage">Garage</option>
-                </>
-              )}
-              {modalType === 'enemy' && (
-                <>
-                  <option value="enemy-small">Main Small</option>
-                  <option value="enemy-medium">Main Medium</option>
-                  <option value="enemy-large">Main Large</option>
-                  <option value="enemy-flank">Flank Base</option>
-                  <option value="enemy-tower">Tower</option>
-                  <option value="enemy-farm">Farm</option>
-                  <option value="enemy-decaying">Decaying Base</option>
-                </>
-              )}
-            </select>
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-              <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
-                {getIcon(formData.type)}
+        <div className="flex gap-4 mb-3">
+          <div className="w-1/3">
+            <label className="block text-sm font-medium mb-0.5 text-gray-200">Base Type</label>
+            <div className="relative">
+              <select 
+                value={formData.type} 
+                onChange={(e) => {
+                  const newType = e.target.value
+                  setFormData(prev => ({
+                    ...prev,
+                    type: newType,
+                    ownerCoordinates: (newType !== 'enemy-farm' && newType !== 'enemy-flank' && newType !== 'enemy-tower') ? '' : prev.ownerCoordinates
+                  }))
+                }} 
+                className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+              >
+                {modalType === 'friendly' && (
+                  <>
+                    <option value="friendly-main">Friendly Main Base</option>
+                    <option value="friendly-flank">Friendly Flank Base</option>
+                    <option value="friendly-farm">Friendly Farm</option>
+                    <option value="friendly-boat">Boat Base</option>
+                    <option value="friendly-garage">Garage</option>
+                  </>
+                )}
+                {modalType === 'enemy' && (
+                  <>
+                    <option value="enemy-small">Main Small</option>
+                    <option value="enemy-medium">Main Medium</option>
+                    <option value="enemy-large">Main Large</option>
+                    <option value="enemy-flank">Flank Base</option>
+                    <option value="enemy-tower">Tower</option>
+                    <option value="enemy-farm">Farm</option>
+                    <option value="enemy-decaying">Decaying Base</option>
+                  </>
+                )}
+              </select>
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
+                <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+                  {getIcon(formData.type)}
+                </div>
+                <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </div>
-              <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
             </div>
           </div>
+          
+          {modalType === 'enemy' && (
+            <div className="flex-1">
+              <RocketCalculatorSection
+                primaryRockets={formData.primaryRockets}
+                onPrimaryRocketsChange={(value) => setFormData(prev => ({ ...prev, primaryRockets: value }))}
+                showCalculatorModal={showRocketCalculator}
+                calculatorPosition={rocketCalculatorPosition}
+                onToggleCalculator={handleToggleRocketCalculator}
+                onCloseCalculator={() => setShowRocketCalculator(false)}
+              />
+            </div>
+          )}
         </div>
         
         <div>
