@@ -957,7 +957,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
             }}
             onCancel={() => {
               setShowRaidedOutPrompt(false)
-              setFormData(prev => ({ ...prev, raidedOut: true }))
+              setFormData(prev => ({ ...prev, raidedOut: false }))
             }}
           />
         )}
