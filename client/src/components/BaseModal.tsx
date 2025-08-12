@@ -205,6 +205,21 @@ const BaseModal = ({
     })
     return filtered.sort((a, b) => a.coord.localeCompare(b.coord))
   }, [getMainBasesWithInfo])
+
+const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
+  const rows = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  const cols = 30
+  const row = Math.floor(y / (100 / rows.length))
+  const col = Math.floor(x / (100 / cols)) + 1
+  const baseName = rows[Math.min(row, rows.length - 1)] + col.toString().padStart(2, "0")
+  
+  const existing = locations.filter(loc => 
+    loc.id !== excludeId && loc.name.startsWith(baseName)
+  ).length
+  
+  return existing > 0 ? `${baseName}(${existing + 1})` : baseName
+}, [])
+
   
   const handleSave = () => {
     const baseData = {
