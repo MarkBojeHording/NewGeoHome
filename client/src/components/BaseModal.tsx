@@ -480,8 +480,9 @@ const BaseModal = ({
   console.log('BaseModal render check:', { modalVisible: modal.visible, modalType, modal })
   if (!modal.visible) return null
 
+  console.log('BaseModal is about to render!')
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ zIndex: 9999 }}>
       <div className="bg-gradient-to-b from-gray-700 to-gray-800 rounded-xl shadow-2xl border border-gray-600 max-w-md w-full mx-4 max-h-[90vh] overflow-hidden">
         <div className="flex flex-col h-full">
           {/* Header */}
