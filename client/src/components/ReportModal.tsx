@@ -182,12 +182,19 @@ export default function ReportModal({
       const friendlyOnlyOptions = ["Enemy built in"];
       const enemyOnlyOptions = ["We grubbed", "Caught moving loot"];
 
+      console.log("Base report filtering - baseType:", baseType, "fieldName:", fieldName);
+      
       if (baseType === "friendly") {
-        return [...commonOptions, ...friendlyOnlyOptions];
+        const filteredOptions = [...commonOptions, ...friendlyOnlyOptions];
+        console.log("Friendly base options:", filteredOptions);
+        return filteredOptions;
       } else if (baseType === "enemy") {
-        return [...commonOptions, ...enemyOnlyOptions];
+        const filteredOptions = [...commonOptions, ...enemyOnlyOptions];
+        console.log("Enemy base options:", filteredOptions);
+        return filteredOptions;
       } else {
         // If baseType is unknown, show all options
+        console.log("Unknown base type, showing all options:", originalOptions);
         return originalOptions;
       }
     }
@@ -300,6 +307,21 @@ export default function ReportModal({
                 <option value="raid">Raid Report</option>
               </select>
             </div>
+
+            {/* Base Type Info Display */}
+            {reportType === "base" && baseType && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Base Type
+                </label>
+                <input
+                  type="text"
+                  value={baseType === "friendly" ? "Friendly Base" : "Enemy Base"}
+                  readOnly
+                  className="w-full p-2 border border-gray-600 rounded bg-gray-700 text-gray-300"
+                />
+              </div>
+            )}
 
             {/* Basic Fields */}
             <div>
