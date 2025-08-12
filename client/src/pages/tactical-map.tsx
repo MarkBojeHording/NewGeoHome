@@ -3,8 +3,8 @@ import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } 
 import BaseModal from '../components/BaseModal'
 import ReportModal from '../components/ReportModal'
 import ContextMenu from '../components/ContextMenu'
-import type { Location, LocationTimers, Timer, ModalState, ContextMenu as ContextMenuType, BaseType } from '../../../shared/location-schema'
-import type { Report, ReportLibrary, GeneralReport, BaseReport, GeneralReportType, BaseReportType } from '../../../shared/report-schema'
+import type { Location, LocationTimers, Timer, ModalState, ContextMenu as ContextMenuType, BaseType } from '../../shared/location-schema'
+import type { Report, ReportLibrary, GeneralReport, BaseReport, GeneralReportType, BaseReportType } from '../../shared/report-schema'
 
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
@@ -197,7 +197,15 @@ const getIcon = (type: string) => {
     'enemy-flank': <Shield className="h-4 w-4" />,
     'enemy-tower': <Castle className="h-4 w-4" />,
     'enemy-farm': <Wheat className="h-4 w-4" />,
-    'enemy-decaying': <Home className="h-4 w-4" />
+    'enemy-decaying': <Home className="h-4 w-4" />,
+    'report-pvp': <MapPin className="h-4 w-4" />,
+    'report-spotted': <MapPin className="h-4 w-4" />,
+    'report-bradley': <MapPin className="h-4 w-4" />,
+    'report-oil': <MapPin className="h-4 w-4" />,
+    'report-monument': <MapPin className="h-4 w-4" />,
+    'report-farming': <MapPin className="h-4 w-4" />,
+    'report-loaded': <MapPin className="h-4 w-4" />,
+    'report-raid': <MapPin className="h-4 w-4" />
   }
   
   return iconMap[type as keyof typeof iconMap] || <MapPin className="h-4 w-4" />

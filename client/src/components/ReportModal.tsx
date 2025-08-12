@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
-import type { Location } from '../../shared/location-schema'
+import type { Location } from '../../../shared/location-schema'
 import type { 
   Report, 
   GeneralReport, 
   BaseReport, 
   GeneralReportType, 
   BaseReportType
-} from '../../shared/report-schema'
+} from '../../../shared/report-schema'
 
 // Report options moved inline to avoid import issues
 const GENERAL_REPORT_OPTIONS = [
@@ -138,9 +138,9 @@ export default function ReportModal({
       outcome: formData.outcome,
       ...(reportType === 'base' && baseLocation && {
         locationId: baseLocation.id,
-        baseType: baseLocation.type.startsWith('friendly') ? 'friendly' : 'enemy'
+        baseType: baseLocation.type.startsWith('friendly') ? 'friendly' as const : 'enemy' as const
       })
-    }
+    } as Partial<Report>
 
     onSave(reportData)
     onClose()
