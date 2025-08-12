@@ -686,7 +686,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                 )}
               </div>
             ) : (
-              <div className="px-4 pb-2 relative z-50">
+              <div className="px-4 pb-2 relative z-50" style={{marginTop: '5px'}}>
                 <div className="flex justify-between">
                   <button 
                     onClick={(e) => {
