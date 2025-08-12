@@ -1,4 +1,4 @@
-function App() {
+export default function TestPage() {
   return (
     <div style={{ 
       height: '100vh', 
@@ -10,9 +10,7 @@ function App() {
       justifyContent: 'center',
       fontSize: '24px'
     }}>
-      <h1>Tactical Map System Online</h1>
+      <h1>Test Page - React is Working!</h1>
     </div>
   );
 }
-
-export default App;

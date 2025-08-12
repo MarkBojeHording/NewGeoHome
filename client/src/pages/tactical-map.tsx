@@ -288,7 +288,7 @@ const LocationMarker = ({
       {/* Base name label */}
       <div className="absolute top-8 left-1/2 transform -translate-x-1/2 pointer-events-none">
         <div className="bg-gray-900 text-white text-xs px-1.5 py-0.5 rounded shadow-lg whitespace-nowrap">
-          {location.name}
+          {'name' in location ? location.name : `Report ${location.id.slice(0, 8)}`}
         </div>
       </div>
       

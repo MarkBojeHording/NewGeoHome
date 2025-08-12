@@ -111,7 +111,6 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    overflow: hidden;
   }
   
   #root {
