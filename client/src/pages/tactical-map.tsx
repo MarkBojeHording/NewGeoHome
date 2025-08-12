@@ -682,6 +682,11 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             if (action === 'Intentional Decay' || action === 'Decaying') {
               setShowDecayingMenu(true)
             }
+             else if (action === 'Write report') {
+              setModalType('report')
+              setNewBaseModal({ visible: true, x: location.x, y: location.y })
+              setEditingLocation(location)
+            }
           }}
         />
       )}
