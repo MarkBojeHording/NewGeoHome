@@ -356,7 +356,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           />
         )}
         
-        <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
+        <label className="block text-sm font-medium mb-0.5 text-gray-200">Base owners</label>
         <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
           <textarea 
             value={formData.players} 
@@ -370,7 +370,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
       <div className="col-span-3">
         {modalType === 'friendly' && (
           <div className="border border-gray-600 rounded-lg p-3 bg-gray-700 mb-3">
-            <label className="block text-sm font-medium mb-1 text-gray-300">Upkeep Tracker</label>
+            <label className="block text-sm font-medium mb-0.5 text-gray-300">Upkeep Tracker</label>
             <div className="space-y-2">
               {['wood', 'stone', 'metal', 'hqm'].map((resource) => (
                 <div key={resource} className="flex items-center gap-3">
@@ -411,7 +411,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
         )}
         
         <div className="w-2/3 mb-3">
-          <label className="block text-sm font-medium mb-1 text-gray-200">Base Type</label>
+          <label className="block text-sm font-medium mb-0.5 text-gray-200">Base Type</label>
           <div className="relative">
             <select 
               value={formData.type} 
@@ -458,7 +458,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
         </div>
         
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-200">Notes</label>
+          <label className="block text-sm font-medium mb-0.5 text-gray-200">Notes</label>
           <textarea 
             value={formData.notes} 
             onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
