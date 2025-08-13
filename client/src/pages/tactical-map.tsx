@@ -1336,6 +1336,7 @@ export default function InteractiveTacticalMap() {
           onClose={() => setShowBaseReportModal(false)}
           baseId={baseReportData.baseId || ''}
           baseName={baseReportData.baseName || ''}
+          baseCoords={baseReportData.baseCoords || ''}
         />
       </div>
     </div>

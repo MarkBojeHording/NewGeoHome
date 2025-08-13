@@ -75,13 +75,10 @@ const BaseReportsList = ({ baseName, baseCoords, onEditReport }) => {
   })
 
   // Filter reports for this specific base (bases only have coordinates, no names)
-  const baseReports = reports.filter(report => {
-    const matches = report.locationCoords === baseCoords ||
-      (report.content?.baseCoords === baseCoords)
-    
-    console.log('Report matching for base:', { baseCoords, reportCoords: report.locationCoords, contentCoords: report.content?.baseCoords, matches })
-    return matches
-  })
+  const baseReports = reports.filter(report => 
+    report.locationCoords === baseCoords ||
+    (report.content?.baseCoords === baseCoords)
+  )
 
   if (isLoading) {
     return <div className="text-gray-400 text-sm">Loading reports...</div>

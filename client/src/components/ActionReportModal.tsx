@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
 import { X, Shield, MapPin } from "lucide-react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { apiRequest } from "@/lib/queryClient"
 
 const getColor = (type) => {
   if (type.startsWith("friendly")) return "text-green-400"
@@ -16,6 +18,7 @@ interface ActionReportModalProps {
   onClose: () => void;
   baseId?: string;
   baseName?: string;
+  baseCoords?: string;
   editingReport?: any;
 }
 
@@ -24,8 +27,10 @@ export default function ActionReportModal({
   onClose,
   baseId,
   baseName,
+  baseCoords,
   editingReport,
 }: ActionReportModalProps) {
+  const queryClient = useQueryClient()
   const [formData, setFormData] = useState({
     type: 'report-pvp',
     reportTime: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
@@ -51,9 +56,32 @@ export default function ActionReportModal({
     }
   }, [editingReport])
 
+  const createReportMutation = useMutation({
+    mutationFn: (reportData) => apiRequest("/api/reports", "POST", reportData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
+      onClose()
+    }
+  })
+
   const handleSave = () => {
-    // Just close the modal - no icon creation
-    onClose()
+    const reportData = {
+      title: `${formData.type.replace('report-', '')} Report`,
+      reportType: "base",
+      locationName: baseName || "",
+      locationCoords: baseCoords || "",
+      content: {
+        type: formData.type,
+        reportTime: formData.reportTime,
+        enemyPlayers: formData.enemyPlayers,
+        friendlyPlayers: formData.friendlyPlayers,
+        notes: formData.notes,
+        reportOutcome: formData.reportOutcome
+      },
+      status: "active"
+    }
+    
+    createReportMutation.mutate(reportData)
   }
 
   if (!isVisible) return null
