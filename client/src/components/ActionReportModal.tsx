@@ -44,17 +44,33 @@ export default function ActionReportModal({
   const [showEnemyInput, setShowEnemyInput] = useState(false)
 
   useEffect(() => {
-    if (editingReport) {
-      setFormData({
-        type: editingReport.type || 'report-pvp',
-        reportTime: editingReport.reportTime || new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
-        enemyPlayers: editingReport.enemyPlayers || '',
-        friendlyPlayers: editingReport.friendlyPlayers || '',
-        notes: editingReport.notes || '',
-        reportOutcome: editingReport.reportOutcome || 'neutral'
-      })
+    if (isVisible) {
+      if (editingReport) {
+        // Load existing report data for editing
+        setFormData({
+          type: editingReport.content?.type || 'report-pvp',
+          reportTime: editingReport.content?.reportTime || new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+          enemyPlayers: editingReport.content?.enemyPlayers || '',
+          friendlyPlayers: editingReport.content?.friendlyPlayers || '',
+          notes: editingReport.content?.notes || '',
+          reportOutcome: editingReport.content?.reportOutcome || 'neutral'
+        })
+      } else {
+        // Reset form for new report
+        setFormData({
+          type: 'report-pvp',
+          reportTime: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+          enemyPlayers: '',
+          friendlyPlayers: '',
+          notes: '',
+          reportOutcome: 'neutral'
+        })
+      }
+      // Reset input visibility states
+      setShowFriendlyInput(false)
+      setShowEnemyInput(false)
     }
-  }, [editingReport])
+  }, [isVisible, editingReport])
 
   const createReportMutation = useMutation({
     mutationFn: async (reportData) => {
