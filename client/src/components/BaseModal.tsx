@@ -597,7 +597,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                   <div className="flex items-center gap-3 flex-1">
                     <div className="relative">
                       {editingLocation?.id && (
-                        <div className="text-gray-500 text-xs font-mono absolute -top-4 left-0" style={{fontSize: '10px'}}>
+                        <div className="text-gray-500 text-xs font-mono absolute -top-6 left-0" style={{fontSize: '10px'}}>
                           ID {editingLocation.id}
                         </div>
                       )}
