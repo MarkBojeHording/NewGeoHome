@@ -57,10 +57,8 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
     if (!premiumPlayerName.trim()) return;
     
     try {
-      await apiRequest('/api/premium-players', {
-        method: 'POST',
-        body: JSON.stringify({ playerName: premiumPlayerName.trim() }),
-        headers: { 'Content-Type': 'application/json' }
+      await apiRequest('POST', '/api/premium-players', { 
+        playerName: premiumPlayerName.trim() 
       });
       
       // Refresh premium players data
