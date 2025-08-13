@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } from 'lucide-react'
+import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, User } from 'lucide-react'
 import BaseModal from '../components/BaseModal'
-
+import { PlayerModal } from '../components/PlayerModal'
 import ActionReportModal from '../components/ActionReportModal'
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
@@ -940,7 +940,7 @@ export default function InteractiveTacticalMap() {
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
   
   // New Report System State
-
+  const [showPlayerModal, setShowPlayerModal] = useState(false)
 
   const [showBaseReportModal, setShowBaseReportModal] = useState(false)
   const [baseReportData, setBaseReportData] = useState({
@@ -1152,6 +1152,15 @@ export default function InteractiveTacticalMap() {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-700 to-gray-900 p-4">
+      {/* Player Button - Fixed Top Right */}
+      <button
+        className="fixed top-4 right-4 z-30 w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-lg transition-colors border-2 border-blue-400"
+        onClick={() => setShowPlayerModal(true)}
+        title="Player Management"
+        data-testid="button-open-player-modal"
+      >
+        <User className="w-6 h-6" />
+      </button>
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {

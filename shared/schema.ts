@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, timestamp, jsonb, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -51,3 +51,18 @@ export const insertReportTemplateSchema = createInsertSchema(reportTemplates).om
 export const selectReportTemplateSchema = createInsertSchema(reportTemplates);
 export type InsertReportTemplate = z.infer<typeof insertReportTemplateSchema>;
 export type ReportTemplate = typeof reportTemplates.$inferSelect;
+
+// Players table
+export const players = pgTable("players", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  isOnline: boolean("is_online").notNull().default(false),
+  lastSessionTime: timestamp("last_session_time").notNull().defaultNow(),
+  associatedBaseNumber: text("associated_base_number"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPlayerSchema = createInsertSchema(players).omit({ id: true, createdAt: true });
+export const selectPlayerSchema = createInsertSchema(players);
+export type InsertPlayer = z.infer<typeof insertPlayerSchema>;
+export type Player = typeof players.$inferSelect;
