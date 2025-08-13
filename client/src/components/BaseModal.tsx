@@ -598,7 +598,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                     <div className="relative">
                       {editingLocation?.id && (
                         <div className="text-gray-500 text-xs font-mono absolute -top-4 left-0" style={{fontSize: '10px'}}>
-                          ID: {editingLocation.id}
+                          ID {editingLocation.id}
                         </div>
                       )}
                       <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
@@ -676,7 +676,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                   <div className="relative">
                     {editingLocation?.id && (
                       <div className="text-gray-500 text-xs font-mono absolute -top-4 left-0" style={{fontSize: '10px'}}>
-                        ID: {editingLocation.id}
+                        ID {editingLocation.id}
                       </div>
                     )}
                     <div className="text-green-500 font-bold text-lg">FRIENDLY</div>
