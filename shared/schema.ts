@@ -69,7 +69,6 @@ export const playerBaseTags = pgTable("player_base_tags", {
   playerName: text("player_name").notNull(),
   baseId: text("base_id").notNull(), // Links to the base unique ID
   baseName: text("base_name").notNull(), // Base name for display (e.g., "A1", "B3(2)")
-  baseCoords: text("base_coords").notNull(), // Grid coordinates
   baseType: text("base_type").notNull(), // enemy-small, friendly-main, etc.
   taggedAt: timestamp("tagged_at").defaultNow(),
 });
