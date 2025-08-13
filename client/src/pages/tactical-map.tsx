@@ -1313,7 +1313,7 @@ export default function InteractiveTacticalMap() {
           />
         )}
 
-        {newBaseModal.visible && (
+        {false && (
           <BaseModal 
             modal={newBaseModal}
             modalType={modalType}
