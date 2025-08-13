@@ -686,7 +686,13 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               setShowDecayingMenu(true)
             }
              else if (action === 'Write report') {
-              onOpenReport(location)
+              setBaseReportData({
+                baseId: location.id,
+                baseName: location.name,
+                baseCoords: location.coordinates,
+                baseType: location.type
+              })
+              setShowBaseReportModal(true)
             }
             else if (action === 'Add Base Report') {
               setBaseReportData({
