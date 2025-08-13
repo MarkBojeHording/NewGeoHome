@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } from 'lucide-react'
 import BaseModal from '../components/BaseModal'
 import ReportModal from '../components/ReportModal'
+import BaseReportModal from '../components/BaseReportModal'
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
   COLS: 32,
@@ -687,6 +688,15 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
              else if (action === 'Write report') {
               onOpenReport(location)
             }
+            else if (action === 'Add Base Report') {
+              setBaseReportData({
+                baseId: location.id,
+                baseName: location.name,
+                baseCoords: location.coordinates || getGridCoordinate(location.x, location.y, locations, null),
+                baseType: location.type
+              })
+              setShowBaseReportModal(true)
+            }
           }}
         />
       )}
@@ -923,6 +933,14 @@ export default function InteractiveTacticalMap() {
     locationName: null,
     locationCoords: null,
     reportType: 'general'
+  })
+
+  const [showBaseReportModal, setShowBaseReportModal] = useState(false)
+  const [baseReportData, setBaseReportData] = useState({
+    baseId: null,
+    baseName: null,
+    baseCoords: null,
+    baseType: null
   })
   
   // Add report to library (for use in BaseModal)
@@ -1296,6 +1314,15 @@ export default function InteractiveTacticalMap() {
           locationName={reportModalData.locationName || ''}
           locationCoords={reportModalData.locationCoords || ''}
           reportType={reportModalData.reportType || 'general'}
+        />
+
+        <BaseReportModal
+          isVisible={showBaseReportModal}
+          onClose={() => setShowBaseReportModal(false)}
+          baseId={baseReportData.baseId || ''}
+          baseName={baseReportData.baseName || ''}
+          baseCoords={baseReportData.baseCoords || ''}
+          baseType={baseReportData.baseType || ''}
         />
       </div>
     </div>
