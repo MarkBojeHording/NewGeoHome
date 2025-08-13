@@ -48,14 +48,12 @@ export const queryClient = new QueryClient({
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
-      retry: 3,
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
-      throwOnError: false, // Don't throw errors that could crash the app
+      retry: 1, // Minimal retries to prevent connection spam
+      throwOnError: false, // Don't crash the app
     },
     mutations: {
-      retry: 2,
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 10000),
-      throwOnError: false, // Don't throw errors that could crash the app
+      retry: 1, // Minimal retries
+      throwOnError: false, // Don't crash the app
     },
   },
 });

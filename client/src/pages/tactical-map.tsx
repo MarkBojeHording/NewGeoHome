@@ -1022,16 +1022,10 @@ export default function InteractiveTacticalMap() {
   // Fetch player data for online count display
   const { data: players = [] } = useQuery<ExternalPlayer[]>({
     queryKey: ['/api/players'],
-    retry: 3, // Retry failed requests
-    retryDelay: 2000, // Wait 2 seconds between retries
-    refetchInterval: 30000, // Refresh every 30 seconds
-    refetchOnWindowFocus: true, // Refetch when tab gains focus
     staleTime: 60000, // Cache for 1 minute
-    gcTime: 300000, // Keep in cache for 5 minutes
-    throwOnError: false, // Don't throw errors - handle gracefully
-    onError: (error) => {
-      console.log('Player API temporarily unavailable, retrying...')
-    }
+    refetchOnWindowFocus: false, // Don't refetch on focus to reduce requests
+    retry: 1, // Minimal retries
+    throwOnError: false, // Don't crash on errors
   })
 
   const mapRef = useRef(null)
