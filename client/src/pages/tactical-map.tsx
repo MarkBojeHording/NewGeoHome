@@ -669,7 +669,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       {!location.type.startsWith('report') && (
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-x-10 flex gap-3">
       {/* Rectangle - smaller size for enemy base preview */}
-      <div className="absolute top-11 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none">
+      <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none">
         <div className="w-44 h-28 bg-gray-800 border border-gray-600 shadow-lg"></div>
       </div>
       
