@@ -8,6 +8,7 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Enhanced report system reliability** - Report modal now opens correctly from both map markers and selected location panel
 ✓ **Created BaseReportModal system** - Added separate base report functionality for friendly bases via ActionMenu
 ✓ **Maintained system separation** - Right-click "Report" creates map icons using existing BaseModal, base reports are separate data-only reports
+✓ **Replaced ActionReportModal with general report format** - Base reports now use the same layout as general reports (report type, time, players, notes) but without icon creation
 ✓ **Maintained existing functionality** - Zero changes to existing code, only additions and bug fixes as requested
 
 ## Current Features
