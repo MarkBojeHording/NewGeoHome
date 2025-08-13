@@ -1059,7 +1059,7 @@ const BaseModal = ({
               {/* List of reports for this base */}
               <div className="flex-1 overflow-y-auto mb-4">
                 <div className="space-y-2">
-                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
+                  <BaseReportsContent baseName={editingLocation?.name || formData.name} onOpenReport={onOpenReport} />
                   {/* Reports will be listed here */}
                 </div>
               </div>
