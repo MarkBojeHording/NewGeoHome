@@ -39,6 +39,7 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
+IMPORTANT: Only implement exactly what is requested. Do not create mock/fake data or add unrequested features. Ask questions if unclear.
 
 # System Architecture
 
