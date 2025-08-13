@@ -752,9 +752,16 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      setShowReportPanel(!showReportPanel)
+                      if (editingLocation?.id) {
+                        setShowReportPanel(!showReportPanel)
+                      }
                     }} 
-                    className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1.5 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
+                    disabled={!editingLocation?.id}
+                    className={`${
+                      showReportPanel && editingLocation?.id ? 'bg-yellow-700' : 
+                      editingLocation?.id ? 'bg-yellow-600 hover:bg-yellow-700' : 
+                      'bg-gray-600 cursor-not-allowed text-gray-400'
+                    } text-white py-1.5 px-3 rounded-md transition-colors font-medium text-sm`}
                     type="button"
                   >
                     Report {showReportPanel ? '◄' : ''}
@@ -851,13 +858,16 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               {/* Create Report Button */}
               <button 
                 onClick={() => {
-                  if (onOpenBaseReport) {
+                  if (editingLocation?.id && onOpenBaseReport) {
                     onOpenBaseReport(editingLocation)
                   }
                 }}
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors"
+                disabled={!editingLocation?.id}
+                className={editingLocation?.id ? 
+                  "w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors" :
+                  "w-full bg-gray-600 text-gray-400 py-2 rounded text-sm font-medium cursor-not-allowed"}
               >
-                Create New Report
+{editingLocation?.id ? "Create New Report" : "Save base first to create reports"}
               </button>
             </div>
           </div>
