@@ -39,6 +39,12 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
     enabled: !!selectedPlayer,
   });
 
+  // Fetch player base tags for selected player
+  const { data: playerBaseTags = [] } = useQuery<any[]>({
+    queryKey: ['/api/player-base-tags/player', selectedPlayer],
+    enabled: !!selectedPlayer,
+  });
+
   // Filter players based on search criteria
   const filteredPlayers = players.filter(player => {
     const nameMatch = nameSearch === '' || player.playerName.toLowerCase().includes(nameSearch.toLowerCase());
@@ -103,7 +109,27 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
             {/* Session History View */}
             {selectedPlayer ? (
               <div className="h-[750px] overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Session History for {selectedPlayer}</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-white">Session History for {selectedPlayer}</h3>
+                  
+                  {/* Base Tags Section */}
+                  {playerBaseTags.length > 0 && (
+                    <div className="text-right">
+                      <div className="text-sm text-gray-400 mb-1">Base Ownership</div>
+                      <div className="flex gap-2 flex-wrap">
+                        {playerBaseTags.map((tag: any) => (
+                          <span
+                            key={tag.id}
+                            className="px-2 py-1 bg-blue-600 text-blue-200 text-xs rounded-full"
+                            title={`${tag.baseType} base at ${tag.baseCoords}`}
+                          >
+                            {tag.baseName}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 {isLoadingHistory ? (
                   <div className="flex justify-center py-8">
                     <div className="text-gray-400">Loading session history...</div>

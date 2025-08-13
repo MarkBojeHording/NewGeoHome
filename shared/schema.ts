@@ -63,6 +63,21 @@ export const insertPremiumPlayerSchema = createInsertSchema(premiumPlayers).omit
 export type InsertPremiumPlayer = z.infer<typeof insertPremiumPlayerSchema>;
 export type PremiumPlayer = typeof premiumPlayers.$inferSelect;
 
+// Player base associations table for tracking which players are tagged with which bases
+export const playerBaseTags = pgTable("player_base_tags", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  playerName: text("player_name").notNull(),
+  baseId: text("base_id").notNull(), // Links to the base unique ID
+  baseName: text("base_name").notNull(), // Base name for display (e.g., "A1", "B3(2)")
+  baseCoords: text("base_coords").notNull(), // Grid coordinates
+  baseType: text("base_type").notNull(), // enemy-small, friendly-main, etc.
+  taggedAt: timestamp("tagged_at").defaultNow(),
+});
+
+export const insertPlayerBaseTagSchema = createInsertSchema(playerBaseTags).omit({ id: true, taggedAt: true });
+export type InsertPlayerBaseTag = z.infer<typeof insertPlayerBaseTagSchema>;
+export type PlayerBaseTag = typeof playerBaseTags.$inferSelect;
+
 // External player data structure to match your API
 export const externalPlayerSchema = z.object({
   playerName: z.string(),

@@ -6,6 +6,13 @@ import { RocketCalculatorSection } from './RocketCalculator'
 import type { ExternalPlayer } from '@shared/schema'
 
 // ============= CONSTANTS =============
+const GRID_CONFIG = {
+  COLS: 32,
+  ROWS: 24,
+  CELL_WIDTH_PERCENT: 3.125,
+  CELL_HEIGHT_PERCENT: 4.167
+}
+
 const LABELS = {
   "friendly-main": "Main",
   "friendly-flank": "Flank", 
@@ -53,29 +60,6 @@ const getIcon = (type: string) => {
   return <Icon className="h-3 w-3" />
 }
 
-const MATERIAL_ICONS = {
-  wood: "🪵",
-  stone: "🪨",
-  metal: "🔩",
-  hqm: "⚙️"
-}
-
-const MATERIAL_LABELS = {
-  wood: "Wood",
-  stone: "Stone",
-  metal: "Metal",
-  hqm: "HQM"
-}
-
-// Grid configuration for coordinate calculation
-const GRID_CONFIG = {
-  COLS: 32,
-  ROWS: 24,
-  CELL_WIDTH_PERCENT: 3.125,
-  CELL_HEIGHT_PERCENT: 4.167
-}
-
-// Generate grid coordinate from x,y position
 const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], excludeId: string | null = null) => {
   const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
   const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
@@ -93,6 +77,22 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
 }
+
+const MATERIAL_ICONS = {
+  wood: "🪵",
+  stone: "🪨",
+  metal: "🔩",
+  hqm: "⚙️"
+}
+
+const MATERIAL_LABELS = {
+  wood: "Wood",
+  stone: "Stone",
+  metal: "Metal",
+  hqm: "HQM"
+}
+
+
 
 // ============= BASE REPORTS CONTENT COMPONENT =============
 const BaseReportsContent = ({ baseName, onOpenReport }) => {
@@ -519,6 +519,32 @@ const BaseModal = ({
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
       raidedOut: modalType === 'enemy' ? formData.raidedOut : undefined,
       primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined
+    }
+    
+    // Create player base tags for owner players when saving enemy/friendly bases
+    if (formData.players && (modalType === 'enemy' || modalType === 'friendly')) {
+      const createPlayerTags = async () => {
+        const playerNames = formData.players.split(',').map(p => p.trim()).filter(p => p)
+        const coordinates = getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)
+        const baseId = editingLocation?.id || `base_${Date.now()}_${Math.random()}`
+        
+        for (const playerName of playerNames) {
+          try {
+            await apiRequest('POST', '/api/player-base-tags', {
+              playerName,
+              baseId,
+              baseName: coordinates,
+              baseCoords: coordinates,
+              baseType: formData.type
+            })
+          } catch (error) {
+            console.error(`Failed to create player base tag for ${playerName}:`, error)
+          }
+        }
+      }
+      
+      // Execute tagging asynchronously (don't block base save)
+      createPlayerTags()
     }
     
     onSave(baseData)

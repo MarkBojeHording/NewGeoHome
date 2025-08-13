@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertReportSchema, insertReportTemplateSchema, insertPremiumPlayerSchema } from "@shared/schema";
+import { insertReportSchema, insertReportTemplateSchema, insertPremiumPlayerSchema, insertPlayerBaseTagSchema } from "@shared/schema";
 
 // TEMPORARY FAKE DATA FUNCTIONS - TO BE DELETED LATER
 function getTempFakePlayers() {
@@ -279,6 +279,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete premium player" });
+    }
+  });
+
+  // Player Base Tags API routes
+  
+  // Get all player base tags
+  app.get("/api/player-base-tags", async (req, res) => {
+    try {
+      const tags = await storage.getAllPlayerBaseTags();
+      res.json(tags);
+    } catch (error) {
+      console.error("Error getting player base tags:", error);
+      res.status(500).json({ error: "Failed to get player base tags" });
+    }
+  });
+
+  // Get tags for a specific player
+  app.get("/api/player-base-tags/player/:playerName", async (req, res) => {
+    try {
+      const tags = await storage.getPlayerBaseTags(req.params.playerName);
+      res.json(tags);
+    } catch (error) {
+      console.error("Error getting player tags:", error);
+      res.status(500).json({ error: "Failed to get player tags" });
+    }
+  });
+
+  // Get tags for a specific base
+  app.get("/api/player-base-tags/base/:baseId", async (req, res) => {
+    try {
+      const tags = await storage.getBasePlayerTags(req.params.baseId);
+      res.json(tags);
+    } catch (error) {
+      console.error("Error getting base tags:", error);
+      res.status(500).json({ error: "Failed to get base tags" });
+    }
+  });
+
+  // Create player base tag
+  app.post("/api/player-base-tags", async (req, res) => {
+    try {
+      const validatedTag = insertPlayerBaseTagSchema.parse(req.body);
+      const tag = await storage.createPlayerBaseTag(validatedTag);
+      res.status(201).json(tag);
+    } catch (error) {
+      console.error("Error creating player base tag:", error);
+      res.status(400).json({ error: "Failed to create player base tag" });
+    }
+  });
+
+  // Delete player base tag
+  app.delete("/api/player-base-tags/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deletePlayerBaseTag(id);
+      if (success) {
+        res.json({ success: true });
+      } else {
+        res.status(404).json({ error: "Player base tag not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting player base tag:", error);
+      res.status(500).json({ error: "Failed to delete player base tag" });
+    }
+  });
+
+  // Delete all tags for a specific base (used when base is deleted)
+  app.delete("/api/player-base-tags/base/:baseId", async (req, res) => {
+    try {
+      const success = await storage.deletePlayerBaseTagsByBaseId(req.params.baseId);
+      res.json({ success });
+    } catch (error) {
+      console.error("Error deleting base tags:", error);
+      res.status(500).json({ error: "Failed to delete base tags" });
     }
   });
 

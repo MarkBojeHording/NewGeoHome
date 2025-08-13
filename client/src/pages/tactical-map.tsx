@@ -1185,6 +1185,15 @@ export default function InteractiveTacticalMap() {
           console.error('Error deleting associated reports:', error)
         }
       }
+
+      // Delete associated player base tags
+      try {
+        await fetch(`/api/player-base-tags/base/${editingLocation.id}`, {
+          method: 'DELETE'
+        })
+      } catch (error) {
+        console.error('Error deleting associated player base tags:', error)
+      }
       
       setLocations(prev => prev.filter(loc => loc.id !== editingLocation.id))
       setSelectedLocation(null)

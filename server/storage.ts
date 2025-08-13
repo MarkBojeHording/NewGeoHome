@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer } from "@shared/schema";
+import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer, type PlayerBaseTag, type InsertPlayerBaseTag } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 // modify the interface with any CRUD methods
@@ -29,11 +29,19 @@ export interface IStorage {
   getPremiumPlayerByName(playerName: string): Promise<PremiumPlayer | undefined>;
   deletePremiumPlayer(id: number): Promise<boolean>;
   
+  // Player base tagging methods
+  createPlayerBaseTag(tag: InsertPlayerBaseTag): Promise<PlayerBaseTag>;
+  getPlayerBaseTags(playerName: string): Promise<PlayerBaseTag[]>;
+  getBasePlayerTags(baseId: string): Promise<PlayerBaseTag[]>;
+  getAllPlayerBaseTags(): Promise<PlayerBaseTag[]>;
+  deletePlayerBaseTag(id: number): Promise<boolean>;
+  deletePlayerBaseTagsByBaseId(baseId: string): Promise<boolean>;
+  
   // Note: Regular player data comes from external API, no local storage needed
 }
 
 import { db } from "./db";
-import { users, reports, reportTemplates, premiumPlayers } from "@shared/schema";
+import { users, reports, reportTemplates, premiumPlayers, playerBaseTags } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
@@ -133,6 +141,37 @@ export class DatabaseStorage implements IStorage {
 
   async deletePremiumPlayer(id: number): Promise<boolean> {
     const result = await db.delete(premiumPlayers).where(eq(premiumPlayers.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Player base tagging methods
+  async createPlayerBaseTag(tag: InsertPlayerBaseTag): Promise<PlayerBaseTag> {
+    const [newTag] = await db
+      .insert(playerBaseTags)
+      .values(tag)
+      .returning();
+    return newTag;
+  }
+
+  async getPlayerBaseTags(playerName: string): Promise<PlayerBaseTag[]> {
+    return await db.select().from(playerBaseTags).where(eq(playerBaseTags.playerName, playerName));
+  }
+
+  async getBasePlayerTags(baseId: string): Promise<PlayerBaseTag[]> {
+    return await db.select().from(playerBaseTags).where(eq(playerBaseTags.baseId, baseId));
+  }
+
+  async getAllPlayerBaseTags(): Promise<PlayerBaseTag[]> {
+    return await db.select().from(playerBaseTags);
+  }
+
+  async deletePlayerBaseTag(id: number): Promise<boolean> {
+    const result = await db.delete(playerBaseTags).where(eq(playerBaseTags.id, id));
+    return result.rowCount > 0;
+  }
+
+  async deletePlayerBaseTagsByBaseId(baseId: string): Promise<boolean> {
+    const result = await db.delete(playerBaseTags).where(eq(playerBaseTags.baseId, baseId));
     return result.rowCount > 0;
   }
 
