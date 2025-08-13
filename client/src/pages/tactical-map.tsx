@@ -1152,15 +1152,23 @@ export default function InteractiveTacticalMap() {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-700 to-gray-900 p-4">
-      {/* Player Button - Fixed Top Right */}
-      <button
-        className="fixed top-4 right-4 z-30 w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-lg transition-colors border-2 border-blue-400"
-        onClick={() => setShowPlayerModal(true)}
-        title="Player Management"
-        data-testid="button-open-player-modal"
-      >
-        <User className="w-6 h-6" />
-      </button>
+      {/* Top Toolbar */}
+      <div className="absolute top-4 left-4 right-4 z-30 flex justify-between items-center pointer-events-none">
+        <div className="flex gap-3 pointer-events-auto">
+          <button
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 shadow-lg transition-colors border border-blue-400"
+            onClick={() => setShowPlayerModal(true)}
+            title="Player Management"
+            data-testid="button-open-player-modal"
+          >
+            <User className="w-5 h-5" />
+            <span className="text-sm font-medium">Players</span>
+          </button>
+        </div>
+        <div className="text-white text-sm font-medium pointer-events-auto">
+          Tactical Map
+        </div>
+      </div>
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
