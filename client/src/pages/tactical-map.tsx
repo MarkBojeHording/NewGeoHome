@@ -661,12 +661,8 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
   
-  // Fetch player base tags for this specific base
-  const { data: playerBaseTags = [] } = useQuery({
-    queryKey: ['/api/player-base-tags/base', location.id],
-    enabled: !!location.id && !location.type.startsWith('report'),
-    staleTime: 0 // Always refetch to get latest data
-  })
+  // Get players from the location data (same as BaseModal)
+  const locationPlayers = location.players || ''
   
   return (
     <div 
@@ -681,11 +677,11 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           {/* Player snapshot grid - 2 columns x 5 rows */}
           <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
             {(() => {
-              // Show players tagged to this specific base
+              // Parse selected players from comma-separated string (same as BaseModal)
+              const selectedPlayersList = locationPlayers ? locationPlayers.split(',').map(p => p.trim()).filter(p => p) : []
               
-              // Filter players to only show those tagged to this specific base
-              const taggedPlayerNames = playerBaseTags.map(tag => tag.playerName) || [];
-              const taggedPlayers = players.filter(p => taggedPlayerNames.includes(p.playerName));
+              // Filter players to only show those assigned to this base
+              const taggedPlayers = players.filter(p => selectedPlayersList.includes(p.playerName));
               
               // Get online and offline players from tagged players only
               const onlinePlayers = taggedPlayers.filter(p => p.isOnline) || [];
