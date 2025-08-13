@@ -478,6 +478,18 @@ const ActionMenu = ({ location, style, onClose, onAction, onOpenBaseReport }) =>
               Set Timer
             </button>
           </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-gray-200 text-sm whitespace-nowrap">Write Report</span>
+            <button 
+              className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors font-medium cursor-pointer"
+              onClick={() => {
+                onOpenBaseReport(location)
+                onClose()
+              }}
+            >
+              Create
+            </button>
+          </div>
         </div>
       </div>
     )
