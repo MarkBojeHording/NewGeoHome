@@ -227,9 +227,8 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
     if (!searchTerm.trim()) return
     
     try {
-      await apiRequest('/api/premium-players', {
-        method: 'POST',
-        body: { playerName: searchTerm.trim() }
+      await apiRequest('POST', '/api/premium-players', { 
+        playerName: searchTerm.trim() 
       })
       
       // Add the player to the selection
