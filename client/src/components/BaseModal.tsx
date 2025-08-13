@@ -98,9 +98,9 @@ const BaseReportsList = ({ baseName, baseCoords, onEditReport }) => {
       {baseReports.map(report => (
         <div key={report.id} className="flex items-center justify-between bg-gray-700 p-2 rounded">
           <div className="flex items-center space-x-2 flex-1 min-w-0">
-            {report.reportType === 'base' ? <Image className="h-4 w-4 text-blue-400 flex-shrink-0" /> : <FileText className="h-4 w-4 text-green-400 flex-shrink-0" />}
+            <FileText className="h-4 w-4 text-green-400 flex-shrink-0" />
             <span className="text-white text-sm truncate">
-              {new Date(report.createdAt).toLocaleDateString()} - {report.reportType} - {report.status}
+              {new Date(report.createdAt).toLocaleDateString()} - {report.content?.type || report.reportType} - {report.status}
             </span>
           </div>
           <button
