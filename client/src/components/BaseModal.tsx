@@ -337,6 +337,7 @@ const BaseModal = ({
       outcome: modalType === 'report' ? formData.reportOutcome : undefined,
       enemyPlayers: modalType === 'report' ? formData.enemyPlayers : undefined,
       friendlyPlayers: modalType === 'report' ? formData.friendlyPlayers : undefined,
+      players: modalType === 'enemy' ? formData.players : undefined,
       isMainBase: modalType === 'enemy' ? true : undefined,
       oldestTC: modalType === 'enemy' && formData.oldestTC > 0 ? formData.oldestTC : undefined,
       ownerCoordinates: (formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') ? formData.ownerCoordinates : undefined,

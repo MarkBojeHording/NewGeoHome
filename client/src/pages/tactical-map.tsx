@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, User } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import ActionReportModal from '../components/ActionReportModal'
+import type { ExternalPlayer } from '@shared/schema'
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
   COLS: 32,
@@ -258,8 +260,18 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
   )
 }
 
-const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, getOwnedBases, onOpenReport, onOpenBaseReport }) => {
+const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport }) => {
   const ownedBases = getOwnedBases(location.name)
+
+  // Calculate online player count for this base
+  const onlinePlayerCount = useMemo(() => {
+    if (!location.players || !players.length) return 0
+    
+    const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
+    return basePlayerNames.filter(playerName => 
+      players.some(player => player.playerName === playerName && player.isOnline)
+    ).length
+  }, [location.players, players])
   
   return (
     <button
@@ -278,6 +290,22 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
             timers={timers} 
             onRemoveTimer={onRemoveTimer}
           />
+        )}
+
+        {/* Online player count display - only show for enemy bases with players */}
+        {location.type.startsWith("enemy") && onlinePlayerCount > 0 && (
+          <div 
+            className="absolute text-xs font-bold text-green-400 bg-black/80 rounded-full w-5 h-5 flex items-center justify-center border border-green-400/50"
+            style={{
+              left: "-12px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              zIndex: 10,
+              fontSize: "10px"
+            }}
+          >
+            {onlinePlayerCount}
+          </div>
         )}
         
         <div className={`bg-gray-700 rounded-full p-0.5 shadow-md border border-gray-600 flex items-center justify-center`}>
@@ -986,6 +1014,11 @@ export default function InteractiveTacticalMap() {
     setShowBaseReportModal(true)
   }, [])
 
+  // Fetch player data for online count display
+  const { data: players = [] } = useQuery<ExternalPlayer[]>({
+    queryKey: ['/api/players']
+  })
+
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
   const { zoom, setZoom, pan, isDragging, setIsDragging, isDraggingRef, dragStartRef, hasDraggedRef } = useMapInteraction()
@@ -1320,6 +1353,7 @@ export default function InteractiveTacticalMap() {
                   timers={locationTimers[location.id]}
                   onRemoveTimer={(timerId) => handleRemoveTimer(location.id, timerId)}
                   getOwnedBases={getOwnedBases}
+                  players={players || []}
                   onOpenReport={onOpenBaseReport}
                   onOpenBaseReport={(location) => {
                     setBaseReportData({
