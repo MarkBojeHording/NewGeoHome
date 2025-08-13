@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Search, User, Plus } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import type { ExternalPlayer } from '@shared/schema';
 
 interface PlayerModalProps {
@@ -13,10 +15,20 @@ interface PlayerModalProps {
 export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   const [nameSearch, setNameSearch] = useState('');
   const [baseNumberSearch, setBaseNumberSearch] = useState('');
+  const [showPremiumDialog, setShowPremiumDialog] = useState(false);
+  const [premiumPlayerName, setPremiumPlayerName] = useState('');
+  
+  const queryClient = useQueryClient();
 
   // Fetch players from the external API via our server
   const { data: players = [], isLoading } = useQuery<ExternalPlayer[]>({
     queryKey: ['/api/players'],
+    enabled: isOpen,
+  });
+
+  // Fetch premium players from our database
+  const { data: premiumPlayers = [] } = useQuery({
+    queryKey: ['/api/premium-players'],
     enabled: isOpen,
   });
 
@@ -26,6 +38,12 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
     // For now, search by session count for base number search (you can customize this)
     const sessionMatch = baseNumberSearch === '' || player.totalSessions.toString().includes(baseNumberSearch);
     return nameMatch && sessionMatch;
+  });
+
+  // Filter premium players based on search criteria
+  const filteredPremiumPlayers = premiumPlayers.filter(player => {
+    const nameMatch = nameSearch === '' || player.playerName.toLowerCase().includes(nameSearch.toLowerCase());
+    return nameMatch;
   });
 
   const formatLastSession = (timestamp: string) => {
@@ -44,6 +62,26 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
     return date.toLocaleDateString();
   };
 
+  const createPremiumPlayer = async () => {
+    if (!premiumPlayerName.trim()) return;
+    
+    try {
+      await apiRequest('/api/premium-players', {
+        method: 'POST',
+        body: { playerName: premiumPlayerName.trim() }
+      });
+      
+      // Refresh premium players data
+      queryClient.invalidateQueries({ queryKey: ['/api/premium-players'] });
+      
+      // Close dialog and reset form
+      setShowPremiumDialog(false);
+      setPremiumPlayerName('');
+    } catch (error) {
+      console.error('Failed to create premium player:', error);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[1600px] h-[900px] bg-gray-900 border-gray-700">
@@ -51,7 +89,10 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
             <User className="w-5 h-5" />
             Player Management
-            <Plus className="w-4 h-4 text-orange-400" />
+            <Plus 
+              className="w-4 h-4 text-orange-400 cursor-pointer hover:text-orange-300" 
+              onClick={() => setShowPremiumDialog(true)}
+            />
           </DialogTitle>
         </DialogHeader>
         
@@ -102,6 +143,33 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
               </div>
             ) : (
               <div className="divide-y divide-gray-700">
+                {/* Premium Players */}
+                {filteredPremiumPlayers.map((player) => (
+                  <div
+                    key={`premium-${player.id}`}
+                    className="p-3 flex items-center justify-between hover:bg-gray-700 transition-colors"
+                    data-testid={`premium-player-item-${player.id}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-orange-500" />
+                        <span className="font-medium text-orange-400">
+                          {player.playerName}
+                        </span>
+                        <span className="text-sm text-orange-600">
+                          Premium
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-orange-400">
+                        Premium User
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* Regular Players */}
                 {filteredPlayers.map((player) => (
                   <div
                     key={player.id}
@@ -157,11 +225,54 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           {/* Results Summary */}
           {!isLoading && (
             <div className="text-sm text-gray-400 text-center">
-              Showing {filteredPlayers.length} of {players.length} players
+              Showing {filteredPlayers.length + filteredPremiumPlayers.length} players 
+              ({filteredPlayers.length} regular, {filteredPremiumPlayers.length} premium)
             </div>
           )}
         </div>
       </DialogContent>
+      
+      {/* Premium Player Creation Dialog */}
+      <Dialog open={showPremiumDialog} onOpenChange={setShowPremiumDialog}>
+        <DialogContent className="bg-gray-900 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Plus className="w-4 h-4 text-orange-400" />
+              Create Premium Player Profile
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">
+                Player Name
+              </label>
+              <Input
+                value={premiumPlayerName}
+                onChange={(e) => setPremiumPlayerName(e.target.value)}
+                placeholder="Enter premium player name..."
+                className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                onKeyPress={(e) => e.key === 'Enter' && createPremiumPlayer()}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                onClick={() => setShowPremiumDialog(false)}
+                variant="outline"
+                className="border-gray-600 text-gray-400 hover:bg-gray-800"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={createPremiumPlayer}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+                disabled={!premiumPlayerName.trim()}
+              >
+                Create Premium Player
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
