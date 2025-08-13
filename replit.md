@@ -29,6 +29,11 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Integrated external player API** - Connected to superinfotest.replit.app for real-time player tracking data
 ✓ **Removed fake player data** - System now uses only authentic external API data, no mock or placeholder content
 ✓ **Enhanced API error handling** - Clear messaging when external API has no player data yet
+✓ **Implemented searchable player selection system** - Replaced basic textarea with interactive PlayerSearchSelector component in BaseModal
+✓ **Added online/offline status indicators** - Green dots for online players, grey for offline players with session count display
+✓ **Connected to live player database** - Successfully integrated with external API serving 525 tracked players from user's actual database
+✓ **Enhanced enemy base creation workflow** - Search functionality with add/remove player capabilities and visual status displays
+✓ **Fixed BaseModal export and coordinate issues** - Resolved getGridCoordinate function and proper React component exports
 
 ## Current Features
 
