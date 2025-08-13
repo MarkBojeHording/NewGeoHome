@@ -57,7 +57,10 @@ export default function ActionReportModal({
   }, [editingReport])
 
   const createReportMutation = useMutation({
-    mutationFn: (reportData) => apiRequest("/api/reports", "POST", reportData),
+    mutationFn: async (reportData) => {
+      const response = await apiRequest("POST", "/api/reports", reportData)
+      return response
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
       onClose()
