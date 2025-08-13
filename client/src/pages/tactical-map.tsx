@@ -295,13 +295,13 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
         {/* Online player count display - only show for enemy bases with players */}
         {location.type.startsWith("enemy") && onlinePlayerCount > 0 && (
           <div 
-            className="absolute text-xs font-bold text-green-400 bg-black/80 rounded-full w-4 h-4 flex items-center justify-center border border-green-400/50"
+            className="absolute text-xs font-bold text-green-400 bg-black/80 rounded-full w-3 h-3 flex items-center justify-center border border-green-400/50"
             style={{
-              left: "-10px",
+              left: "-8px",
               top: "50%",
               transform: "translateY(-50%)",
               zIndex: 10,
-              fontSize: "10px"
+              fontSize: "9px"
             }}
           >
             {onlinePlayerCount}
