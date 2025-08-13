@@ -428,7 +428,7 @@ const ContextMenu = ({ x, y, onAddBase }) => (
   </div>
 )
 
-const ActionMenu = ({ location, style, onClose, onAction, onOpenReport, onOpenBaseReport }) => {
+const ActionMenu = ({ location, style, onClose, onAction, onOpenBaseReport }) => {
   const isFriendly = location.type.startsWith('friendly')
   
   if (isFriendly) {
@@ -678,7 +678,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             zIndex: 30
           }}
           onClose={() => setShowActionMenu(false)}
-          onOpenReport={onOpenReport}
           onOpenBaseReport={onOpenBaseReport}
           onAction={(action) => {
             console.log(action)
