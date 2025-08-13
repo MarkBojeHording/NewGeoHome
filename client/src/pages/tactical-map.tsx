@@ -954,6 +954,27 @@ export default function InteractiveTacticalMap() {
   }, [])
 
   
+  // Report Modal Handlers
+  const onOpenReport = useCallback((location) => {
+    setBaseReportData({
+      baseId: location.id,
+      baseName: location.name,
+      baseCoords: location.coordinates,
+      baseType: location.type
+    })
+    setShowBaseReportModal(true)
+  }, [])
+
+  const onOpenBaseReport = useCallback((location) => {
+    setBaseReportData({
+      baseId: location.id,
+      baseName: location.name,
+      baseCoords: location.coordinates,
+      baseType: location.type
+    })
+    setShowBaseReportModal(true)
+  }, [])
+
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
   const { zoom, setZoom, pan, isDragging, setIsDragging, isDraggingRef, dragStartRef, hasDraggedRef } = useMapInteraction()
