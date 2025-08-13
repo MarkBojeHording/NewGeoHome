@@ -89,13 +89,17 @@ export default function ActionReportModal({
       reportType: "base",
       locationName: baseName || baseCoords || "",
       locationCoords: baseCoords || "",
+      baseId: baseId || "", // Link to specific base ID
       content: {
         type: formData.type,
         reportTime: formData.reportTime,
         enemyPlayers: formData.enemyPlayers,
         friendlyPlayers: formData.friendlyPlayers,
         notes: formData.notes,
-        reportOutcome: formData.reportOutcome
+        reportOutcome: formData.reportOutcome,
+        baseId: baseId || "", // Also store in content for backup
+        baseName: baseName || "",
+        baseCoords: baseCoords || ""
       },
       status: "active"
     }

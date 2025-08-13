@@ -23,6 +23,8 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Fixed multiple bases coordinate handling** - Resolved coordinate calculation bug between BaseModal and tactical map
 ✓ **Added manual coordinate editing** - Users can click and edit coordinates independently from icon position
 ✓ **Enhanced duplicate base naming** - Multiple bases in same grid square properly numbered (A1, A1(2), A1(3))
+✓ **Implemented robust base ID system** - Each base gets unique ID for reliable report tracking and data relationships
+✓ **Enhanced report-base linking** - Reports now linked via base IDs instead of coordinates/names for better data integrity
 
 ## Current Features
 

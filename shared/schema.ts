@@ -24,6 +24,7 @@ export const reports = pgTable("reports", {
   reportType: text("report_type").notNull(), // 'general', 'base', 'raid', etc.
   locationName: text("location_name"), // Associated location/base name
   locationCoords: text("location_coords"), // Grid coordinates like "A1"
+  baseId: text("base_id"), // Unique base identifier for reliable linking
   content: jsonb("content").notNull(), // Flexible JSON structure for different report types
   tags: text("tags").array(), // Array of tags for categorization
   priority: text("priority").default("medium"), // low, medium, high, critical
