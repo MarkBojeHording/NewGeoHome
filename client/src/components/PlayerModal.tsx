@@ -85,7 +85,19 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
               <div className="p-4 text-center text-gray-400">Loading players...</div>
             ) : filteredPlayers.length === 0 ? (
               <div className="p-4 text-center text-gray-400">
-                {players.length === 0 ? 'No players found' : 'No players match your search'}
+                {players.length === 0 ? (
+                  <div className="space-y-2">
+                    <div>No player data available from external API</div>
+                    <div className="text-sm text-gray-500">
+                      API connection successful but no players recorded yet
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      Visit superinfotest.replit.app to populate player data
+                    </div>
+                  </div>
+                ) : (
+                  'No players match your search'
+                )}
               </div>
             ) : (
               <div className="divide-y divide-gray-700">
