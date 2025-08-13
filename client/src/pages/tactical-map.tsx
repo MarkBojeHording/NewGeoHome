@@ -1293,9 +1293,9 @@ export default function InteractiveTacticalMap() {
         <ReportModal
           isVisible={showReportModal}
           onClose={() => setShowReportModal(false)}
-          locationName={reportModalData.locationName}
-          locationCoords={reportModalData.locationCoords}
-          reportType={reportModalData.reportType}
+          locationName={reportModalData.locationName || ''}
+          locationCoords={reportModalData.locationCoords || ''}
+          reportType={reportModalData.reportType || 'general'}
         />
       </div>
     </div>
