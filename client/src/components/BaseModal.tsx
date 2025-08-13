@@ -92,22 +92,36 @@ const BaseReportsList = ({ baseName, baseCoords, onEditReport }) => {
 
   return (
     <div className="space-y-2">
-      {baseReports.map(report => (
-        <div key={report.id} className="flex items-center justify-between bg-gray-700 p-2 rounded">
-          <div className="flex items-center space-x-2 flex-1 min-w-0">
-            <FileText className="h-4 w-4 text-green-400 flex-shrink-0" />
-            <span className="text-white text-sm truncate">
-              {new Date(report.createdAt).toLocaleDateString()} - {report.content?.type || report.reportType} - {report.status}
-            </span>
+      {baseReports.map(report => {
+        // Format time as HH:MM
+        const reportDate = new Date(report.createdAt)
+        const timeString = reportDate.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: false 
+        })
+        
+        // Remove "Report" from title and clean up type display
+        const cleanTitle = report.title.replace(/\s+Report$/i, '')
+        const reportType = report.content?.type ? report.content.type.replace('report-', '') : report.reportType
+        
+        return (
+          <div key={report.id} className="flex items-center justify-between bg-gray-700 p-2 rounded">
+            <div className="flex items-center space-x-2 flex-1 min-w-0">
+              <FileText className="h-4 w-4 text-green-400 flex-shrink-0" />
+              <span className="text-white text-sm truncate">
+                {timeString} - {reportType}
+              </span>
+            </div>
+            <button
+              onClick={() => onEditReport(report)}
+              className="text-blue-400 hover:text-blue-300 p-1 flex-shrink-0"
+            >
+              <Edit className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            onClick={() => onEditReport(report)}
-            className="text-blue-400 hover:text-blue-300 p-1 flex-shrink-0"
-          >
-            <Edit className="h-4 w-4" />
-          </button>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
