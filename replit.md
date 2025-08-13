@@ -18,6 +18,8 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Enhanced report display** - Reports now show full category names (PvP Encounter, Raid Activity, etc.)
 ✓ **Added content indicators** - Camera and note icons show dark gray until content exists in those categories
 ✓ **Improved layout formatting** - Time shows as HH:MM, removed "Report" from titles, removed "active" status
+✓ **Implemented cascade deletion** - When bases are deleted from map, all associated reports are automatically removed from database
+✓ **Report button disabling** - Report functionality disabled until base is saved, preventing errors
 
 ## Current Features
 

@@ -1053,8 +1053,34 @@ export default function InteractiveTacticalMap() {
     setShowAdvancedPanel(false)
   }, [])
   
-  const handleDeleteLocation = useCallback(() => {
+  const handleDeleteLocation = useCallback(async () => {
     if (editingLocation) {
+      // Delete associated reports from database if this is a base with a name
+      if (editingLocation.name) {
+        try {
+          // Fetch all reports for this base
+          const response = await fetch('/api/reports')
+          const allReports = await response.json()
+          
+          // Find reports that belong to this base
+          const reportsToDelete = allReports.filter(report => 
+            report.locationName === editingLocation.name ||
+            report.locationCoords === editingLocation.name ||
+            (report.content?.baseName === editingLocation.name) ||
+            (report.content?.baseCoords === editingLocation.name)
+          )
+          
+          // Delete each report
+          for (const report of reportsToDelete) {
+            await fetch(`/api/reports/${report.id}`, {
+              method: 'DELETE'
+            })
+          }
+        } catch (error) {
+          console.error('Error deleting associated reports:', error)
+        }
+      }
+      
       setLocations(prev => prev.filter(loc => loc.id !== editingLocation.id))
       setSelectedLocation(null)
       setLocationTimers(prev => {
