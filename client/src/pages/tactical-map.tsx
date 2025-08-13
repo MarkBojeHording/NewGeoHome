@@ -1322,6 +1322,7 @@ export default function InteractiveTacticalMap() {
             onSave={handleSaveBase}
             onCancel={handleCancel}
             onDelete={handleDeleteLocation}
+            onOpenBaseReport={onOpenBaseReport}
             editingReport={editingReport}
             reportLibrary={reportLibrary}
             addToReportLibrary={addToReportLibrary}

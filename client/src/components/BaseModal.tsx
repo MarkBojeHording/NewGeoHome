@@ -91,7 +91,8 @@ const BaseModal = ({
   locations,
   onSave,
   onCancel,
-  onDelete
+  onDelete,
+  onOpenBaseReport,
 }) => {
   const [formData, setFormData] = useState({
     type: modalType === 'friendly' ? 'friendly-main' : modalType === 'enemy' ? 'enemy-small' : 'report-pvp',
