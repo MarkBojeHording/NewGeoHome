@@ -119,9 +119,15 @@ export default function ActionReportModal({
           <X className="h-5 w-5" />
         </button>
         
-        <h3 className="text-lg font-bold text-white mb-4">
+        <h3 className="text-lg font-bold text-white mb-2">
           {editingReport ? "Edit Base Report" : "Create Base Report"}
         </h3>
+        
+        {baseId && (
+          <div className="text-xs text-gray-400 font-mono mb-4 bg-gray-700 px-2 py-1 rounded border border-gray-600">
+            Tagging to Base ID: {baseId}
+          </div>
+        )}
         
         <div>
           <div className="flex gap-4 items-end mb-4">
