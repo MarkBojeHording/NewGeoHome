@@ -670,7 +670,50 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-x-10 flex gap-3">
       {/* Rectangle - smaller size for enemy base preview */}
       <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none">
-        <div className="w-52 h-28 bg-gray-800 border border-gray-600 shadow-lg"></div>
+        <div className="w-52 h-28 bg-gray-800 border border-gray-600 shadow-lg">
+          {/* Player snapshot grid - 2 columns x 5 rows */}
+          <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
+            {(() => {
+              // Get players from the React Query hook data
+              const onlinePlayers = players.filter(p => p.isOnline) || [];
+              const offlinePlayers = players.filter(p => !p.isOnline) || [];
+              
+              // Combine in priority order: online first, then offline
+              const prioritizedPlayers = [
+                ...onlinePlayers.slice(0, 10), // Take up to 10 online players first
+                ...offlinePlayers.slice(0, Math.max(0, 10 - onlinePlayers.length)) // Fill remaining with offline
+              ].slice(0, 10);
+              
+              // Fill remaining slots with empty boxes
+              const slots = Array(10).fill(null).map((_, index) => 
+                prioritizedPlayers[index] || null
+              );
+              
+              return slots.map((player, index) => (
+                <div 
+                  key={index}
+                  className={`flex items-center justify-center text-xs font-medium border-r border-b border-gray-700 ${
+                    index % 2 === 1 ? 'border-r-0' : ''
+                  } ${
+                    index >= 8 ? 'border-b-0' : ''
+                  } ${
+                    player 
+                      ? player.isOnline 
+                        ? 'bg-green-900 text-green-300' 
+                        : 'bg-gray-700 text-gray-400'
+                      : 'bg-gray-800'
+                  }`}
+                >
+                  {player ? (
+                    <span className="truncate px-1" title={player.playerName}>
+                      {player.playerName.length > 8 ? player.playerName.slice(0, 8) : player.playerName}
+                    </span>
+                  ) : null}
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
       </div>
       
           <button className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center hover:from-blue-400 hover:to-blue-600 transition-all duration-200 border-2 border-blue-300 shadow-lg transform hover:scale-105" title="Linked Bases">
