@@ -258,7 +258,7 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
   )
 }
 
-const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, getOwnedBases, onOpenReport }) => {
+const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, getOwnedBases, onOpenReport, onOpenBaseReport }) => {
   const ownedBases = getOwnedBases(location.name)
   
   return (
@@ -428,7 +428,7 @@ const ContextMenu = ({ x, y, onAddBase }) => (
   </div>
 )
 
-const ActionMenu = ({ location, style, onClose, onAction, onOpenReport }) => {
+const ActionMenu = ({ location, style, onClose, onAction, onOpenReport, onOpenBaseReport }) => {
   const isFriendly = location.type.startsWith('friendly')
   
   if (isFriendly) {
@@ -679,6 +679,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           }}
           onClose={() => setShowActionMenu(false)}
           onOpenReport={onOpenReport}
+          onOpenBaseReport={onOpenBaseReport}
           onAction={(action) => {
             console.log(action)
             setShowActionMenu(false)
@@ -686,13 +687,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               setShowDecayingMenu(true)
             }
              else if (action === 'Write report') {
-              setBaseReportData({
-                baseId: location.id,
-                baseName: location.name,
-                baseCoords: location.coordinates,
-                baseType: location.type
-              })
-              setShowBaseReportModal(true)
+              onOpenBaseReport(location)
             }
             else if (action === 'Add Base Report') {
               setBaseReportData({
@@ -1265,6 +1260,15 @@ export default function InteractiveTacticalMap() {
                       reportType: location.type.startsWith('enemy') ? 'base' : 'general'
                     })
                     setShowReportModal(true)
+                  }}
+                  onOpenBaseReport={(location) => {
+                    setBaseReportData({
+                      baseId: location.id,
+                      baseName: location.name,
+                      baseCoords: location.coordinates,
+                      baseType: location.type
+                    })
+                    setShowBaseReportModal(true)
                   }}
                 />
               ))}
