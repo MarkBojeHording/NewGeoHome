@@ -45,7 +45,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[800px] h-[700px] bg-gray-900 border-gray-700">
+      <DialogContent className="w-[1200px] h-[900px] bg-gray-900 border-gray-700">
         <DialogHeader>
           <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -79,7 +79,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           </div>
 
           {/* Player List */}
-          <div className="h-[500px] overflow-y-auto bg-gray-800 rounded-lg border border-gray-600">
+          <div className="h-[750px] overflow-y-auto bg-gray-800 rounded-lg border border-gray-600">
             {isLoading ? (
               <div className="p-4 text-center text-gray-400">Loading players...</div>
             ) : filteredPlayers.length === 0 ? (
