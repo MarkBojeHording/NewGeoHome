@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Search, User } from 'lucide-react';
+import { Search, User, Plus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import type { ExternalPlayer } from '@shared/schema';
 
@@ -51,6 +51,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
             <User className="w-5 h-5" />
             Player Management
+            <Plus className="w-4 h-4 text-orange-400" />
           </DialogTitle>
         </DialogHeader>
         

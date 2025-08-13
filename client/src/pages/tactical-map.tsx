@@ -1270,9 +1270,8 @@ export default function InteractiveTacticalMap() {
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     {['Logs', 'Progression', 'Players', 'Teams', 'Bot Control', 'Turret Control'].map((btn) => (
-                      <button key={btn} onClick={() => btn === 'Players' ? setShowPlayerModal(true) : undefined} data-testid={btn === 'Players' ? 'button-open-player-modal' : undefined} className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl flex items-center">
+                      <button key={btn} onClick={() => btn === 'Players' ? setShowPlayerModal(true) : undefined} data-testid={btn === 'Players' ? 'button-open-player-modal' : undefined} className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl">
                         {btn}
-                        {btn === 'Players' && <Plus className="w-3 h-3 text-orange-400 ml-1" />}
                       </button>
                     ))}
                   </div>

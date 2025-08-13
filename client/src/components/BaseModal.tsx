@@ -126,6 +126,8 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
 
   // Check if we have any results
   const hasResults = filteredPlayers.length > 0 || filteredPremiumPlayers.length > 0
+  
+
 
   const addPlayer = (playerName) => {
     const newPlayers = [...selectedPlayersList, playerName].join(', ')
