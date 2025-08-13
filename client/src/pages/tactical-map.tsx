@@ -298,7 +298,7 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
             className="absolute text-xs font-bold text-green-400 bg-black/80 rounded-full w-3 h-3 flex items-center justify-center border border-green-400/50"
             style={{
               left: "-10px",
-              top: "10%",
+              top: "0%",
               transform: "translateY(-50%)",
               zIndex: 10,
               fontSize: "9px"
