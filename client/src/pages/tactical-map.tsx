@@ -656,7 +656,7 @@ const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
   </div>
 )
 
-const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport }) => {
+const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport, players }) => {
   const [showActionMenu, setShowActionMenu] = useState(false)
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
@@ -1431,6 +1431,7 @@ export default function InteractiveTacticalMap() {
               locationTimers={locationTimers}
               onAddTimer={handleAddTimer}
               onOpenReport={onOpenBaseReport}
+              players={players || []}
               onOpenBaseReport={(location) => {
                 setBaseReportData({
                   baseId: location.id,
