@@ -6,6 +6,8 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Fixed critical "Write report" functionality** - Resolved `setModalType is not defined` error that completely broke report creation
 ✓ **Restored ActionMenu functionality** - Properly threaded `onOpenReport` props through LocationMarker and SelectedLocationPanel components  
 ✓ **Enhanced report system reliability** - Report modal now opens correctly from both map markers and selected location panel
+✓ **Created BaseReportModal system** - Added separate base report functionality for friendly bases via ActionMenu
+✓ **Maintained system separation** - Right-click "Report" creates map icons using existing BaseModal, base reports are separate data-only reports
 ✓ **Maintained existing functionality** - Zero changes to existing code, only additions and bug fixes as requested
 
 ## Current Features
