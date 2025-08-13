@@ -428,7 +428,7 @@ const BaseModal = ({
         type: editingLocation.type,
         notes: editingLocation.notes || '',
         oldestTC: editingLocation.oldestTC || 0,
-        players: '',
+        players: editingLocation.players || '',
         upkeep: editingLocation.upkeep || { wood: 0, stone: 0, metal: 0, hqm: 0 },
         reportTime: editingLocation.time || '',
         reportOutcome: editingLocation.outcome || 'neutral',

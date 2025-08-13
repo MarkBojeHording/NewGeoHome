@@ -661,6 +661,12 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
   
+  // Fetch player base tags for this specific base
+  const { data: playerBaseTags = [] } = useQuery({
+    queryKey: ['/api/player-base-tags/base', location.id],
+    enabled: !!location.id && !location.type.startsWith('report')
+  })
+  
   return (
     <div 
       className="absolute bottom-0 left-0 bg-gray-900 bg-opacity-95 backdrop-blur-sm rounded-tr-lg shadow-2xl p-6 flex gap-5 border-t border-r border-gray-700 z-20 transition-all duration-300 ease-out"
@@ -674,9 +680,13 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           {/* Player snapshot grid - 2 columns x 5 rows */}
           <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
             {(() => {
-              // Get players from the React Query hook data
-              const onlinePlayers = players.filter(p => p.isOnline) || [];
-              const offlinePlayers = players.filter(p => !p.isOnline) || [];
+              // Filter players to only show those tagged to this specific base
+              const taggedPlayerNames = playerBaseTags.map(tag => tag.playerName) || [];
+              const taggedPlayers = players.filter(p => taggedPlayerNames.includes(p.playerName));
+              
+              // Get online and offline players from tagged players only
+              const onlinePlayers = taggedPlayers.filter(p => p.isOnline) || [];
+              const offlinePlayers = taggedPlayers.filter(p => !p.isOnline) || [];
               
               // Combine in priority order: online first, then offline
               const prioritizedPlayers = [
