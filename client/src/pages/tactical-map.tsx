@@ -300,7 +300,7 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
               left: "-8px",
               top: "0%",
               transform: "translateY(-50%)",
-              zIndex: 10,
+              zIndex: 1,
               fontSize: "9px"
             }}
           >
