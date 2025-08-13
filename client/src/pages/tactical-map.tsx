@@ -667,10 +667,10 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       style={{ width: '30%', minWidth: '350px', maxWidth: '450px', minHeight: '160px' }}
     >
       {!location.type.startsWith('report') && (
-        <div className="absolute -top-7 left-1/2 transform -translate-x-1/2 flex gap-3">
-      {/* Rectangle in the middle */}
+        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 flex gap-3">
+      {/* Rectangle in the middle - bigger and moved down */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-32 h-20 bg-gray-800 border border-gray-600 shadow-lg"></div>
+        <div className="w-48 h-32 bg-gray-800 border border-gray-600 shadow-lg"></div>
       </div>
       
           <button className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center hover:from-blue-400 hover:to-blue-600 transition-all duration-200 border-2 border-blue-300 shadow-lg transform hover:scale-105" title="Linked Bases">
