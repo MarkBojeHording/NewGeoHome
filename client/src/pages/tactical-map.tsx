@@ -52,17 +52,17 @@ const DECAY_TIMES = {
 }
 
 // ============= UTILITY FUNCTIONS =============
-const getColor = (type) => {
+const getColor = (type: string) => {
   if (type.startsWith('report')) return 'text-purple-600'
   return type.startsWith('friendly') ? 'text-green-600' : 'text-red-600'
 }
 
-const getBorderColor = (type) => {
+const getBorderColor = (type: string) => {
   if (type.startsWith('report')) return 'border-purple-500'
   return type.startsWith('friendly') ? 'border-green-500' : 'border-red-500'
 }
 
-const getGridCoordinate = (x, y, existingLocations = [], excludeId = null) => {
+const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], excludeId: string | null = null) => {
   const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
   const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
   const clampedCol = Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1)
@@ -913,7 +913,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
 
 // ============= MAIN COMPONENT =============
 export default function InteractiveTacticalMap() {
-  const [locations, setLocations] = useState([])
+  const [locations, setLocations] = useState<any[]>([])
   const [selectedLocation, setSelectedLocation] = useState(null)
   const [contextMenu, setContextMenu] = useState({ x: 0, y: 0, visible: false })
   const [newBaseModal, setNewBaseModal] = useState({ x: 0, y: 0, visible: false })
@@ -922,7 +922,7 @@ export default function InteractiveTacticalMap() {
   const [editingReport, setEditingReport] = useState(null)
   
   // Central Report Library - Hidden storage for all reports
-  const [reportLibrary, setReportLibrary] = useState([])
+  const [reportLibrary, setReportLibrary] = useState<any[]>([])
   const [reportCounter, setReportCounter] = useState(1)
   const [showReportPanel, setShowReportPanel] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)

@@ -40,13 +40,13 @@ const ICON_MAP = {
   "report-bradley": Shield
 }
 
-const getColor = (type) => {
+const getColor = (type: string) => {
   if (type.startsWith("friendly")) return "text-green-400"
   if (type.startsWith("enemy")) return "text-red-400"
   return "text-yellow-400"
 }
 
-const getIcon = (type) => {
+const getIcon = (type: string) => {
   const Icon = ICON_MAP[type] || MapPin
   return <Icon className="h-3 w-3" />
 }
