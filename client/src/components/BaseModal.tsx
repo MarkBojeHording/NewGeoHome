@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } from "lucide-react"
+import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit } from "lucide-react"
 import { RocketCalculatorSection } from './RocketCalculator'
 
 // ============= CONSTANTS =============
@@ -774,13 +774,58 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               {/* List of reports for this base */}
               <div className="flex-1 overflow-y-auto mb-4">
                 <div className="space-y-2">
-                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
-                  {/* Reports will be listed here */}
+                  {/* Mock reports - replace with real data later */}
+                  {[
+                    { id: 1, time: "14:30", type: "PVP General", hasNotes: true, hasImages: false },
+                    { id: 2, time: "16:45", type: "Spotted Enemy", hasNotes: false, hasImages: true },
+                    { id: 3, time: "18:20", type: "Countered Raid", hasNotes: true, hasImages: true }
+                  ].map((report) => (
+                    <div key={report.id} className="bg-gray-700 rounded-lg p-3 border border-gray-600 hover:border-gray-500 transition-colors">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-medium text-sm">{report.time}</span>
+                          <div className="flex items-center gap-1">
+                            <FileText 
+                              className={`h-3 w-3 ${report.hasNotes ? 'text-yellow-400' : 'text-gray-500'}`} 
+                            />
+                            <Image 
+                              className={`h-3 w-3 ${report.hasImages ? 'text-blue-400' : 'text-gray-500'}`} 
+                            />
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            // Open edit modal for this report
+                            if (onOpenBaseReport) {
+                              onOpenBaseReport(editingLocation)
+                            }
+                          }}
+                          className="text-gray-400 hover:text-gray-200 transition-colors"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </button>
+                      </div>
+                      <div className="text-gray-300 text-xs">{report.type}</div>
+                    </div>
+                  ))}
+                  
+                  {/* Show message if no reports exist */}
+                  {false && (
+                    <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
+                  )}
+
                 </div>
               </div>
               
               {/* Create Report Button */}
-              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+              <button 
+                onClick={() => {
+                  if (onOpenBaseReport) {
+                    onOpenBaseReport(editingLocation)
+                  }
+                }}
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors"
+              >
                 Create New Report
               </button>
             </div>
