@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit, Camera, StickyNote, Search, Plus, Minus } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
+import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
 import type { ExternalPlayer } from '@shared/schema'
 
@@ -103,20 +104,53 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
     queryKey: ['/api/players']
   })
 
+  // Fetch premium players from our database
+  const { data: premiumPlayers = [] } = useQuery({
+    queryKey: ['/api/premium-players']
+  })
+
   // Parse selected players from comma-separated string
   const selectedPlayersList = selectedPlayers ? selectedPlayers.split(',').map(p => p.trim()).filter(p => p) : []
   
-  // Filter players based on search term
+  // Filter regular players based on search term
   const filteredPlayers = players.filter(player => 
     player.playerName.toLowerCase().includes(searchTerm.toLowerCase()) &&
     !selectedPlayersList.includes(player.playerName)
   )
+
+  // Filter premium players based on search term
+  const filteredPremiumPlayers = premiumPlayers.filter(player => 
+    player.playerName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    !selectedPlayersList.includes(player.playerName)
+  )
+
+  // Check if we have any results
+  const hasResults = filteredPlayers.length > 0 || filteredPremiumPlayers.length > 0
 
   const addPlayer = (playerName) => {
     const newPlayers = [...selectedPlayersList, playerName].join(', ')
     onPlayersChange(newPlayers)
     setSearchTerm('')
     setShowDropdown(false)
+  }
+
+  const createPremiumPlayer = async () => {
+    if (!searchTerm.trim()) return
+    
+    try {
+      await apiRequest('/api/premium-players', {
+        method: 'POST',
+        body: { playerName: searchTerm.trim() }
+      })
+      
+      // Add the player to the selection
+      addPlayer(searchTerm.trim())
+      
+      // Invalidate premium players cache to refresh the data
+      queryClient.invalidateQueries({ queryKey: ['/api/premium-players'] })
+    } catch (error) {
+      console.error('Failed to create premium player:', error)
+    }
   }
 
   const removePlayer = (playerName) => {
@@ -144,11 +178,12 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
         </div>
         
         {/* Search Results Dropdown */}
-        {showDropdown && searchTerm && filteredPlayers.length > 0 && (
+        {showDropdown && searchTerm && (
           <div className="absolute top-full left-2 right-2 mt-1 bg-gray-800 border border-gray-600 rounded max-h-32 overflow-y-auto z-50">
+            {/* Regular Players */}
             {filteredPlayers.slice(0, 10).map((player) => (
               <button
-                key={player.id}
+                key={`regular-${player.id}`}
                 onClick={() => addPlayer(player.playerName)}
                 className="w-full text-left px-2 py-1 hover:bg-gray-700 flex items-center gap-2 text-sm"
               >
@@ -161,6 +196,36 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
                 </span>
               </button>
             ))}
+            
+            {/* Premium Players */}
+            {filteredPremiumPlayers.slice(0, 10).map((player) => (
+              <button
+                key={`premium-${player.id}`}
+                onClick={() => addPlayer(player.playerName)}
+                className="w-full text-left px-2 py-1 hover:bg-gray-700 flex items-center gap-2 text-sm"
+              >
+                <div className="w-2 h-2 rounded-full bg-orange-500" />
+                <span className="text-orange-400">
+                  {player.playerName}
+                </span>
+                <span className="text-xs text-orange-600">
+                  (Premium)
+                </span>
+              </button>
+            ))}
+            
+            {/* Create Premium Profile Option */}
+            {!hasResults && searchTerm.trim() && (
+              <button
+                onClick={createPremiumPlayer}
+                className="w-full text-left px-2 py-1 hover:bg-gray-700 flex items-center gap-2 text-sm border-t border-gray-600"
+              >
+                <Plus className="w-3 h-3 text-orange-400" />
+                <span className="text-orange-400">
+                  Create Premium profile: "{searchTerm.trim()}"
+                </span>
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -173,14 +238,33 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
           <div className="space-y-1">
             {selectedPlayersList.map((playerName, index) => {
               const player = players.find(p => p.playerName === playerName)
+              const premiumPlayer = premiumPlayers.find(p => p.playerName === playerName)
+              const isPremium = !!premiumPlayer
+              
               return (
                 <div key={index} className="flex items-center justify-between bg-gray-800 rounded px-2 py-1">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${player?.isOnline ? 'bg-green-500' : 'bg-gray-500'}`} />
-                    <span className={`text-sm ${player?.isOnline ? 'text-green-400' : 'text-gray-400'}`}>
+                    <div className={`w-2 h-2 rounded-full ${
+                      isPremium 
+                        ? 'bg-orange-500' 
+                        : player?.isOnline 
+                        ? 'bg-green-500' 
+                        : 'bg-gray-500'
+                    }`} />
+                    <span className={`text-sm ${
+                      isPremium 
+                        ? 'text-orange-400' 
+                        : player?.isOnline 
+                        ? 'text-green-400' 
+                        : 'text-gray-400'
+                    }`}>
                       {playerName}
                     </span>
-                    {player && (
+                    {isPremium ? (
+                      <span className="text-xs text-orange-600">
+                        (Premium)
+                      </span>
+                    ) : player && (
                       <span className="text-xs text-gray-500">
                         ({player.totalSessions} sessions)
                       </span>

@@ -263,9 +263,9 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
 const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport }) => {
   const ownedBases = getOwnedBases(location.name)
 
-  // Calculate online player count for this base
+  // Calculate online player count for this base (regular players only, premium players are always counted as online)
   const onlinePlayerCount = useMemo(() => {
-    if (!location.players || !players.length) return 0
+    if (!location.players) return 0
     
     const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
     return basePlayerNames.filter(playerName => 

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertReportSchema, insertReportTemplateSchema } from "@shared/schema";
+import { insertReportSchema, insertReportTemplateSchema, insertPremiumPlayerSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Reports API routes
@@ -156,7 +156,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Note: Individual player routes removed - using external API for all player data
+  // Premium Players API routes
+  
+  // Get all premium players
+  app.get("/api/premium-players", async (req, res) => {
+    try {
+      const premiumPlayers = await storage.getAllPremiumPlayers();
+      res.json(premiumPlayers);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch premium players" });
+    }
+  });
+
+  // Create premium player
+  app.post("/api/premium-players", async (req, res) => {
+    try {
+      const validatedData = insertPremiumPlayerSchema.parse(req.body);
+      const premiumPlayer = await storage.createPremiumPlayer(validatedData);
+      res.status(201).json(premiumPlayer);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid premium player data" });
+    }
+  });
+
+  // Get premium player by name
+  app.get("/api/premium-players/:name", async (req, res) => {
+    try {
+      const { name } = req.params;
+      const player = await storage.getPremiumPlayerByName(name);
+      if (!player) {
+        return res.status(404).json({ error: "Premium player not found" });
+      }
+      res.json(player);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch premium player" });
+    }
+  });
+
+  // Delete premium player
+  app.delete("/api/premium-players/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deletePremiumPlayer(id);
+      if (!success) {
+        return res.status(404).json({ error: "Premium player not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete premium player" });
+    }
+  });
+
+  // Note: Individual player routes removed - using external API for regular player data
 
   const httpServer = createServer(app);
 

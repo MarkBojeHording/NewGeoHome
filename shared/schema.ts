@@ -52,6 +52,17 @@ export const selectReportTemplateSchema = createInsertSchema(reportTemplates);
 export type InsertReportTemplate = z.infer<typeof insertReportTemplateSchema>;
 export type ReportTemplate = typeof reportTemplates.$inferSelect;
 
+// Premium players table for tracking Battlemetrics premium users
+export const premiumPlayers = pgTable("premium_players", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  playerName: text("player_name").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPremiumPlayerSchema = createInsertSchema(premiumPlayers).omit({ id: true, createdAt: true });
+export type InsertPremiumPlayer = z.infer<typeof insertPremiumPlayerSchema>;
+export type PremiumPlayer = typeof premiumPlayers.$inferSelect;
+
 // External player data structure to match your API
 export const externalPlayerSchema = z.object({
   playerName: z.string(),

@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type Player, type InsertPlayer } from "@shared/schema";
+import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 // modify the interface with any CRUD methods
@@ -23,11 +23,17 @@ export interface IStorage {
   getAllReportTemplates(): Promise<ReportTemplate[]>;
   getReportTemplateByType(reportType: string): Promise<ReportTemplate | undefined>;
   
-  // Note: Player data now comes from external API, no local storage needed
+  // Premium player management methods
+  createPremiumPlayer(player: InsertPremiumPlayer): Promise<PremiumPlayer>;
+  getAllPremiumPlayers(): Promise<PremiumPlayer[]>;
+  getPremiumPlayerByName(playerName: string): Promise<PremiumPlayer | undefined>;
+  deletePremiumPlayer(id: number): Promise<boolean>;
+  
+  // Note: Regular player data comes from external API, no local storage needed
 }
 
 import { db } from "./db";
-import { users, reports, reportTemplates } from "@shared/schema";
+import { users, reports, reportTemplates, premiumPlayers } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
@@ -107,7 +113,30 @@ export class DatabaseStorage implements IStorage {
     return template || undefined;
   }
 
-  // Note: Player methods removed - using external API instead
+  // Premium player management methods
+  async createPremiumPlayer(player: InsertPremiumPlayer): Promise<PremiumPlayer> {
+    const [newPlayer] = await db
+      .insert(premiumPlayers)
+      .values(player)
+      .returning();
+    return newPlayer;
+  }
+
+  async getAllPremiumPlayers(): Promise<PremiumPlayer[]> {
+    return await db.select().from(premiumPlayers);
+  }
+
+  async getPremiumPlayerByName(playerName: string): Promise<PremiumPlayer | undefined> {
+    const [player] = await db.select().from(premiumPlayers).where(eq(premiumPlayers.playerName, playerName));
+    return player || undefined;
+  }
+
+  async deletePremiumPlayer(id: number): Promise<boolean> {
+    const result = await db.delete(premiumPlayers).where(eq(premiumPlayers.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Note: Regular player methods removed - using external API instead
 }
 
 export const storage = new DatabaseStorage();
