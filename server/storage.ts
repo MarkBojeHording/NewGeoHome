@@ -21,7 +21,7 @@ export interface IStorage {
   // Template management methods
   createReportTemplate(template: InsertReportTemplate): Promise<ReportTemplate>;
   getAllReportTemplates(): Promise<ReportTemplate[]>;
-  getReportTemplateByType(reportType: string, baseType?: string): Promise<ReportTemplate | undefined>;
+  getReportTemplateByType(reportType: string): Promise<ReportTemplate | undefined>;
 }
 
 import { db } from "./db";
@@ -84,7 +84,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteReport(id: number): Promise<boolean> {
     const result = await db.delete(reports).where(eq(reports.id, id));
-    return (result.rowCount || 0) > 0;
+    return result.rowCount > 0;
   }
 
   // Template management methods
@@ -100,35 +100,9 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(reportTemplates);
   }
 
-  async getReportTemplateByType(reportType: string, baseType?: string): Promise<ReportTemplate | undefined> {
+  async getReportTemplateByType(reportType: string): Promise<ReportTemplate | undefined> {
     const [template] = await db.select().from(reportTemplates).where(eq(reportTemplates.reportType, reportType));
-    
-    if (!template || reportType !== 'base' || !baseType) {
-      return template || undefined;
-    }
-
-    // Clone the template to avoid modifying the original
-    const filteredTemplate = JSON.parse(JSON.stringify(template));
-    
-    // Filter base report action options based on base type
-    if (filteredTemplate.template?.fields) {
-      filteredTemplate.template.fields = filteredTemplate.template.fields.map((field: any) => {
-        if (field.name === 'action' && field.options) {
-          const allOptions = ["Base Raided", "MLRS'd", "Enemy built in", "We grubbed", "Caught moving loot"];
-          const isEnemy = baseType.startsWith('enemy');
-          const isFriendly = baseType.startsWith('friendly');
-          
-          if (isEnemy) {
-            field.options = ["Base Raided", "MLRS'd", "We grubbed", "Caught moving loot"];
-          } else if (isFriendly) {
-            field.options = ["Base Raided", "MLRS'd", "Enemy built in"];
-          }
-        }
-        return field;
-      });
-    }
-    
-    return filteredTemplate;
+    return template || undefined;
   }
 }
 
