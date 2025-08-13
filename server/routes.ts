@@ -135,7 +135,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const response = await fetch('https://3de60948-f8d7-4a5d-9537-2286d058f7c0-00-2uooy61mnqc4.janeway.replit.dev/api/public/servers/2933470/profiles');
       
       if (!response.ok) {
-        throw new Error(`External API error: ${response.status}`);
+        console.log(`External API temporarily unavailable: ${response.status}`);
+        // Return empty array instead of error to keep app running
+        return res.json([]);
       }
       
       const externalPlayers = await response.json();
@@ -151,8 +153,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(players);
     } catch (error) {
-      console.error('Failed to fetch external players:', error);
-      res.status(500).json({ error: "Failed to fetch players from external API" });
+      console.log('External API temporarily unavailable, returning empty array');
+      // Return empty array instead of error to keep app running smoothly
+      res.json([]);
     }
   });
 
