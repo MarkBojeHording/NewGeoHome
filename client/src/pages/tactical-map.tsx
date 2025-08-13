@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } from 'lucide-react'
 import BaseModal from '../components/BaseModal'
+import ReportLibrary from '../components/ReportLibrary'
 
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
@@ -921,6 +922,7 @@ export default function InteractiveTacticalMap() {
   const [reportCounter, setReportCounter] = useState(1)
   const [showReportPanel, setShowReportPanel] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
+  const [showReportLibrary, setShowReportLibrary] = useState(false)
   
 
   
@@ -1149,8 +1151,16 @@ export default function InteractiveTacticalMap() {
               <div className="bg-gradient-to-b from-gray-500 to-gray-700 p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
-                    {['Logs', 'Progression', 'Players', 'Teams', 'Bot Control', 'Turret Control'].map((btn) => (
-                      <button key={btn} className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl">
+                    {['Logs', 'Progression', 'Players', 'Teams', 'Bot Control', 'Turret Control', 'Report Library'].map((btn) => (
+                      <button 
+                        key={btn} 
+                        onClick={() => btn === 'Report Library' && setShowReportLibrary(true)}
+                        className={`px-4 py-2 bg-gradient-to-b ${
+                          btn === 'Report Library' 
+                            ? 'from-purple-400 to-purple-600 hover:from-purple-300 hover:to-purple-500 border-purple-500' 
+                            : 'from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 border-gray-500'
+                        } text-white font-semibold rounded shadow-lg border transition-all duration-200 hover:shadow-xl`}
+                      >
                         {btn}
                       </button>
                     ))}
