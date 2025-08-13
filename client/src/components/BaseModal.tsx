@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
 import { RocketCalculatorSection } from './RocketCalculator'
 
 // ============= CONSTANTS =============
@@ -65,6 +66,54 @@ const MATERIAL_LABELS = {
 }
 
 
+
+// ============= BASE REPORTS LIST COMPONENT =============
+const BaseReportsList = ({ baseName, baseCoords, onEditReport }) => {
+  const { data: reports = [], isLoading } = useQuery({
+    queryKey: ['/api/reports'],
+    enabled: !!(baseName || baseCoords)
+  })
+
+  // Filter reports for this specific base
+  const baseReports = reports.filter(report => {
+    const matches = report.locationName === baseName || 
+      report.locationCoords === baseCoords ||
+      (report.content?.baseName === baseName) ||
+      (report.content?.baseCoords === baseCoords)
+    
+    console.log('Report matching for base:', { baseName, baseCoords, reportName: report.locationName, reportCoords: report.locationCoords, matches })
+    return matches
+  })
+
+  if (isLoading) {
+    return <div className="text-gray-400 text-sm">Loading reports...</div>
+  }
+
+  if (baseReports.length === 0) {
+    return <div className="text-gray-400 text-sm italic">No reports for this base yet.</div>
+  }
+
+  return (
+    <div className="space-y-2">
+      {baseReports.map(report => (
+        <div key={report.id} className="flex items-center justify-between bg-gray-700 p-2 rounded">
+          <div className="flex items-center space-x-2 flex-1 min-w-0">
+            {report.reportType === 'base' ? <Image className="h-4 w-4 text-blue-400 flex-shrink-0" /> : <FileText className="h-4 w-4 text-green-400 flex-shrink-0" />}
+            <span className="text-white text-sm truncate">
+              {new Date(report.createdAt).toLocaleDateString()} - {report.reportType} - {report.status}
+            </span>
+          </div>
+          <button
+            onClick={() => onEditReport(report)}
+            className="text-blue-400 hover:text-blue-300 p-1 flex-shrink-0"
+          >
+            <Edit className="h-4 w-4" />
+          </button>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 // ============= RAIDED OUT PROMPT COMPONENT =============
 const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
@@ -775,8 +824,18 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               {/* List of reports for this base */}
               <div className="flex-1 overflow-y-auto mb-4">
                 <div className="space-y-2">
-                  {/* Reports will be populated here from real data */}
-                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
+                  <BaseReportsList 
+                    baseName={editingLocation?.name}
+                    baseCoords={editingLocation?.coordinates || 
+                      (editingLocation?.x && editingLocation?.y ? 
+                        `${String.fromCharCode(65 + Math.floor(editingLocation.x / 146))}${Math.floor(editingLocation.y / 146) + 1}` : 
+                        '')}
+                    onEditReport={(report) => {
+                      if (onOpenBaseReport) {
+                        onOpenBaseReport(editingLocation)
+                      }
+                    }}
+                  />
 
                 </div>
               </div>
