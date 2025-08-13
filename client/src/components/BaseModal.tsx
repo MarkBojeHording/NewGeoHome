@@ -74,14 +74,12 @@ const BaseReportsList = ({ baseName, baseCoords, onEditReport }) => {
     enabled: !!(baseName || baseCoords)
   })
 
-  // Filter reports for this specific base
+  // Filter reports for this specific base (bases only have coordinates, no names)
   const baseReports = reports.filter(report => {
-    const matches = report.locationName === baseName || 
-      report.locationCoords === baseCoords ||
-      (report.content?.baseName === baseName) ||
+    const matches = report.locationCoords === baseCoords ||
       (report.content?.baseCoords === baseCoords)
     
-    console.log('Report matching for base:', { baseName, baseCoords, reportName: report.locationName, reportCoords: report.locationCoords, matches })
+    console.log('Report matching for base:', { baseCoords, reportCoords: report.locationCoords, contentCoords: report.content?.baseCoords, matches })
     return matches
   })
 
