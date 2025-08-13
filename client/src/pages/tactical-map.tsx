@@ -1020,8 +1020,14 @@ export default function InteractiveTacticalMap() {
   }, [])
 
   // Fetch player data for online count display
-  const { data: players = [] } = useQuery<ExternalPlayer[]>({
-    queryKey: ['/api/players']
+  const { data: players = [], isError, error } = useQuery<ExternalPlayer[]>({
+    queryKey: ['/api/players'],
+    retry: false, // Don't retry on connection failures
+    refetchOnWindowFocus: false, // Don't refetch when tab gains focus
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    onError: (error) => {
+      console.log('Player API offline - using offline mode')
+    }
   })
 
   const mapRef = useRef(null)
@@ -1195,6 +1201,11 @@ export default function InteractiveTacticalMap() {
         <div className="text-white text-sm font-medium pointer-events-auto">
           Tactical Map
         </div>
+        {isError && (
+          <div className="bg-yellow-600/80 text-white text-xs px-2 py-1 rounded-md pointer-events-auto">
+            Offline Mode - Core features available
+          </div>
+        )}
       </div>
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,

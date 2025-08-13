@@ -48,10 +48,22 @@ export const queryClient = new QueryClient({
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: Infinity,
-      retry: false,
+      retry: (failureCount, error) => {
+        // Don't retry network errors - allow offline functionality
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+          return false;
+        }
+        return failureCount < 2;
+      },
     },
     mutations: {
-      retry: false,
+      retry: (failureCount, error) => {
+        // Don't retry network errors for mutations
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+          return false;
+        }
+        return failureCount < 1;
+      },
     },
   },
 });
