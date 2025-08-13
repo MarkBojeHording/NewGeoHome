@@ -66,6 +66,33 @@ const MATERIAL_LABELS = {
   hqm: "HQM"
 }
 
+// Grid configuration for coordinate calculation
+const GRID_CONFIG = {
+  COLS: 32,
+  ROWS: 24,
+  CELL_WIDTH_PERCENT: 3.125,
+  CELL_HEIGHT_PERCENT: 4.167
+}
+
+// Generate grid coordinate from x,y position
+const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], excludeId: string | null = null) => {
+  const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
+  const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
+  const clampedCol = Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1)
+  const clampedRow = Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
+  const letter = clampedCol < 26 ? String.fromCharCode(65 + clampedCol) : `A${String.fromCharCode(65 + clampedCol - 26)}`
+  const number = clampedRow + 1
+  const baseCoord = `${letter}${number}`
+  
+  const duplicates = existingLocations.filter(loc => {
+    if (excludeId && loc.id === excludeId) return false
+    const locBase = loc.name.split('(')[0]
+    return locBase === baseCoord
+  })
+  
+  return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
+}
+
 // ============= PLAYER SEARCH SELECTOR COMPONENT =============
 const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) => {
   const [searchTerm, setSearchTerm] = useState('')
