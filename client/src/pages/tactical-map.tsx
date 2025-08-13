@@ -664,7 +664,8 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
   // Fetch player base tags for this specific base
   const { data: playerBaseTags = [] } = useQuery({
     queryKey: ['/api/player-base-tags/base', location.id],
-    enabled: !!location.id && !location.type.startsWith('report')
+    enabled: !!location.id && !location.type.startsWith('report'),
+    staleTime: 0 // Always refetch to get latest data
   })
   
   return (
@@ -680,10 +681,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           {/* Player snapshot grid - 2 columns x 5 rows */}
           <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
             {(() => {
-              // Debug: log data to see what we're working with
-              console.log('Location ID:', location.id);
-              console.log('Player base tags:', playerBaseTags);
-              console.log('Available players:', players.length);
+              // Show players tagged to this specific base
               
               // Filter players to only show those tagged to this specific base
               const taggedPlayerNames = playerBaseTags.map(tag => tag.playerName) || [];

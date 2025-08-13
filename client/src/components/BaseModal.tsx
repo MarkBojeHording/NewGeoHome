@@ -541,6 +541,9 @@ const BaseModal = ({
             console.error(`Failed to create player base tag for ${playerName}:`, error)
           }
         }
+        
+        // Invalidate cache for this base's player tags
+        queryClient.invalidateQueries({ queryKey: ['/api/player-base-tags/base', baseId] })
       }
       
       // Execute tagging asynchronously (don't block base save)
