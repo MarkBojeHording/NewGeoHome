@@ -128,64 +128,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Players API routes
   
-  // Get all players
+  // Get all players from external API
   app.get("/api/players", async (req, res) => {
     try {
-      const players = await storage.getAllPlayers();
+      // Fetch from your external API
+      const response = await fetch('https://YOUR-REPL-NAME.replit.app/api/public/servers/2933470/profiles');
+      
+      if (!response.ok) {
+        throw new Error(`External API error: ${response.status}`);
+      }
+      
+      const externalPlayers = await response.json();
+      
+      // Transform external data to match our interface
+      const players = externalPlayers.map((player: any, index: number) => ({
+        id: index + 1, // Generate temporary ID for UI
+        playerName: player.playerName,
+        isOnline: player.isOnline,
+        totalSessions: player.totalSessions,
+        // Add any other fields you want to display
+      }));
+      
       res.json(players);
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch players" });
+      console.error('Failed to fetch external players:', error);
+      res.status(500).json({ error: "Failed to fetch players from external API" });
     }
   });
 
-  // Get specific player
-  app.get("/api/players/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const player = await storage.getPlayer(id);
-      if (!player) {
-        return res.status(404).json({ error: "Player not found" });
-      }
-      res.json(player);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch player" });
-    }
-  });
-
-  // Create new player
-  app.post("/api/players", async (req, res) => {
-    try {
-      const player = await storage.createPlayer(req.body);
-      res.status(201).json(player);
-    } catch (error) {
-      res.status(400).json({ error: "Invalid player data" });
-    }
-  });
-
-  // Update player
-  app.put("/api/players/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const player = await storage.updatePlayer(id, req.body);
-      if (!player) {
-        return res.status(404).json({ error: "Player not found" });
-      }
-      res.json(player);
-    } catch (error) {
-      res.status(400).json({ error: "Invalid player data" });
-    }
-  });
-
-  // Delete player
-  app.delete("/api/players/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      await storage.deletePlayer(id);
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ error: "Failed to delete player" });
-    }
-  });
+  // Note: Individual player routes removed - using external API for all player data
 
   const httpServer = createServer(app);
 

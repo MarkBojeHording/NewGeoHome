@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Search, User } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import type { Player } from '@shared/schema';
+import type { ExternalPlayer } from '@shared/schema';
 
 interface PlayerModalProps {
   isOpen: boolean;
@@ -14,17 +14,18 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   const [nameSearch, setNameSearch] = useState('');
   const [baseNumberSearch, setBaseNumberSearch] = useState('');
 
-  // Fetch players from the server
-  const { data: players = [], isLoading } = useQuery<Player[]>({
+  // Fetch players from the external API via our server
+  const { data: players = [], isLoading } = useQuery<ExternalPlayer[]>({
     queryKey: ['/api/players'],
     enabled: isOpen,
   });
 
   // Filter players based on search criteria
   const filteredPlayers = players.filter(player => {
-    const nameMatch = nameSearch === '' || player.name.toLowerCase().includes(nameSearch.toLowerCase());
-    const baseMatch = baseNumberSearch === '' || (player.associatedBaseNumber && player.associatedBaseNumber.toLowerCase().includes(baseNumberSearch.toLowerCase()));
-    return nameMatch && baseMatch;
+    const nameMatch = nameSearch === '' || player.playerName.toLowerCase().includes(nameSearch.toLowerCase());
+    // For now, search by session count for base number search (you can customize this)
+    const sessionMatch = baseNumberSearch === '' || player.totalSessions.toString().includes(baseNumberSearch);
+    return nameMatch && sessionMatch;
   });
 
   const formatLastSession = (timestamp: string) => {
@@ -69,7 +70,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
-                placeholder="Search by base number..."
+                placeholder="Search by sessions..."
                 value={baseNumberSearch}
                 onChange={(e) => setBaseNumberSearch(e.target.value)}
                 className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
@@ -108,7 +109,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                           }`}
                           data-testid={`player-name-${player.id}`}
                         >
-                          {player.name}
+                          {player.playerName}
                         </span>
                         <span
                           className={`text-sm ${
@@ -119,21 +120,19 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                           {player.isOnline ? 'Online' : 'Offline'}
                         </span>
                       </div>
-                      {player.associatedBaseNumber && (
-                        <span 
-                          className="text-xs bg-gray-600 px-2 py-1 rounded text-gray-300"
-                          data-testid={`base-number-${player.id}`}
-                        >
-                          Base: {player.associatedBaseNumber}
-                        </span>
-                      )}
+                      <span 
+                        className="text-xs bg-blue-600 px-2 py-1 rounded text-blue-200"
+                        data-testid={`sessions-${player.id}`}
+                      >
+                        Sessions: {player.totalSessions}
+                      </span>
                     </div>
                     <div className="text-right">
                       <div 
                         className="text-sm text-gray-400"
-                        data-testid={`last-session-${player.id}`}
+                        data-testid={`online-status-${player.id}`}
                       >
-                        {formatLastSession(player.lastSessionTime)}
+                        {player.isOnline ? 'Currently Online' : 'Offline'}
                       </div>
                     </div>
                   </div>

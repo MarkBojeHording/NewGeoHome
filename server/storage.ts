@@ -23,16 +23,11 @@ export interface IStorage {
   getAllReportTemplates(): Promise<ReportTemplate[]>;
   getReportTemplateByType(reportType: string): Promise<ReportTemplate | undefined>;
   
-  // Player management methods
-  createPlayer(player: InsertPlayer): Promise<Player>;
-  getPlayer(id: number): Promise<Player | undefined>;
-  getAllPlayers(): Promise<Player[]>;
-  updatePlayer(id: number, player: Partial<InsertPlayer>): Promise<Player | undefined>;
-  deletePlayer(id: number): Promise<boolean>;
+  // Note: Player data now comes from external API, no local storage needed
 }
 
 import { db } from "./db";
-import { users, reports, reportTemplates, players } from "@shared/schema";
+import { users, reports, reportTemplates } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
@@ -112,37 +107,7 @@ export class DatabaseStorage implements IStorage {
     return template || undefined;
   }
 
-  // Player management methods
-  async createPlayer(player: InsertPlayer): Promise<Player> {
-    const [newPlayer] = await db
-      .insert(players)
-      .values(player)
-      .returning();
-    return newPlayer;
-  }
-
-  async getPlayer(id: number): Promise<Player | undefined> {
-    const [player] = await db.select().from(players).where(eq(players.id, id));
-    return player || undefined;
-  }
-
-  async getAllPlayers(): Promise<Player[]> {
-    return await db.select().from(players);
-  }
-
-  async updatePlayer(id: number, player: Partial<InsertPlayer>): Promise<Player | undefined> {
-    const [updatedPlayer] = await db
-      .update(players)
-      .set(player)
-      .where(eq(players.id, id))
-      .returning();
-    return updatedPlayer || undefined;
-  }
-
-  async deletePlayer(id: number): Promise<boolean> {
-    const result = await db.delete(players).where(eq(players.id, id));
-    return result.rowCount > 0;
-  }
+  // Note: Player methods removed - using external API instead
 }
 
 export const storage = new DatabaseStorage();

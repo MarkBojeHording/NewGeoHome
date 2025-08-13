@@ -52,17 +52,12 @@ export const selectReportTemplateSchema = createInsertSchema(reportTemplates);
 export type InsertReportTemplate = z.infer<typeof insertReportTemplateSchema>;
 export type ReportTemplate = typeof reportTemplates.$inferSelect;
 
-// Players table
-export const players = pgTable("players", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  name: text("name").notNull(),
-  isOnline: boolean("is_online").notNull().default(false),
-  lastSessionTime: timestamp("last_session_time").notNull().defaultNow(),
-  associatedBaseNumber: text("associated_base_number"),
-  createdAt: timestamp("created_at").defaultNow(),
+// External player data structure to match your API
+export const externalPlayerSchema = z.object({
+  playerName: z.string(),
+  isOnline: z.boolean(),
+  totalSessions: z.number(),
+  // Add other fields as needed from your API
 });
 
-export const insertPlayerSchema = createInsertSchema(players).omit({ id: true, createdAt: true });
-export const selectPlayerSchema = createInsertSchema(players);
-export type InsertPlayer = z.infer<typeof insertPlayerSchema>;
-export type Player = typeof players.$inferSelect;
+export type ExternalPlayer = z.infer<typeof externalPlayerSchema>;
