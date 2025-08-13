@@ -675,10 +675,10 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       {!location.type.startsWith('report') && (
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-x-10 flex gap-3">
       {/* Rectangle - smaller size for enemy base preview */}
-      <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none">
+      <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none z-50">
         <div className="w-52 h-28 bg-gray-800 border border-gray-600 shadow-lg">
-          {/* Player snapshot grid - 2 rows x 5 columns */}
-          <div className="grid grid-cols-5 grid-rows-2 h-full w-full">
+          {/* Player snapshot grid - 2 columns x 5 rows */}
+          <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
             {(() => {
               // Filter players to only show those tagged to this specific base
               const taggedPlayerNames = playerBaseTags.map(tag => tag.playerName) || [];
@@ -703,9 +703,9 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
                 <div 
                   key={index}
                   className={`flex items-center justify-center text-xs font-medium border-r border-b border-gray-700 ${
-                    index % 5 === 4 ? 'border-r-0' : ''
+                    index % 2 === 1 ? 'border-r-0' : ''
                   } ${
-                    index >= 5 ? 'border-b-0' : ''
+                    index >= 8 ? 'border-b-0' : ''
                   } ${
                     player 
                       ? player.isOnline 
@@ -716,7 +716,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
                 >
                   {player ? (
                     <span className="truncate px-1" title={player.playerName}>
-                      {player.playerName.length > 6 ? player.playerName.slice(0, 6) : player.playerName}
+                      {player.playerName.length > 8 ? player.playerName.slice(0, 8) : player.playerName}
                     </span>
                   ) : null}
                 </div>
