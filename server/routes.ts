@@ -132,7 +132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/players", async (req, res) => {
     try {
       // Fetch from your external API
-      const response = await fetch('https://YOUR-REPL-NAME.replit.app/api/public/servers/2933470/profiles');
+      const response = await fetch('https://superinfotest.replit.app/api/public/servers/2933470/profiles');
       
       if (!response.ok) {
         throw new Error(`External API error: ${response.status}`);
