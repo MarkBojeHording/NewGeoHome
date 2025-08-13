@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } from 'lucide-react'
-import BaseModal from '../components/BaseModal'
+import BaseModal from '../components/BaseModalFixed'
 import ReportLibrary from '../components/ReportLibrary'
 
 // ============= CONSTANTS =============
