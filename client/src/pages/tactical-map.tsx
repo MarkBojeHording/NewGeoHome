@@ -414,9 +414,9 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
   )
 }
 
-const ContextMenu = ({ x, y, onAddBase }) => (
+const ContextMenu = ({ x, y, onAddBase, onAddGeneralReport }) => (
   <div className="fixed bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-20 py-2" style={{ left: x, top: y }}>
-    <button className="block w-full text-left px-4 py-2 hover:bg-gray-700 text-gray-200 text-sm" onClick={() => onAddBase('report')}>
+    <button className="block w-full text-left px-4 py-2 hover:bg-gray-700 text-gray-200 text-sm" onClick={() => onAddGeneralReport()}>
       Report
     </button>
     <button className="block w-full text-left px-4 py-2 hover:bg-gray-700 text-gray-200 text-sm" onClick={() => onAddBase('enemy')}>
@@ -1290,6 +1290,15 @@ export default function InteractiveTacticalMap() {
             x={contextMenu.x}
             y={contextMenu.y}
             onAddBase={handleAddBase}
+            onAddGeneralReport={() => {
+              setContextMenu(prev => ({ ...prev, visible: false }))
+              setReportModalData({
+                locationName: getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null),
+                locationCoords: getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null),
+                reportType: 'general'
+              })
+              setShowReportModal(true)
+            }}
           />
         )}
 
