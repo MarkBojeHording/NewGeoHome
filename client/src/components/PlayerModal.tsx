@@ -17,6 +17,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   const [baseNumberSearch, setBaseNumberSearch] = useState('');
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
   const [premiumPlayerName, setPremiumPlayerName] = useState('');
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   
   const queryClient = useQueryClient();
 
@@ -27,9 +28,15 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   });
 
   // Fetch premium players from our database
-  const { data: premiumPlayers = [] } = useQuery({
+  const { data: premiumPlayers = [] } = useQuery<any[]>({
     queryKey: ['/api/premium-players'],
     enabled: isOpen,
+  });
+
+  // Fetch session history for selected player
+  const { data: sessionHistory = [], isLoading: isLoadingHistory } = useQuery<any[]>({
+    queryKey: ['/api/players', selectedPlayer, 'sessions'],
+    enabled: !!selectedPlayer,
   });
 
   // Filter players based on search criteria
@@ -41,26 +48,10 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   });
 
   // Filter premium players based on search criteria
-  const filteredPremiumPlayers = premiumPlayers.filter(player => {
+  const filteredPremiumPlayers = premiumPlayers.filter((player: any) => {
     const nameMatch = nameSearch === '' || player.playerName.toLowerCase().includes(nameSearch.toLowerCase());
     return nameMatch;
   });
-
-  const formatLastSession = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    
-    return date.toLocaleDateString();
-  };
 
   const createPremiumPlayer = async () => {
     if (!premiumPlayerName.trim()) return;
@@ -68,7 +59,8 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
     try {
       await apiRequest('/api/premium-players', {
         method: 'POST',
-        body: { playerName: premiumPlayerName.trim() }
+        body: JSON.stringify({ playerName: premiumPlayerName.trim() }),
+        headers: { 'Content-Type': 'application/json' }
       });
       
       // Refresh premium players data
@@ -83,154 +75,215 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[1600px] h-[900px] bg-gray-900 border-gray-700">
-        <DialogHeader>
-          <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
-            <User className="w-5 h-5" />
-            Player Management
-            <Plus 
-              className="w-4 h-4 text-orange-400 cursor-pointer hover:text-orange-300" 
-              onClick={() => setShowPremiumDialog(true)}
-            />
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-4">
-          {/* Search Controls */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search by player name..."
-                value={nameSearch}
-                onChange={(e) => setNameSearch(e.target.value)}
-                className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
-                data-testid="input-player-name-search"
-              />
-            </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search by sessions..."
-                value={baseNumberSearch}
-                onChange={(e) => setBaseNumberSearch(e.target.value)}
-                className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
-                data-testid="input-base-number-search"
-              />
-            </div>
-          </div>
-
-          {/* Player List */}
-          <div className="h-[750px] overflow-y-auto bg-gray-800 rounded-lg border border-gray-600">
-            {isLoading ? (
-              <div className="p-4 text-center text-gray-400">Loading players...</div>
-            ) : filteredPlayers.length === 0 ? (
-              <div className="p-4 text-center text-gray-400">
-                {players.length === 0 ? (
-                  <div className="space-y-2">
-                    <div>No player data available from external API</div>
-                    <div className="text-sm text-gray-500">
-                      API connection successful but no players recorded yet
-                    </div>
-                    <div className="text-xs text-gray-600">
-                      Visit superinfotest.replit.app to populate player data
-                    </div>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="w-[1600px] h-[900px] bg-gray-900 border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
+              <User className="w-5 h-5" />
+              {selectedPlayer ? `${selectedPlayer} - Session History` : 'Player Management'}
+              {!selectedPlayer && (
+                <Plus 
+                  className="w-4 h-4 text-orange-400 cursor-pointer hover:text-orange-300" 
+                  onClick={() => setShowPremiumDialog(true)}
+                />
+              )}
+              {selectedPlayer && (
+                <Button
+                  onClick={() => setSelectedPlayer(null)}
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto border-gray-600 text-gray-400 hover:bg-gray-800"
+                >
+                  Back to Players
+                </Button>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Session History View */}
+            {selectedPlayer ? (
+              <div className="h-[750px] overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
+                <h3 className="text-lg font-semibold text-white mb-4">Session History for {selectedPlayer}</h3>
+                {isLoadingHistory ? (
+                  <div className="flex justify-center py-8">
+                    <div className="text-gray-400">Loading session history...</div>
                   </div>
                 ) : (
-                  'No players match your search'
+                  <div className="space-y-3">
+                    {sessionHistory.map((session: any) => (
+                      <div
+                        key={session.id}
+                        className="bg-gray-700 rounded-lg p-4 border border-gray-600"
+                        data-testid={`session-${session.id}`}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="text-white font-medium">
+                            Session #{session.id}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {session.durationHours}h duration
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-400">Started:</span>
+                            <div className="text-white">
+                              {new Date(session.startTime).toLocaleString()}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Ended:</span>
+                            <div className="text-white">
+                              {new Date(session.endTime).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-sm">
+                          <span className="text-gray-400">Server:</span>
+                          <span className="text-white ml-2">{session.server}</span>
+                        </div>
+                      </div>
+                    ))}
+                    {sessionHistory.length === 0 && (
+                      <div className="text-center text-gray-400 py-8">
+                        No session history available
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             ) : (
-              <div className="divide-y divide-gray-700">
-                {/* Premium Players */}
-                {filteredPremiumPlayers.map((player) => (
-                  <div
-                    key={`premium-${player.id}`}
-                    className="p-3 flex items-center justify-between hover:bg-gray-700 transition-colors"
-                    data-testid={`premium-player-item-${player.id}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-orange-500" />
-                        <span className="font-medium text-orange-400">
-                          {player.playerName}
-                        </span>
-                        <span className="text-sm text-orange-600">
-                          Premium
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-orange-400">
-                        Premium User
-                      </div>
-                    </div>
+              <>
+                {/* Search Controls */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      placeholder="Search by player name..."
+                      value={nameSearch}
+                      onChange={(e) => setNameSearch(e.target.value)}
+                      className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                      data-testid="input-player-name-search"
+                    />
                   </div>
-                ))}
-                
-                {/* Regular Players */}
-                {filteredPlayers.map((player) => (
-                  <div
-                    key={player.id}
-                    className="p-3 flex items-center justify-between hover:bg-gray-700 transition-colors"
-                    data-testid={`player-item-${player.id}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      placeholder="Search by sessions..."
+                      value={baseNumberSearch}
+                      onChange={(e) => setBaseNumberSearch(e.target.value)}
+                      className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                      data-testid="input-base-number-search"
+                    />
+                  </div>
+                </div>
+
+                {/* Player List */}
+                <div className="h-[750px] overflow-y-auto bg-gray-800 rounded-lg border border-gray-600">
+                  {isLoading ? (
+                    <div className="flex justify-center py-8">
+                      <div className="text-gray-400">Loading players...</div>
+                    </div>
+                  ) : players.length === 0 && premiumPlayers.length === 0 ? (
+                    <div className="flex justify-center py-8">
+                      <div className="text-gray-400">No players found. External API may be temporarily unavailable.</div>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-gray-700">
+                      {/* Premium Players */}
+                      {filteredPremiumPlayers.map((player: any) => (
                         <div
-                          className={`w-2 h-2 rounded-full ${
-                            player.isOnline ? 'bg-green-500' : 'bg-gray-500'
-                          }`}
-                          data-testid={`status-indicator-${player.id}`}
-                        />
-                        <span
-                          className={`font-medium ${
-                            player.isOnline ? 'text-green-400' : 'text-gray-400'
-                          }`}
-                          data-testid={`player-name-${player.id}`}
+                          key={`premium-${player.id}`}
+                          className="p-3 flex items-center justify-between hover:bg-gray-700 transition-colors"
+                          data-testid={`premium-player-item-${player.id}`}
                         >
-                          {player.playerName}
-                        </span>
-                        <span
-                          className={`text-sm ${
-                            player.isOnline ? 'text-green-300' : 'text-gray-500'
-                          }`}
-                          data-testid={`player-status-${player.id}`}
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-orange-500" />
+                              <span className="font-medium text-orange-400">
+                                {player.playerName}
+                              </span>
+                              <span className="text-sm text-orange-600">
+                                Premium
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm text-orange-400">
+                              Premium User
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Regular Players */}
+                      {filteredPlayers.map((player, index) => (
+                        <div
+                          key={index}
+                          className="p-3 flex items-center justify-between hover:bg-gray-700 transition-colors cursor-pointer"
+                          data-testid={`player-item-${index}`}
+                          onClick={() => setSelectedPlayer(player.playerName)}
                         >
-                          {player.isOnline ? 'Online' : 'Offline'}
-                        </span>
-                      </div>
-                      <span 
-                        className="text-xs bg-blue-600 px-2 py-1 rounded text-blue-200"
-                        data-testid={`sessions-${player.id}`}
-                      >
-                        Sessions: {player.totalSessions}
-                      </span>
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <div
+                                className={`w-2 h-2 rounded-full ${
+                                  player.isOnline ? 'bg-green-500' : 'bg-gray-500'
+                                }`}
+                                data-testid={`status-indicator-${index}`}
+                              />
+                              <span
+                                className={`font-medium ${
+                                  player.isOnline ? 'text-green-400' : 'text-gray-400'
+                                }`}
+                                data-testid={`player-name-${index}`}
+                              >
+                                {player.playerName}
+                              </span>
+                              <span
+                                className={`text-sm ${
+                                  player.isOnline ? 'text-green-300' : 'text-gray-500'
+                                }`}
+                                data-testid={`player-status-${index}`}
+                              >
+                                {player.isOnline ? 'Online' : 'Offline'}
+                              </span>
+                            </div>
+                            <span 
+                              className="text-xs bg-blue-600 px-2 py-1 rounded text-blue-200"
+                              data-testid={`sessions-${index}`}
+                            >
+                              Sessions: {player.totalSessions}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <div 
+                              className="text-sm text-gray-400"
+                              data-testid={`online-status-${index}`}
+                            >
+                              {player.isOnline ? 'Currently Online' : 'Offline'}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="text-right">
-                      <div 
-                        className="text-sm text-gray-400"
-                        data-testid={`online-status-${player.id}`}
-                      >
-                        {player.isOnline ? 'Currently Online' : 'Offline'}
-                      </div>
-                    </div>
+                  )}
+                </div>
+
+                {/* Results Summary */}
+                {!isLoading && (
+                  <div className="text-sm text-gray-400 text-center">
+                    Showing {filteredPlayers.length + filteredPremiumPlayers.length} players 
+                    ({filteredPlayers.length} regular, {filteredPremiumPlayers.length} premium)
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
           </div>
-
-          {/* Results Summary */}
-          {!isLoading && (
-            <div className="text-sm text-gray-400 text-center">
-              Showing {filteredPlayers.length + filteredPremiumPlayers.length} players 
-              ({filteredPlayers.length} regular, {filteredPremiumPlayers.length} premium)
-            </div>
-          )}
-        </div>
-      </DialogContent>
+        </DialogContent>
+      </Dialog>
       
       {/* Premium Player Creation Dialog */}
       <Dialog open={showPremiumDialog} onOpenChange={setShowPremiumDialog}>
@@ -273,6 +326,6 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           </div>
         </DialogContent>
       </Dialog>
-    </Dialog>
+    </>
   );
 }
