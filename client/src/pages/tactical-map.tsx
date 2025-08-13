@@ -440,8 +440,8 @@ const ActionMenu = ({ location, style, onClose, onAction, onOpenBaseReport }) =>
       >
         <div className="space-y-2">
           {[
-            { label: 'Ore needs pick up', actions: ['Simple', 'Detailed'] },
-            { label: 'Loot needs pick up', actions: ['Simple', 'Detailed'] },
+            { label: 'Needs pickup', actions: ['Ore', 'Loot', 'Detailed'] },
+
             { label: 'Base needs kits', actions: ['Simple', 'Detailed'] },
             { label: 'Needs Repair/Upgrade', actions: ['Simple', 'Detailed'] }
           ].map(({ label, actions }) => (
