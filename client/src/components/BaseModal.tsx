@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit, Camera, StickyNote } from "lucide-react"
+import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit, Camera, StickyNote, Search, Plus, Minus } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { RocketCalculatorSection } from './RocketCalculator'
+import type { ExternalPlayer } from '@shared/schema'
 
 // ============= CONSTANTS =============
 const LABELS = {
@@ -65,107 +66,114 @@ const MATERIAL_LABELS = {
   hqm: "HQM"
 }
 
-
-
-// ============= BASE REPORTS LIST COMPONENT =============
-const BaseReportsList = ({ baseName, baseCoords, onEditReport }) => {
-  const { data: reports = [], isLoading } = useQuery({
-    queryKey: ['/api/reports'],
-    enabled: !!(baseName || baseCoords)
+// ============= PLAYER SEARCH SELECTOR COMPONENT =============
+const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) => {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showDropdown, setShowDropdown] = useState(false)
+  
+  // Fetch players from external API
+  const { data: players = [] } = useQuery<ExternalPlayer[]>({
+    queryKey: ['/api/players']
   })
 
-  // Filter reports for this specific base using base name (like "M7", "A1", etc.)
-  const baseReports = reports.filter(report => 
-    report.locationName === baseCoords ||
-    report.locationCoords === baseCoords ||
-    (report.content?.baseName === baseCoords) ||
-    (report.content?.baseCoords === baseCoords)
+  // Parse selected players from comma-separated string
+  const selectedPlayersList = selectedPlayers ? selectedPlayers.split(',').map(p => p.trim()).filter(p => p) : []
+  
+  // Filter players based on search term
+  const filteredPlayers = players.filter(player => 
+    player.playerName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    !selectedPlayersList.includes(player.playerName)
   )
 
-  if (isLoading) {
-    return <div className="text-gray-400 text-sm">Loading reports...</div>
+  const addPlayer = (playerName) => {
+    const newPlayers = [...selectedPlayersList, playerName].join(', ')
+    onPlayersChange(newPlayers)
+    setSearchTerm('')
+    setShowDropdown(false)
   }
 
-  if (baseReports.length === 0) {
-    return <div className="text-gray-400 text-sm italic">No reports for this base yet.</div>
+  const removePlayer = (playerName) => {
+    const newPlayers = selectedPlayersList.filter(p => p !== playerName).join(', ')
+    onPlayersChange(newPlayers)
   }
 
   return (
-    <div className="space-y-2">
-      {baseReports.map(report => {
-        // Format time as HH:MM
-        const reportDate = new Date(report.createdAt)
-        const timeString = reportDate.toLocaleTimeString('en-US', { 
-          hour: '2-digit', 
-          minute: '2-digit',
-          hour12: false 
-        })
+    <div className="w-full h-full flex flex-col">
+      {/* Search Input */}
+      <div className="relative p-2 border-b border-gray-600">
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value)
+              setShowDropdown(true)
+            }}
+            onFocus={() => setShowDropdown(true)}
+            className="w-full pl-7 pr-2 py-1 bg-gray-800 border border-gray-600 rounded text-sm text-gray-200 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+            placeholder="Search players to add..."
+          />
+        </div>
         
-        // Remove "Report" from title and clean up type display with fuller names
-        const cleanTitle = report.title.replace(/\s+Report$/i, '')
-        const getFullReportType = (type) => {
-          if (!type) return 'Unknown'
-          const typeStr = type.replace('report-', '')
-          switch(typeStr) {
-            case 'pvp': return 'PvP Encounter'
-            case 'raid': return 'Raid Activity'
-            case 'spotted': return 'Enemy Spotted'
-            case 'monument': return 'Monument Activity'
-            case 'heli': return 'Helicopter Event'
-            case 'bradley': return 'Bradley Event'
-            default: return typeStr.charAt(0).toUpperCase() + typeStr.slice(1)
-          }
-        }
-        const reportType = getFullReportType(report.content?.type || report.reportType)
-        
-        // Check if report has content in notes or pictures (pictures feature coming later)
-        const hasNotes = report.content?.notes && report.content.notes.trim().length > 0
-        const hasPictures = false // Will be implemented later
-        
-        return (
-          <div key={report.id} className="flex items-center justify-between bg-gray-700 p-2 rounded">
-            <div className="flex items-center space-x-2 flex-1 min-w-0">
-              <FileText className="h-4 w-4 text-green-400 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="text-white text-sm truncate">
-                  {timeString} - {reportType}
-                </div>
-              </div>
-              <div className="flex items-center space-x-1 flex-shrink-0">
-                <Camera className={`h-3 w-3 ${hasPictures ? 'text-blue-400' : 'text-gray-600'}`} />
-                <StickyNote className={`h-3 w-3 ${hasNotes ? 'text-yellow-400' : 'text-gray-600'}`} />
-              </div>
-            </div>
-            <button
-              onClick={() => onEditReport(report)}
-              className="text-blue-400 hover:text-blue-300 p-1 flex-shrink-0 ml-2"
-            >
-              <Edit className="h-4 w-4" />
-            </button>
+        {/* Search Results Dropdown */}
+        {showDropdown && searchTerm && filteredPlayers.length > 0 && (
+          <div className="absolute top-full left-2 right-2 mt-1 bg-gray-800 border border-gray-600 rounded max-h-32 overflow-y-auto z-50">
+            {filteredPlayers.slice(0, 10).map((player) => (
+              <button
+                key={player.id}
+                onClick={() => addPlayer(player.playerName)}
+                className="w-full text-left px-2 py-1 hover:bg-gray-700 flex items-center gap-2 text-sm"
+              >
+                <div className={`w-2 h-2 rounded-full ${player.isOnline ? 'bg-green-500' : 'bg-gray-500'}`} />
+                <span className={player.isOnline ? 'text-green-400' : 'text-gray-400'}>
+                  {player.playerName}
+                </span>
+                <span className="text-xs text-gray-500">
+                  ({player.totalSessions} sessions)
+                </span>
+              </button>
+            ))}
           </div>
-        )
-      })}
+        )}
+      </div>
+
+      {/* Selected Players List */}
+      <div className="flex-1 overflow-y-auto p-2">
+        {selectedPlayersList.length === 0 ? (
+          <div className="text-gray-500 text-sm italic">No players selected</div>
+        ) : (
+          <div className="space-y-1">
+            {selectedPlayersList.map((playerName, index) => {
+              const player = players.find(p => p.playerName === playerName)
+              return (
+                <div key={index} className="flex items-center justify-between bg-gray-800 rounded px-2 py-1">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${player?.isOnline ? 'bg-green-500' : 'bg-gray-500'}`} />
+                    <span className={`text-sm ${player?.isOnline ? 'text-green-400' : 'text-gray-400'}`}>
+                      {playerName}
+                    </span>
+                    {player && (
+                      <span className="text-xs text-gray-500">
+                        ({player.totalSessions} sessions)
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => removePlayer(playerName)}
+                    className="text-red-400 hover:text-red-300 p-1"
+                  >
+                    <Minus className="w-3 h-3" />
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
-
-// ============= RAIDED OUT PROMPT COMPONENT =============
-const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style={{ zIndex: 10000 }}>
-    <div className="bg-gradient-to-b from-gray-700 to-gray-800 rounded-xl border border-gray-600 p-6 max-w-sm">
-      <h3 className="text-white font-bold mb-4">Confirm Raided Out</h3>
-      <p className="text-gray-300 mb-6">Mark this base as raided out?</p>
-      <div className="flex gap-3">
-        <button onClick={onConfirm} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-          Confirm
-        </button>
-        <button onClick={onCancel} className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)
 
 const BaseModal = ({ 
   modal, 
@@ -174,8 +182,7 @@ const BaseModal = ({
   locations,
   onSave,
   onCancel,
-  onDelete,
-  onOpenBaseReport,
+  onDelete
 }) => {
   const [formData, setFormData] = useState({
     type: modalType === 'friendly' ? 'friendly-main' : modalType === 'enemy' ? 'enemy-small' : 'report-pvp',
@@ -193,8 +200,7 @@ const BaseModal = ({
     raidedOut: false,
     primaryRockets: 0,
     enemyPlayers: '',
-    friendlyPlayers: '',
-    coordinateOverride: ''
+    friendlyPlayers: ''
   })
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
@@ -235,8 +241,7 @@ const BaseModal = ({
         raidedOut: editingLocation.raidedOut || false,
         primaryRockets: editingLocation.primaryRockets || 0,
         enemyPlayers: editingLocation.enemyPlayers || '',
-        friendlyPlayers: editingLocation.friendlyPlayers || '',
-        coordinateOverride: editingLocation.coordinateOverride || ''
+        friendlyPlayers: editingLocation.friendlyPlayers || ''
       })
     } else if (modalType === 'report') {
       const now = new Date()
@@ -248,7 +253,6 @@ const BaseModal = ({
   }, [editingLocation, modalType])
   
   const getMainBases = useCallback(() => {
-    if (!locations || !Array.isArray(locations)) return []
     const bases = locations.filter(loc => 
       !loc.type.includes('farm') && 
       !loc.type.includes('flank') && 
@@ -259,11 +263,10 @@ const BaseModal = ({
       !loc.type.startsWith('report')
     ).map(loc => loc.name.split('(')[0])
     
-    return Array.from(new Set(bases))
+    return [...new Set(bases)]
   }, [locations])
   
   const getMainBasesWithInfo = useCallback(() => {
-    if (!locations || !Array.isArray(locations)) return new Map()
     const bases = locations.filter(loc => 
       !loc.type.includes('farm') && 
       !loc.type.includes('flank') && 
@@ -296,34 +299,6 @@ const BaseModal = ({
     })
     return filtered.sort((a, b) => a.coord.localeCompare(b.coord))
   }, [getMainBasesWithInfo])
-
-const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
-  const GRID_CONFIG = {
-    COLS: 32,
-    ROWS: 24,
-    CELL_WIDTH_PERCENT: 3.125,
-    CELL_HEIGHT_PERCENT: 4.167
-  }
-  
-  const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
-  const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
-  const clampedCol = Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1)
-  const clampedRow = Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
-  const letter = clampedCol < 26 ? String.fromCharCode(65 + clampedCol) : `A${String.fromCharCode(65 + clampedCol - 26)}`
-  const number = clampedRow + 1
-  const baseCoord = `${letter}${number}`
-  
-  if (!locations || !Array.isArray(locations)) return baseCoord
-  
-  const duplicates = locations.filter(loc => {
-    if (excludeId && loc.id === excludeId) return false
-    const locBase = loc.name.split('(')[0]
-    return locBase === baseCoord
-  })
-  
-  return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
-}, [])
-
   
   const handleSave = () => {
     const baseData = {
@@ -343,8 +318,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
       roofCamper: modalType === 'enemy' ? formData.roofCamper : undefined,
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
       raidedOut: modalType === 'enemy' ? formData.raidedOut : undefined,
-      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined,
-      coordinateOverride: formData.coordinateOverride || undefined
+      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined
     }
     
     onSave(baseData)
@@ -443,15 +417,68 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
   const renderBaseModal = () => (
     <div className="grid grid-cols-5 gap-4">
       <div className="col-span-2 flex flex-col">
+        <label className="block text-sm font-medium mb-1 text-gray-200">Base Type</label>
+        <div className="relative mb-3">
+          <select 
+            value={formData.type} 
+            onChange={(e) => {
+              const newType = e.target.value
+              setFormData(prev => ({
+                ...prev,
+                type: newType,
+                ownerCoordinates: (newType !== 'enemy-farm' && newType !== 'enemy-flank' && newType !== 'enemy-tower') ? '' : prev.ownerCoordinates
+              }))
+            }} 
+            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+          >
+            {modalType === 'friendly' && (
+              <>
+                <option value="friendly-main">Friendly Main Base</option>
+                <option value="friendly-flank">Friendly Flank Base</option>
+                <option value="friendly-farm">Friendly Farm</option>
+                <option value="friendly-boat">Boat Base</option>
+                <option value="friendly-garage">Garage</option>
+              </>
+            )}
+            {modalType === 'enemy' && (
+              <>
+                <option value="enemy-small">Main Small</option>
+                <option value="enemy-medium">Main Medium</option>
+                <option value="enemy-large">Main Large</option>
+                <option value="enemy-flank">Flank Base</option>
+                <option value="enemy-tower">Tower</option>
+                <option value="enemy-farm">Farm</option>
+                <option value="enemy-decaying">Decaying Base</option>
+              </>
+            )}
+          </select>
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
+            <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+              {getIcon(formData.type)}
+            </div>
+            <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
         
+        {modalType === 'enemy' && (
+          <RocketCalculatorSection
+            primaryRockets={formData.primaryRockets}
+            onPrimaryRocketsChange={(value) => setFormData(prev => ({ ...prev, primaryRockets: value }))}
+            showCalculatorModal={showRocketCalculator}
+            calculatorPosition={rocketCalculatorPosition}
+            onToggleCalculator={handleToggleRocketCalculator}
+            onCloseCalculator={() => setShowRocketCalculator(false)}
+          />
+        )}
         
-        <label className="block text-sm font-medium mb-0.5 text-gray-200">Base owners</label>
+        <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
         <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
-          <textarea 
-            value={formData.players} 
-            onChange={(e) => setFormData(prev => ({ ...prev, players: e.target.value }))} 
-            className="w-full h-full px-2 py-1.5 bg-transparent border-none rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-200 placeholder-gray-500" 
-            placeholder="List base owners here..." 
+          <PlayerSearchSelector 
+            selectedPlayers={formData.players}
+            onPlayersChange={(players) => setFormData(prev => ({ ...prev, players }))}
+            maxHeight={modalType === 'enemy' ? '160px' : '300px'}
           />
         </div>
       </div>
@@ -459,7 +486,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
       <div className="col-span-3">
         {modalType === 'friendly' && (
           <div className="border border-gray-600 rounded-lg p-3 bg-gray-700 mb-3">
-            <label className="block text-sm font-medium mb-0.5 text-gray-300">Upkeep Tracker</label>
+            <label className="block text-sm font-medium mb-1 text-gray-300">Upkeep Tracker</label>
             <div className="space-y-2">
               {['wood', 'stone', 'metal', 'hqm'].map((resource) => (
                 <div key={resource} className="flex items-center gap-3">
@@ -483,14 +510,14 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
         )}
         
         {modalType === 'enemy' && (
-          <div className="border border-gray-600 rounded-lg bg-gray-700 mb-2 relative">
+          <div className="border border-gray-600 rounded-lg bg-gray-700 mb-3 relative">
             <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Heat Map</label>
             <div className="p-2 pt-3">
               <div className="flex gap-1">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                   <div key={day} className="flex-1">
                     <div className="text-[10px] text-gray-400 text-center">{day}</div>
-                    <div className="bg-gray-800 rounded" style={{height: '120px', position: 'relative'}}>
+                    <div className="bg-gray-800 rounded" style={{height: '160px', position: 'relative'}}>
                     </div>
                   </div>
                 ))}
@@ -499,24 +526,14 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           </div>
         )}
         
-        {modalType === 'enemy' && (
-          <RocketCalculatorSection
-            primaryRockets={formData.primaryRockets}
-            onPrimaryRocketsChange={(value) => setFormData(prev => ({ ...prev, primaryRockets: value }))}
-            showCalculatorModal={showRocketCalculator}
-            calculatorPosition={rocketCalculatorPosition}
-            onToggleCalculator={handleToggleRocketCalculator}
-            onCloseCalculator={() => setShowRocketCalculator(false)}
-          />
-        )}
-        
-        <div style={{marginTop: '4px'}}>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">Notes</label>
           <textarea 
             value={formData.notes} 
             onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
             className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md resize-none text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
             placeholder="Add notes..." 
-            style={{height: modalType === 'friendly' ? '190px' : modalType === 'enemy' ? '60px' : '340px', resize: 'none'}} 
+            style={{height: modalType === 'friendly' ? '190px' : modalType === 'enemy' ? '120px' : '340px', resize: 'none'}} 
           />
         </div>
       </div>
@@ -530,15 +547,9 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           {modalType === 'enemy' && (
             <>
               <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
-                <div className="text-white font-mono font-bold text-3xl text-center">
-                  <input
-                    type="text"
-                    value={formData.coordinateOverride || (editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id))}
-                    onChange={(e) => setFormData(prev => ({ ...prev, coordinateOverride: e.target.value }))}
-                    className="bg-transparent text-white font-mono font-bold text-3xl text-center border-none outline-none focus:bg-gray-800 focus:px-2 focus:rounded w-full"
-                    placeholder="Coordinate"
-                  />
-                </div>
+                <span className="text-white font-mono font-bold text-3xl">
+                  {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)}
+                </span>
               </div>
               {(formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') && (
                 <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-800 rounded-lg px-2 py-1.5 border-2 border-gray-600 shadow-lg" style={{top: '28px', width: '90px', zIndex: 60}}>
@@ -590,19 +601,12 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
             </div>
           )}
 
-          <div className="bg-gray-800 rounded-lg shadow-xl w-full mx-4 border border-gray-700 flex flex-col relative" style={{maxWidth: modalType === 'enemy' ? '832px' : '768px', maxHeight: modalType === 'enemy' ? '1200px' : '805px', zIndex: 50}}>
+          <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
                   <div className="flex items-center gap-3 flex-1">
-                    <div className="relative">
-                      {editingLocation?.id && (
-                        <div className="text-gray-500 text-xs font-mono absolute -top-6 left-0" style={{fontSize: '10px'}}>
-                          ID {editingLocation.id}
-                        </div>
-                      )}
-                      <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
-                    </div>
+                    <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
                     <div className="flex gap-2 flex-wrap">
                       <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
                         <input 
@@ -638,50 +642,9 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                         <span>Raided Out</span>
                       </label>
                     </div>
-                    <div className="flex-shrink-0 ml-4" style={{width: "100px"}}>
-                      <div className="relative">
-                        <select 
-                          value={formData.type} 
-                          onChange={(e) => {
-                            const newType = e.target.value
-                            setFormData(prev => ({
-                              ...prev,
-                              type: newType,
-                              ownerCoordinates: (newType !== "enemy-farm" && newType !== "enemy-flank" && newType !== "enemy-tower") ? "" : prev.ownerCoordinates
-                            }))
-                          }} 
-                          className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-10 text-gray-200 focus:border-blue-500 focus:outline-none text-xs"
-                        >
-                          <option value="enemy-small">Main Small</option>
-                          <option value="enemy-medium">Main Medium</option>
-                          <option value="enemy-large">Main Large</option>
-                          <option value="enemy-flank">Flank Base</option>
-                          <option value="enemy-tower">Tower</option>
-                          <option value="enemy-farm">Farm</option>
-                          <option value="enemy-decaying">Decaying Base</option>
-                        </select>
-                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-                          <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600 scale-75`}>
-                            {getIcon(formData.type)}
-                          </div>
-                          <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 )}
-                {modalType !== 'enemy' && (
-                  <div className="relative">
-                    {editingLocation?.id && (
-                      <div className="text-gray-500 text-xs font-mono absolute -top-4 left-0" style={{fontSize: '10px'}}>
-                        ID {editingLocation.id}
-                      </div>
-                    )}
-                    <div className="text-green-500 font-bold text-lg">FRIENDLY</div>
-                  </div>
-                )}
+                {modalType !== 'enemy' && <div></div>}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()
@@ -696,7 +659,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               </div>
             </div>
             
-            <div className="px-4 pt-4 space-y-2 text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
+            <div className="flex-1 px-4 pt-4 space-y-3 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
                 <div className="mb-3">
                   <label className="block text-sm font-medium mb-1 text-gray-200">Report Screenshots</label>
@@ -711,7 +674,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               
               {modalType !== 'report' && (
                 <div className="mb-3">
-
+                  <label className="block text-sm font-medium mb-1 text-gray-200">Base Screenshots</label>
                   <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '160px', width: '65%', marginRight: 'auto'}}>
                     <svg className="h-9 w-9 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -806,22 +769,15 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                 )}
               </div>
             ) : (
-              <div className="px-4 pb-2 relative z-50" style={{marginTop: '5px'}}>
+              <div className="px-4 pb-2 relative z-50">
                 <div className="flex justify-between">
                   <button 
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      if (editingLocation?.id) {
-                        setShowReportPanel(!showReportPanel)
-                      }
+                      setShowReportPanel(!showReportPanel)
                     }} 
-                    disabled={!editingLocation?.id}
-                    className={`${
-                      showReportPanel && editingLocation?.id ? 'bg-yellow-700' : 
-                      editingLocation?.id ? 'bg-yellow-600 hover:bg-yellow-700' : 
-                      'bg-gray-600 cursor-not-allowed text-gray-400'
-                    } text-white py-1.5 px-3 rounded-md transition-colors font-medium text-sm`}
+                    className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1.5 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
                     type="button"
                   >
                     Report {showReportPanel ? '◄' : ''}
@@ -887,8 +843,8 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           <div 
             className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
             style={{
-              height: '600px',
-              maxHeight: '600px',
+              height: '95vh',
+              maxHeight: '805px',
               width: '320px',
               left: '16px',
               transform: 'translateX(-100%)',
@@ -902,32 +858,14 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               {/* List of reports for this base */}
               <div className="flex-1 overflow-y-auto mb-4">
                 <div className="space-y-2">
-                  <BaseReportsList 
-                    baseName={editingLocation?.name}
-                    baseCoords={editingLocation?.name}
-                    onEditReport={(report) => {
-                      if (onOpenBaseReport) {
-                        onOpenBaseReport(editingLocation)
-                      }
-                    }}
-                  />
-
+                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
+                  {/* Reports will be listed here */}
                 </div>
               </div>
               
               {/* Create Report Button */}
-              <button 
-                onClick={() => {
-                  if (editingLocation?.id && onOpenBaseReport) {
-                    onOpenBaseReport(editingLocation)
-                  }
-                }}
-                disabled={!editingLocation?.id}
-                className={editingLocation?.id ? 
-                  "w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors" :
-                  "w-full bg-gray-600 text-gray-400 py-2 rounded text-sm font-medium cursor-not-allowed"}
-              >
-{editingLocation?.id ? "Create New Report" : "Save base first to create reports"}
+              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+                Create New Report
               </button>
             </div>
           </div>
@@ -938,8 +876,8 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           <div 
             className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
             style={{
-              height: '600px',
-              maxHeight: '600px',
+              height: '95vh',
+              maxHeight: '805px',
               width: '280px',
               left: '100%',
               top: 0,
@@ -1040,6 +978,60 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           </div>
         )}
         
+        {/* Report Panel - Debug Version */}
+        {showReportPanel && (
+          <div 
+            className="bg-red-800 rounded-lg shadow-xl border-4 border-yellow-500 absolute"
+            style={{
+              height: '95vh',
+              maxHeight: '805px',
+              width: '320px',
+              left: '16px',
+              transform: 'translateX(-100%)',
+              top: 0,
+              zIndex: 9999
+            }}
+          >
+            <div className="p-4 h-full flex flex-col">
+              <h3 className="text-white font-bold mb-4 text-xl">REPORT PANEL IS VISIBLE</h3>
+              <p className="text-white mb-2">Modal Type: {modalType}</p>
+              <p className="text-white mb-4">If you see this, the panel is working!</p>
+              
+              {/* Enemy and Friendly Player Containers Side by Side */}
+              <div className="flex gap-3 flex-1 mb-4">
+                {/* Enemy Players - Left Side */}
+                <div className="w-1/2 bg-gray-900 border-2 border-red-500 rounded p-3 flex flex-col">
+                  <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
+                  <div className="flex-1 overflow-y-auto">
+                    <p className="text-xs text-gray-500">No enemies reported</p>
+                  </div>
+                </div>
+                
+                {/* Friendly Players - Right Side */}
+                <div className="w-1/2 bg-gray-900 border-2 border-green-500 rounded p-3 flex flex-col">
+                  <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
+                  <div className="flex-1 overflow-y-auto">
+                    <p className="text-xs text-gray-500">No friendlies reported</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Notes Container - Bottom */}
+              <div className="bg-gray-900 border-2 border-gray-600 rounded p-3 h-32">
+                <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
+                <textarea 
+                  className="w-full h-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 resize-none focus:outline-none focus:border-blue-500"
+                  placeholder="Enter notes..."
+                />
+              </div>
+              
+              {/* Create Report Button */}
+              <button className="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+                Create New Report
+              </button>
+            </div>
+          </div>
+        )}
         
         {showRaidedOutPrompt && (
           <RaidedOutPrompt 
@@ -1049,7 +1041,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
             }}
             onCancel={() => {
               setShowRaidedOutPrompt(false)
-              setFormData(prev => ({ ...prev, raidedOut: false }))
+              setFormData(prev => ({ ...prev, raidedOut: true }))
             }}
           />
         )}
