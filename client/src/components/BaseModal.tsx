@@ -595,7 +595,14 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
                   <div className="flex items-center gap-3 flex-1">
-                    <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
+                    <div className="relative">
+                      {editingLocation?.id && (
+                        <div className="text-gray-500 text-xs font-mono absolute -top-4 left-0" style={{fontSize: '10px'}}>
+                          ID: {editingLocation.id}
+                        </div>
+                      )}
+                      <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
+                    </div>
                     <div className="flex gap-2 flex-wrap">
                       <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
                         <input 
@@ -665,7 +672,16 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                     </div>
                   </div>
                 )}
-                {modalType !== 'enemy' && <div></div>}
+                {modalType !== 'enemy' && (
+                  <div className="relative">
+                    {editingLocation?.id && (
+                      <div className="text-gray-500 text-xs font-mono absolute -top-4 left-0" style={{fontSize: '10px'}}>
+                        ID: {editingLocation.id}
+                      </div>
+                    )}
+                    <div className="text-green-500 font-bold text-lg">FRIENDLY</div>
+                  </div>
+                )}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()
