@@ -1007,6 +1007,13 @@ export default function InteractiveTacticalMap() {
     setContextMenu(prev => ({ ...prev, visible: false }))
     setEditingLocation(null)
     setEditingReport(null)
+    // Clear any stale base report data
+    setBaseReportData({
+      baseId: null,
+      baseName: null,
+      baseCoords: null,
+      baseType: null
+    })
     setModalType(type)
     console.log("Modal type set to:", type, "Modal should be visible:", true)
     setNewBaseModal(prev => ({ ...prev, visible: true }))
@@ -1062,8 +1069,9 @@ export default function InteractiveTacticalMap() {
           const response = await fetch('/api/reports')
           const allReports = await response.json()
           
-          // Find reports that belong to this base
+          // Find reports that belong to this base using base ID (primary) and name (fallback)
           const reportsToDelete = allReports.filter(report => 
+            report.baseId === editingLocation.id ||
             report.locationName === editingLocation.name ||
             report.locationCoords === editingLocation.name ||
             (report.content?.baseName === editingLocation.name) ||
