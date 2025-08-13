@@ -118,6 +118,7 @@ const BaseModal = ({
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
+  const [reportTab, setReportTab] = useState('view') // Default to 'view' for "Write report" button
   
   const ownerInputRef = useRef(null)
   
@@ -227,6 +228,204 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
 }, [])
 
   
+  const renderViewReports = () => {
+    const baseReports = (reportLibrary || []).filter(r => r.locationId === editingLocation?.id)
+    
+    return (
+      <div className="max-h-96 overflow-y-auto">
+        {baseReports.length === 0 ? (
+          <div className="text-center py-8 text-gray-400">
+            No reports for this base yet
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {baseReports.map((report) => (
+              <div 
+                key={report.id} 
+                className="bg-gray-700 rounded-lg p-4 border border-gray-600 flex items-center justify-between"
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-white font-medium">{report.title}</span>
+                    <span className="text-gray-400 text-sm">• {report.time}</span>
+                    {report.notes && (
+                      <svg className="h-4 w-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    )}
+                    <svg className="h-4 w-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    </svg>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      report.outcome === 'won' ? 'bg-green-600 text-white' : 
+                      report.outcome === 'lost' ? 'bg-red-600 text-white' : 
+                      'bg-gray-600 text-white'
+                    }`}>
+                      {report.outcome}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    // setEditingReport(report) - Removed since not needed for now
+                    setReportTab('create')
+                  }}
+                  className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded"
+                >
+                  Edit
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  const renderCreateReport = () => (
+    <div>
+      <div className="flex gap-4 items-end mb-4">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
+          <div className="relative">
+            <select 
+              value={formData.type} 
+              onChange={(e) => {
+                const newType = e.target.value
+                setFormData(prev => ({ 
+                  ...prev, 
+                  type: newType,
+                  reportOutcome: newType === 'report-farming' ? 'lost' : newType === 'report-loaded' ? 'won' : 'neutral'
+                }))
+              }} 
+              className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="report-pvp">PVP General</option>
+              <option value="report-spotted">Spotted Enemy</option>
+              <option value="report-bradley">Countered/Took Bradley/Heli</option>
+              <option value="report-oil">Countered/Took Oil/Cargo</option>
+              <option value="report-monument">Big Score/Fight at Monument</option>
+              <option value="report-farming">Killed While Farming</option>
+              <option value="report-loaded">Killed Loaded Enemy</option>
+              <option value="report-raid">Countered Raid</option>
+              <option value="report-base-raided">Base Raided</option>
+              <option value="report-base-mlrsd">MLRS'd</option>
+              <option value="report-base-grubbed">We grubbed</option>
+              <option value="report-base-caught-loot">Caught moving loot</option>
+              <option value="report-base-enemy-built">Enemy built in</option>
+            </select>
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
+              <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+                {getIcon(formData.type)}
+              </div>
+              <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">Time</label>
+          <input 
+            type="time" 
+            value={formData.reportTime} 
+            onChange={(e) => setFormData(prev => ({ ...prev, reportTime: e.target.value }))} 
+            className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
+          />
+        </div>
+      </div>
+      
+      {/* Rest of the form fields from the original renderReportModal */}
+      {(formData.type === 'report-base-raided' || 
+        formData.type === 'report-base-mlrsd' || 
+        formData.type === 'report-base-grubbed' || 
+        formData.type === 'report-base-caught-loot' || 
+        formData.type === 'report-base-enemy-built') && (
+        <div className="mt-4">
+          {/* Enemy and Friendly Player Containers */}
+          <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
+            {/* Enemy Players */}
+            <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col">
+              <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
+              <div className="flex-1 overflow-y-auto">
+                <textarea 
+                  placeholder="Enter enemy player names (one per line)" 
+                  value={formData.enemyPlayers} 
+                  onChange={(e) => setFormData(prev => ({ ...prev, enemyPlayers: e.target.value }))} 
+                  className="w-full h-full bg-transparent border-none outline-none text-red-300 placeholder-red-500 resize-none text-sm" 
+                />
+              </div>
+            </div>
+
+            {/* Friendly Players */}
+            <div className="flex-1 bg-gray-900 border border-blue-500 rounded p-3 flex flex-col">
+              <h4 className="text-blue-400 font-semibold text-sm mb-2">Friendly Players</h4>
+              <div className="flex-1 overflow-y-auto">
+                <textarea 
+                  placeholder="Enter friendly player names (one per line)" 
+                  value={formData.friendlyPlayers} 
+                  onChange={(e) => setFormData(prev => ({ ...prev, friendlyPlayers: e.target.value }))} 
+                  className="w-full h-full bg-transparent border-none outline-none text-blue-300 placeholder-blue-500 resize-none text-sm" 
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Outcome Buttons */}
+          <div className="flex gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({ ...prev, reportOutcome: 'won' }))}
+              className={`px-4 py-2 rounded font-medium transition-colors ${
+                formData.reportOutcome === 'won' 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Won
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({ ...prev, reportOutcome: 'lost' }))}
+              className={`px-4 py-2 rounded font-medium transition-colors ${
+                formData.reportOutcome === 'lost' 
+                  ? 'bg-red-600 text-white' 
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Lost
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({ ...prev, reportOutcome: 'neutral' }))}
+              className={`px-4 py-2 rounded font-medium transition-colors ${
+                formData.reportOutcome === 'neutral' 
+                  ? 'bg-gray-600 text-white' 
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Neutral
+            </button>
+          </div>
+
+          {/* Notes Field */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1 text-gray-200">Notes</label>
+            <textarea 
+              placeholder="Add any additional notes about this base report..." 
+              value={formData.notes} 
+              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-400 focus:border-blue-500 focus:outline-none" 
+              rows="3"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
   const handleSave = () => {
     const baseData = {
       type: formData.type,
