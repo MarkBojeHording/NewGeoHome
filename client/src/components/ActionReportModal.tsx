@@ -84,6 +84,8 @@ export default function ActionReportModal({
   })
 
   const handleSave = () => {
+    if (createReportMutation.isPending) return // Prevent multiple submissions
+    
     const reportData = {
       title: `${formData.type.replace('report-', '')} Report`,
       reportType: "base",
@@ -254,9 +256,14 @@ export default function ActionReportModal({
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+              disabled={createReportMutation.isPending}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                createReportMutation.isPending 
+                  ? 'bg-blue-400 text-gray-300 cursor-not-allowed' 
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
             >
-              Save Report
+              {createReportMutation.isPending ? 'Saving...' : 'Save Report'}
             </button>
           </div>
         </div>
