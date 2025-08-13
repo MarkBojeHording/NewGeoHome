@@ -667,9 +667,9 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       style={{ width: '30%', minWidth: '350px', maxWidth: '450px', minHeight: '160px' }}
     >
       {!location.type.startsWith('report') && (
-        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 translate-x-1 flex gap-3">
+        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 translate-x-1 flex gap-3">
       {/* Rectangle - wider, 20px from bottom, 5px right */}
-      <div className="absolute top-12 left-1/2 transform -translate-x-1/2 pointer-events-none">
+      <div className="absolute top-16 left-1/2 transform -translate-x-1/2 pointer-events-none">
         <div className="w-56 h-32 bg-gray-800 border border-gray-600 shadow-lg"></div>
       </div>
       
