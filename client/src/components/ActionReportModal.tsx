@@ -59,7 +59,7 @@ export default function ActionReportModal({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch template for base reports
+  // Fetch template for the report type
   const { data: template, isLoading } = useQuery<ReportTemplate>({
     queryKey: ["/api/report-templates", "base"],
     enabled: isVisible,
@@ -82,7 +82,7 @@ export default function ActionReportModal({
     },
     onSuccess: () => {
       toast({
-        title: editingReport ? "Base Report Updated" : "Base Report Created",
+        title: editingReport ? "Report Updated" : "Report Created",
         description: `Report "${formData.title}" has been saved successfully.`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/reports"] });
@@ -118,7 +118,7 @@ export default function ActionReportModal({
     if (editingReport) {
       setFormData({
         title: editingReport.title || "",
-        reportType: "base",
+        reportType: editingReport.reportType || "base",
         baseId: editingReport.baseId || baseId,
         baseName: editingReport.baseName || baseName,
         content: editingReport.content || {},
@@ -245,7 +245,7 @@ export default function ActionReportModal({
       <div className="bg-gray-900 rounded-lg border border-gray-700 p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-white">
-            {editingReport ? "Edit Base Report" : "Create Base Report"}
+            {editingReport ? "Edit Report" : "Create New Report"}
           </h2>
           <button
             onClick={onClose}
@@ -261,6 +261,22 @@ export default function ActionReportModal({
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Report Type Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Report Type
+              </label>
+              <select
+                value={formData.reportType}
+                onChange={(e) => setFormData(prev => ({ ...prev, reportType: e.target.value }))}
+                className="w-full p-2 border border-gray-600 rounded bg-gray-800 text-white"
+              >
+                <option value="general">General Report</option>
+                <option value="base">Base Report</option>
+                <option value="raid">Raid Report</option>
+              </select>
+            </div>
+
             {/* Basic Fields */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
