@@ -668,6 +668,11 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
     >
       {!location.type.startsWith('report') && (
         <div className="absolute -top-7 left-1/2 transform -translate-x-1/2 flex gap-3">
+      {/* Rectangle in the middle */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="w-32 h-20 bg-gray-800 border border-gray-600 shadow-lg"></div>
+      </div>
+      
           <button className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center hover:from-blue-400 hover:to-blue-600 transition-all duration-200 border-2 border-blue-300 shadow-lg transform hover:scale-105" title="Linked Bases">
             <svg className="h-5 w-5 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
