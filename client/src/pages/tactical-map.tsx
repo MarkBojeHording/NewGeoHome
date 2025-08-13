@@ -1154,17 +1154,6 @@ export default function InteractiveTacticalMap() {
     <div className="min-h-screen bg-gradient-to-b from-gray-700 to-gray-900 p-4">
       {/* Top Toolbar */}
       <div className="absolute top-4 left-4 right-4 z-30 flex justify-between items-center pointer-events-none">
-        <div className="flex gap-3 pointer-events-auto">
-          <button
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 shadow-lg transition-colors border border-blue-400"
-            onClick={() => setShowPlayerModal(true)}
-            title="Player Management"
-            data-testid="button-open-player-modal"
-          >
-            <User className="w-5 h-5" />
-            <span className="text-sm font-medium">Players</span>
-          </button>
-        </div>
         <div className="text-white text-sm font-medium pointer-events-auto">
           Tactical Map
         </div>
@@ -1248,7 +1237,7 @@ export default function InteractiveTacticalMap() {
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     {['Logs', 'Progression', 'Players', 'Teams', 'Bot Control', 'Turret Control'].map((btn) => (
-                      <button key={btn} className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl">
+                      <button key={btn} onClick={() => btn === 'Players' ? setShowPlayerModal(true) : undefined} data-testid={btn === 'Players' ? 'button-open-player-modal' : undefined} className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl">
                         {btn}
                       </button>
                     ))}
