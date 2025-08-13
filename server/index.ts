@@ -48,7 +48,8 @@ app.use((req, res, next) => {
     const message = err.message || "Internal Server Error";
 
     res.status(status).json({ message });
-    throw err;
+    // Don't throw error - just log it to prevent crashes
+    console.error('Request error:', err);
   });
 
   // importantly only setup vite in development and after
@@ -65,6 +66,23 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
+  
+  server.on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`Port ${port} is busy, retrying in 2 seconds...`);
+      setTimeout(() => {
+        server.close();
+        server.listen({
+          port,
+          host: "0.0.0.0",
+          reusePort: true,
+        });
+      }, 2000);
+    } else {
+      console.error('Server error:', err);
+    }
+  });
+  
   server.listen({
     port,
     host: "0.0.0.0",

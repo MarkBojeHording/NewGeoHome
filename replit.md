@@ -38,6 +38,10 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Added dual premium player creation methods** - Both enemy base modal search dropdown and Player Management modal orange plus button create premium players
 ✓ **Enhanced Player Management modal** - Displays premium players with orange styling, orange plus icon opens dedicated creation dialog
 ✓ **Fixed premium player dropdown logic** - Corrected BaseModal dropdown condition to show "Create Premium profile" option when no search results found
+✓ **Added rectangle to base preview container** - Rectangle with 90-degree corners and darker color in SelectedLocationPanel for visual reference
+✓ **Enhanced app stability** - Improved connection handling, port conflict resolution, and error handling to prevent crashes
+✓ **Restored Reports tab functionality** - Fixed BaseModal Reports tab to display actual report data instead of placeholder text
+✓ **Graceful external API handling** - App continues working when external player API is unavailable, returns empty arrays instead of errors
 
 ## Current Features
 
