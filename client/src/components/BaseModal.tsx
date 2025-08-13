@@ -178,7 +178,7 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
         </div>
         
         {/* Search Results Dropdown */}
-        {showDropdown && searchTerm && (
+        {showDropdown && searchTerm && (hasResults || searchTerm.trim()) && (
           <div className="absolute top-full left-2 right-2 mt-1 bg-gray-800 border border-gray-600 rounded max-h-32 overflow-y-auto z-50">
             {/* Regular Players */}
             {filteredPlayers.slice(0, 10).map((player) => (
