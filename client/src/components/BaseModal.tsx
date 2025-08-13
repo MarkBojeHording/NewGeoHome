@@ -193,7 +193,8 @@ const BaseModal = ({
     raidedOut: false,
     primaryRockets: 0,
     enemyPlayers: '',
-    friendlyPlayers: ''
+    friendlyPlayers: '',
+    coordinateOverride: ''
   })
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
@@ -234,7 +235,8 @@ const BaseModal = ({
         raidedOut: editingLocation.raidedOut || false,
         primaryRockets: editingLocation.primaryRockets || 0,
         enemyPlayers: editingLocation.enemyPlayers || '',
-        friendlyPlayers: editingLocation.friendlyPlayers || ''
+        friendlyPlayers: editingLocation.friendlyPlayers || '',
+        coordinateOverride: editingLocation.coordinateOverride || ''
       })
     } else if (modalType === 'report') {
       const now = new Date()
@@ -296,18 +298,30 @@ const BaseModal = ({
   }, [getMainBasesWithInfo])
 
 const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
-  const rows = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  const cols = 30
-  const row = Math.floor(y / (100 / rows.length))
-  const col = Math.floor(x / (100 / cols)) + 1
-  const baseName = rows[Math.min(row, rows.length - 1)] + col.toString().padStart(2, "0")
+  const GRID_CONFIG = {
+    COLS: 32,
+    ROWS: 24,
+    CELL_WIDTH_PERCENT: 3.125,
+    CELL_HEIGHT_PERCENT: 4.167
+  }
   
-  if (!locations || !Array.isArray(locations)) return baseName
-  const existing = locations.filter(loc => 
-    loc.id !== excludeId && loc.name.startsWith(baseName)
-  ).length
+  const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
+  const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
+  const clampedCol = Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1)
+  const clampedRow = Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
+  const letter = clampedCol < 26 ? String.fromCharCode(65 + clampedCol) : `A${String.fromCharCode(65 + clampedCol - 26)}`
+  const number = clampedRow + 1
+  const baseCoord = `${letter}${number}`
   
-  return existing > 0 ? `${baseName}(${existing + 1})` : baseName
+  if (!locations || !Array.isArray(locations)) return baseCoord
+  
+  const duplicates = locations.filter(loc => {
+    if (excludeId && loc.id === excludeId) return false
+    const locBase = loc.name.split('(')[0]
+    return locBase === baseCoord
+  })
+  
+  return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
 }, [])
 
   
@@ -329,7 +343,8 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
       roofCamper: modalType === 'enemy' ? formData.roofCamper : undefined,
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
       raidedOut: modalType === 'enemy' ? formData.raidedOut : undefined,
-      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined
+      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined,
+      coordinateOverride: formData.coordinateOverride || undefined
     }
     
     onSave(baseData)
@@ -515,9 +530,15 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
           {modalType === 'enemy' && (
             <>
               <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
-                <span className="text-white font-mono font-bold text-3xl">
-                  {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)}
-                </span>
+                <div className="text-white font-mono font-bold text-3xl text-center">
+                  <input
+                    type="text"
+                    value={formData.coordinateOverride || (editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, coordinateOverride: e.target.value }))}
+                    className="bg-transparent text-white font-mono font-bold text-3xl text-center border-none outline-none focus:bg-gray-800 focus:px-2 focus:rounded w-full"
+                    placeholder="Coordinate"
+                  />
+                </div>
               </div>
               {(formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') && (
                 <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-800 rounded-lg px-2 py-1.5 border-2 border-gray-600 shadow-lg" style={{top: '28px', width: '90px', zIndex: 60}}>
