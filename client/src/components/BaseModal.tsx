@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit } from "lucide-react"
+import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit, Camera, StickyNote } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { RocketCalculatorSection } from './RocketCalculator'
 
@@ -101,21 +101,44 @@ const BaseReportsList = ({ baseName, baseCoords, onEditReport }) => {
           hour12: false 
         })
         
-        // Remove "Report" from title and clean up type display
+        // Remove "Report" from title and clean up type display with fuller names
         const cleanTitle = report.title.replace(/\s+Report$/i, '')
-        const reportType = report.content?.type ? report.content.type.replace('report-', '') : report.reportType
+        const getFullReportType = (type) => {
+          if (!type) return 'Unknown'
+          const typeStr = type.replace('report-', '')
+          switch(typeStr) {
+            case 'pvp': return 'PvP Encounter'
+            case 'raid': return 'Raid Activity'
+            case 'spotted': return 'Enemy Spotted'
+            case 'monument': return 'Monument Activity'
+            case 'heli': return 'Helicopter Event'
+            case 'bradley': return 'Bradley Event'
+            default: return typeStr.charAt(0).toUpperCase() + typeStr.slice(1)
+          }
+        }
+        const reportType = getFullReportType(report.content?.type || report.reportType)
+        
+        // Check if report has content in notes or pictures (pictures feature coming later)
+        const hasNotes = report.content?.notes && report.content.notes.trim().length > 0
+        const hasPictures = false // Will be implemented later
         
         return (
           <div key={report.id} className="flex items-center justify-between bg-gray-700 p-2 rounded">
             <div className="flex items-center space-x-2 flex-1 min-w-0">
               <FileText className="h-4 w-4 text-green-400 flex-shrink-0" />
-              <span className="text-white text-sm truncate">
-                {timeString} - {reportType}
-              </span>
+              <div className="flex-1 min-w-0">
+                <div className="text-white text-sm truncate">
+                  {timeString} - {reportType}
+                </div>
+              </div>
+              <div className="flex items-center space-x-1 flex-shrink-0">
+                <Camera className={`h-3 w-3 ${hasPictures ? 'text-blue-400' : 'text-gray-600'}`} />
+                <StickyNote className={`h-3 w-3 ${hasNotes ? 'text-yellow-400' : 'text-gray-600'}`} />
+              </div>
             </div>
             <button
               onClick={() => onEditReport(report)}
-              className="text-blue-400 hover:text-blue-300 p-1 flex-shrink-0"
+              className="text-blue-400 hover:text-blue-300 p-1 flex-shrink-0 ml-2"
             >
               <Edit className="h-4 w-4" />
             </button>

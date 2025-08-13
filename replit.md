@@ -15,6 +15,9 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Implemented proper data saving** - ActionReportModal saves reports to database with React Query integration
 ✓ **Resolved base matching logic** - Reports now properly match to bases using base names (M7, A1, etc.)
 ✓ **Multiple report creation confirmed working** - Users can create unlimited reports per base with proper form reset
+✓ **Enhanced report display** - Reports now show full category names (PvP Encounter, Raid Activity, etc.)
+✓ **Added content indicators** - Camera and note icons show dark gray until content exists in those categories
+✓ **Improved layout formatting** - Time shows as HH:MM, removed "Report" from titles, removed "active" status
 
 ## Current Features
 
