@@ -1401,6 +1401,11 @@ export default function InteractiveTacticalMap() {
           baseName={baseReportData.baseName || ''}
           baseCoords={baseReportData.baseCoords || ''}
         />
+
+        <PlayerModal
+          isOpen={showPlayerModal}
+          onClose={() => setShowPlayerModal(false)}
+        />
       </div>
     </div>
   )
