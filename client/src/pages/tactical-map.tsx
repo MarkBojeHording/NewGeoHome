@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } from 'lucide-react'
 import BaseModal from '../components/BaseModal'
 import ReportModal from '../components/ReportModal'
-import BaseReportModal from '../components/BaseReportModal'
+import ActionReportModal from '../components/ActionReportModal'
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
   COLS: 32,
@@ -1316,13 +1316,11 @@ export default function InteractiveTacticalMap() {
           reportType={reportModalData.reportType || 'general'}
         />
 
-        <BaseReportModal
+        <ActionReportModal
           isVisible={showBaseReportModal}
           onClose={() => setShowBaseReportModal(false)}
           baseId={baseReportData.baseId || ''}
           baseName={baseReportData.baseName || ''}
-          baseCoords={baseReportData.baseCoords || ''}
-          baseType={baseReportData.baseType || ''}
         />
       </div>
     </div>
