@@ -74,9 +74,11 @@ const BaseReportsList = ({ baseName, baseCoords, onEditReport }) => {
     enabled: !!(baseName || baseCoords)
   })
 
-  // Filter reports for this specific base (bases only have coordinates, no names)
+  // Filter reports for this specific base using base name (like "M7", "A1", etc.)
   const baseReports = reports.filter(report => 
+    report.locationName === baseCoords ||
     report.locationCoords === baseCoords ||
+    (report.content?.baseName === baseCoords) ||
     (report.content?.baseCoords === baseCoords)
   )
 
@@ -821,10 +823,7 @@ const getGridCoordinate = useCallback((x, y, locations, excludeId = null) => {
                 <div className="space-y-2">
                   <BaseReportsList 
                     baseName={editingLocation?.name}
-                    baseCoords={editingLocation?.coordinates || 
-                      (editingLocation?.x && editingLocation?.y ? 
-                        `${String.fromCharCode(65 + Math.floor(editingLocation.x / 146))}${Math.floor(editingLocation.y / 146) + 1}` : 
-                        '')}
+                    baseCoords={editingLocation?.name}
                     onEditReport={(report) => {
                       if (onOpenBaseReport) {
                         onOpenBaseReport(editingLocation)

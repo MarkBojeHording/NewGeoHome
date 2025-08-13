@@ -87,7 +87,7 @@ export default function ActionReportModal({
     const reportData = {
       title: `${formData.type.replace('report-', '')} Report`,
       reportType: "base",
-      locationName: baseName || "",
+      locationName: baseName || baseCoords || "",
       locationCoords: baseCoords || "",
       content: {
         type: formData.type,
