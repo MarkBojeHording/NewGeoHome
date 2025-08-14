@@ -50,6 +50,7 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Added automatic tag cleanup** - When bases are deleted, all associated player base tags are automatically removed from database
 ✓ **Enhanced BaseModal with automatic tagging** - When saving enemy/friendly bases with players, system creates player base tags automatically
 ✓ **Extended PlayerModal with base ownership display** - Player profiles now show which bases they own with coordinate tags and base type tooltips
+✓ **Added multi-circle player count system** - Main base icons now display up to 3 player count circles: green (online), orange (premium, 35% smaller), and grey (offline, 35% smaller) with precise positioning
 
 ## Current Features
 
