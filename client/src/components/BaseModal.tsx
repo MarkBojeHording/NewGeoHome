@@ -679,21 +679,16 @@ const BaseModal = ({
             <div className="p-4 h-full flex flex-col">
               <h3 className="text-white font-bold mb-4">Base Reports</h3>
               
-              {/* Fetch and display reports for this base */}
-              <BaseReportsContent baseName={editingLocation?.name} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
-              
-              {/* 
-                ⚠️  PERMANENTLY REMOVED: Enemy/Friendly Player containers and Notes textarea ⚠️
-                These were placeholder containers showing "No enemies reported" / "No friendlies reported" 
-                and an empty notes textarea that created visual clutter without functional value.
-                
-                🚫 DO NOT RE-ADD THESE CONTAINERS 🚫 - Removed permanently: August 14, 2025
-                
-                If report functionality is needed, enhance BaseReportsContent component instead.
-              */
+              {/* List of reports for this base */}
+              <div className="flex-1 overflow-y-auto mb-4">
+                <div className="space-y-2">
+                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
+                  {/* Reports will be listed here */}
+                </div>
+              </div>
               
               {/* Create Report Button */}
-              <button className="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
                 Create New Report
               </button>
             </div>
@@ -807,7 +802,6 @@ const BaseModal = ({
           </div>
         )}
         
-        
         {showRaidedOutPrompt && (
           <RaidedOutPrompt 
             onConfirm={() => {
@@ -824,3 +818,5 @@ const BaseModal = ({
     </div>
   )
 }
+
+export default BaseModal
