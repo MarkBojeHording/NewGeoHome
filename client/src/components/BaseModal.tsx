@@ -374,6 +374,42 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
     </div>
   )
 }
+// RaidedOutPrompt component for handling raided out confirmation
+const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
+  <div 
+    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4"
+    onClick={onCancel}
+  >
+    <div 
+      className="bg-gray-800 rounded-lg shadow-2xl border border-gray-600 p-6 max-w-sm w-full relative"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        onClick={onCancel}
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
+      >
+        <X className="h-5 w-5" />
+      </button>
+      <h3 className="text-lg font-bold text-white mb-4">Base Raided Out</h3>
+      <p className="text-gray-300 mb-6">Would you like to report this raid?</p>
+      <div className="flex gap-3 justify-end">
+        <button
+          onClick={onConfirm}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+        >
+          Make Report
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 bg-gray-700 text-gray-200 rounded-md hover:bg-gray-600 transition-colors font-medium"
+        >
+          Not right now
+        </button>
+      </div>
+    </div>
+  </div>
+)
+
 
 const BaseModal = ({ 
   modal, 
