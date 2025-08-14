@@ -181,33 +181,60 @@ const getGridPosition = (x: number, y: number) => {
   }
 }
 
-// Get group color for a base (only if it has subordinates or is part of a group)
+// Get group color for a base - MUCH SIMPLER STABLE APPROACH
 const getGroupColor = (baseId: string, locations: any[]) => {
-  const groupBases = getBaseGroup(baseId, locations)
+  const currentBase = locations.find(loc => loc.id === baseId)
+  if (!currentBase) return null
   
-  if (groupBases.length <= 1) return null // No group if only one base
+  // SIMPLE RULE: Only main bases (small/medium/large) that have subordinates get colors
+  const isMainBase = currentBase.type === "enemy-small" || currentBase.type === "enemy-medium" || currentBase.type === "enemy-large"
   
-  // Find main bases in the group
-  const mainBases = groupBases.filter(base => 
-    base.type === "enemy-small" || base.type === "enemy-medium" || base.type === "enemy-large"
-  )
-  
-  if (mainBases.length === 0) return null // No main base found
-  
-  // Sort main bases by name for consistent color assignment
-  const sortedMainBases = mainBases.sort((a, b) => a.name.localeCompare(b.name))
-  const firstMainBase = sortedMainBases[0]
-  
-  // Use hash of first main base name to determine color index
-  let hash = 0
-  for (let i = 0; i < firstMainBase.name.length; i++) {
-    const char = firstMainBase.name.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash // Convert to 32-bit integer
+  if (isMainBase) {
+    // Check if this main base has any subordinates linked to it
+    const currentBaseCoords = currentBase.name.split('(')[0] // Remove (2), (3) etc
+    const hasSubordinates = locations.some(loc => {
+      const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
+      return isSubordinate && loc.ownerCoordinates === currentBaseCoords
+    })
+    
+    if (hasSubordinates) {
+      // Use simple hash of main base ID (which never changes) for stable color
+      let hash = 0
+      for (let i = 0; i < baseId.length; i++) {
+        const char = baseId.charCodeAt(i)
+        hash = ((hash << 5) - hash) + char
+        hash = hash & hash
+      }
+      return GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
+    }
   }
   
-  const color = GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
-  return color
+  // SIMPLE RULE: Subordinate bases get the same color as their owner main base
+  const isSubordinateBase = currentBase.type === "enemy-flank" || currentBase.type === "enemy-farm" || currentBase.type === "enemy-tower"
+  
+  if (isSubordinateBase && currentBase.ownerCoordinates) {
+    // Find the main base this subordinate is linked to
+    const ownerMainBase = locations.find(loc => {
+      const isMainBase = loc.type === "enemy-small" || loc.type === "enemy-medium" || loc.type === "enemy-large"
+      if (!isMainBase) return false
+      
+      const mainBaseCoords = loc.name.split('(')[0]
+      return mainBaseCoords === currentBase.ownerCoordinates
+    })
+    
+    if (ownerMainBase) {
+      // Use same color logic as the main base
+      let hash = 0
+      for (let i = 0; i < ownerMainBase.id.length; i++) {
+        const char = ownerMainBase.id.charCodeAt(i)
+        hash = ((hash << 5) - hash) + char
+        hash = hash & hash
+      }
+      return GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
+    }
+  }
+  
+  return null // No color for bases without grouping
 }
 
 
