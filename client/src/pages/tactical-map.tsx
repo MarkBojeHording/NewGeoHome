@@ -683,14 +683,20 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               // Filter players to only show those assigned to this base
               const taggedPlayers = players.filter(p => selectedPlayersList.includes(p.playerName));
               
-              // Get online and offline players from tagged players only
-              const onlinePlayers = taggedPlayers.filter(p => p.isOnline) || [];
-              const offlinePlayers = taggedPlayers.filter(p => !p.isOnline) || [];
+              // Separate premium and regular players
+              const premiumTaggedPlayers = taggedPlayers.filter(p => p.createdAt !== undefined); // Premium players have createdAt
+              const regularTaggedPlayers = taggedPlayers.filter(p => p.createdAt === undefined);
               
-              // Combine in priority order: online first, then offline
+              // Get online and offline players from regular players only (premium players are always offline)
+              const onlinePlayers = regularTaggedPlayers.filter(p => p.isOnline) || [];
+              const offlinePlayers = regularTaggedPlayers.filter(p => !p.isOnline) || [];
+              
+              // Combine in priority order: online first, then offline, then premium
+              const regularPlayerCount = onlinePlayers.length + offlinePlayers.length;
               const prioritizedPlayers = [
                 ...onlinePlayers.slice(0, 10), // Take up to 10 online players first
-                ...offlinePlayers.slice(0, Math.max(0, 10 - onlinePlayers.length)) // Fill remaining with offline
+                ...offlinePlayers.slice(0, Math.max(0, 10 - onlinePlayers.length)), // Fill remaining with offline
+                ...premiumTaggedPlayers.slice(0, Math.max(0, 10 - regularPlayerCount)) // Add premium players if space
               ].slice(0, 10);
               
               // Fill remaining slots with empty boxes
@@ -707,9 +713,11 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
                     index >= 8 ? 'border-b-0' : ''
                   } ${
                     player 
-                      ? player.isOnline 
-                        ? 'bg-green-900 text-green-300' 
-                        : 'bg-gray-700 text-gray-400'
+                      ? player.createdAt !== undefined // Premium player
+                        ? 'bg-orange-900 text-orange-300' 
+                        : player.isOnline 
+                          ? 'bg-green-900 text-green-300' 
+                          : 'bg-gray-700 text-gray-400'
                       : 'bg-gray-800'
                   }`}
                 >
