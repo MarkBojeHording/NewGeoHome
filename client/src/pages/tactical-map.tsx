@@ -563,7 +563,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           </div>
         )}
         
-        <div className={`bg-gray-700 rounded-full shadow-md border border-gray-600 flex items-center justify-center ${
+        <div className={`${location.raidedOut ? 'bg-gray-500 border-gray-400' : 'bg-gray-700 border-gray-600'} rounded-full shadow-md border flex items-center justify-center ${
           location.type.startsWith('report') ? 'p-0.5 scale-[0.375]' : 'p-0.5 scale-75'
         }`}>
           <div className={`${getColor(location.type, location.raidedOut)} flex items-center justify-center`}>
@@ -1104,7 +1104,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       )}
       
       <div className="flex-shrink-0 mt-4 relative">
-        <div className="bg-gray-700 rounded-full p-4 shadow-xl border-2 border-gray-600">
+        <div className={`${location.raidedOut ? 'bg-gray-500 border-gray-400' : 'bg-gray-700 border-gray-600'} rounded-full p-4 shadow-xl border-2`}>
           <div className={getColor(location.type, location.raidedOut)}>
             <div className="transform scale-125">
               {getLargeIcon(location.type)}
