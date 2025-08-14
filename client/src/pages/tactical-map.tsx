@@ -658,13 +658,27 @@ const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
   </div>
 )
 
-const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport, players }) => {
+const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport, players, locations }) => {
   const [showActionMenu, setShowActionMenu] = useState(false)
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
   
   // Get players from the location data (same as BaseModal)
-  const locationPlayers = location.players || ''
+  // For subsidiary bases, get players from their main base
+  const locationPlayers = (() => {
+    if (location.ownerCoordinates && 
+        (location.type.includes('flank') || 
+         location.type.includes('tower') || 
+         location.type.includes('farm'))) {
+      const mainBase = locations.find(loc => 
+        loc.name.split('(')[0] === location.ownerCoordinates.split('(')[0]
+      )
+      if (mainBase && mainBase.players) {
+        return mainBase.players
+      }
+    }
+    return location.players || ''
+  })()
   
   return (
     <div 
@@ -1479,6 +1493,7 @@ export default function InteractiveTacticalMap() {
               onAddTimer={handleAddTimer}
               onOpenReport={onOpenBaseReport}
               players={players}
+              locations={locations}
               onOpenBaseReport={(location) => {
                 setBaseReportData({
                   baseId: location.id,
