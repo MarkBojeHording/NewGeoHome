@@ -443,16 +443,14 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             <div 
               className="absolute rounded-full"
               style={{
-                width: "18px", // Smaller group ring
+                width: "18px", // Smaller group circle
                 height: "18px",
                 left: "50%",
                 top: "50%",
                 transform: "translate(-50%, -50%)",
-                borderColor: groupColor,
-                borderWidth: "3px", // Proportionally smaller border
-                borderStyle: "solid",
+                backgroundColor: groupColor,
                 zIndex: 0, // Behind the icon
-                opacity: 0.8
+                opacity: 0.6 // Slightly more transparent since it's filled
               }}
             />
           )
