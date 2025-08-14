@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit, Camera, StickyNote, Search, Plus, Minus } from "lucide-react"
-import { useQuery, useQueries } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
 import type { ExternalPlayer } from '@shared/schema'
@@ -92,162 +92,6 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   })
   
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
-}
-
-// ============= ENEMY BASE HEAT MAP COMPONENT =============
-const EnemyBaseHeatMap = ({ players }: { players: string }) => {
-  // Parse selected players from comma-separated string
-  const selectedPlayersList = useMemo(() => {
-    return players ? players.split(',').map(p => p.trim()).filter(p => p) : []
-  }, [players])
-  
-  // Fetch session data for all selected players
-  const sessionQueries = useQueries({
-    queries: selectedPlayersList.map(playerName => ({
-      queryKey: ['/api/players', playerName, 'sessions'],
-      enabled: !!playerName
-    }))
-  })
-  
-  // Multi-player heat map data generation
-  const generateMultiPlayerHeatMapData = (allPlayersData: any[]) => {
-    const heatMapData: Record<string, Record<number, number>> = {}
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    
-    // Initialize empty data structure
-    days.forEach(day => {
-      heatMapData[day] = {}
-      for (let hour = 0; hour < 24; hour++) {
-        heatMapData[day][hour] = 0
-      }
-    })
-    
-    // Process each player's session data for accurate concurrent tracking
-    for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-      const dayName = days[dayIndex]
-      
-      for (let hour = 0; hour < 24; hour++) {
-        let concurrentPlayers = 0
-        
-        // Count players with active sessions during this specific day/hour
-        allPlayersData.forEach(playerSessions => {
-          if (!playerSessions || !Array.isArray(playerSessions)) return
-          
-          // Check if this player has a session active during this specific day/hour
-          const hasActiveSession = playerSessions.some(session => {
-            const startTime = new Date(session.startTime)
-            const endTime = new Date(session.endTime)
-            
-            // Get the day of week and check if it matches
-            const sessionStartDay = startTime.getDay()
-            const sessionEndDay = endTime.getDay()
-            
-            // Check if session spans across the target day and hour
-            if (sessionStartDay === dayIndex || sessionEndDay === dayIndex) {
-              const sessionStartHour = startTime.getHours()
-              const sessionEndHour = endTime.getHours()
-              
-              // For same day sessions
-              if (sessionStartDay === sessionEndDay && sessionStartDay === dayIndex) {
-                return hour >= sessionStartHour && hour < sessionEndHour
-              }
-              
-              // For sessions spanning midnight (different days)
-              if (sessionStartDay === dayIndex && sessionEndDay !== dayIndex) {
-                return hour >= sessionStartHour
-              }
-              
-              if (sessionEndDay === dayIndex && sessionStartDay !== dayIndex) {
-                return hour < sessionEndHour
-              }
-            }
-            
-            return false
-          })
-          
-          if (hasActiveSession) {
-            concurrentPlayers++
-          }
-        })
-        
-        heatMapData[dayName][hour] = concurrentPlayers
-      }
-    }
-    
-    return heatMapData
-  }
-  
-  // Get heat map color based on concurrent player count
-  const getMultiPlayerHeatMapColor = (playerCount: number) => {
-    if (playerCount === 0) return { className: 'bg-gray-800', style: {} }
-    if (playerCount === 1) return { className: 'bg-blue-900', style: {} }        // Dark blue
-    if (playerCount === 2) return { className: 'bg-green-400', style: {} }       // Light green
-    if (playerCount === 3) return { className: 'bg-yellow-400', style: {} }      // Yellow
-    if (playerCount === 4) return { className: 'bg-orange-500', style: {} }      // Orange
-    return { className: 'bg-red-500', style: {} }                               // Red (5+ players)
-  }
-  
-  // Render day column with hours
-  const renderDayColumn = (day: string, heatMapData: any) => {
-    const dayData = heatMapData[day] || {}
-    const hours = Array.from({ length: 24 }, (_, i) => i)
-    
-    return hours.map(hour => {
-      const playerCount = dayData[hour] || 0
-      const colorConfig = getMultiPlayerHeatMapColor(playerCount)
-      
-      return (
-        <div
-          key={hour}
-          className={`${colorConfig.className} border-b border-gray-700`}
-          style={{
-            height: '6px',
-            marginBottom: '0.5px',
-            ...colorConfig.style
-          }}
-          title={`${day} ${hour}:00 - ${playerCount} player${playerCount !== 1 ? 's' : ''} active`}
-        />
-      )
-    })
-  }
-  
-  // Get all session data
-  const allSessionsData = sessionQueries.map(query => query.data || [])
-  const isLoading = sessionQueries.some(query => query.isLoading)
-  
-  // Generate heat map data
-  const heatMapData = useMemo(() => {
-    if (isLoading) return {}
-    return generateMultiPlayerHeatMapData(allSessionsData)
-  }, [allSessionsData, isLoading])
-  
-  return (
-    <div className="border border-gray-600 rounded-lg bg-gray-700 mb-3 relative">
-      <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Heat Map</label>
-      <div className="p-2 pt-3">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-40">
-            <div className="text-gray-400 text-sm">Loading activity data...</div>
-          </div>
-        ) : selectedPlayersList.length === 0 ? (
-          <div className="flex items-center justify-center h-40">
-            <div className="text-gray-500 text-sm">Select base owners to view activity heat map</div>
-          </div>
-        ) : (
-          <div className="flex gap-1">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="flex-1">
-                <div className="text-[10px] text-gray-400 text-center">{day}</div>
-                <div className="bg-gray-800 rounded p-1" style={{height: '160px', position: 'relative'}}>
-                  {renderDayColumn(day, heatMapData)}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  )
 }
 
 // ============= BASE REPORTS CONTENT COMPONENT =============
@@ -436,6 +280,9 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
                 <span className={player.isOnline ? 'text-green-400' : 'text-gray-400'}>
                   {player.playerName}
                 </span>
+                <span className="text-xs text-gray-500">
+                  ({player.totalSessions} sessions)
+                </span>
               </button>
             ))}
             
@@ -502,9 +349,13 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
                     }`}>
                       {playerName}
                     </span>
-                    {isPremium && (
+                    {isPremium ? (
                       <span className="text-xs text-orange-600">
                         (Premium)
+                      </span>
+                    ) : player && (
+                      <span className="text-xs text-gray-500">
+                        ({player.totalSessions} sessions)
                       </span>
                     )}
                   </div>
@@ -559,12 +410,6 @@ const BaseModal = ({
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
   
-  // Query to fetch reports for this base using location coordinates
-  const { data: baseReports = [], isLoading: reportsLoading } = useQuery({
-    queryKey: ['/api/reports/location', editingLocation?.coordinates],
-    enabled: !!editingLocation?.coordinates && showReportPanel
-  })
-  
   const ownerInputRef = useRef(null)
   
   const handleToggleRocketCalculator = useCallback((e) => {
@@ -584,7 +429,7 @@ const BaseModal = ({
         type: editingLocation.type,
         notes: editingLocation.notes || '',
         oldestTC: editingLocation.oldestTC || 0,
-        players: editingLocation.players || '',
+        players: '',
         upkeep: editingLocation.upkeep || { wood: 0, stone: 0, metal: 0, hqm: 0 },
         reportTime: editingLocation.time || '',
         reportOutcome: editingLocation.outcome || 'neutral',
@@ -607,26 +452,6 @@ const BaseModal = ({
     }
   }, [editingLocation, modalType])
   
-  // Get subordinate bases for this main base
-  const getSubordinateBases = useCallback(() => {
-    if (!editingLocation || modalType !== 'enemy') return []
-    
-    const isMainBase = editingLocation.type === "enemy-small" || editingLocation.type === "enemy-medium" || editingLocation.type === "enemy-large"
-    if (!isMainBase) return []
-    
-    const currentCoords = editingLocation.name.split('(')[0] // Remove (2), (3) etc
-    
-    return locations.filter(loc => {
-      const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
-      if (!isSubordinate) return false
-      
-      // Check if this subordinate is linked to this main base
-      if (loc.ownerCoordinates === currentCoords) return true
-      
-      return false
-    }).map(loc => loc.name)
-  }, [editingLocation, locations, modalType])
-
   const getMainBases = useCallback(() => {
     const bases = locations.filter(loc => 
       !loc.type.includes('farm') && 
@@ -849,28 +674,13 @@ const BaseModal = ({
           />
         )}
         
-        {modalType === 'enemy' && (
-          <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
-        )}
+        <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
         <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
-          {modalType === 'enemy' ? (
-            <PlayerSearchSelector 
-              selectedPlayers={formData.players}
-              onPlayersChange={(players) => setFormData(prev => ({ ...prev, players }))}
-              maxHeight="160px"
-            />
-          ) : (
-            <div className="h-full bg-green-600 rounded flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-white font-bold text-2xl" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
-                  COMING
-                </div>
-                <div className="text-white font-bold text-2xl" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
-                  SOON
-                </div>
-              </div>
-            </div>
-          )}
+          <PlayerSearchSelector 
+            selectedPlayers={formData.players}
+            onPlayersChange={(players) => setFormData(prev => ({ ...prev, players }))}
+            maxHeight={modalType === 'enemy' ? '160px' : '300px'}
+          />
         </div>
       </div>
 
@@ -900,9 +710,21 @@ const BaseModal = ({
           </div>
         )}
         
-
         {modalType === 'enemy' && (
-          <EnemyBaseHeatMap players={formData.players} />
+          <div className="border border-gray-600 rounded-lg bg-gray-700 mb-3 relative">
+            <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Heat Map</label>
+            <div className="p-2 pt-3">
+              <div className="flex gap-1">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                  <div key={day} className="flex-1">
+                    <div className="text-[10px] text-gray-400 text-center">{day}</div>
+                    <div className="bg-gray-800 rounded" style={{height: '160px', position: 'relative'}}>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
         
         <div>
@@ -937,8 +759,7 @@ const BaseModal = ({
                     type="text"
                     value={formData.ownerCoordinates}
                     onChange={(e) => {
-                      const uppercaseValue = e.target.value.toUpperCase()
-                      setFormData(prev => ({ ...prev, ownerCoordinates: uppercaseValue }))
+                      setFormData(prev => ({ ...prev, ownerCoordinates: e.target.value }))
                       setShowOwnerSuggestions(true)
                     }}
                     onFocus={() => setShowOwnerSuggestions(true)}
@@ -985,80 +806,46 @@ const BaseModal = ({
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
-                  <div className="flex flex-col gap-1 flex-1">
-                    <div className="h-3 flex gap-1 flex-wrap overflow-hidden" style={{marginTop: '-4px'}}>
-                      {getSubordinateBases().map((baseName, index) => (
-                        <button
-                          key={index}
-                          className="text-xs bg-gray-700 text-gray-300 px-1.5 py-0.5 rounded border border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-colors h-4 leading-none"
-                          onClick={() => {
-                            // Find the subordinate base and open its modal
-                            const subordinateBase = locations.find(loc => loc.name === baseName)
-                            if (subordinateBase) {
-                              // Close current modal and open subordinate base modal
-                              onCancel()
-                              // Use a small delay to ensure clean transition
-                              setTimeout(() => {
-                                window.dispatchEvent(new CustomEvent('openBaseModal', {
-                                  detail: {
-                                    location: subordinateBase,
-                                    modalType: 'enemy'
-                                  }
-                                }))
-                              }, 50)
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
+                    <div className="flex gap-2 flex-wrap">
+                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.roofCamper} 
+                          onChange={(e) => setFormData(prev => ({ ...prev, roofCamper: e.target.checked }))}
+                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                        />
+                        <span>Roof Camper</span>
+                      </label>
+                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.hostileSamsite} 
+                          onChange={(e) => setFormData(prev => ({ ...prev, hostileSamsite: e.target.checked }))}
+                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                        />
+                        <span>Hostile Samsite</span>
+                      </label>
+                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.raidedOut} 
+                          onChange={(e) => {
+                            if (!formData.raidedOut && e.target.checked) {
+                              setShowRaidedOutPrompt(true)
+                            } else {
+                              setFormData(prev => ({ ...prev, raidedOut: false }))
                             }
                           }}
-                        >
-                          {baseName}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
-                      <div className="flex gap-2 flex-wrap">
-                        <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={formData.roofCamper} 
-                            onChange={(e) => setFormData(prev => ({ ...prev, roofCamper: e.target.checked }))}
-                            className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                          />
-                          <span>Roof Camper</span>
-                        </label>
-                        <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={formData.hostileSamsite} 
-                            onChange={(e) => setFormData(prev => ({ ...prev, hostileSamsite: e.target.checked }))}
-                            className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                          />
-                          <span>Hostile Samsite</span>
-                        </label>
-                        <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={formData.raidedOut} 
-                            onChange={(e) => {
-                              if (!formData.raidedOut && e.target.checked) {
-                                setShowRaidedOutPrompt(true)
-                              } else {
-                                setFormData(prev => ({ ...prev, raidedOut: false }))
-                              }
-                            }}
-                            className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                          />
-                          <span>Raided Out</span>
-                        </label>
-                      </div>
+                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                        />
+                        <span>Raided Out</span>
+                      </label>
                     </div>
                   </div>
                 )}
-                {modalType === 'friendly' && (
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className="text-green-500 font-bold text-lg flex-shrink-0">FRIENDLY</div>
-                  </div>
-                )}
-                {modalType === 'report' && <div></div>}
+                {modalType !== 'enemy' && <div></div>}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()
@@ -1189,7 +976,6 @@ const BaseModal = ({
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      // Toggle the Reports panel to show reports for this base
                       setShowReportPanel(!showReportPanel)
                     }} 
                     className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1.5 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
@@ -1273,55 +1059,13 @@ const BaseModal = ({
               {/* List of reports for this base */}
               <div className="flex-1 overflow-y-auto mb-4">
                 <div className="space-y-2">
-                  {reportsLoading ? (
-                    <p className="text-gray-400 text-sm">Loading reports...</p>
-                  ) : baseReports.length === 0 ? (
-                    <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
-                  ) : (
-                    baseReports.map(report => (
-                      <div key={report.id} className="bg-gray-700 rounded p-3 text-sm">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="text-white font-medium">{report.reportType}</span>
-                          <span className="text-gray-400 text-xs">
-                            {report.reportTime ? new Date(report.reportTime).toLocaleTimeString('en-US', { 
-                              hour: '2-digit', 
-                              minute: '2-digit',
-                              hour12: false 
-                            }) : 'No time'}
-                          </span>
-                        </div>
-                        {report.players && (
-                          <div className="text-gray-300 mb-1">
-                            <strong>Players:</strong> {report.players}
-                          </div>
-                        )}
-                        {report.notes && (
-                          <div className="text-gray-300">
-                            <strong>Notes:</strong> {report.notes}
-                          </div>
-                        )}
-                        <div className="flex gap-2 mt-2">
-                          {report.youtube && <Camera className="w-3 h-3 text-white" />}
-                          {report.notes && <StickyNote className="w-3 h-3 text-white" />}
-                        </div>
-                      </div>
-                    ))
-                  )}
-
+                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
+                  {/* Reports will be listed here */}
                 </div>
               </div>
               
               {/* Create Report Button */}
-              <button 
-                onClick={() => {
-                  if (editingLocation) {
-                    window.dispatchEvent(new CustomEvent('openBaseReport', {
-                      detail: { location: editingLocation }
-                    }))
-                  }
-                }}
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors"
-              >
+              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
                 Create New Report
               </button>
             </div>
@@ -1454,72 +1198,34 @@ const BaseModal = ({
 
               <h3 className="text-white font-bold mb-4">Base Reports</h3>
               
-              {/* List of reports for this base */}
-              <div className="flex-1 overflow-y-auto mb-4">
-                <div className="space-y-2">
-                  {reportsLoading ? (
-                    <p className="text-gray-400 text-sm">Loading reports...</p>
-                  ) : baseReports.length === 0 ? (
-                    <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
-                  ) : (
-                    baseReports.map(report => (
-                      <div key={report.id} className="bg-gray-700 rounded p-3 text-sm">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="text-white font-medium">{report.reportType}</span>
-                          <span className="text-gray-400 text-xs">
-                            {report.reportTime ? new Date(report.reportTime).toLocaleTimeString('en-US', { 
-                              hour: '2-digit', 
-                              minute: '2-digit',
-                              hour12: false 
-                            }) : 'No time'}
-                          </span>
-                        </div>
-                        {report.players && (
-                          <div className="text-gray-300 mb-1">
-                            <strong>Players:</strong> {report.players}
-                          </div>
-                        )}
-                        {report.notes && (
-                          <div className="text-gray-300">
-                            <strong>Notes:</strong> {report.notes}
-                          </div>
-                        )}
-                        <div className="flex gap-2 mt-2">
-                          {report.youtube && <Camera className="w-3 h-3 text-white" />}
-                          {report.notes && <StickyNote className="w-3 h-3 text-white" />}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
+              {/* Fetch and display reports for this base */}
+              <BaseReportsContent baseName={editingLocation?.name} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
               
-
+              {/* Enemy and Friendly Player Containers Side by Side */}
               <div className="flex gap-3 flex-1 mb-4">
-
-
-
+                {/* Enemy Players - Left Side */}
+                <div className="w-1/2 bg-gray-900 border-2 border-red-500 rounded p-3 flex flex-col">
+                  <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
                   <div className="flex-1 overflow-y-auto">
-
+                    <p className="text-xs text-gray-500">No enemies reported</p>
                   </div>
                 </div>
                 
-
+                {/* Friendly Players - Right Side */}
                 <div className="w-1/2 bg-gray-900 border-2 border-green-500 rounded p-3 flex flex-col">
-
+                  <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
                   <div className="flex-1 overflow-y-auto">
-
+                    <p className="text-xs text-gray-500">No friendlies reported</p>
                   </div>
                 </div>
               </div>
               
-
+              {/* Notes Container - Bottom */}
               <div className="bg-gray-900 border-2 border-gray-600 rounded p-3 h-32">
-
+                <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
                 <textarea 
-
-
+                  className="w-full h-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 resize-none focus:outline-none focus:border-blue-500"
+                  placeholder="Enter notes..."
                 />
               </div>
               
@@ -1531,7 +1237,7 @@ const BaseModal = ({
           </div>
         )}
         
-        {false && showRaidedOutPrompt && ( // DISABLED RAIDED OUT PROMPT
+        {showRaidedOutPrompt && (
           <RaidedOutPrompt 
             onConfirm={() => {
               setShowRaidedOutPrompt(false)
