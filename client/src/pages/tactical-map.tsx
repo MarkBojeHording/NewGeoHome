@@ -1072,13 +1072,31 @@ export default function InteractiveTacticalMap() {
   }, [])
 
   // Fetch player data for online count display
-  const { data: players = [] } = useQuery<ExternalPlayer[]>({
+  const { data: externalPlayers = [] } = useQuery<ExternalPlayer[]>({
     queryKey: ['/api/players'],
     staleTime: 60000, // Cache for 1 minute
     refetchOnWindowFocus: false, // Don't refetch on focus to reduce requests
     retry: 1, // Minimal retries
     throwOnError: false, // Don't crash on errors
   })
+
+  const { data: premiumPlayers = [] } = useQuery({
+    queryKey: ['/api/premium-players'],
+    staleTime: 60000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+    throwOnError: false,
+  })
+
+  // Combine external and premium players
+  const players = [
+    ...externalPlayers,
+    ...premiumPlayers.map(p => ({
+      ...p,
+      isOnline: false, // Premium players are considered offline for display
+      totalSessions: 0
+    }))
+  ]
 
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
@@ -1424,7 +1442,7 @@ export default function InteractiveTacticalMap() {
                   timers={locationTimers[location.id]}
                   onRemoveTimer={(timerId) => handleRemoveTimer(location.id, timerId)}
                   getOwnedBases={getOwnedBases}
-                  players={players || []}
+                  players={players}
                   onOpenReport={onOpenBaseReport}
                   onOpenBaseReport={(location) => {
                     setBaseReportData({
@@ -1449,7 +1467,7 @@ export default function InteractiveTacticalMap() {
               locationTimers={locationTimers}
               onAddTimer={handleAddTimer}
               onOpenReport={onOpenBaseReport}
-              players={players || []}
+              players={players}
               onOpenBaseReport={(location) => {
                 setBaseReportData({
                   baseId: location.id,
