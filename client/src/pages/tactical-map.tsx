@@ -453,8 +453,8 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             <div 
               className="absolute rounded-full"
               style={{
-                width: "42px", // Smaller circumference
-                height: "42px",
+                width: "36px", // Inner edge matches base icon outer edge
+                height: "36px",
                 left: "50%",
                 top: "50%",
                 transform: "translate(-50%, -50%)",
