@@ -308,7 +308,9 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
           </div>
         )}
         
-        <div className={`bg-gray-700 rounded-full p-0.5 shadow-md border border-gray-600 flex items-center justify-center`}>
+        <div className={`bg-gray-700 rounded-full shadow-md border border-gray-600 flex items-center justify-center ${
+          location.type.startsWith('report') ? 'p-0.5 scale-50' : 'p-0.5'
+        }`}>
           <div className={`${getColor(location.type)} flex items-center justify-center`}>
             {getIcon(location.type)}
           </div>
@@ -319,12 +321,12 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '26px',
-            height: '26px',
+            width: location.type.startsWith('report') ? '13px' : '26px',
+            height: location.type.startsWith('report') ? '13px' : '26px',
             zIndex: 5
           }}>
             <div className="selection-ring" style={{ width: '100%', height: '100%' }}>
-              <svg width="26" height="26" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+              <svg width={location.type.startsWith('report') ? "13" : "26"} height={location.type.startsWith('report') ? "13" : "26"} viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id={`greyGradient-${location.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stopColor="#D8D8D8"/>
