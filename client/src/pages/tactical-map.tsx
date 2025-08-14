@@ -272,6 +272,26 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
       players.some(player => player.playerName === playerName && player.isOnline)
     ).length
   }, [location.players, players])
+
+  // Calculate premium player count for this base
+  const premiumPlayerCount = useMemo(() => {
+    if (!location.players) return 0
+    
+    const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
+    return basePlayerNames.filter(playerName => 
+      players.some(player => player.playerName === playerName && player.createdAt !== undefined)
+    ).length
+  }, [location.players, players])
+
+  // Calculate offline player count for this base (regular players only, premium players are not counted as offline)
+  const offlinePlayerCount = useMemo(() => {
+    if (!location.players) return 0
+    
+    const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
+    return basePlayerNames.filter(playerName => 
+      players.some(player => player.playerName === playerName && !player.isOnline && player.createdAt === undefined)
+    ).length
+  }, [location.players, players])
   
   return (
     <button
@@ -305,6 +325,42 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
             }}
           >
             {onlinePlayerCount}
+          </div>
+        )}
+
+        {/* Premium player count display - orange circle, 35% smaller, to the right of green */}
+        {location.type.startsWith("enemy") && premiumPlayerCount > 0 && (
+          <div 
+            className="absolute text-xs font-bold text-orange-400 bg-black/80 rounded-full flex items-center justify-center border border-orange-400/50"
+            style={{
+              width: "7.8px", // 35% smaller than 12px (3*0.65)
+              height: "7.8px",
+              left: "4px", // Positioned to the right of green circle, touching
+              top: "0%",
+              transform: "translateY(-50%)",
+              zIndex: 1,
+              fontSize: "6px" // Smaller font for smaller circle
+            }}
+          >
+            {premiumPlayerCount}
+          </div>
+        )}
+
+        {/* Offline player count display - grey circle, below green */}
+        {location.type.startsWith("enemy") && offlinePlayerCount > 0 && (
+          <div 
+            className="absolute text-xs font-bold text-gray-400 bg-black/80 rounded-full flex items-center justify-center border border-gray-400/50"
+            style={{
+              width: "7.8px", // 35% smaller than 12px (3*0.65)
+              height: "7.8px",
+              left: "-8px", // Same left position as green circle
+              top: "12px", // Below green circle, touching
+              transform: "translateY(-50%)",
+              zIndex: 1,
+              fontSize: "6px" // Smaller font for smaller circle
+            }}
+          >
+            {offlinePlayerCount}
           </div>
         )}
         
