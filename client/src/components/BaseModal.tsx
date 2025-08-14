@@ -557,7 +557,13 @@ const BaseModal = ({
   const [showRaidedOutPrompt, setShowRaidedOutPrompt] = useState(false)
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
-  const showReportPanel = false // DISABLED OLD REPORT PANEL
+  const [showReportPanel, setShowReportPanel] = useState(false)
+  
+  // Query to fetch reports for this base
+  const { data: baseReports = [], isLoading: reportsLoading } = useQuery({
+    queryKey: ['/api/base-reports', editingLocation?.id],
+    enabled: !!editingLocation?.id && showReportPanel
+  })
   
   const ownerInputRef = useRef(null)
   
@@ -1183,12 +1189,8 @@ const BaseModal = ({
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      // Dispatch custom event to open ActionReportModal
-                      if (editingLocation) {
-                        window.dispatchEvent(new CustomEvent('openBaseReport', {
-                          detail: { location: editingLocation }
-                        }))
-                      }
+                      // Toggle the Reports panel to show reports for this base
+                      setShowReportPanel(!showReportPanel)
                     }} 
                     className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1.5 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
                     type="button"
@@ -1271,13 +1273,55 @@ const BaseModal = ({
               {/* List of reports for this base */}
               <div className="flex-1 overflow-y-auto mb-4">
                 <div className="space-y-2">
-                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
-                  {/* Reports will be listed here */}
+                  {reportsLoading ? (
+                    <p className="text-gray-400 text-sm">Loading reports...</p>
+                  ) : baseReports.length === 0 ? (
+                    <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
+                  ) : (
+                    baseReports.map(report => (
+                      <div key={report.id} className="bg-gray-700 rounded p-3 text-sm">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="text-white font-medium">{report.reportType}</span>
+                          <span className="text-gray-400 text-xs">
+                            {report.reportTime ? new Date(report.reportTime).toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit',
+                              hour12: false 
+                            }) : 'No time'}
+                          </span>
+                        </div>
+                        {report.players && (
+                          <div className="text-gray-300 mb-1">
+                            <strong>Players:</strong> {report.players}
+                          </div>
+                        )}
+                        {report.notes && (
+                          <div className="text-gray-300">
+                            <strong>Notes:</strong> {report.notes}
+                          </div>
+                        )}
+                        <div className="flex gap-2 mt-2">
+                          {report.youtube && <Camera className="w-3 h-3 text-white" />}
+                          {report.notes && <StickyNote className="w-3 h-3 text-white" />}
+                        </div>
+                      </div>
+                    ))
+                  )}
+
                 </div>
               </div>
               
               {/* Create Report Button */}
-              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+              <button 
+                onClick={() => {
+                  if (editingLocation) {
+                    window.dispatchEvent(new CustomEvent('openBaseReport', {
+                      detail: { location: editingLocation }
+                    }))
+                  }
+                }}
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors"
+              >
                 Create New Report
               </button>
             </div>
