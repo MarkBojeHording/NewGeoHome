@@ -54,6 +54,19 @@ const DECAY_TIMES = {
   hqm: { max: 2000, hours: 12 }
 }
 
+const GROUP_COLORS = [
+  '#ff6b6b', // Red
+  '#4ecdc4', // Teal  
+  '#45b7d1', // Blue
+  '#96ceb4', // Green
+  '#ffeaa7', // Yellow
+  '#dda0dd', // Plum
+  '#ffa726', // Orange
+  '#ab47bc', // Purple
+  '#26a69a', // Cyan
+  '#ef5350'  // Pink
+]
+
 // ============= UTILITY FUNCTIONS =============
 const getColor = (type: string) => {
   if (type.startsWith('report')) return 'text-purple-600'
@@ -81,6 +94,44 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   })
   
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
+}
+
+// Get all bases that belong to the same group (share common players)
+const getBaseGroup = (baseId: string, locations: any[]) => {
+  const currentBase = locations.find(loc => loc.id === baseId)
+  if (!currentBase?.players?.length) return []
+  
+  const groupBases = locations.filter(loc => {
+    if (loc.id === baseId) return true
+    if (!loc.players?.length) return false
+    
+    // Check if any players are shared between bases
+    return currentBase.players.some(player => 
+      loc.players.some(otherPlayer => otherPlayer === player)
+    )
+  })
+  
+  return groupBases
+}
+
+// Get group color for a base (only if it has subordinates or is part of a group)
+const getGroupColor = (baseId: string, locations: any[]) => {
+  const groupBases = getBaseGroup(baseId, locations)
+  if (groupBases.length <= 1) return null // No group if only one base
+  
+  // Find main bases in the group
+  const mainBases = groupBases.filter(base => 
+    base.type === "enemy-small" || base.type === "enemy-medium" || base.type === "enemy-large"
+  )
+  
+  if (mainBases.length === 0) return null // No main base found
+  
+  // Sort main bases by ID for consistent color assignment
+  const sortedMainBases = mainBases.sort((a, b) => a.id.localeCompare(b.id))
+  const mainBaseIndex = sortedMainBases.findIndex(base => base.id === sortedMainBases[0].id)
+  
+  // Use the first main base ID to determine color
+  return GROUP_COLORS[mainBaseIndex % GROUP_COLORS.length]
 }
 
 const formatTime = (seconds) => {
@@ -307,6 +358,27 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
     >
       <div className="relative">
         {!location.type.startsWith('report') && (
+        {/* Group Color Ring - shows for bases that belong to a group */}
+        {(() => {
+          const groupColor = getGroupColor(location.id, locations)
+          if (!groupColor) return null
+          
+          return (
+            <div 
+              className="absolute rounded-full border-4"
+              style={{
+                width: "52px", // Larger than icon to create ring effect
+                height: "52px",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+                borderColor: groupColor,
+                zIndex: 0, // Behind the icon
+                opacity: 0.8
+              }}
+            />
+          )
+        })()}
           <TimerDisplay 
             timers={timers} 
             onRemoveTimer={onRemoveTimer}
@@ -1519,6 +1591,7 @@ export default function InteractiveTacticalMap() {
                 <LocationMarker
                   key={location.id}
                   location={location}
+                  locations={locations}
                   isSelected={selectedLocation?.id === location.id}
                   onClick={setSelectedLocation}
                   timers={locationTimers[location.id]}
