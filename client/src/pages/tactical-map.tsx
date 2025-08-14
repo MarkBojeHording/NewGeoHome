@@ -451,16 +451,17 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           
           return (
             <div 
-              className="absolute rounded-full border-4"
+              className="absolute rounded-full border-3"
               style={{
-                width: "52px", // Larger than icon to create ring effect
-                height: "52px",
+                width: "42px", // Just at the edge of the base icon
+                height: "42px",
                 left: "50%",
                 top: "50%",
                 transform: "translate(-50%, -50%)",
                 borderColor: groupColor,
                 zIndex: 0, // Behind the icon
-                opacity: 0.8
+                opacity: 0.9,
+                borderWidth: "2px"
               }}
             />
           )
