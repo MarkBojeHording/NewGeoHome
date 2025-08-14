@@ -428,7 +428,21 @@ const BaseModal = ({
         type: editingLocation.type,
         notes: editingLocation.notes || '',
         oldestTC: editingLocation.oldestTC || 0,
-        players: editingLocation.players || '',
+        players: (() => {
+          // For subsidiary bases, get players from their main base
+          if (editingLocation.ownerCoordinates && 
+              (editingLocation.type.includes('flank') || 
+               editingLocation.type.includes('tower') || 
+               editingLocation.type.includes('farm'))) {
+            const mainBase = locations.find(loc => 
+              loc.name.split('(')[0] === editingLocation.ownerCoordinates.split('(')[0]
+            )
+            if (mainBase && mainBase.players) {
+              return mainBase.players
+            }
+          }
+          return editingLocation.players || ''
+        })(),
         upkeep: editingLocation.upkeep || { wood: 0, stone: 0, metal: 0, hqm: 0 },
         reportTime: editingLocation.time || '',
         reportOutcome: editingLocation.outcome || 'neutral',
