@@ -179,7 +179,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="w-[1200px] min-w-[1200px] max-w-[1200px] h-[800px] bg-gray-900 border-gray-700">
+        <DialogContent className="w-[1150px] min-w-[1150px] max-w-[1150px] h-[800px] bg-gray-900 border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
@@ -480,12 +480,6 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                                 {player.isOnline ? 'Online' : 'Offline'}
                               </span>
                             </div>
-                            <span 
-                              className="text-xs bg-blue-600 px-2 py-1 rounded text-blue-200"
-                              data-testid={`sessions-${index}`}
-                            >
-                              Sessions: {player.totalSessions}
-                            </span>
                           </div>
                           <div className="text-right">
                             <div 
