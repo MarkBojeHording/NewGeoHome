@@ -886,7 +886,12 @@ const BaseModal = ({
                     </div>
                   </div>
                 )}
-                {modalType !== 'enemy' && <div></div>}
+                {modalType === 'friendly' && (
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="text-green-500 font-bold text-lg flex-shrink-0">FRIENDLY</div>
+                  </div>
+                )}
+                {modalType === 'report' && <div></div>}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()
