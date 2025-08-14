@@ -325,11 +325,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                   {/* Activity Summary */}
                   <div className="mt-4 bg-gray-700 rounded-lg p-3">
                     <h4 className="text-white font-medium mb-2">Activity Summary</h4>
-                    <div className="grid grid-cols-3 gap-4 text-sm">
-                      <div className="text-center">
-                        <div className="text-blue-400 font-bold text-lg">{sessionHistory.length}</div>
-                        <div className="text-gray-400">Sessions</div>
-                      </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="text-center">
                         <div className="text-green-400 font-bold text-lg">
                           {sessionHistory.reduce((total, session) => total + session.durationHours, 0)}h
@@ -345,42 +341,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                     </div>
                   </div>
 
-                  {/* Most Active Times */}
-                  <div className="mt-4 bg-gray-700 rounded-lg p-3">
-                    <h4 className="text-white font-medium mb-2">Peak Activity Times</h4>
-                    <div className="space-y-1 text-xs">
-                      {(() => {
-                        // Find most active day and hour
-                        let maxActivity = 0;
-                        let peakDay = '';
-                        let peakHour = 0;
-                        
-                        Object.keys(heatMapData).forEach(day => {
-                          Object.keys(heatMapData[day]).forEach(hourStr => {
-                            const hour = parseInt(hourStr);
-                            const activity = heatMapData[day][hour];
-                            if (activity > maxActivity) {
-                              maxActivity = activity;
-                              peakDay = day;
-                              peakHour = hour;
-                            }
-                          });
-                        });
-                        
-                        if (maxActivity > 0) {
-                          return (
-                            <div className="text-gray-300">
-                              Most active: <span className="text-blue-400">{peakDay}</span> at{' '}
-                              <span className="text-blue-400">{peakHour.toString().padStart(2, '0')}:00</span>
-                              {' '}({Math.round(maxActivity * 100)}% activity)
-                            </div>
-                          );
-                        } else {
-                          return <div className="text-gray-400">No activity data available</div>;
-                        }
-                      })()}
-                    </div>
-                  </div>
+
                 </div>
               </div>
             ) : (
