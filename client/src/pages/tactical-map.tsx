@@ -1732,6 +1732,43 @@ export default function InteractiveTacticalMap() {
                 </svg>
               </div>
 
+{/* Connection lines between grouped bases when one is selected */}
+              {selectedLocation && (() => {
+                const selectedGroupColor = getGroupColor(selectedLocation.id, locations)
+                if (!selectedGroupColor) return null
+                
+                const groupBases = getBaseGroup(selectedLocation.id, locations)
+                if (groupBases.length <= 1) return null
+                
+                const mainBase = groupBases.find(base => 
+                  base.type === "enemy-small" || base.type === "enemy-medium" || base.type === "enemy-large"
+                )
+                
+                if (!mainBase) return null
+                
+                const subordinates = groupBases.filter(base => 
+                  base.type === "enemy-flank" || base.type === "enemy-farm" || base.type === "enemy-tower"
+                )
+                
+                return (
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 800" style={{zIndex: 1}}>
+                    {subordinates.map(subordinate => (
+                      <line
+                        key={`line-${mainBase.id}-${subordinate.id}`}
+                        x1={mainBase.x * 8}
+                        y1={mainBase.y * 8}
+                        x2={subordinate.x * 8}
+                        y2={subordinate.y * 8}
+                        stroke={selectedGroupColor}
+                        strokeWidth="2"
+                        opacity="0.8"
+                        strokeDasharray="5,3"
+                      />
+                    ))}
+                  </svg>
+                )
+              })()}
+
               {locations.map((location) => (
                 <LocationMarker
                   key={location.id}
