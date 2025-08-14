@@ -78,6 +78,102 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
     }
   };
 
+  // Heat map generation function
+  const generateHeatMapData = (sessions: any[]) => {
+    if (!sessions || sessions.length === 0) return {};
+    
+    // Create a map for each day of the week and each hour (0-23)
+    const heatMap: { [key: string]: { [key: number]: number } } = {};
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    // Initialize heat map structure
+    days.forEach(day => {
+      heatMap[day] = {};
+      for (let hour = 0; hour < 24; hour++) {
+        heatMap[day][hour] = 0;
+      }
+    });
+    
+    // Process each session and add to heat map
+    sessions.forEach(session => {
+      const startTime = new Date(session.startTime);
+      const endTime = new Date(session.endTime);
+      
+      // Get day of week (0 = Sunday, 1 = Monday, etc.)
+      const dayIndex = startTime.getDay();
+      const dayName = days[dayIndex];
+      
+      // Handle sessions that span multiple hours or days
+      let currentTime = new Date(startTime);
+      while (currentTime < endTime) {
+        const currentDayIndex = currentTime.getDay();
+        const currentDayName = days[currentDayIndex];
+        const currentHour = currentTime.getHours();
+        
+        // Calculate how much of this hour is covered by the session
+        const hourEnd = new Date(currentTime);
+        hourEnd.setMinutes(59, 59, 999);
+        
+        const sessionEndForThisHour = endTime < hourEnd ? endTime : hourEnd;
+        const minutesInThisHour = (sessionEndForThisHour.getTime() - currentTime.getTime()) / (1000 * 60);
+        
+        // Add intensity based on minutes (0-60 minutes = 0-1 intensity)
+        if (heatMap[currentDayName]) {
+          heatMap[currentDayName][currentHour] += Math.min(minutesInThisHour / 60, 1);
+        }
+        
+        // Move to next hour
+        currentTime = new Date(hourEnd.getTime() + 1);
+      }
+    });
+    
+    // Normalize values to prevent intensity > 1
+    Object.keys(heatMap).forEach(day => {
+      Object.keys(heatMap[day]).forEach(hour => {
+        const hourNum = parseInt(hour);
+        heatMap[day][hourNum] = Math.min(heatMap[day][hourNum], 1);
+      });
+    });
+    
+    return heatMap;
+  };
+
+  // Get heat map data for selected player
+  const heatMapData = selectedPlayer ? generateHeatMapData(sessionHistory) : {};
+
+  // Helper function to get heat map color intensity
+  const getHeatMapColor = (intensity: number) => {
+    if (intensity === 0) return 'bg-gray-800';
+    if (intensity < 0.2) return 'bg-blue-900 opacity-60';
+    if (intensity < 0.4) return 'bg-blue-800 opacity-70';
+    if (intensity < 0.6) return 'bg-blue-700 opacity-80';
+    if (intensity < 0.8) return 'bg-blue-600 opacity-90';
+    return 'bg-blue-500';
+  };
+
+  // Helper function to render hour blocks for a day
+  const renderDayColumn = (day: string) => {
+    const dayData = heatMapData[day] || {};
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+    
+    return hours.map(hour => {
+      const intensity = dayData[hour] || 0;
+      const colorClass = getHeatMapColor(intensity);
+      
+      return (
+        <div
+          key={hour}
+          className={`${colorClass} border-b border-gray-700`}
+          style={{
+            height: '8px',
+            marginBottom: '0.5px'
+          }}
+          title={`${day} ${hour}:00 - Activity: ${Math.round(intensity * 100)}%`}
+        />
+      );
+    });
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -186,39 +282,116 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                 <div className="flex-1 bg-gray-800 rounded-lg border border-gray-600 p-4">
                   <h3 className="text-lg font-semibold text-white mb-4">Activity Heat Map</h3>
                   
-                  {/* Heat Map copied from BaseModal */}
+                  {/* Functional Heat Map with Session Data */}
                   <div className="border border-gray-600 rounded-lg bg-gray-700 relative">
-                    <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Weekly Activity</label>
+                    <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Weekly Activity Pattern</label>
                     <div className="p-2 pt-3">
                       <div className="flex gap-1">
+                        {/* Hour labels column */}
+                        <div className="w-8">
+                          <div className="text-[10px] text-gray-400 text-center mb-1 h-4"></div>
+                          <div style={{height: '200px'}} className="flex flex-col justify-between py-1">
+                            {[0, 6, 12, 18].map((hour) => (
+                              <div key={hour} className="text-[9px] text-gray-500 text-right pr-1">
+                                {hour.toString().padStart(2, '0')}:00
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Day columns */}
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                           <div key={day} className="flex-1">
-                            <div className="text-[10px] text-gray-400 text-center">{day}</div>
-                            <div className="bg-gray-800 rounded" style={{height: '200px', position: 'relative'}}>
-                              {/* Heat map content would go here */}
+                            <div className="text-[10px] text-gray-400 text-center mb-1">{day}</div>
+                            <div className="bg-gray-800 rounded p-0.5" style={{height: '200px', position: 'relative'}}>
+                              <div className="flex flex-col h-full">
+                                {renderDayColumn(day)}
+                              </div>
                             </div>
                           </div>
                         ))}
                       </div>
+                      
+                      {/* Heat Map Legend */}
+                      <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-400">
+                        <span>Activity:</span>
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 bg-gray-800 rounded"></div>
+                          <span>None</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 bg-blue-900 opacity-60 rounded"></div>
+                          <span>Low</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 bg-blue-700 opacity-80 rounded"></div>
+                          <span>Medium</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                          <span>High</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
-                  {/* Additional Player Stats */}
-                  <div className="mt-6 grid grid-cols-2 gap-4">
-                    <div className="bg-gray-700 rounded-lg p-3">
-                      <h4 className="text-white font-medium mb-2">Online Status</h4>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full ${players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'bg-green-500' : 'bg-gray-500'}`} />
-                        <span className="text-gray-300">
-                          {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'Currently Online' : 'Offline'}
-                        </span>
+                  {/* Activity Summary */}
+                  <div className="mt-4 bg-gray-700 rounded-lg p-3">
+                    <h4 className="text-white font-medium mb-2">Activity Summary</h4>
+                    <div className="grid grid-cols-3 gap-4 text-sm">
+                      <div className="text-center">
+                        <div className="text-blue-400 font-bold text-lg">{sessionHistory.length}</div>
+                        <div className="text-gray-400">Sessions</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-green-400 font-bold text-lg">
+                          {sessionHistory.reduce((total, session) => total + session.durationHours, 0)}h
+                        </div>
+                        <div className="text-gray-400">Total Time</div>
+                      </div>
+                      <div className="text-center">
+                        <div className={`font-bold text-lg ${players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'text-green-400' : 'text-gray-400'}`}>
+                          {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'ONLINE' : 'OFFLINE'}
+                        </div>
+                        <div className="text-gray-400">Status</div>
                       </div>
                     </div>
-                    <div className="bg-gray-700 rounded-lg p-3">
-                      <h4 className="text-white font-medium mb-2">Total Sessions</h4>
-                      <div className="text-2xl font-bold text-blue-400">
-                        {players.find(p => p.playerName === selectedPlayer)?.totalSessions || 0}
-                      </div>
+                  </div>
+
+                  {/* Most Active Times */}
+                  <div className="mt-4 bg-gray-700 rounded-lg p-3">
+                    <h4 className="text-white font-medium mb-2">Peak Activity Times</h4>
+                    <div className="space-y-1 text-xs">
+                      {(() => {
+                        // Find most active day and hour
+                        let maxActivity = 0;
+                        let peakDay = '';
+                        let peakHour = 0;
+                        
+                        Object.keys(heatMapData).forEach(day => {
+                          Object.keys(heatMapData[day]).forEach(hourStr => {
+                            const hour = parseInt(hourStr);
+                            const activity = heatMapData[day][hour];
+                            if (activity > maxActivity) {
+                              maxActivity = activity;
+                              peakDay = day;
+                              peakHour = hour;
+                            }
+                          });
+                        });
+                        
+                        if (maxActivity > 0) {
+                          return (
+                            <div className="text-gray-300">
+                              Most active: <span className="text-blue-400">{peakDay}</span> at{' '}
+                              <span className="text-blue-400">{peakHour.toString().padStart(2, '0')}:00</span>
+                              {' '}({Math.round(maxActivity * 100)}% activity)
+                            </div>
+                          );
+                        } else {
+                          return <div className="text-gray-400">No activity data available</div>;
+                        }
+                      })()}
                     </div>
                   </div>
                 </div>
