@@ -334,13 +334,13 @@ const getIcon = (type) => {
   if (type === 'enemy-decaying') return <DecayingIcon />
   if (type === 'enemy-tower') return <TowerIcon />
   const Icon = ICON_MAP[type] || MapPin
-  return <Icon className="h-3 w-3" />
+  return <Icon className="h-2.5 w-2.5" />
 }
 
 const getLargeIcon = (type) => {
   if (type === 'enemy-decaying') {
     return (
-      <svg className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
         <path d="M3 21h18v-2H3v2zm0-4h2v-4h2v4h2v-4h2v4h2v-4h2v4h2v-4h2v4h2v-4h2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v12zm4-12h2v2H7V5zm4 0h2v2h-2V5zm4 0h2v2h-2V5zM7 9h2v2H7V9zm4 0h2v2h-2V9z" opacity="0.7"/>
         <path d="M8 17l-2 2v2h3v-4zm8 0v4h3v-2l-2-2zm-4-8l-1 2h2l-1-2z" />
         <path d="M6 13l-1.5 1.5M18 13l1.5 1.5M9 16l-1 1M15 16l1 1" stroke="currentColor" strokeWidth="1" opacity="0.5"/>
@@ -349,13 +349,13 @@ const getLargeIcon = (type) => {
   }
   if (type === 'enemy-tower') {
     return (
-      <svg className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+      <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
         <path d="M8 2v2h1v2H6v2h1v12h10V8h1V6h-3V4h1V2h-8zm7 16H9V8h6v10zm-3-8.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/>
       </svg>
     )
   }
   const Icon = ICON_MAP[type] || MapPin
-  return <Icon className="h-8 w-8" />
+  return <Icon className="h-6 w-6" />
 }
 
 const TimerDisplay = ({ timers, onRemoveTimer }) => {
@@ -443,13 +443,13 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             <div 
               className="absolute rounded-full"
               style={{
-                width: "24px", // Very small circumference
-                height: "24px",
+                width: "18px", // 25% smaller
+                height: "18px",
                 left: "50%",
                 top: "50%",
                 transform: "translate(-50%, -50%)",
                 borderColor: groupColor,
-                borderWidth: "4px", // Thick border like before
+                borderWidth: "3px", // 25% smaller
                 borderStyle: "solid",
                 zIndex: 0, // Behind the icon
                 opacity: 0.8
@@ -467,13 +467,13 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         {/* Online player count display - only show for enemy bases with players */}
         {location.type.startsWith("enemy") && onlinePlayerCount > 0 && (
           <div 
-            className="absolute text-xs font-bold text-green-400 bg-black/80 rounded-full w-3 h-3 flex items-center justify-center border border-green-400/50"
+            className="absolute text-xs font-bold text-green-400 bg-black/80 rounded-full w-2.5 h-2.5 flex items-center justify-center border border-green-400/50"
             style={{
-              left: "-8px", // Moved right a tiny bit
-              top: "-2px", // Kept same
+              left: "-6px", // Adjusted for smaller sizes
+              top: "-1px", // Adjusted for smaller sizes
               transform: "translateY(-50%)",
               zIndex: 1,
-              fontSize: "9px"
+              fontSize: "7px"
             }}
           >
             {onlinePlayerCount}
@@ -485,13 +485,13 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           <div 
             className="absolute text-xs font-bold text-orange-400 bg-black/80 rounded-full flex items-center justify-center border border-orange-400/50"
             style={{
-              width: "7.8px", // 35% smaller than 12px (3*0.65)
-              height: "7.8px",
-              left: "4px", // Moved right to follow green circle
-              top: "-4px", // Moved up a tiny bit more
+              width: "6px", // 25% smaller
+              height: "6px",
+              left: "3px", // Adjusted for smaller sizes
+              top: "-3px", // Adjusted for smaller sizes
               transform: "translateY(-50%)",
               zIndex: 1,
-              fontSize: "6px" // Smaller font for smaller circle
+              fontSize: "5px" // Smaller font for smaller circle
             }}
           >
             {premiumPlayerCount}
@@ -503,13 +503,13 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           <div 
             className="absolute text-xs font-bold text-gray-400 bg-black/80 rounded-full flex items-center justify-center border border-gray-400/50"
             style={{
-              width: "7.8px", // 35% smaller than 12px (3*0.65)
-              height: "7.8px",
-              left: "-8px", // Moved right same as green circle
-              top: "8px", // Kept same
+              width: "6px", // 25% smaller
+              height: "6px",
+              left: "-6px", // Adjusted for smaller sizes
+              top: "6px", // Adjusted for smaller sizes
               transform: "translateY(-50%)",
               zIndex: 1,
-              fontSize: "6px" // Smaller font for smaller circle
+              fontSize: "5px" // Smaller font for smaller circle
             }}
           >
             {offlinePlayerCount}
@@ -529,12 +529,12 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: location.type.startsWith('report') ? '13px' : '26px',
-            height: location.type.startsWith('report') ? '13px' : '26px',
+            width: location.type.startsWith('report') ? '10px' : '20px',
+            height: location.type.startsWith('report') ? '10px' : '20px',
             zIndex: 5
           }}>
             <div className="selection-ring" style={{ width: '100%', height: '100%' }}>
-              <svg width={location.type.startsWith('report') ? "13" : "26"} height={location.type.startsWith('report') ? "13" : "26"} viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+              <svg width={location.type.startsWith('report') ? "10" : "20"} height={location.type.startsWith('report') ? "10" : "20"} viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id={`greyGradient-${location.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stopColor="#D8D8D8"/>
@@ -600,8 +600,8 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
         {location.roofCamper && (
           <div className="absolute -top-1 -left-1" style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center" title="Roof Camper">
-              <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+            <div className="w-2.5 h-2.5 bg-orange-500 rounded-full flex items-center justify-center" title="Roof Camper">
+              <svg className="w-1.5 h-1.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                 <circle cx="12" cy="12" r="8" />
                 <line x1="12" y1="8" x2="12" y2="16" />
                 <line x1="8" y1="12" x2="16" y2="12" />
@@ -612,7 +612,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
         {location.hostileSamsite && (
           <div className={`absolute ${location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' ? '-right-2.5' : '-right-1'} ${ownedBases.length > 0 ? '-bottom-2.5' : '-bottom-1'}`} style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center" title="Hostile Samsite">
+            <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full flex items-center justify-center" title="Hostile Samsite">
               <span className="text-[8px] font-bold text-black">!</span>
             </div>
           </div>
@@ -620,8 +620,8 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
         {location.raidedOut && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style={{ zIndex: 10 }}>
-            <div className="w-4 h-4 bg-red-600 bg-opacity-80 rounded-full flex items-center justify-center" title="Raided Out">
-              <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="w-3 h-3 bg-red-600 bg-opacity-80 rounded-full flex items-center justify-center" title="Raided Out">
+              <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
@@ -631,7 +631,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
         {location.oldestTC && location.oldestTC > 0 && (
           <div className="absolute inset-0 pointer-events-none">
-            <svg width="28" height="28" viewBox="0 0 28 28" className="absolute" style={{top: '-2px', left: '-2px'}}>
+            <svg width="22" height="22" viewBox="0 0 28 28" className="absolute" style={{top: '-1px', left: '-1px'}}>
               <g transform="translate(14, 14)">
                 <g transform={`rotate(${location.oldestTC + 180})`}>
                   <g transform="translate(0, -11)">
@@ -897,7 +897,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-x-10 flex gap-3">
       {/* Rectangle - smaller size for enemy base preview */}
       <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none z-50">
-        <div className="w-52 h-28 bg-gray-800 border border-gray-600 shadow-lg">
+        <div className="w-40 h-22 bg-gray-800 border border-gray-600 shadow-lg">
           {/* Player snapshot grid - 2 columns x 5 rows */}
           <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
             {(() => {
@@ -958,20 +958,20 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         </div>
       </div>
       
-          <button className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center hover:from-blue-400 hover:to-blue-600 transition-all duration-200 border-2 border-blue-300 shadow-lg transform hover:scale-105" title="Linked Bases">
-            <svg className="h-5 w-5 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none">
+          <button className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center hover:from-blue-400 hover:to-blue-600 transition-all duration-200 border-2 border-blue-300 shadow-lg transform hover:scale-105" title="Linked Bases">
+            <svg className="h-4 w-4 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          <button className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-700 rounded-full flex items-center justify-center hover:from-green-400 hover:to-green-600 transition-all duration-200 border-2 border-green-300 shadow-lg transform hover:scale-105" title="Notes" onClick={() => onEdit(location)}>
-            <svg className="h-5 w-5 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none">
+          <button className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-700 rounded-full flex items-center justify-center hover:from-green-400 hover:to-green-600 transition-all duration-200 border-2 border-green-300 shadow-lg transform hover:scale-105" title="Notes" onClick={() => onEdit(location)}>
+            <svg className="h-4 w-4 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none">
               <path d="M4 4v16c0 1.1.9 2 2 2h10l4-4V6c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2z" fill="white" stroke="white" strokeWidth="1"/>
               <path d="M16 18v-4h4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          <button className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center hover:from-purple-400 hover:to-purple-600 transition-all duration-200 border-2 border-purple-300 shadow-lg transform hover:scale-105" title="Help">
-            <HelpCircle className="h-5 w-5 text-white drop-shadow-sm" />
+          <button className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center hover:from-purple-400 hover:to-purple-600 transition-all duration-200 border-2 border-purple-300 shadow-lg transform hover:scale-105" title="Help">
+            <HelpCircle className="h-4 w-4 text-white drop-shadow-sm" />
           </button>
         </div>
       )}
@@ -979,7 +979,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       {location.type.startsWith('report') ? (
         <button 
           className="absolute -top-4 -right-4 bg-purple-600 rounded-full flex items-center justify-center hover:bg-purple-700 transition-colors border-2 border-gray-800 shadow-lg"
-          style={{width: '60px', height: '60px'}} 
+          style={{width: '48px', height: '48px'}} 
           title="Details"
           onClick={() => onEdit(location)}
         >
@@ -988,7 +988,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       ) : (
         <button 
           className="absolute -top-4 -right-4 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors border-2 border-gray-800 shadow-lg" 
-          style={{width: '52px', height: '52px'}} 
+          style={{width: '40px', height: '40px'}} 
           title="Actions"
           onClick={(e) => {
             e.stopPropagation()
@@ -1657,16 +1657,16 @@ export default function InteractiveTacticalMap() {
               <div className="absolute inset-0 pointer-events-none">
                 <svg className="w-full h-full" viewBox="0 0 800 800">
                   {Array.from({ length: 27 }, (_, i) => (
-                    <line key={`v-${i}`} x1={i * 30.77} y1="0" x2={i * 30.77} y2="800" stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
+                    <line key={`v-${i}`} x1={i * 30.77} y1="0" x2={i * 30.77} y2="800" stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.5"/>
                   ))}
                   {Array.from({ length: 27 }, (_, i) => (
-                    <line key={`h-${i}`} x1="0" y1={i * 30.77} x2="800" y2={i * 30.77} stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
+                    <line key={`h-${i}`} x1="0" y1={i * 30.77} x2="800" y2={i * 30.77} stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.5"/>
                   ))}
                   {Array.from({ length: 26 }, (_, col) => 
                     Array.from({ length: 26 }, (_, row) => {
                       const letter = col < 26 ? String.fromCharCode(65 + col) : `A${String.fromCharCode(65 + col - 26)}`
                       return (
-                        <text key={`label-${col}-${row}`} x={col * 30.77 + 1} y={row * 30.77 + 7} fill="black" fontSize="7" fontWeight="600" textAnchor="start">
+                        <text key={`label-${col}-${row}`} x={col * 30.77 + 1} y={row * 30.77 + 7} fill="black" fontSize="5" fontWeight="600" textAnchor="start">
                           {letter}{row}
                         </text>
                       )
