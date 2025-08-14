@@ -832,11 +832,7 @@ const BaseModal = ({
                           type="checkbox" 
                           checked={formData.raidedOut} 
                           onChange={(e) => {
-                            if (!formData.raidedOut && e.target.checked) {
-                              setShowRaidedOutPrompt(true)
-                            } else {
-                              setFormData(prev => ({ ...prev, raidedOut: false }))
-                            }
+                            setFormData(prev => ({ ...prev, raidedOut: e.target.checked }))
                           }}
                           className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
                         />
@@ -1237,18 +1233,6 @@ const BaseModal = ({
           </div>
         )}
         
-        {showRaidedOutPrompt && (
-          <RaidedOutPrompt 
-            onConfirm={() => {
-              setShowRaidedOutPrompt(false)
-              setFormData(prev => ({ ...prev, raidedOut: true }))
-            }}
-            onCancel={() => {
-              setShowRaidedOutPrompt(false)
-              setFormData(prev => ({ ...prev, raidedOut: true }))
-            }}
-          />
-        )}
       </div>
     </div>
   )
