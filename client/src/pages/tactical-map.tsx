@@ -278,6 +278,25 @@ const useLocationTimers = () => {
   return [locationTimers, setLocationTimers]
 }
 
+const useBaseReportEvents = (setBaseReportData, setShowBaseReportModal) => {
+  useEffect(() => {
+    const handleOpenBaseReport = (event) => {
+      const { location } = event.detail
+      // Use the same logic as the onOpenBaseReport function
+      setBaseReportData({
+        baseId: location.id,
+        baseName: location.name,
+        baseCoords: location.coordinates,
+        baseType: location.type
+      })
+      setShowBaseReportModal(true)
+    }
+    
+    window.addEventListener('openBaseReport', handleOpenBaseReport)
+    return () => window.removeEventListener('openBaseReport', handleOpenBaseReport)
+  }, [setBaseReportData, setShowBaseReportModal])
+}
+
 const useMapInteraction = () => {
   const [zoom, setZoom] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
@@ -1356,6 +1375,9 @@ export default function InteractiveTacticalMap() {
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
   const { zoom, setZoom, pan, isDragging, setIsDragging, isDraggingRef, dragStartRef, hasDraggedRef } = useMapInteraction()
+  
+  // Handle BaseModal report events
+  useBaseReportEvents(setBaseReportData, setShowBaseReportModal)
   
   // Handle subordinate base modal navigation
   useEffect(() => {

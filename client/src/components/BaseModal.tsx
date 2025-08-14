@@ -1183,7 +1183,12 @@ const BaseModal = ({
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      // setShowReportPanel(!showReportPanel) // DISABLED
+                      // Dispatch custom event to open ActionReportModal
+                      if (editingLocation) {
+                        window.dispatchEvent(new CustomEvent('openBaseReport', {
+                          detail: { location: editingLocation }
+                        }))
+                      }
                     }} 
                     className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1.5 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
                     type="button"
