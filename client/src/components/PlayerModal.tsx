@@ -243,19 +243,22 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                           className="bg-gray-700 rounded-lg px-3 py-2 border border-gray-600"
                           data-testid={`session-${session.id}`}
                         >
-                          <div className="flex justify-between items-center text-xs">
+                          <div className="flex justify-between items-center text-xs whitespace-nowrap">
                             <div className="text-white">
-                              {new Date(session.startTime).toLocaleString(undefined, { 
+                              {new Date(session.startTime).toLocaleDateString(undefined, { 
                                 month: 'short', 
-                                day: 'numeric', 
+                                day: 'numeric'
+                              })} {new Date(session.startTime).toLocaleTimeString(undefined, { 
                                 hour: '2-digit', 
-                                minute: '2-digit' 
-                              })} - {new Date(session.endTime).toLocaleString(undefined, { 
+                                minute: '2-digit',
+                                hour12: false
+                              })} - {new Date(session.endTime).toLocaleTimeString(undefined, { 
                                 hour: '2-digit', 
-                                minute: '2-digit' 
+                                minute: '2-digit',
+                                hour12: false
                               })}
                             </div>
-                            <div className="text-gray-400">
+                            <div className="text-gray-400 ml-2">
                               {session.durationHours}h
                             </div>
                           </div>
