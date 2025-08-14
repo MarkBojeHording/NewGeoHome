@@ -1477,17 +1477,17 @@ export default function InteractiveTacticalMap() {
               }}
             >
               <div className="absolute inset-0">
-                <svg className="w-full h-full" viewBox="0 0 800 600">
+                <svg className="w-full h-full" viewBox="0 0 800 800">
                   <defs>
                     <pattern id="waves" x="0" y="0" width="40" height="20" patternUnits="userSpaceOnUse">
                       <path d="M0,10 Q10,0 20,10 T40,10" stroke="#0f766e" strokeWidth="2" fill="none" opacity="0.4"/>
                     </pattern>
                   </defs>
-                  <image href={rustMapImage} width="100%" height="100%" preserveAspectRatio="xMinYMin meet" style={{filter: 'brightness(0.9) contrast(1.1)'}}/>
+                  <image href={rustMapImage} width="100%" height="100%" preserveAspectRatio="xMinYMin slice" style={{filter: 'brightness(0.9) contrast(1.1)'}}/>
                 </svg>
               </div>
 
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 600" style={{display: 'none'}}>
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 800" style={{display: 'none'}}>
                 <path d="M150,200 Q200,100 350,80 Q500,60 600,150 Q700,250 650,400 Q600,500 450,520 Q300,540 200,450 Q100,350 150,200 Z"
                       fill="#fbbf24" stroke="#d97706" strokeWidth="3"/>
                 <path d="M160,210 Q210,110 350,90 Q490,70 590,160 Q680,260 640,390 Q590,490 450,510 Q310,530 210,440 Q110,360 160,210 Z"
@@ -1495,7 +1495,7 @@ export default function InteractiveTacticalMap() {
               </svg>
 
               <div className="absolute inset-0 pointer-events-none">
-                <svg className="w-full h-full" viewBox="0 0 800 600">
+                <svg className="w-full h-full" viewBox="0 0 800 800">
                   {Array.from({ length: 27 }, (_, i) => (
                     <line key={`v-${i}`} x1={i * 30.77} y1="0" x2={i * 30.77} y2="800" stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
                   ))}
