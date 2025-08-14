@@ -842,15 +842,7 @@ const BaseModal = ({
           <div className="border border-gray-600 rounded-lg bg-gray-700 mb-3 relative">
             <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Heat Map</label>
             <div className="p-2 pt-3">
-              <div className="flex gap-1">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="flex-1">
-                    <div className="text-[10px] text-gray-400 text-center">{day}</div>
-                    <div className="bg-gray-800 rounded" style={{height: '160px', position: 'relative'}}>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <EnemyBaseHeatMap players={formData.players} />
             </div>
           </div>
         )}
