@@ -845,11 +845,24 @@ const BaseModal = ({
         
         <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
         <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
-          <PlayerSearchSelector 
-            selectedPlayers={formData.players}
-            onPlayersChange={(players) => setFormData(prev => ({ ...prev, players }))}
-            maxHeight={modalType === 'enemy' ? '160px' : '300px'}
-          />
+          {modalType === 'enemy' ? (
+            <PlayerSearchSelector 
+              selectedPlayers={formData.players}
+              onPlayersChange={(players) => setFormData(prev => ({ ...prev, players }))}
+              maxHeight="160px"
+            />
+          ) : (
+            <div className="h-full bg-green-600 rounded flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-white font-bold text-2xl" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+                  COMING
+                </div>
+                <div className="text-white font-bold text-2xl" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+                  SOON
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
