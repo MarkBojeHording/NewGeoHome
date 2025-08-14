@@ -1483,7 +1483,7 @@ export default function InteractiveTacticalMap() {
                       <path d="M0,10 Q10,0 20,10 T40,10" stroke="#0f766e" strokeWidth="2" fill="none" opacity="0.4"/>
                     </pattern>
                   </defs>
-                  <image href={rustMapImage} width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style={{filter: 'brightness(0.9) contrast(1.1)'}}/>
+                  <image href={rustMapImage} width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style={{filter: 'brightness(0.9) contrast(1.1)'}}/>
                 </svg>
               </div>
 
