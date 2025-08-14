@@ -126,6 +126,21 @@ const getGroupColor = (baseId: string, locations: any[]) => {
   const groupBases = getBaseGroup(baseId, locations)
   console.log(`Group bases for ${baseId}:`, groupBases.map(b => `${b.name} (${b.type})`))
   
+  // Debug: Log current base details
+  const currentBase = locations.find(loc => loc.id === baseId)
+  if (currentBase) {
+    console.log(`Current base ${baseId} (${currentBase.name}): players = "${currentBase.players}"`)
+  }
+  
+  // Debug: Log all bases with players
+  const basesWithPlayers = locations.filter(loc => loc.players?.length > 0)
+  console.log('All bases with players:', basesWithPlayers.map(b => ({
+    name: b.name,
+    type: b.type,
+    players: b.players,
+    id: b.id
+  })))
+  
   if (groupBases.length <= 1) return null // No group if only one base
   
   // Find main bases in the group
