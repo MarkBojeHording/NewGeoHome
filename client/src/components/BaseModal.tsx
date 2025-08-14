@@ -843,7 +843,9 @@ const BaseModal = ({
           />
         )}
         
-        <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
+        {modalType === 'enemy' && (
+          <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
+        )}
         <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
           {modalType === 'enemy' ? (
             <PlayerSearchSelector 
