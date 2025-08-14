@@ -125,56 +125,46 @@ const getBaseGroup = (baseId: string, locations: any[]) => {
   const isSubordinateBase = currentBase.type === "enemy-flank" || currentBase.type === "enemy-farm" || currentBase.type === "enemy-tower"
   
   if (isMainBase) {
-    // Group main bases with nearby subordinate bases regardless of player assignment
-    const nearbyBases = locations.filter(loc => {
+    // Group main bases with subordinate bases that have this main base as owner
+    const currentBaseCoords = currentBase.name.split('(')[0] // Remove (2), (3) etc
+    const linkedBases = locations.filter(loc => {
       if (loc.id === baseId) return true
       
-      const isNearbySubordinate = (loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower")
-      if (!isNearbySubordinate) return false
+      const isSubordinate = (loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower")
+      if (!isSubordinate) return false
       
-      // Calculate grid distance
-      const currentCoords = getGridPosition(currentBase.x, currentBase.y)
-      const locCoords = getGridPosition(loc.x, loc.y)
-      const distance = Math.abs(currentCoords.col - locCoords.col) + Math.abs(currentCoords.row - locCoords.row)
-      
-      return distance <= 3 // Within 3 grid squares
+      // Check if this subordinate is linked to this main base via ownerCoordinates
+      return loc.ownerCoordinates === currentBaseCoords
     })
     
-    return nearbyBases.length > 1 ? nearbyBases : [currentBase]
+    return linkedBases.length > 1 ? linkedBases : [currentBase]
   }
   
   if (isSubordinateBase) {
-    // Find nearby main bases
-    const nearbyMainBases = locations.filter(loc => {
-      const isMainBase = loc.type === "enemy-small" || loc.type === "enemy-medium" || loc.type === "enemy-large"
-      if (!isMainBase) return false
-      
-      // Calculate grid distance
-      const currentCoords = getGridPosition(currentBase.x, currentBase.y)
-      const locCoords = getGridPosition(loc.x, loc.y)
-      const distance = Math.abs(currentCoords.col - locCoords.col) + Math.abs(currentCoords.row - locCoords.row)
-      
-      return distance <= 3 // Within 3 grid squares
-    })
-    
-    if (nearbyMainBases.length > 0) {
-      // Include the subordinate base and all nearby bases around the main base
-      const mainBase = nearbyMainBases[0] // Use closest main base
-      const groupBases = locations.filter(loc => {
-        if (loc.id === mainBase.id) return true
-        if (loc.id === baseId) return true
+    // Find the main base this subordinate is linked to via ownerCoordinates
+    if (currentBase.ownerCoordinates) {
+      const ownerMainBase = locations.find(loc => {
+        const isMainBase = loc.type === "enemy-small" || loc.type === "enemy-medium" || loc.type === "enemy-large"
+        if (!isMainBase) return false
         
-        const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
-        if (!isSubordinate) return false
-        
-        const mainCoords = getGridPosition(mainBase.x, mainBase.y)
-        const locCoords = getGridPosition(loc.x, loc.y)
-        const distance = Math.abs(mainCoords.col - locCoords.col) + Math.abs(mainCoords.row - locCoords.row)
-        
-        return distance <= 3
+        const mainBaseCoords = loc.name.split('(')[0] // Remove (2), (3) etc
+        return mainBaseCoords === currentBase.ownerCoordinates
       })
       
-      return groupBases
+      if (ownerMainBase) {
+        // Include the main base and all subordinates linked to it
+        const groupBases = locations.filter(loc => {
+          if (loc.id === ownerMainBase.id) return true
+          if (loc.id === baseId) return true
+          
+          const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
+          if (!isSubordinate) return false
+          
+          return loc.ownerCoordinates === currentBase.ownerCoordinates
+        })
+        
+        return groupBases
+      }
     }
   }
   
