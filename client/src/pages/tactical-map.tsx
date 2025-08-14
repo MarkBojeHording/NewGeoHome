@@ -102,21 +102,20 @@ const getBaseGroup = (baseId: string, locations: any[]) => {
   const currentBase = locations.find(loc => loc.id === baseId)
   if (!currentBase?.players?.length) return []
   
-  const groupBases = locations.filter(loc => {
-
-// Get all bases that belong to the same group (share common players)
-const getBaseGroup = (baseId: string, locations: any[]) => {
-  const currentBase = locations.find(loc => loc.id === baseId)
-  if (!currentBase?.players?.length) return []
+  // Parse current base players (handle comma-separated string)
+  const currentPlayers = currentBase.players.split(",").map(p => p.trim()).filter(p => p)
+  if (currentPlayers.length === 0) return []
   
   const groupBases = locations.filter(loc => {
     if (loc.id === baseId) return true
     if (!loc.players?.length) return false
     
+    // Parse location players
+    const locPlayers = loc.players.split(",").map(p => p.trim()).filter(p => p)
+    if (locPlayers.length === 0) return false
+    
     // Check if any players are shared between bases
-    return currentBase.players.some(player => 
-      loc.players.some(otherPlayer => otherPlayer === player)
-    )
+    return currentPlayers.some(player => locPlayers.includes(player))
   })
   
   return groupBases
@@ -125,12 +124,16 @@ const getBaseGroup = (baseId: string, locations: any[]) => {
 // Get group color for a base (only if it has subordinates or is part of a group)
 const getGroupColor = (baseId: string, locations: any[]) => {
   const groupBases = getBaseGroup(baseId, locations)
+  console.log(`Group bases for ${baseId}:`, groupBases.map(b => `${b.name} (${b.type})`))
+  
   if (groupBases.length <= 1) return null // No group if only one base
   
   // Find main bases in the group
   const mainBases = groupBases.filter(base => 
     base.type === "enemy-small" || base.type === "enemy-medium" || base.type === "enemy-large"
   )
+  
+  console.log(`Main bases in group for ${baseId}:`, mainBases.map(b => `${b.name} (${b.type})`))
   
   if (mainBases.length === 0) return null // No main base found
   
@@ -146,39 +149,11 @@ const getGroupColor = (baseId: string, locations: any[]) => {
     hash = hash & hash // Convert to 32-bit integer
   }
   
-  return GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
-}
-    if (loc.id === baseId) return true
-    if (!loc.players?.length) return false
-    
-    // Check if any players are shared between bases
-    return currentBase.players.some(player => 
-      loc.players.some(otherPlayer => otherPlayer === player)
-    )
-  })
-  
-  return groupBases
+  const color = GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
+  console.log(`Group color for ${baseId}: ${color}`)
+  return color
 }
 
-// Get group color for a base (only if it has subordinates or is part of a group)
-const getGroupColor = (baseId: string, locations: any[]) => {
-  const groupBases = getBaseGroup(baseId, locations)
-  if (groupBases.length <= 1) return null // No group if only one base
-  
-  // Find main bases in the group
-  const mainBases = groupBases.filter(base => 
-    base.type === "enemy-small" || base.type === "enemy-medium" || base.type === "enemy-large"
-  )
-  
-  if (mainBases.length === 0) return null // No main base found
-  
-  // Sort main bases by ID for consistent color assignment
-  const sortedMainBases = mainBases.sort((a, b) => a.id.localeCompare(b.id))
-  const mainBaseIndex = sortedMainBases.findIndex(base => base.id === sortedMainBases[0].id)
-  
-  // Use the first main base ID to determine color
-  return GROUP_COLORS[mainBaseIndex % GROUP_COLORS.length]
-}
 
 const formatTime = (seconds) => {
   const hours = Math.floor(seconds / 3600)
@@ -187,7 +162,7 @@ const formatTime = (seconds) => {
   if (hours > 0) {
     return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
-  return `${minutes}:${secs.toString().padStart(2, '0')}`
+  return `${minutes}:${secs.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
 // ============= CUSTOM HOOKS =============
@@ -1114,11 +1089,20 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             } ${
               (location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates ? 'px-3 py-1' : 'px-4 py-1.5'
             }`}>
-              <LocationName name={location.name} className={`${
-                location.type.startsWith('report') ? 'text-purple-300' : location.type.startsWith('enemy') ? 'text-red-300' : 'text-green-300'
-              } ${
-                (location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates ? 'text-xl' : 'text-3xl'
-              }`} />
+              <LocationName 
+                name={location.name} 
+                className={`${
+                  location.type.startsWith('report') ? 'text-purple-300' : location.type.startsWith('enemy') ? 'text-red-300' : 'text-green-300'
+                } ${
+                  (location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates ? 'text-xl' : 'text-3xl'
+                }`}
+                style={{
+                  color: (() => {
+                    const groupColor = getGroupColor(location.id, locations)
+                    return groupColor || undefined
+                  })()
+                }}
+              />
               {(location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates && (
                 <span className="text-sm font-normal ml-1 opacity-80 text-white">
                   ({location.ownerCoordinates})
