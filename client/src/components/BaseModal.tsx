@@ -1226,7 +1226,7 @@ const BaseModal = ({
           </div>
         )}
         
-        {showRaidedOutPrompt && (
+        {false && showRaidedOutPrompt && (
           <RaidedOutPrompt 
             onConfirm={() => {
               setShowRaidedOutPrompt(false)
