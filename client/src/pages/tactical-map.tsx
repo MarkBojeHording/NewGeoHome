@@ -1757,6 +1757,9 @@ export default function InteractiveTacticalMap() {
                   const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
                   const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI
                   
+                  // Debug info
+                  console.log(`Line from ${mainBase.x}, ${mainBase.y} to ${subordinate.x}, ${subordinate.y}: distance=${distance}, angle=${angle}`)
+                  
                   return (
                     <div
                       key={`line-${mainBase.id}-${subordinate.id}`}
