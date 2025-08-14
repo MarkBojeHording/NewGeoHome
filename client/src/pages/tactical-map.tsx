@@ -69,7 +69,8 @@ const GROUP_COLORS = [
 
 
 // ============= UTILITY FUNCTIONS =============
-const getColor = (type: string) => {
+const getColor = (type: string, raidedOut: boolean = false) => {
+  if (raidedOut) return "text-gray-500"
   if (type.startsWith('report')) return 'text-purple-600'
   return type.startsWith('friendly') ? 'text-green-600' : 'text-red-600'
 }
@@ -565,7 +566,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         <div className={`bg-gray-700 rounded-full shadow-md border border-gray-600 flex items-center justify-center ${
           location.type.startsWith('report') ? 'p-0.5 scale-[0.375]' : 'p-0.5 scale-75'
         }`}>
-          <div className={`${getColor(location.type)} flex items-center justify-center`}>
+          <div className={`${getColor(location.type, location.raidedOut)} flex items-center justify-center`}>
             {getIcon(location.type)}
           </div>
         </div>
@@ -1104,7 +1105,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       
       <div className="flex-shrink-0 mt-4 relative">
         <div className="bg-gray-700 rounded-full p-4 shadow-xl border-2 border-gray-600">
-          <div className={getColor(location.type)}>
+          <div className={getColor(location.type, location.raidedOut)}>
             <div className="transform scale-125">
               {getLargeIcon(location.type)}
             </div>
