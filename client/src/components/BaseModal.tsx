@@ -557,7 +557,7 @@ const BaseModal = ({
   const [showRaidedOutPrompt, setShowRaidedOutPrompt] = useState(false)
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
-  const [showReportPanel, setShowReportPanel] = useState(false)
+  const showReportPanel = false // DISABLED OLD REPORT PANEL
   
   const ownerInputRef = useRef(null)
   
@@ -1183,7 +1183,7 @@ const BaseModal = ({
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      setShowReportPanel(!showReportPanel)
+                      // setShowReportPanel(!showReportPanel) // DISABLED
                     }} 
                     className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1.5 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
                     type="button"
@@ -1444,7 +1444,7 @@ const BaseModal = ({
           </div>
         )}
         
-        {showRaidedOutPrompt && (
+        {false && showRaidedOutPrompt && ( // DISABLED RAIDED OUT PROMPT
           <RaidedOutPrompt 
             onConfirm={() => {
               setShowRaidedOutPrompt(false)
