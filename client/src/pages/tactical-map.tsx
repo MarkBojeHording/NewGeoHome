@@ -5,6 +5,7 @@ import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import ActionReportModal from '../components/ActionReportModal'
 import type { ExternalPlayer } from '@shared/schema'
+import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
   COLS: 32,
@@ -1482,11 +1483,11 @@ export default function InteractiveTacticalMap() {
                       <path d="M0,10 Q10,0 20,10 T40,10" stroke="#0f766e" strokeWidth="2" fill="none" opacity="0.4"/>
                     </pattern>
                   </defs>
-                  <rect width="100%" height="100%" fill="url(#waves)" />
+                  <image href={rustMapImage} width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style={{filter: 'brightness(0.9) contrast(1.1)'}}/>
                 </svg>
               </div>
 
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 600">
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 600" style={{display: 'none'}}>
                 <path d="M150,200 Q200,100 350,80 Q500,60 600,150 Q700,250 650,400 Q600,500 450,520 Q300,540 200,450 Q100,350 150,200 Z"
                       fill="#fbbf24" stroke="#d97706" strokeWidth="3"/>
                 <path d="M160,210 Q210,110 350,90 Q490,70 590,160 Q680,260 640,390 Q590,490 450,510 Q310,530 210,440 Q110,360 160,210 Z"
