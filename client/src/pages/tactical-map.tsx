@@ -1091,13 +1091,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           </div>
         )}
         
-        {ownedBases.length > 0 && (
-          <div className="absolute -bottom-1 -right-1">
-            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg border-2 border-gray-800">
-              <span className="text-xs text-white font-bold">{ownedBases.length}</span>
-            </div>
-          </div>
-        )}
         
         {location.roofCamper && (
           <div className="absolute -top-2 -left-2">
