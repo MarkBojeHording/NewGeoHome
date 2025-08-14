@@ -179,7 +179,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="w-[1400px] min-w-[1400px] max-w-[1400px] h-[1000px] bg-gray-900 border-gray-700">
+        <DialogContent className="w-[1200px] min-w-[1200px] max-w-[1200px] h-[800px] bg-gray-900 border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
@@ -206,7 +206,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <div className="space-y-4">
             {/* Session History View */}
             {selectedPlayer ? (
-              <div className="h-[850px] flex gap-4">
+              <div className="h-[650px] flex gap-4">
                 {/* Left Column - Session History */}
                 <div className="w-3/4 overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
                   <div className="mb-4">
