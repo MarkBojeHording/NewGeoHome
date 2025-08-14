@@ -465,6 +465,26 @@ const BaseModal = ({
     }
   }, [editingLocation, modalType])
   
+  // Get subordinate bases for this main base
+  const getSubordinateBases = useCallback(() => {
+    if (!editingLocation || modalType !== 'enemy') return []
+    
+    const isMainBase = editingLocation.type === "enemy-small" || editingLocation.type === "enemy-medium" || editingLocation.type === "enemy-large"
+    if (!isMainBase) return []
+    
+    const currentCoords = editingLocation.name.split('(')[0] // Remove (2), (3) etc
+    
+    return locations.filter(loc => {
+      const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
+      if (!isSubordinate) return false
+      
+      // Check if this subordinate is linked to this main base
+      if (loc.ownerCoordinates === currentCoords) return true
+      
+      return false
+    }).map(loc => loc.name)
+  }, [editingLocation, locations, modalType])
+
   const getMainBases = useCallback(() => {
     const bases = locations.filter(loc => 
       !loc.type.includes('farm') && 
@@ -846,6 +866,26 @@ const BaseModal = ({
 
           <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
+              {modalType === 'enemy' && getSubordinateBases().length > 0 && (
+                <div className="flex gap-1 flex-wrap mb-2">
+                  {getSubordinateBases().map((baseName, index) => (
+                    <button
+                      key={index}
+                      className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded border border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-colors"
+                      onClick={() => {
+                        // Find and focus the subordinate base
+                        const subordinateBase = locations.find(loc => loc.name === baseName)
+                        if (subordinateBase && onCancel) {
+                          onCancel() // Close current modal
+                          // User can click on the subordinate base to open its modal
+                        }
+                      }}
+                    >
+                      {baseName}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
                   <div className="flex items-center gap-3 flex-1">
