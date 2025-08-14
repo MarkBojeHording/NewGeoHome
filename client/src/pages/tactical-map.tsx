@@ -590,13 +590,6 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           </div>
         )}
         
-        {ownedBases.length > 0 && (
-          <div className="absolute -bottom-1 -left-1" style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-[8px] text-white font-bold">{ownedBases.length}</span>
-            </div>
-          </div>
-        )}
         
         {location.roofCamper && (
           <div className="absolute -top-1 -left-1" style={{ zIndex: 10 }}>
@@ -896,7 +889,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       {!location.type.startsWith('report') && (
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-x-10 flex gap-3">
       {/* Rectangle - smaller size for enemy base preview */}
-      <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none z-50">
+      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 pointer-events-none z-50">
         <div className="w-40 h-22 bg-gray-800 border border-gray-600 shadow-lg">
           {/* Player snapshot grid - 2 columns x 5 rows */}
           <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
