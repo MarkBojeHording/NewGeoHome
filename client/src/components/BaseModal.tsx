@@ -405,7 +405,6 @@ const BaseModal = ({
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
-  const [showRaidedOutPrompt, setShowRaidedOutPrompt] = useState(false)
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
@@ -831,6 +830,7 @@ const BaseModal = ({
                         <input 
                           type="checkbox" 
                           checked={formData.raidedOut} 
+                          disabled={false}
                           onChange={(e) => {
                             setFormData(prev => ({ ...prev, raidedOut: e.target.checked }))
                           }}
