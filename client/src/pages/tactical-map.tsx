@@ -592,13 +592,6 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           </div>
         )}
         
-        {ownedBases.length > 0 && (
-          <div className="absolute -bottom-1 -left-1" style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-[8px] text-white font-bold">{ownedBases.length}</span>
-            </div>
-          </div>
-        )}
         
         {location.roofCamper && (
           <div className="absolute -top-1 -left-1" style={{ zIndex: 10 }}>
@@ -613,7 +606,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         )}
         
         {location.hostileSamsite && (
-          <div className={`absolute ${location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' ? '-right-2.5' : '-right-1'} ${ownedBases.length > 0 ? '-bottom-2.5' : '-bottom-1'}`} style={{ zIndex: 10 }}>
+          <div className={`absolute ${location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' ? '-right-2.5' : '-right-1'} ${"-bottom-1"}`} style={{ zIndex: 10 }}>
             <div className="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center" title="Hostile Samsite">
               <span className="text-[8px] font-bold text-black">!</span>
             </div>
