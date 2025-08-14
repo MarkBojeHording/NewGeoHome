@@ -122,28 +122,57 @@ const EnemyBaseHeatMap = ({ players }: { players: string }) => {
       }
     })
     
-    // Process each player's session data
-    allPlayersData.forEach(playerSessions => {
-      if (!playerSessions || !Array.isArray(playerSessions)) return
+    // Process each player's session data for accurate concurrent tracking
+    for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+      const dayName = days[dayIndex]
       
-      playerSessions.forEach(session => {
-        const startTime = new Date(session.startTime)
-        const endTime = new Date(session.endTime)
+      for (let hour = 0; hour < 24; hour++) {
+        let concurrentPlayers = 0
         
-        // Calculate which hours this session covers
-        let currentTime = new Date(startTime)
-        while (currentTime < endTime) {
-          const dayName = days[currentTime.getDay()]
-          const hour = currentTime.getHours()
+        // Count players with active sessions during this specific day/hour
+        allPlayersData.forEach(playerSessions => {
+          if (!playerSessions || !Array.isArray(playerSessions)) return
           
-          // Add 1 concurrent player for this hour
-          heatMapData[dayName][hour] += 1
+          // Check if this player has a session active during this specific day/hour
+          const hasActiveSession = playerSessions.some(session => {
+            const startTime = new Date(session.startTime)
+            const endTime = new Date(session.endTime)
+            
+            // Get the day of week and check if it matches
+            const sessionStartDay = startTime.getDay()
+            const sessionEndDay = endTime.getDay()
+            
+            // Check if session spans across the target day and hour
+            if (sessionStartDay === dayIndex || sessionEndDay === dayIndex) {
+              const sessionStartHour = startTime.getHours()
+              const sessionEndHour = endTime.getHours()
+              
+              // For same day sessions
+              if (sessionStartDay === sessionEndDay && sessionStartDay === dayIndex) {
+                return hour >= sessionStartHour && hour < sessionEndHour
+              }
+              
+              // For sessions spanning midnight (different days)
+              if (sessionStartDay === dayIndex && sessionEndDay !== dayIndex) {
+                return hour >= sessionStartHour
+              }
+              
+              if (sessionEndDay === dayIndex && sessionStartDay !== dayIndex) {
+                return hour < sessionEndHour
+              }
+            }
+            
+            return false
+          })
           
-          // Move to next hour
-          currentTime.setHours(currentTime.getHours() + 1, 0, 0, 0)
-        }
-      })
-    })
+          if (hasActiveSession) {
+            concurrentPlayers++
+          }
+        })
+        
+        heatMapData[dayName][hour] = concurrentPlayers
+      }
+    }
     
     return heatMapData
   }
