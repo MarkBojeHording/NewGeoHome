@@ -1751,7 +1751,7 @@ export default function InteractiveTacticalMap() {
                 )
                 
                 return (
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{zIndex: -1}}>
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{zIndex: 0}}>
                     {subordinates.map(subordinate => (
                       <line
                         key={`line-${mainBase.id}-${subordinate.id}`}
