@@ -1497,16 +1497,16 @@ export default function InteractiveTacticalMap() {
               <div className="absolute inset-0 pointer-events-none">
                 <svg className="w-full h-full" viewBox="0 0 800 600">
                   {Array.from({ length: 27 }, (_, i) => (
-                    <line key={`v-${i}`} x1={i * 30.77} y1="0" x2={i * 30.77} y2="600" stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
+                    <line key={`v-${i}`} x1={i * 30.77} y1="0" x2={i * 30.77} y2="800" stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
                   ))}
                   {Array.from({ length: 27 }, (_, i) => (
-                    <line key={`h-${i}`} x1="0" y1={i * 23.08} x2="800" y2={i * 23.08} stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
+                    <line key={`h-${i}`} x1="0" y1={i * 30.77} x2="800" y2={i * 30.77} stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
                   ))}
                   {Array.from({ length: 26 }, (_, col) => 
                     Array.from({ length: 26 }, (_, row) => {
                       const letter = col < 26 ? String.fromCharCode(65 + col) : `A${String.fromCharCode(65 + col - 26)}`
                       return (
-                        <text key={`label-${col}-${row}`} x={col * 30.77 + 1} y={row * 23.08 + 7} fill="black" fontSize="7" fontWeight="600" textAnchor="start" stroke="rgba(255,255,255,0.4)" strokeWidth="0.3">
+                        <text key={`label-${col}-${row}`} x={col * 30.77 + 1} y={row * 30.77 + 7} fill="black" fontSize="7" fontWeight="600" textAnchor="start" stroke="rgba(255,255,255,0.4)" strokeWidth="0.3">
                           {letter}{row}
                         </text>
                       )
