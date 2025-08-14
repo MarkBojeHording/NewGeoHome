@@ -986,11 +986,20 @@ const BaseModal = ({
                           key={index}
                           className="text-xs bg-gray-700 text-gray-300 px-1.5 py-0.5 rounded border border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-colors h-4 leading-none"
                           onClick={() => {
-                            // Find and focus the subordinate base
+                            // Find the subordinate base and open its modal
                             const subordinateBase = locations.find(loc => loc.name === baseName)
-                            if (subordinateBase && onCancel) {
-                              onCancel() // Close current modal
-                              // User can click on the subordinate base to open its modal
+                            if (subordinateBase) {
+                              // Close current modal and open subordinate base modal
+                              onCancel()
+                              // Use a small delay to ensure clean transition
+                              setTimeout(() => {
+                                window.dispatchEvent(new CustomEvent('openBaseModal', {
+                                  detail: {
+                                    location: subordinateBase,
+                                    modalType: 'enemy'
+                                  }
+                                }))
+                              }, 50)
                             }
                           }}
                         >

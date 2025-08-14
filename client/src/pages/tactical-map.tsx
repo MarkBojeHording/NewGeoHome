@@ -1357,6 +1357,28 @@ export default function InteractiveTacticalMap() {
   const [locationTimers, setLocationTimers] = useLocationTimers()
   const { zoom, setZoom, pan, isDragging, setIsDragging, isDraggingRef, dragStartRef, hasDraggedRef } = useMapInteraction()
   
+  // Handle subordinate base modal navigation
+  useEffect(() => {
+    const handleOpenBaseModal = (event) => {
+      const { location, modalType } = event.detail
+      if (location && modalType === 'enemy') {
+        setEditingLocation(location)
+        setModalType('enemy')
+        setNewBaseModal({ 
+          visible: true,
+          x: location.x, 
+          y: location.y 
+        })
+      }
+    }
+
+    window.addEventListener('openBaseModal', handleOpenBaseModal)
+    
+    return () => {
+      window.removeEventListener('openBaseModal', handleOpenBaseModal)
+    }
+  }, [])
+
   const getOwnedBases = useCallback((ownerName) => {
     const ownerBase = ownerName.split('(')[0]
     return locations.filter(loc => 
