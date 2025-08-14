@@ -179,7 +179,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="w-[1800px] min-w-[1800px] max-w-[1800px] h-[1000px] bg-gray-900 border-gray-700">
+        <DialogContent className="w-[1600px] min-w-[1600px] max-w-[1600px] h-[1000px] bg-gray-900 border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
