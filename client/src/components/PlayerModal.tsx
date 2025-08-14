@@ -208,7 +208,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
             {selectedPlayer ? (
               <div className="h-[850px] flex gap-4">
                 {/* Left Column - Session History */}
-                <div className="w-1/3 overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
+                <div className="w-1/2 overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
                   <div className="mb-4">
                     <h3 className="text-lg font-semibold text-white mb-2">Session History</h3>
                     <div className="text-sm text-gray-400">{selectedPlayer}</div>
