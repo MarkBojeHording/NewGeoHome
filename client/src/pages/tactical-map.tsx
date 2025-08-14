@@ -67,6 +67,7 @@ const GROUP_COLORS = [
   '#ef5350'  // Pink
 ]
 
+
 // ============= UTILITY FUNCTIONS =============
 const getColor = (type: string) => {
   if (type.startsWith('report')) return 'text-purple-600'
@@ -102,6 +103,51 @@ const getBaseGroup = (baseId: string, locations: any[]) => {
   if (!currentBase?.players?.length) return []
   
   const groupBases = locations.filter(loc => {
+
+// Get all bases that belong to the same group (share common players)
+const getBaseGroup = (baseId: string, locations: any[]) => {
+  const currentBase = locations.find(loc => loc.id === baseId)
+  if (!currentBase?.players?.length) return []
+  
+  const groupBases = locations.filter(loc => {
+    if (loc.id === baseId) return true
+    if (!loc.players?.length) return false
+    
+    // Check if any players are shared between bases
+    return currentBase.players.some(player => 
+      loc.players.some(otherPlayer => otherPlayer === player)
+    )
+  })
+  
+  return groupBases
+}
+
+// Get group color for a base (only if it has subordinates or is part of a group)
+const getGroupColor = (baseId: string, locations: any[]) => {
+  const groupBases = getBaseGroup(baseId, locations)
+  if (groupBases.length <= 1) return null // No group if only one base
+  
+  // Find main bases in the group
+  const mainBases = groupBases.filter(base => 
+    base.type === "enemy-small" || base.type === "enemy-medium" || base.type === "enemy-large"
+  )
+  
+  if (mainBases.length === 0) return null // No main base found
+  
+  // Sort main bases by name for consistent color assignment
+  const sortedMainBases = mainBases.sort((a, b) => a.name.localeCompare(b.name))
+  const firstMainBase = sortedMainBases[0]
+  
+  // Use hash of first main base name to determine color index
+  let hash = 0
+  for (let i = 0; i < firstMainBase.name.length; i++) {
+    const char = firstMainBase.name.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32-bit integer
+  }
+  
+  return GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
+}
     if (loc.id === baseId) return true
     if (!loc.players?.length) return false
     
@@ -312,7 +358,7 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
   )
 }
 
-const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport }) => {
+const LocationMarker = ({ location, locations = [], isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport }) => {
   const ownedBases = getOwnedBases(location.name)
 
   // Calculate online player count for this base (regular players only, premium players are always counted as online)
@@ -357,7 +403,6 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
       }}
     >
       <div className="relative">
-        {!location.type.startsWith('report') && (
         {/* Group Color Ring - shows for bases that belong to a group */}
         {(() => {
           const groupColor = getGroupColor(location.id, locations)
@@ -379,6 +424,7 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
             />
           )
         })()}
+        {!location.type.startsWith('report') && (
           <TimerDisplay 
             timers={timers} 
             onRemoveTimer={onRemoveTimer}
