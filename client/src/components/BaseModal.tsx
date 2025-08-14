@@ -1065,7 +1065,15 @@ const BaseModal = ({
               </div>
               
               {/* Create Report Button */}
-              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+              <button 
+                onClick={() => {
+                  if (editingLocation) {
+                    window.dispatchEvent(new CustomEvent("openBaseReport", {
+                      detail: { location: editingLocation }
+                    }))
+                  }
+                }}
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
                 Create New Report
               </button>
             </div>
@@ -1203,7 +1211,15 @@ const BaseModal = ({
               
               
               {/* Create Report Button */}
-              <button className="mt-auto w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+              <button 
+                onClick={() => {
+                  if (editingLocation) {
+                    window.dispatchEvent(new CustomEvent("openBaseReport", {
+                      detail: { location: editingLocation }
+                    }))
+                  }
+                }}
+                className="mt-auto w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
                 Create New Report
               </button>
             </div>
