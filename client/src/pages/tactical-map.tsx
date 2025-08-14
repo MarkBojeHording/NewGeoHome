@@ -1761,7 +1761,7 @@ export default function InteractiveTacticalMap() {
                         y2={`${subordinate.y}%`}
                         stroke={selectedGroupColor}
                         strokeWidth="3"
-                        opacity="0.9"
+                        opacity="0.6"
                       />
                     ))}
                   </svg>
