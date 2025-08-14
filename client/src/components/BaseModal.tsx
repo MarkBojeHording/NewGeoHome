@@ -1,3 +1,5 @@
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+
 const BaseModal = ({ 
   modal, 
   modalType, 
