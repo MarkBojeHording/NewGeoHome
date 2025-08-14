@@ -255,18 +255,26 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                             <div>
                               <span className="text-gray-400">Started:</span>
                               <div className="text-white">
-                                {new Date(session.startTime).toLocaleString()}
+                                {new Date(session.startTime).toLocaleString(undefined, { 
+                                  year: 'numeric', 
+                                  month: 'short', 
+                                  day: 'numeric', 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
                               </div>
                             </div>
                             <div>
                               <span className="text-gray-400">Ended:</span>
                               <div className="text-white">
-                                {new Date(session.endTime).toLocaleString()}
+                                {new Date(session.endTime).toLocaleString(undefined, { 
+                                  year: 'numeric', 
+                                  month: 'short', 
+                                  day: 'numeric', 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}
                               </div>
-                            </div>
-                            <div>
-                              <span className="text-gray-400">Server:</span>
-                              <span className="text-white ml-1">{session.server}</span>
                             </div>
                           </div>
                         </div>
