@@ -779,7 +779,8 @@ const BaseModal = ({
                     type="text"
                     value={formData.ownerCoordinates}
                     onChange={(e) => {
-                      setFormData(prev => ({ ...prev, ownerCoordinates: e.target.value }))
+                      const uppercaseValue = e.target.value.toUpperCase()
+                      setFormData(prev => ({ ...prev, ownerCoordinates: uppercaseValue }))
                       setShowOwnerSuggestions(true)
                     }}
                     onFocus={() => setShowOwnerSuggestions(true)}
