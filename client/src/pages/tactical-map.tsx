@@ -316,14 +316,12 @@ const DECAY_TIMES = {
 }
 
 // ============= UTILITY FUNCTIONS =============
-const getColor = (type, isRaidedOut = false) => {
-  if (isRaidedOut) return 'text-gray-500'
+const getColor = (type) => {
   if (type.startsWith('report')) return 'text-purple-600'
   return type.startsWith('friendly') ? 'text-green-600' : 'text-red-600'
 }
 
-const getBorderColor = (type, isRaidedOut = false) => {
-  if (isRaidedOut) return 'border-gray-500'
+const getBorderColor = (type) => {
   if (type.startsWith('report')) return 'border-purple-500'
   return type.startsWith('friendly') ? 'border-green-500' : 'border-red-500'
 }
@@ -546,8 +544,8 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
           />
         )}
         
-        <div className={`${location.raidedOut ? 'bg-gray-500 border-gray-400' : 'bg-gray-700 border-gray-600'} rounded-full p-0.5 shadow-md border flex items-center justify-center`}>
-          <div className={`${getColor(location.type, location.raidedOut)} flex items-center justify-center`}>
+        <div className={`bg-gray-700 rounded-full p-0.5 shadow-md border border-gray-600 flex items-center justify-center`}>
+          <div className={`${getColor(location.type)} flex items-center justify-center`}>
             {getIcon(location.type)}
           </div>
         </div>
@@ -987,8 +985,8 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       )}
       
       <div className="flex-shrink-0 mt-4 relative">
-        <div className={`${location.raidedOut ? 'bg-gray-500 border-gray-400' : 'bg-gray-700 border-gray-600'} rounded-full p-4 shadow-xl border-2`}>
-          <div className={getColor(location.type, location.raidedOut)}>
+        <div className="bg-gray-700 rounded-full p-4 shadow-xl border-2 border-gray-600">
+          <div className={getColor(location.type)}>
             <div className="transform scale-125">
               {getLargeIcon(location.type)}
             </div>
