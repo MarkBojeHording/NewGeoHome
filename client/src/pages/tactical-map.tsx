@@ -194,22 +194,6 @@ const getGridPosition = (x: number, y: number) => {
 // Get group color for a base (only if it has subordinates or is part of a group)
 const getGroupColor = (baseId: string, locations: any[]) => {
   const groupBases = getBaseGroup(baseId, locations)
-  console.log(`Group bases for ${baseId}:`, groupBases.map(b => `${b.name} (${b.type})`))
-  
-  // Debug: Log current base details
-  const currentBase = locations.find(loc => loc.id === baseId)
-  if (currentBase) {
-    console.log(`Current base ${baseId} (${currentBase.name}): players = "${currentBase.players}"`)
-  }
-  
-  // Debug: Log all bases with players
-  const basesWithPlayers = locations.filter(loc => loc.players?.length > 0)
-  console.log('All bases with players:', basesWithPlayers.map(b => ({
-    name: b.name,
-    type: b.type,
-    players: b.players,
-    id: b.id
-  })))
   
   if (groupBases.length <= 1) return null // No group if only one base
   
@@ -217,8 +201,6 @@ const getGroupColor = (baseId: string, locations: any[]) => {
   const mainBases = groupBases.filter(base => 
     base.type === "enemy-small" || base.type === "enemy-medium" || base.type === "enemy-large"
   )
-  
-  console.log(`Main bases in group for ${baseId}:`, mainBases.map(b => `${b.name} (${b.type})`))
   
   if (mainBases.length === 0) return null // No main base found
   
@@ -235,7 +217,6 @@ const getGroupColor = (baseId: string, locations: any[]) => {
   }
   
   const color = GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
-  console.log(`Group color for ${baseId}: ${color}`)
   return color
 }
 

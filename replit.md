@@ -54,6 +54,10 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Implemented authentic Rust map integration** - Replaced fake SVG with real Rust game map image aligned to top-left corner
 ✓ **Extended grid system to 26x26** - Grid coordinates now go from A0-Z25 (676 total squares) with perfect square cells
 ✓ **Aligned map with grid coordinates** - Top-left corner is A0, bottom-left is A25, with proper image scaling to fill grid area
+✓ **Implemented working group coloring system** - Bases now display colored rings and coordinate text when grouped together
+✓ **Added dual grouping logic** - Player-based grouping for shared ownership and proximity-based grouping for subordinate bases
+✓ **Created reliable base relationships** - Main bases automatically group with nearby subordinate bases within 3 grid squares
+✓ **Enhanced visual feedback** - Group colors applied to both ring borders and coordinate text for clear identification
 
 ## Current Features
 
