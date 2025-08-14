@@ -1768,7 +1768,7 @@ export default function InteractiveTacticalMap() {
                         height: '3px',
                         backgroundColor: selectedGroupColor,
                         transformOrigin: '0 50%',
-                        transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+                        transform: `translate(0, -50%) rotate(${angle}deg)`,
                         opacity: 0.9,
                         zIndex: 1
                       }}
