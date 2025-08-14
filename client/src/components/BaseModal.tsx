@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit, Camera, StickyNote, Search, Plus, Minus } from "lucide-react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueries } from "@tanstack/react-query"
 import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
 import type { ExternalPlayer } from '@shared/schema'
@@ -97,19 +97,21 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
 // ============= ENEMY BASE HEAT MAP COMPONENT =============
 const EnemyBaseHeatMap = ({ players }: { players: string }) => {
   // Parse selected players from comma-separated string
-  const selectedPlayersList = players ? players.split(',').map(p => p.trim()).filter(p => p) : []
+  const selectedPlayersList = useMemo(() => {
+    return players ? players.split(',').map(p => p.trim()).filter(p => p) : []
+  }, [players])
   
   // Fetch session data for all selected players
-  const sessionQueries = selectedPlayersList.map(playerName => 
-    useQuery({
+  const sessionQueries = useQueries({
+    queries: selectedPlayersList.map(playerName => ({
       queryKey: ['/api/players', playerName, 'sessions'],
       enabled: !!playerName
-    })
-  )
+    }))
+  })
   
   // Multi-player heat map data generation
   const generateMultiPlayerHeatMapData = (allPlayersData: any[]) => {
-    const heatMapData = {}
+    const heatMapData: Record<string, Record<number, number>> = {}
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     
     // Initialize empty data structure
