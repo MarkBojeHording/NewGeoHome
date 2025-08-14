@@ -69,6 +69,9 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Implemented connection lines system** - Added visual connection lines between main bases and subordinates when grouped bases are selected
 ✓ **Enhanced group visualization** - Connection lines match group colors, display with 60% transparency, and appear behind base icons for clean layering
 ✓ **Optimized coordinate positioning** - Lines use same percentage coordinate system as colored rings for precise alignment between base centers
+✓ **Permanently resolved container duplication issue** - Completely removed duplicate debug Report Panel and placeholder Enemy/Friendly containers causing recurring issues
+✓ **Enhanced BaseModal Reports tab functionality** - Reports tab now uses BaseReportsContent component with proper database integration instead of placeholder text
+✓ **Added permanent prevention documentation** - Clear warning comments prevent re-addition of problematic containers and debug panels
 
 ## Current Features
 
