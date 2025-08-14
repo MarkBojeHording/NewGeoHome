@@ -66,10 +66,13 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Added sophisticated activity analysis** - Heat map calculates intensity based on session duration and time overlap with proper normalization
 ✓ **Enhanced visual feedback system** - Color-coded intensity levels (gray=none, blue gradients=low to high) with tooltips showing exact activity percentages
 ✓ **Added comprehensive activity metrics** - Displays session count, total playtime, current status, and peak activity times with day/hour analysis
+✓ **Implemented connection lines system** - Added visual connection lines between main bases and subordinates when grouped bases are selected
+✓ **Enhanced group visualization** - Connection lines match group colors, display with 60% transparency, and appear behind base icons for clean layering
+✓ **Optimized coordinate positioning** - Lines use same percentage coordinate system as colored rings for precise alignment between base centers
 
 ## Current Features
 
-### Primary Map Feature (2376 lines - main tactical planning interface)
+### Primary Map Feature (1861 lines - main tactical planning interface)
 - Interactive tactical map with zoom/pan controls
 - Base placement system (friendly/enemy bases with different types)
 - Rocket calculator with material cost calculations
