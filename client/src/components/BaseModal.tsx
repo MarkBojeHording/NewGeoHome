@@ -827,7 +827,7 @@ const BaseModal = ({
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
                   <div className="flex flex-col gap-1 flex-1">
-                    <div className="h-3 flex gap-1 flex-wrap overflow-hidden">
+                    <div className="h-3 flex gap-1 flex-wrap overflow-hidden" style={{marginTop: '-4px'}}>
                       {getSubordinateBases().map((baseName, index) => (
                         <button
                           key={index}

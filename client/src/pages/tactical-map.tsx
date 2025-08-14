@@ -124,26 +124,23 @@ const getBaseGroup = (baseId: string, locations: any[]) => {
   const isMainBase = currentBase.type === "enemy-small" || currentBase.type === "enemy-medium" || currentBase.type === "enemy-large"
   const isSubordinateBase = currentBase.type === "enemy-flank" || currentBase.type === "enemy-farm" || currentBase.type === "enemy-tower"
   
-  if (isMainBase && currentBase.players && currentBase.players.length > 0) {
-    // Only group main bases with subordinate bases if the main base has players
-    const mainBasePlayers = currentBase.players.split(",").map(p => p.trim()).filter(p => p)
-    if (mainBasePlayers.length > 0) {
-      const nearbyBases = locations.filter(loc => {
-        if (loc.id === baseId) return true
-        
-        const isNearbySubordinate = (loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower")
-        if (!isNearbySubordinate) return false
-        
-        // Calculate grid distance
-        const currentCoords = getGridPosition(currentBase.x, currentBase.y)
-        const locCoords = getGridPosition(loc.x, loc.y)
-        const distance = Math.abs(currentCoords.col - locCoords.col) + Math.abs(currentCoords.row - locCoords.row)
-        
-        return distance <= 3 // Within 3 grid squares
-      })
+  if (isMainBase) {
+    // Group main bases with nearby subordinate bases regardless of player assignment
+    const nearbyBases = locations.filter(loc => {
+      if (loc.id === baseId) return true
       
-      return nearbyBases.length > 1 ? nearbyBases : [currentBase]
-    }
+      const isNearbySubordinate = (loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower")
+      if (!isNearbySubordinate) return false
+      
+      // Calculate grid distance
+      const currentCoords = getGridPosition(currentBase.x, currentBase.y)
+      const locCoords = getGridPosition(loc.x, loc.y)
+      const distance = Math.abs(currentCoords.col - locCoords.col) + Math.abs(currentCoords.row - locCoords.row)
+      
+      return distance <= 3 // Within 3 grid squares
+    })
+    
+    return nearbyBases.length > 1 ? nearbyBases : [currentBase]
   }
   
   if (isSubordinateBase) {
