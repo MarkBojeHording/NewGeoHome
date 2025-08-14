@@ -6,13 +6,6 @@ import { RocketCalculatorSection } from './RocketCalculator'
 import type { ExternalPlayer } from '@shared/schema'
 
 // ============= CONSTANTS =============
-const GRID_CONFIG = {
-  COLS: 32,
-  ROWS: 24,
-  CELL_WIDTH_PERCENT: 3.125,
-  CELL_HEIGHT_PERCENT: 4.167
-}
-
 const LABELS = {
   "friendly-main": "Main",
   "friendly-flank": "Flank", 
@@ -60,6 +53,29 @@ const getIcon = (type: string) => {
   return <Icon className="h-3 w-3" />
 }
 
+const MATERIAL_ICONS = {
+  wood: "🪵",
+  stone: "🪨",
+  metal: "🔩",
+  hqm: "⚙️"
+}
+
+const MATERIAL_LABELS = {
+  wood: "Wood",
+  stone: "Stone",
+  metal: "Metal",
+  hqm: "HQM"
+}
+
+// Grid configuration for coordinate calculation
+const GRID_CONFIG = {
+  COLS: 32,
+  ROWS: 24,
+  CELL_WIDTH_PERCENT: 3.125,
+  CELL_HEIGHT_PERCENT: 4.167
+}
+
+// Generate grid coordinate from x,y position
 const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], excludeId: string | null = null) => {
   const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
   const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
@@ -77,22 +93,6 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
 }
-
-const MATERIAL_ICONS = {
-  wood: "🪵",
-  stone: "🪨",
-  metal: "🔩",
-  hqm: "⚙️"
-}
-
-const MATERIAL_LABELS = {
-  wood: "Wood",
-  stone: "Stone",
-  metal: "Metal",
-  hqm: "HQM"
-}
-
-
 
 // ============= BASE REPORTS CONTENT COMPONENT =============
 const BaseReportsContent = ({ baseName, onOpenReport }) => {
@@ -227,8 +227,9 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
     if (!searchTerm.trim()) return
     
     try {
-      await apiRequest('POST', '/api/premium-players', { 
-        playerName: searchTerm.trim() 
+      await apiRequest('/api/premium-players', {
+        method: 'POST',
+        body: { playerName: searchTerm.trim() }
       })
       
       // Add the player to the selection
@@ -428,21 +429,7 @@ const BaseModal = ({
         type: editingLocation.type,
         notes: editingLocation.notes || '',
         oldestTC: editingLocation.oldestTC || 0,
-        players: (() => {
-          // For subsidiary bases, get players from their main base
-          if (editingLocation.ownerCoordinates && 
-              (editingLocation.type.includes('flank') || 
-               editingLocation.type.includes('tower') || 
-               editingLocation.type.includes('farm'))) {
-            const mainBase = locations.find(loc => 
-              loc.name.split('(')[0] === editingLocation.ownerCoordinates.split('(')[0]
-            )
-            if (mainBase && mainBase.players) {
-              return mainBase.players
-            }
-          }
-          return editingLocation.players || ''
-        })(),
+        players: '',
         upkeep: editingLocation.upkeep || { wood: 0, stone: 0, metal: 0, hqm: 0 },
         reportTime: editingLocation.time || '',
         reportOutcome: editingLocation.outcome || 'neutral',
@@ -553,35 +540,6 @@ const BaseModal = ({
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
       raidedOut: modalType === 'enemy' ? formData.raidedOut : undefined,
       primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined
-    }
-    
-    // Create player base tags for owner players when saving enemy/friendly bases
-    if (formData.players && (modalType === 'enemy' || modalType === 'friendly')) {
-      const createPlayerTags = async () => {
-        const playerNames = formData.players.split(',').map(p => p.trim()).filter(p => p)
-        const coordinates = getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)
-        const baseId = editingLocation?.id || `base_${Date.now()}_${Math.random()}`
-        
-        for (const playerName of playerNames) {
-          try {
-            await apiRequest('POST', '/api/player-base-tags', {
-              playerName,
-              baseId,
-              baseName: coordinates,
-              baseCoords: coordinates,
-              baseType: formData.type
-            })
-          } catch (error) {
-            console.error(`Failed to create player base tag for ${playerName}:`, error)
-          }
-        }
-        
-        // Invalidate cache for this base's player tags
-        queryClient.invalidateQueries({ queryKey: ['/api/player-base-tags/base', baseId] })
-      }
-      
-      // Execute tagging asynchronously (don't block base save)
-      createPlayerTags()
     }
     
     onSave(baseData)
@@ -866,64 +824,64 @@ const BaseModal = ({
 
           <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
-              {modalType === 'enemy' && (
-                <div className="h-3 mb-1 flex gap-1 flex-wrap overflow-hidden">
-                  {getSubordinateBases().map((baseName, index) => (
-                    <button
-                      key={index}
-                      className="text-xs bg-gray-700 text-gray-300 px-1.5 py-0.5 rounded border border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-colors h-4 leading-none"
-                      onClick={() => {
-                        // Find and focus the subordinate base
-                        const subordinateBase = locations.find(loc => loc.name === baseName)
-                        if (subordinateBase && onCancel) {
-                          onCancel() // Close current modal
-                          // User can click on the subordinate base to open its modal
-                        }
-                      }}
-                    >
-                      {baseName}
-                    </button>
-                  ))}
-                </div>
-              )}
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
-                    <div className="flex gap-2 flex-wrap">
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.roofCamper} 
-                          onChange={(e) => setFormData(prev => ({ ...prev, roofCamper: e.target.checked }))}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                        />
-                        <span>Roof Camper</span>
-                      </label>
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.hostileSamsite} 
-                          onChange={(e) => setFormData(prev => ({ ...prev, hostileSamsite: e.target.checked }))}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                        />
-                        <span>Hostile Samsite</span>
-                      </label>
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.raidedOut} 
-                          onChange={(e) => {
-                            if (!formData.raidedOut && e.target.checked) {
-                              setShowRaidedOutPrompt(true)
-                            } else {
-                              setFormData(prev => ({ ...prev, raidedOut: false }))
+                  <div className="flex flex-col gap-1 flex-1">
+                    <div className="h-3 flex gap-1 flex-wrap overflow-hidden">
+                      {getSubordinateBases().map((baseName, index) => (
+                        <button
+                          key={index}
+                          className="text-xs bg-gray-700 text-gray-300 px-1.5 py-0.5 rounded border border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-colors h-4 leading-none"
+                          onClick={() => {
+                            // Find and focus the subordinate base
+                            const subordinateBase = locations.find(loc => loc.name === baseName)
+                            if (subordinateBase && onCancel) {
+                              onCancel() // Close current modal
+                              // User can click on the subordinate base to open its modal
                             }
                           }}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                        />
-                        <span>Raided Out</span>
-                      </label>
+                        >
+                          {baseName}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
+                      <div className="flex gap-2 flex-wrap">
+                        <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={formData.roofCamper} 
+                            onChange={(e) => setFormData(prev => ({ ...prev, roofCamper: e.target.checked }))}
+                            className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                          />
+                          <span>Roof Camper</span>
+                        </label>
+                        <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={formData.hostileSamsite} 
+                            onChange={(e) => setFormData(prev => ({ ...prev, hostileSamsite: e.target.checked }))}
+                            className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                          />
+                          <span>Hostile Samsite</span>
+                        </label>
+                        <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={formData.raidedOut} 
+                            onChange={(e) => {
+                              if (!formData.raidedOut && e.target.checked) {
+                                setShowRaidedOutPrompt(true)
+                              } else {
+                                setFormData(prev => ({ ...prev, raidedOut: false }))
+                              }
+                            }}
+                            className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                          />
+                          <span>Raided Out</span>
+                        </label>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1141,7 +1099,7 @@ const BaseModal = ({
               {/* List of reports for this base */}
               <div className="flex-1 overflow-y-auto mb-4">
                 <div className="space-y-2">
-                  <BaseReportsContent baseName={editingLocation?.name || formData.name} onOpenReport={onOpenReport} />
+                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
                   {/* Reports will be listed here */}
                 </div>
               </div>
