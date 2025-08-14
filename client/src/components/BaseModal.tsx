@@ -559,10 +559,10 @@ const BaseModal = ({
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
   
-  // Query to fetch reports for this base
+  // Query to fetch reports for this base using location coordinates
   const { data: baseReports = [], isLoading: reportsLoading } = useQuery({
-    queryKey: ['/api/base-reports', editingLocation?.id],
-    enabled: !!editingLocation?.id && showReportPanel
+    queryKey: ['/api/reports/location', editingLocation?.coordinates],
+    enabled: !!editingLocation?.coordinates && showReportPanel
   })
   
   const ownerInputRef = useRef(null)
