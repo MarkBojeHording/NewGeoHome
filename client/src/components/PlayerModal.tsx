@@ -179,7 +179,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="w-[1800px] h-[1000px] bg-gray-900 border-gray-700">
+        <DialogContent className="w-[2000px] h-[1000px] bg-gray-900 border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
@@ -240,41 +240,23 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                       {sessionHistory.map((session: any) => (
                         <div
                           key={session.id}
-                          className="bg-gray-700 rounded-lg p-3 border border-gray-600"
+                          className="bg-gray-700 rounded-lg px-3 py-2 border border-gray-600"
                           data-testid={`session-${session.id}`}
                         >
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="text-white font-medium text-sm">
-                              Session #{session.id}
+                          <div className="flex justify-between items-center text-xs">
+                            <div className="text-white">
+                              {new Date(session.startTime).toLocaleString(undefined, { 
+                                month: 'short', 
+                                day: 'numeric', 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })} - {new Date(session.endTime).toLocaleString(undefined, { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
                             </div>
-                            <div className="text-xs text-gray-400">
+                            <div className="text-gray-400">
                               {session.durationHours}h
-                            </div>
-                          </div>
-                          <div className="space-y-1 text-xs">
-                            <div>
-                              <span className="text-gray-400">Started:</span>
-                              <div className="text-white">
-                                {new Date(session.startTime).toLocaleString(undefined, { 
-                                  year: 'numeric', 
-                                  month: 'short', 
-                                  day: 'numeric', 
-                                  hour: '2-digit', 
-                                  minute: '2-digit' 
-                                })}
-                              </div>
-                            </div>
-                            <div>
-                              <span className="text-gray-400">Ended:</span>
-                              <div className="text-white">
-                                {new Date(session.endTime).toLocaleString(undefined, { 
-                                  year: 'numeric', 
-                                  month: 'short', 
-                                  day: 'numeric', 
-                                  hour: '2-digit', 
-                                  minute: '2-digit' 
-                                })}
-                              </div>
                             </div>
                           </div>
                         </div>
