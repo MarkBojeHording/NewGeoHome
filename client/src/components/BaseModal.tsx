@@ -866,12 +866,12 @@ const BaseModal = ({
 
           <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
-              {modalType === 'enemy' && getSubordinateBases().length > 0 && (
-                <div className="flex gap-1 flex-wrap mb-2">
+              {modalType === 'enemy' && (
+                <div className="h-6 mb-2 flex gap-1 flex-wrap overflow-hidden">
                   {getSubordinateBases().map((baseName, index) => (
                     <button
                       key={index}
-                      className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded border border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-colors"
+                      className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded border border-gray-600 hover:bg-gray-600 hover:border-gray-500 transition-colors h-6"
                       onClick={() => {
                         // Find and focus the subordinate base
                         const subordinateBase = locations.find(loc => loc.name === baseName)
