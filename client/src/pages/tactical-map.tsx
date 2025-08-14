@@ -97,28 +97,98 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
 }
 
-// Get all bases that belong to the same group (share common players)
+// Get all bases that belong to the same group (share common players OR are subordinate bases near main bases)
 const getBaseGroup = (baseId: string, locations: any[]) => {
   const currentBase = locations.find(loc => loc.id === baseId)
-  if (!currentBase?.players?.length) return []
+  if (!currentBase) return []
   
-  // Parse current base players (handle comma-separated string)
-  const currentPlayers = currentBase.players.split(",").map(p => p.trim()).filter(p => p)
-  if (currentPlayers.length === 0) return []
+  // Method 1: Player-based grouping (original logic)
+  if (currentBase.players && currentBase.players.length > 0) {
+    const currentPlayers = currentBase.players.split(",").map(p => p.trim()).filter(p => p)
+    if (currentPlayers.length > 0) {
+      const playerGroupBases = locations.filter(loc => {
+        if (loc.id === baseId) return true
+        if (!loc.players?.length) return false
+        
+        const locPlayers = loc.players.split(",").map(p => p.trim()).filter(p => p)
+        if (locPlayers.length === 0) return false
+        
+        return currentPlayers.some(player => locPlayers.includes(player))
+      })
+      
+      if (playerGroupBases.length > 1) return playerGroupBases
+    }
+  }
   
-  const groupBases = locations.filter(loc => {
-    if (loc.id === baseId) return true
-    if (!loc.players?.length) return false
+  // Method 2: Proximity-based grouping for subordinate bases
+  const isMainBase = currentBase.type === "enemy-small" || currentBase.type === "enemy-medium" || currentBase.type === "enemy-large"
+  const isSubordinateBase = currentBase.type === "enemy-flank" || currentBase.type === "enemy-farm" || currentBase.type === "enemy-tower"
+  
+  if (isMainBase) {
+    // Find nearby subordinate bases (within 2 grid squares)
+    const nearbyBases = locations.filter(loc => {
+      if (loc.id === baseId) return true
+      
+      const isNearbySubordinate = (loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower")
+      if (!isNearbySubordinate) return false
+      
+      // Calculate grid distance
+      const currentCoords = getGridPosition(currentBase.x, currentBase.y)
+      const locCoords = getGridPosition(loc.x, loc.y)
+      const distance = Math.abs(currentCoords.col - locCoords.col) + Math.abs(currentCoords.row - locCoords.row)
+      
+      return distance <= 3 // Within 3 grid squares
+    })
     
-    // Parse location players
-    const locPlayers = loc.players.split(",").map(p => p.trim()).filter(p => p)
-    if (locPlayers.length === 0) return false
-    
-    // Check if any players are shared between bases
-    return currentPlayers.some(player => locPlayers.includes(player))
-  })
+    return nearbyBases.length > 1 ? nearbyBases : [currentBase]
+  }
   
-  return groupBases
+  if (isSubordinateBase) {
+    // Find nearby main bases
+    const nearbyMainBases = locations.filter(loc => {
+      const isMainBase = loc.type === "enemy-small" || loc.type === "enemy-medium" || loc.type === "enemy-large"
+      if (!isMainBase) return false
+      
+      // Calculate grid distance
+      const currentCoords = getGridPosition(currentBase.x, currentBase.y)
+      const locCoords = getGridPosition(loc.x, loc.y)
+      const distance = Math.abs(currentCoords.col - locCoords.col) + Math.abs(currentCoords.row - locCoords.row)
+      
+      return distance <= 3 // Within 3 grid squares
+    })
+    
+    if (nearbyMainBases.length > 0) {
+      // Include the subordinate base and all nearby bases around the main base
+      const mainBase = nearbyMainBases[0] // Use closest main base
+      const groupBases = locations.filter(loc => {
+        if (loc.id === mainBase.id) return true
+        if (loc.id === baseId) return true
+        
+        const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
+        if (!isSubordinate) return false
+        
+        const mainCoords = getGridPosition(mainBase.x, mainBase.y)
+        const locCoords = getGridPosition(loc.x, loc.y)
+        const distance = Math.abs(mainCoords.col - locCoords.col) + Math.abs(mainCoords.row - locCoords.row)
+        
+        return distance <= 3
+      })
+      
+      return groupBases
+    }
+  }
+  
+  return [currentBase]
+}
+
+// Helper function to get grid position
+const getGridPosition = (x: number, y: number) => {
+  const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
+  const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
+  return {
+    col: Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1),
+    row: Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
+  }
 }
 
 // Get group color for a base (only if it has subordinates or is part of a group)
