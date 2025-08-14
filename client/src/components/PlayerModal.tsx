@@ -410,7 +410,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                 </div>
 
                 {/* Player List */}
-                <div className="h-[750px] overflow-y-auto bg-gray-800 rounded-lg border border-gray-600">
+                <div className="h-[550px] overflow-y-auto bg-gray-800 rounded-lg border border-gray-600">
                   {isLoading ? (
                     <div className="flex justify-center py-8">
                       <div className="text-gray-400">Loading players...</div>
