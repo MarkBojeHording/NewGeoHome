@@ -317,8 +317,8 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
           <div 
             className="absolute text-xs font-bold text-green-400 bg-black/80 rounded-full w-3 h-3 flex items-center justify-center border border-green-400/50"
             style={{
-              left: "-8px",
-              top: "0%",
+              left: "-10px", // Moved left a bit more
+              top: "-2px", // Moved up a bit
               transform: "translateY(-50%)",
               zIndex: 1,
               fontSize: "9px"
@@ -335,8 +335,8 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
             style={{
               width: "7.8px", // 35% smaller than 12px (3*0.65)
               height: "7.8px",
-              left: "4px", // Positioned to the right of green circle, touching
-              top: "0%",
+              left: "2px", // Moved left a bit to follow green circle
+              top: "-2px", // Moved up same as green circle
               transform: "translateY(-50%)",
               zIndex: 1,
               fontSize: "6px" // Smaller font for smaller circle
@@ -353,8 +353,8 @@ const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, 
             style={{
               width: "7.8px", // 35% smaller than 12px (3*0.65)
               height: "7.8px",
-              left: "-8px", // Same left position as green circle
-              top: "12px", // Below green circle, touching
+              left: "-10px", // Same left position as green circle
+              top: "8px", // Moved up from 12px to 8px
               transform: "translateY(-50%)",
               zIndex: 1,
               fontSize: "6px" // Smaller font for smaller circle
