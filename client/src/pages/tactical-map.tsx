@@ -692,11 +692,12 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               const offlinePlayers = regularTaggedPlayers.filter(p => !p.isOnline) || [];
               
               // Combine in priority order: online first, then offline, then premium
-              const regularPlayerCount = onlinePlayers.length + offlinePlayers.length;
+              const onlineCount = onlinePlayers.length;
+              const offlineCount = offlinePlayers.length;
               const prioritizedPlayers = [
                 ...onlinePlayers.slice(0, 10), // Take up to 10 online players first
-                ...offlinePlayers.slice(0, Math.max(0, 10 - onlinePlayers.length)), // Fill remaining with offline
-                ...premiumTaggedPlayers.slice(0, Math.max(0, 10 - regularPlayerCount)) // Add premium players if space
+                ...offlinePlayers.slice(0, Math.max(0, 10 - onlineCount)), // Offline players after online
+                ...premiumTaggedPlayers.slice(0, Math.max(0, 10 - onlineCount - offlineCount)) // Premium players last
               ].slice(0, 10);
               
               // Fill remaining slots with empty boxes
