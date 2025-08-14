@@ -867,7 +867,7 @@ const BaseModal = ({
           <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
               {modalType === 'enemy' && (
-                <div className="h-4 mb-1 flex gap-1 flex-wrap overflow-hidden">
+                <div className="h-3 mb-1 flex gap-1 flex-wrap overflow-hidden">
                   {getSubordinateBases().map((baseName, index) => (
                     <button
                       key={index}
