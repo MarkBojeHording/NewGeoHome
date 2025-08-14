@@ -1750,28 +1750,31 @@ export default function InteractiveTacticalMap() {
                   base.type === "enemy-flank" || base.type === "enemy-farm" || base.type === "enemy-tower"
                 )
                 
-                // Debug coordinates
-                console.log('Drawing lines for:', {
-                  mainBase: { x: mainBase.x, y: mainBase.y, svgX: mainBase.x / 100 * 800, svgY: mainBase.y / 100 * 800 },
-                  subordinates: subordinates.map(s => ({ x: s.x, y: s.y, svgX: s.x / 100 * 800, svgY: s.y / 100 * 800 }))
+                return subordinates.map(subordinate => {
+                  // Calculate line position and angle using the same positioning system as colored rings
+                  const deltaX = subordinate.x - mainBase.x
+                  const deltaY = subordinate.y - mainBase.y
+                  const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+                  const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI
+                  
+                  return (
+                    <div
+                      key={`line-${mainBase.id}-${subordinate.id}`}
+                      className="absolute pointer-events-none"
+                      style={{
+                        left: `${mainBase.x}%`,
+                        top: `${mainBase.y}%`,
+                        width: `${distance}%`,
+                        height: '3px',
+                        backgroundColor: selectedGroupColor,
+                        transformOrigin: '0 50%',
+                        transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+                        opacity: 0.9,
+                        zIndex: 1
+                      }}
+                    />
+                  )
                 })
-                
-                return (
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 800" style={{zIndex: 1}}>
-                    {subordinates.map(subordinate => (
-                      <line
-                        key={`line-${mainBase.id}-${subordinate.id}`}
-                        x1={mainBase.x / 100 * 800}
-                        y1={mainBase.y / 100 * 800}
-                        x2={subordinate.x / 100 * 800}
-                        y2={subordinate.y / 100 * 800}
-                        stroke={selectedGroupColor}
-                        strokeWidth="3"
-                        opacity="0.9"
-                      />
-                    ))}
-                  </svg>
-                )
               })()}
 
               {locations.map((location) => (
