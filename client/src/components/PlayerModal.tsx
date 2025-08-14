@@ -141,14 +141,15 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   // Get heat map data for selected player
   const heatMapData = selectedPlayer ? generateHeatMapData(sessionHistory) : {};
 
-  // Helper function to get heat map color intensity
+  // Helper function to get heat map color intensity - simplified for single player view
   const getHeatMapColor = (intensity: number) => {
-    if (intensity === 0) return 'bg-gray-800';
-    if (intensity < 0.2) return 'bg-blue-900 opacity-60';
-    if (intensity < 0.4) return 'bg-blue-800 opacity-70';
-    if (intensity < 0.6) return 'bg-blue-700 opacity-80';
-    if (intensity < 0.8) return 'bg-blue-600 opacity-90';
-    return 'bg-blue-500';
+    if (intensity === 0) return { className: 'bg-gray-800', style: {} };
+    // Simple white intensity - easier to read and will work better when combined with enemy base colors
+    const opacity = Math.min(intensity * 0.8 + 0.2, 1); // Min 20% opacity, max 100%
+    return { 
+      className: 'bg-white', 
+      style: { opacity: opacity.toString() }
+    };
   };
 
   // Helper function to render hour blocks for a day
@@ -158,15 +159,16 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
     
     return hours.map(hour => {
       const intensity = dayData[hour] || 0;
-      const colorClass = getHeatMapColor(intensity);
+      const colorConfig = getHeatMapColor(intensity);
       
       return (
         <div
           key={hour}
-          className={`${colorClass} border-b border-gray-700`}
+          className={`${colorConfig.className} border-b border-gray-700`}
           style={{
             height: '8px',
-            marginBottom: '0.5px'
+            marginBottom: '0.5px',
+            ...colorConfig.style
           }}
           title={`${day} ${hour}:00 - Activity: ${Math.round(intensity * 100)}%`}
         />
@@ -312,23 +314,19 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                         ))}
                       </div>
                       
-                      {/* Heat Map Legend */}
-                      <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-400">
+                      {/* Heat Map Legend - Simplified */}
+                      <div className="mt-3 flex items-center justify-center gap-3 text-xs text-gray-400">
                         <span>Activity:</span>
                         <div className="flex items-center gap-1">
-                          <div className="w-3 h-3 bg-gray-800 rounded"></div>
+                          <div className="w-3 h-3 bg-gray-800 rounded border border-gray-600"></div>
                           <span>None</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <div className="w-3 h-3 bg-blue-900 opacity-60 rounded"></div>
+                          <div className="w-3 h-3 bg-white opacity-30 rounded border border-gray-600"></div>
                           <span>Low</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <div className="w-3 h-3 bg-blue-700 opacity-80 rounded"></div>
-                          <span>Medium</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                          <div className="w-3 h-3 bg-white opacity-70 rounded border border-gray-600"></div>
                           <span>High</span>
                         </div>
                       </div>
