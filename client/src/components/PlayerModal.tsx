@@ -314,20 +314,16 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                         ))}
                       </div>
                       
-                      {/* Heat Map Legend - Simplified */}
-                      <div className="mt-3 flex items-center justify-center gap-3 text-xs text-gray-400">
-                        <span>Activity:</span>
+                      {/* Heat Map Legend - Online/Offline */}
+                      <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-400">
+                        <span>Player Status:</span>
                         <div className="flex items-center gap-1">
                           <div className="w-3 h-3 bg-gray-800 rounded border border-gray-600"></div>
-                          <span>None</span>
+                          <span>Offline</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <div className="w-3 h-3 bg-white opacity-30 rounded border border-gray-600"></div>
-                          <span>Low</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-3 h-3 bg-white opacity-70 rounded border border-gray-600"></div>
-                          <span>High</span>
+                          <div className="w-3 h-3 bg-white opacity-80 rounded border border-gray-600"></div>
+                          <span>Online</span>
                         </div>
                       </div>
                     </div>
