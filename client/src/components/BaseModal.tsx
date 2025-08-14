@@ -807,12 +807,6 @@ const BaseModal = ({
           </div>
         )}
         
-              <button className="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
-                Create New Report
-              </button>
-            </div>
-          </div>
-        )}
         
         {showRaidedOutPrompt && (
           <RaidedOutPrompt 
