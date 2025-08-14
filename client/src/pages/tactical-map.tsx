@@ -71,7 +71,7 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   const clampedCol = Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1)
   const clampedRow = Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
   const letter = clampedCol < 26 ? String.fromCharCode(65 + clampedCol) : `A${String.fromCharCode(65 + clampedCol - 26)}`
-  const number = clampedRow + 1
+  const number = clampedRow
   const baseCoord = `${letter}${number}`
   
   const duplicates = existingLocations.filter(loc => {
@@ -1507,7 +1507,7 @@ export default function InteractiveTacticalMap() {
                       const letter = col < 26 ? String.fromCharCode(65 + col) : `A${String.fromCharCode(65 + col - 26)}`
                       return (
                         <text key={`label-${col}-${row}`} x={col * 25 + 1} y={row * 25 + 7} fill="black" fontSize="7" fontWeight="600" textAnchor="start" stroke="rgba(255,255,255,0.4)" strokeWidth="0.3">
-                          {letter}{row + 1}
+                          {letter}{row}
                         </text>
                       )
                     })
