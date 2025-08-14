@@ -58,6 +58,10 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Added dual grouping logic** - Player-based grouping for shared ownership and proximity-based grouping for subordinate bases
 ✓ **Created reliable base relationships** - Main bases automatically group with nearby subordinate bases within 3 grid squares
 ✓ **Enhanced visual feedback** - Group colors applied to both ring borders and coordinate text for clear identification
+✓ **Enhanced PlayerModal with heat map feature** - Copied heat map from enemy base modal with reorganized layout for better space utilization
+✓ **Increased PlayerModal dimensions** - Modal enlarged to 1800x1000px to accommodate new layout with heat map and additional player statistics
+✓ **Reorganized player session view** - Session history moved to left column (1/3 width) with compacted log info format for efficient space usage
+✓ **Added comprehensive activity visualization** - Heat map displays 7-day weekly activity pattern with enhanced visual indicators and player stats section
 
 ## Current Features
 

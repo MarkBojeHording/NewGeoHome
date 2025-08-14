@@ -81,7 +81,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="w-[1600px] h-[900px] bg-gray-900 border-gray-700">
+        <DialogContent className="w-[1800px] h-[1000px] bg-gray-900 border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
@@ -108,75 +108,120 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <div className="space-y-4">
             {/* Session History View */}
             {selectedPlayer ? (
-              <div className="h-[750px] overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-white">Session History for {selectedPlayer}</h3>
-                  
-                  {/* Base Tags Section */}
-                  {playerBaseTags.length > 0 && (
-                    <div className="text-right">
-                      <div className="text-sm text-gray-400 mb-1">Base Ownership</div>
-                      <div className="flex gap-2 flex-wrap">
-                        {playerBaseTags.map((tag: any) => (
-                          <span
-                            key={tag.id}
-                            className="px-2 py-1 bg-blue-600 text-blue-200 text-xs rounded-full"
-                            title={`${tag.baseType} base at ${tag.baseCoords}`}
-                          >
-                            {tag.baseName}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {isLoadingHistory ? (
-                  <div className="flex justify-center py-8">
-                    <div className="text-gray-400">Loading session history...</div>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {sessionHistory.map((session: any) => (
-                      <div
-                        key={session.id}
-                        className="bg-gray-700 rounded-lg p-4 border border-gray-600"
-                        data-testid={`session-${session.id}`}
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="text-white font-medium">
-                            Session #{session.id}
-                          </div>
-                          <div className="text-sm text-gray-400">
-                            {session.durationHours}h duration
-                          </div>
+              <div className="h-[850px] flex gap-4">
+                {/* Left Column - Session History */}
+                <div className="w-1/3 overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">Session History</h3>
+                    <div className="text-sm text-gray-400">{selectedPlayer}</div>
+                    
+                    {/* Base Tags Section */}
+                    {playerBaseTags.length > 0 && (
+                      <div className="mt-3">
+                        <div className="text-sm text-gray-400 mb-1">Base Ownership</div>
+                        <div className="flex gap-2 flex-wrap">
+                          {playerBaseTags.map((tag: any) => (
+                            <span
+                              key={tag.id}
+                              className="px-2 py-1 bg-blue-600 text-blue-200 text-xs rounded-full"
+                              title={`${tag.baseType} base at ${tag.baseCoords}`}
+                            >
+                              {tag.baseName}
+                            </span>
+                          ))}
                         </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-gray-400">Started:</span>
-                            <div className="text-white">
-                              {new Date(session.startTime).toLocaleString()}
-                            </div>
-                          </div>
-                          <div>
-                            <span className="text-gray-400">Ended:</span>
-                            <div className="text-white">
-                              {new Date(session.endTime).toLocaleString()}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="mt-2 text-sm">
-                          <span className="text-gray-400">Server:</span>
-                          <span className="text-white ml-2">{session.server}</span>
-                        </div>
-                      </div>
-                    ))}
-                    {sessionHistory.length === 0 && (
-                      <div className="text-center text-gray-400 py-8">
-                        No session history available
                       </div>
                     )}
                   </div>
-                )}
+                  {isLoadingHistory ? (
+                    <div className="flex justify-center py-8">
+                      <div className="text-gray-400">Loading session history...</div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {sessionHistory.map((session: any) => (
+                        <div
+                          key={session.id}
+                          className="bg-gray-700 rounded-lg p-3 border border-gray-600"
+                          data-testid={`session-${session.id}`}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="text-white font-medium text-sm">
+                              Session #{session.id}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {session.durationHours}h
+                            </div>
+                          </div>
+                          <div className="space-y-1 text-xs">
+                            <div>
+                              <span className="text-gray-400">Started:</span>
+                              <div className="text-white">
+                                {new Date(session.startTime).toLocaleString()}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Ended:</span>
+                              <div className="text-white">
+                                {new Date(session.endTime).toLocaleString()}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Server:</span>
+                              <span className="text-white ml-1">{session.server}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {sessionHistory.length === 0 && (
+                        <div className="text-center text-gray-400 py-8">
+                          No session history available
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Right Section - Heat Map */}
+                <div className="flex-1 bg-gray-800 rounded-lg border border-gray-600 p-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Activity Heat Map</h3>
+                  
+                  {/* Heat Map copied from BaseModal */}
+                  <div className="border border-gray-600 rounded-lg bg-gray-700 relative">
+                    <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Weekly Activity</label>
+                    <div className="p-2 pt-3">
+                      <div className="flex gap-1">
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                          <div key={day} className="flex-1">
+                            <div className="text-[10px] text-gray-400 text-center">{day}</div>
+                            <div className="bg-gray-800 rounded" style={{height: '200px', position: 'relative'}}>
+                              {/* Heat map content would go here */}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Additional Player Stats */}
+                  <div className="mt-6 grid grid-cols-2 gap-4">
+                    <div className="bg-gray-700 rounded-lg p-3">
+                      <h4 className="text-white font-medium mb-2">Online Status</h4>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full ${players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'bg-green-500' : 'bg-gray-500'}`} />
+                        <span className="text-gray-300">
+                          {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'Currently Online' : 'Offline'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="bg-gray-700 rounded-lg p-3">
+                      <h4 className="text-white font-medium mb-2">Total Sessions</h4>
+                      <div className="text-2xl font-bold text-blue-400">
+                        {players.find(p => p.playerName === selectedPlayer)?.totalSessions || 0}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
               <>
