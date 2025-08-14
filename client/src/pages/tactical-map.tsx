@@ -1755,10 +1755,10 @@ export default function InteractiveTacticalMap() {
                     {subordinates.map(subordinate => (
                       <line
                         key={`line-${mainBase.id}-${subordinate.id}`}
-                        x1={mainBase.x / 100 * 800}
-                        y1={mainBase.y / 100 * 800}
-                        x2={subordinate.x / 100 * 800}
-                        y2={subordinate.y / 100 * 800}
+                        x1={mainBase.x * 8}
+                        y1={mainBase.y * 8}
+                        x2={subordinate.x * 8}
+                        y2={subordinate.y * 8}
                         stroke={selectedGroupColor}
                         strokeWidth="3"
                         opacity="0.9"
