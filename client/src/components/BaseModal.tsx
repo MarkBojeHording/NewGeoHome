@@ -94,6 +94,131 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
 }
 
+// ============= ENEMY BASE HEAT MAP COMPONENT =============
+const EnemyBaseHeatMap = ({ players }: { players: string }) => {
+  // Parse selected players from comma-separated string
+  const selectedPlayersList = players ? players.split(',').map(p => p.trim()).filter(p => p) : []
+  
+  // Fetch session data for all selected players
+  const sessionQueries = selectedPlayersList.map(playerName => 
+    useQuery({
+      queryKey: ['/api/players', playerName, 'sessions'],
+      enabled: !!playerName
+    })
+  )
+  
+  // Multi-player heat map data generation
+  const generateMultiPlayerHeatMapData = (allPlayersData: any[]) => {
+    const heatMapData = {}
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    
+    // Initialize empty data structure
+    days.forEach(day => {
+      heatMapData[day] = {}
+      for (let hour = 0; hour < 24; hour++) {
+        heatMapData[day][hour] = 0
+      }
+    })
+    
+    // Process each player's session data
+    allPlayersData.forEach(playerSessions => {
+      if (!playerSessions || !Array.isArray(playerSessions)) return
+      
+      playerSessions.forEach(session => {
+        const startTime = new Date(session.startTime)
+        const endTime = new Date(session.endTime)
+        
+        // Calculate which hours this session covers
+        let currentTime = new Date(startTime)
+        while (currentTime < endTime) {
+          const dayName = days[currentTime.getDay()]
+          const hour = currentTime.getHours()
+          
+          // Add 1 concurrent player for this hour
+          heatMapData[dayName][hour] += 1
+          
+          // Move to next hour
+          currentTime.setHours(currentTime.getHours() + 1, 0, 0, 0)
+        }
+      })
+    })
+    
+    return heatMapData
+  }
+  
+  // Get heat map color based on concurrent player count
+  const getMultiPlayerHeatMapColor = (playerCount: number) => {
+    if (playerCount === 0) return { className: 'bg-gray-800', style: {} }
+    if (playerCount === 1) return { className: 'bg-blue-900', style: {} }        // Dark blue
+    if (playerCount === 2) return { className: 'bg-green-400', style: {} }       // Light green
+    if (playerCount === 3) return { className: 'bg-yellow-400', style: {} }      // Yellow
+    if (playerCount === 4) return { className: 'bg-orange-500', style: {} }      // Orange
+    return { className: 'bg-red-500', style: {} }                               // Red (5+ players)
+  }
+  
+  // Render day column with hours
+  const renderDayColumn = (day: string, heatMapData: any) => {
+    const dayData = heatMapData[day] || {}
+    const hours = Array.from({ length: 24 }, (_, i) => i)
+    
+    return hours.map(hour => {
+      const playerCount = dayData[hour] || 0
+      const colorConfig = getMultiPlayerHeatMapColor(playerCount)
+      
+      return (
+        <div
+          key={hour}
+          className={`${colorConfig.className} border-b border-gray-700`}
+          style={{
+            height: '6px',
+            marginBottom: '0.5px',
+            ...colorConfig.style
+          }}
+          title={`${day} ${hour}:00 - ${playerCount} player${playerCount !== 1 ? 's' : ''} active`}
+        />
+      )
+    })
+  }
+  
+  // Get all session data
+  const allSessionsData = sessionQueries.map(query => query.data || [])
+  const isLoading = sessionQueries.some(query => query.isLoading)
+  
+  // Generate heat map data
+  const heatMapData = useMemo(() => {
+    if (isLoading) return {}
+    return generateMultiPlayerHeatMapData(allSessionsData)
+  }, [allSessionsData, isLoading])
+  
+  return (
+    <div className="border border-gray-600 rounded-lg bg-gray-700 mb-3 relative">
+      <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Heat Map</label>
+      <div className="p-2 pt-3">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-40">
+            <div className="text-gray-400 text-sm">Loading activity data...</div>
+          </div>
+        ) : selectedPlayersList.length === 0 ? (
+          <div className="flex items-center justify-center h-40">
+            <div className="text-gray-500 text-sm">Select base owners to view activity heat map</div>
+          </div>
+        ) : (
+          <div className="flex gap-1">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+              <div key={day} className="flex-1">
+                <div className="text-[10px] text-gray-400 text-center">{day}</div>
+                <div className="bg-gray-800 rounded p-1" style={{height: '160px', position: 'relative'}}>
+                  {renderDayColumn(day, heatMapData)}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ============= BASE REPORTS CONTENT COMPONENT =============
 const BaseReportsContent = ({ baseName, onOpenReport }) => {
   const { data: reports = [], isLoading } = useQuery({
@@ -730,21 +855,9 @@ const BaseModal = ({
           </div>
         )}
         
+
         {modalType === 'enemy' && (
-          <div className="border border-gray-600 rounded-lg bg-gray-700 mb-3 relative">
-            <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Heat Map</label>
-            <div className="p-2 pt-3">
-              <div className="flex gap-1">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="flex-1">
-                    <div className="text-[10px] text-gray-400 text-center">{day}</div>
-                    <div className="bg-gray-800 rounded" style={{height: '160px', position: 'relative'}}>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <EnemyBaseHeatMap players={formData.players} />
         )}
         
         <div>
