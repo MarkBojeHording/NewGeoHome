@@ -28,6 +28,34 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
 }
 
+// Icon mapping for different base types
+const ICON_MAP = {
+  'friendly-main': Castle,
+  'friendly-flank': Shield,
+  'friendly-farm': Wheat,
+  'enemy-small': Tent,
+  'enemy-medium': Home,
+  'enemy-large': Castle,
+  'enemy-flank': Shield,
+  'enemy-farm': Wheat
+}
+
+// Utility functions
+const getColor = (type: string) => {
+  if (type.startsWith('report')) return 'text-purple-600'
+  return type.startsWith('friendly') ? 'text-green-600' : 'text-red-600'
+}
+
+const getIcon = (type: string) => {
+  const Icon = ICON_MAP[type] || MapPin
+  return <Icon className="h-3 w-3" />
+}
+
+const getBorderColor = (type: string) => {
+  if (type.startsWith('report')) return 'border-purple-500'
+  return type.startsWith('friendly') ? 'border-green-500' : 'border-red-500'
+}
+
 const BaseModal = ({ 
   modal, 
   modalType, 
