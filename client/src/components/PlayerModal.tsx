@@ -246,18 +246,18 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                           data-testid={`session-${session.id}`}
                         >
                           <div className="text-white">
-                            {new Date(session.startTime).toLocaleDateString(undefined, { 
-                              month: 'short', 
-                              day: 'numeric'
-                            })} {new Date(session.startTime).toLocaleTimeString(undefined, { 
-                              hour: '2-digit', 
-                              minute: '2-digit',
-                              hour12: false
-                            })} - {new Date(session.endTime).toLocaleTimeString(undefined, { 
-                              hour: '2-digit', 
-                              minute: '2-digit',
-                              hour12: false
-                            })}
+                            {(() => {
+                              const startDate = new Date(session.startTime);
+                              const endDate = new Date(session.endTime);
+                              const startDateStr = startDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                              const endDateStr = endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                              const startTimeStr = startDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
+                              const endTimeStr = endDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
+                              
+                              return startDateStr === endDateStr 
+                                ? `${startDateStr} ${startTimeStr} - ${endTimeStr}`
+                                : `${startDateStr} ${startTimeStr} - ${endDateStr} ${endTimeStr}`;
+                            })()}
                           </div>
                           <div className="text-gray-400 ml-2">
                             {session.durationHours}h
