@@ -16,8 +16,7 @@ function getTempFakePlayers() {
     players.push({
       id: id++,
       playerName: name,
-      isOnline: true,
-      totalSessions: Math.floor(Math.random() * (100 - 30) + 30) // Random 30-100 hours
+      isOnline: true
     });
   });
   
@@ -26,43 +25,14 @@ function getTempFakePlayers() {
     players.push({
       id: id++,
       playerName: name,
-      isOnline: false,
-      totalSessions: Math.floor(Math.random() * (100 - 30) + 30) // Random 30-100 hours
+      isOnline: false
     });
   });
   
   return players;
 }
 
-function generateFakeSessionHistory(playerName: string) {
-  const sessions = [];
-  const now = new Date();
-  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  
-  // Generate 5-15 random sessions over the last week
-  const sessionCount = Math.floor(Math.random() * 11) + 5;
-  
-  for (let i = 0; i < sessionCount; i++) {
-    // Random date within the last week
-    const sessionDate = new Date(oneWeekAgo.getTime() + Math.random() * (now.getTime() - oneWeekAgo.getTime()));
-    
-    // Random session duration between 1-8 hours
-    const durationHours = Math.floor(Math.random() * 8) + 1;
-    
-    sessions.push({
-      id: i + 1,
-      playerName,
-      startTime: sessionDate.toISOString(),
-      endTime: new Date(sessionDate.getTime() + durationHours * 60 * 60 * 1000).toISOString(),
-      durationHours,
-      server: "US West",
-      status: "completed"
-    });
-  }
-  
-  // Sort by most recent first
-  return sessions.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
-}
+
 // END TEMPORARY FAKE DATA FUNCTIONS
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -209,8 +179,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const players = externalPlayers.map((player: any, index: number) => ({
         id: index + 1, // Generate temporary ID for UI
         playerName: player.playerName,
-        isOnline: player.isOnline,
-        totalSessions: player.totalSessions,
+        isOnline: player.isOnline
         // Add any other fields you want to display
       }));
       
@@ -223,13 +192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // TEMPORARY: Get player session history - TO BE DELETED LATER
-  app.get("/api/players/:playerName/sessions", async (req, res) => {
-    const { playerName } = req.params;
-    // Generate fake session history (30-100 hours over last week)
-    const sessions = generateFakeSessionHistory(playerName);
-    res.json(sessions);
-  });
+
 
   // Premium Players API routes
   
