@@ -7,6 +7,11 @@ This project is a Rust-themed tactical map and raid calculator application desig
 Preferred communication style: Simple, everyday language.
 IMPORTANT: Only implement exactly what is requested. Do not create mock/fake data or add unrequested features. Ask questions if unclear.
 
+## Layout Preferences
+- Avoid flex containers for layout - they are confusing and cause dimensional control issues
+- Use explicit width/height dimensions and grid layouts instead of flex for better control
+- Flex containers make moving and changing dimensions difficult
+
 # System Architecture
 
 ## Frontend Architecture
