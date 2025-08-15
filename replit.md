@@ -72,6 +72,8 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Permanently resolved container duplication issue** - Completely removed duplicate debug Report Panel and placeholder Enemy/Friendly containers causing recurring issues
 ✓ **Enhanced BaseModal Reports tab functionality** - Reports tab now uses BaseReportsContent component with proper database integration instead of placeholder text
 ✓ **Added permanent prevention documentation** - Clear warning comments prevent re-addition of problematic containers and debug panels
+✓ **Permanently fixed duplicate container issue in Report tab** - Removed recurring "No enemies reported"/"No friendlies reported" placeholder containers that kept reappearing (January 17, 2025)
+✓ **Cleaned up Report Panel duplicates** - Eliminated both duplicate Report Panel sections, keeping only the functional implementation
 
 ## Current Features
 
