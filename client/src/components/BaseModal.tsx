@@ -896,7 +896,6 @@ const BaseModal = ({
             
             <div className="flex-1 px-4 pt-4 space-y-3 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
-                <div className="mb-3">
 
                   <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '220px'}}>
                     <svg className="h-7 w-7 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -904,7 +903,6 @@ const BaseModal = ({
                     </svg>
                     <p className="text-gray-400 text-xs">Click to upload screenshots</p>
                   </div>
-                </div>
               )}
               
               {modalType !== 'report' && (
