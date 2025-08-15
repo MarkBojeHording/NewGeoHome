@@ -535,7 +535,7 @@ const BaseModal = ({
   
   const renderReportModal = () => (
     <div>
-      <div className="flex gap-4 items-end mb-4 justify-end" style={{marginTop: '20px'}}>
+      <div className="flex gap-4 items-end mb-4 justify-end" style={{marginTop: '135px'}}>
         <div>
 
           <input 
@@ -550,7 +550,7 @@ const BaseModal = ({
       {/* Enemy and Friendly Player Containers */}
         
         {/* Report Type Dropdown - positioned above friendly players */}
-        <div className="absolute" style={{ top: "182px", right: "12px", width: "230px", zIndex: "10" }}>
+        <div className="absolute" style={{ top: "282px", right: "12px", width: "230px", zIndex: "10" }}>
 
           <div className="relative">
             <select 
