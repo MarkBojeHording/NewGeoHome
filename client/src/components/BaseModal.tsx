@@ -282,9 +282,7 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
                 <span className={player.isOnline ? 'text-green-400' : 'text-gray-400'}>
                   {player.playerName}
                 </span>
-                <span className="text-xs text-gray-500">
-                  ({player.totalSessions} sessions)
-                </span>
+
               </button>
             ))}
             
