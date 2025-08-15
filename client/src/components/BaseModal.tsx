@@ -596,7 +596,7 @@ const BaseModal = ({
         </div>
         
         {/* Friendly Players */}
-        <div className="w-48 bg-gray-900 border border-green-500 rounded p-3 flex flex-col h-32 self-end">
+        <div className="flex-1 bg-gray-900 border border-green-500 rounded p-3 flex flex-col h-32 self-end">
           <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
           <div className="flex-1 overflow-y-auto">
             <textarea 
