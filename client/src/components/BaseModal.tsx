@@ -535,7 +535,7 @@ const BaseModal = ({
   
   const renderReportModal = () => (
     <div>
-      <div className="flex gap-4 items-end mb-4">
+      <div className="flex gap-4 items-end mb-4 justify-end">
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-200">Time</label>
           <input 
