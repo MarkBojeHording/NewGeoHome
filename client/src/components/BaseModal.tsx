@@ -582,11 +582,11 @@ const BaseModal = ({
       </div>
       
       {/* Enemy and Friendly Player Containers */}
-      <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
+      <div className="grid grid-cols-2 gap-3 mb-4" style={{ height: '200px' }}>
         {/* Enemy Players */}
-        <div className="flex-1 bg-gray-900 border border-red-500 rounded p-1 flex flex-col relative">
+        <div className="bg-gray-900 border border-red-500 rounded p-1 relative" style={{ width: '100%', height: '200px' }}>
           <h4 className="text-red-400 font-semibold text-xs absolute top-1 left-1">Enemy Players</h4>
-          <div className="mt-3 flex-1 overflow-hidden px-2 pb-1">
+          <div className="mt-3 overflow-hidden px-2 pb-1" style={{ height: '170px' }}>
             <PlayerSearchSelector
               selectedPlayers={formData.enemyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
@@ -596,9 +596,9 @@ const BaseModal = ({
         </div>
         
         {/* Friendly Players */}
-        <div className="flex-1 bg-gray-900 border border-green-500 rounded p-3 flex flex-col h-32 self-end">
+        <div className="bg-gray-900 border border-green-500 rounded p-3" style={{ width: '100%', height: '128px', marginTop: '72px' }}>
           <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
-          <div className="flex-1 overflow-y-auto">
+          <div className="overflow-y-auto" style={{ height: '80px' }}>
             <textarea 
               value={formData.friendlyPlayers}
               onChange={(e) => setFormData(prev => ({ ...prev, friendlyPlayers: e.target.value }))}
