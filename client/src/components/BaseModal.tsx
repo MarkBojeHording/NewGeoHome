@@ -1,3 +1,6 @@
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import { Wrench, Calculator, X, Users, Globe, Target, Flame, Swords, Truck, AlertTriangle, Skull, Crown, Shield, Search, SquareX, Check, Star, Trash2, Zap, Eye, Gauge, Map, Home, UserX, Plus } from 'lucide-react'
+
 const BaseModal = ({ 
   modal, 
   modalType, 
