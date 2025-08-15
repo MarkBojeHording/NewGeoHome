@@ -542,7 +542,7 @@ const BaseModal = ({
             type="time" 
             value={formData.reportTime} 
             onChange={(e) => setFormData(prev => ({ ...prev, reportTime: e.target.value }))} 
-            className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
+            className="px-2 py-1 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
           />
         </div>
       </div>
@@ -563,7 +563,7 @@ const BaseModal = ({
                   reportOutcome: newType === 'report-farming' ? 'lost' : newType === 'report-loaded' ? 'won' : 'neutral'
                 }))
               }} 
-              className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+              className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
             >
               <option value="report-pvp">PVP General</option>
               <option value="report-spotted">Spotted Enemy</option>
@@ -629,7 +629,7 @@ const BaseModal = ({
                 ownerCoordinates: (newType !== 'enemy-farm' && newType !== 'enemy-flank' && newType !== 'enemy-tower') ? '' : prev.ownerCoordinates
               }))
             }} 
-            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+            className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
           >
             {modalType === 'friendly' && (
               <>
@@ -731,7 +731,7 @@ const BaseModal = ({
           <textarea 
             value={formData.notes} 
             onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
-            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md resize-none text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
+            className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md resize-none text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
             placeholder="Add notes..." 
             style={{height: modalType === 'friendly' ? '190px' : modalType === 'enemy' ? '120px' : '340px', resize: 'none'}} 
           />
@@ -746,13 +746,13 @@ const BaseModal = ({
         <div className="relative">
           {modalType === 'enemy' && (
             <>
-              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
+              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1 border-2 border-red-500 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
                 <span className="text-white font-mono font-bold text-3xl">
                   {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)}
                 </span>
               </div>
               {(formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') && (
-                <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-800 rounded-lg px-2 py-1.5 border-2 border-gray-600 shadow-lg" style={{top: '28px', width: '90px', zIndex: 60}}>
+                <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-800 rounded-lg px-2 py-1 border-2 border-gray-600 shadow-lg" style={{top: '28px', width: '90px', zIndex: 60}}>
                   <input
                     ref={ownerInputRef}
                     type="text"
@@ -794,7 +794,7 @@ const BaseModal = ({
           )}
           
           {modalType === 'friendly' && (
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-green-600 rounded-lg px-3 py-1.5 border-2 border-green-500 shadow-lg" style={{zIndex: 60}}>
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-green-600 rounded-lg px-3 py-1 border-2 border-green-500 shadow-lg" style={{zIndex: 60}}>
               <span className="text-white font-mono font-bold text-3xl">
                 {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
               </span>
@@ -802,7 +802,7 @@ const BaseModal = ({
           )}
           
           {modalType === 'report' && (
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
               <span className="text-white font-mono font-bold text-3xl">
                 {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
               </span>
@@ -921,7 +921,7 @@ const BaseModal = ({
                       e.stopPropagation()
                       onCancel()
                     }} 
-                    className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+                    className="bg-gray-700 text-gray-200 py-1 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
                     type="button"
                   >
                     Cancel
@@ -958,7 +958,7 @@ const BaseModal = ({
                   </div>
                   
                   <button 
-                    className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+                    className="bg-gray-700 text-gray-200 py-1 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
                     type="button"
                   >
                     Advanced
@@ -969,7 +969,7 @@ const BaseModal = ({
                       e.stopPropagation()
                       handleSave()
                     }} 
-                    className="bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
+                    className="bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
                     type="button"
                   >
                     {editingLocation ? 'Update Report' : 'Save Report'}
@@ -1001,7 +1001,7 @@ const BaseModal = ({
                       e.stopPropagation()
                       setShowReportPanel(!showReportPanel)
                     }} 
-                    className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1.5 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
+                    className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
                     type="button"
                   >
                     Report {showReportPanel ? '◄' : ''}
@@ -1013,7 +1013,7 @@ const BaseModal = ({
                         e.stopPropagation()
                         handleSave()
                       }} 
-                      className="bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
+                      className="bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
                       type="button"
                     >
                       {editingLocation ? 'Update' : 'Save'}
@@ -1024,7 +1024,7 @@ const BaseModal = ({
                         e.stopPropagation()
                         onCancel()
                       }} 
-                      className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+                      className="bg-gray-700 text-gray-200 py-1 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
                       type="button"
                     >
                       Cancel
@@ -1036,7 +1036,7 @@ const BaseModal = ({
                           e.stopPropagation()
                           setShowAdvancedPanel(!showAdvancedPanel)
                         }} 
-                        className="bg-purple-600 text-white py-1.5 px-3 rounded-md hover:bg-purple-700 transition-colors font-medium text-sm cursor-pointer"
+                        className="bg-purple-600 text-white py-1 px-3 rounded-md hover:bg-purple-700 transition-colors font-medium text-sm cursor-pointer"
                         type="button"
                       >
                         Advanced
@@ -1049,7 +1049,7 @@ const BaseModal = ({
                           e.stopPropagation()
                           onDelete()
                         }} 
-                        className="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 transition-colors font-medium text-sm cursor-pointer"
+                        className="bg-red-600 text-white py-1 px-3 rounded-md hover:bg-red-700 transition-colors font-medium text-sm cursor-pointer"
                         type="button"
                       >
                         Delete
@@ -1087,7 +1087,7 @@ const BaseModal = ({
                     type="number" 
                     value={formData.oldestTC || ''} 
                     onChange={(e) => setFormData(prev => ({ ...prev, oldestTC: Math.min(360, Math.max(0, Number(e.target.value) || 0)) }))} 
-                    className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
+                    className="px-2 py-1 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
                     min="0" 
                     max="360" 
                     style={{width: '60px'}}
@@ -1147,7 +1147,7 @@ const BaseModal = ({
                     <select 
                       value={formData.library}
                       onChange={(e) => setFormData(prev => ({ ...prev, library: e.target.value }))}
-                      className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none appearance-none"
+                      className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none appearance-none"
                     >
                       <option value="">Select...</option>
                     </select>
@@ -1161,7 +1161,7 @@ const BaseModal = ({
                       value={formData.youtube}
                       onChange={(e) => setFormData(prev => ({ ...prev, youtube: e.target.value }))}
                       placeholder="Enter YouTube URL..."
-                      className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
+                      className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
                     />
                   </div>
                 </div>
