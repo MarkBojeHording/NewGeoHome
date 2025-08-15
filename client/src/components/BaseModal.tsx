@@ -3,6 +3,7 @@ import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, F
 import { useQuery } from "@tanstack/react-query"
 import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
+
 import type { ExternalPlayer } from '@shared/schema'
 
 // ============= CONSTANTS =============
@@ -523,7 +524,9 @@ const BaseModal = ({
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
 
       primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined,
-      abandoned: formData.abandoned
+      abandoned: formData.abandoned,
+      // Generate unique ID for reports if not editing existing one
+      id: modalType === 'report' && !editingLocation ? `report-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` : undefined
     }
     
     onSave(baseData)
@@ -603,6 +606,14 @@ const BaseModal = ({
               placeholder="List friendly players..."
             />
           </div>
+        </div>
+      </div>
+      
+      {/* Report ID Display */}
+      <div className="bg-gray-900 border border-blue-500 rounded p-2 mb-3">
+        <h4 className="text-blue-400 font-semibold text-sm mb-1">Report ID</h4>
+        <div className="text-gray-300 text-xs font-mono">
+          {editingLocation?.id || `REP-${Date.now().toString().slice(-6)}`}
         </div>
       </div>
       
