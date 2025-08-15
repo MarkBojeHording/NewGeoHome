@@ -1,56 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { X, Calculator, HelpCircle, MapPin, Home, Shield, Wheat, Castle, Tent } from 'lucide-react'
 
-// Grid configuration constants
-const GRID_CONFIG = {
-  COLS: 26,
-  ROWS: 26,
-  CELL_WIDTH_PERCENT: 3.846,
-  CELL_HEIGHT_PERCENT: 3.846
-}
-
-// Get grid coordinate for base positioning
-const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], excludeId: string | null = null) => {
-  const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
-  const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
-  const clampedCol = Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1)
-  const clampedRow = Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
-  const letter = clampedCol < 26 ? String.fromCharCode(65 + clampedCol) : `A${String.fromCharCode(65 + clampedCol - 26)}`
-  const number = clampedRow
-  const baseCoord = `${letter}${number}`
-  
-  const duplicates = existingLocations.filter(loc => {
-    if (excludeId && loc.id === excludeId) return false
-    const locBase = loc.name.split('(')[0]
-    return locBase === baseCoord
-  })
-  
-  return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
-}
-
-// Icon mapping for different base types
-const ICON_MAP = {
-  'friendly-main': Castle,
-  'friendly-flank': Shield,
-  'friendly-farm': Wheat,
-  'enemy-small': Tent,
-  'enemy-medium': Home,
-  'enemy-large': Castle,
-  'enemy-flank': Shield,
-  'enemy-farm': Wheat
-}
-
-// Utility functions
-const getColor = (type: string) => {
-  if (type.startsWith('report')) return 'text-purple-600'
-  return type.startsWith('friendly') ? 'text-green-600' : 'text-red-600'
-}
-
-const getIcon = (type: string) => {
-  const Icon = ICON_MAP[type] || MapPin
-  return <Icon className="h-3 w-3" />
-}
-
 const BaseModal = ({ 
   modal, 
   modalType, 
@@ -851,6 +801,61 @@ const BaseModal = ({
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Report Panel - Debug Version */}
+        {showReportPanel && (
+          <div 
+            className="bg-red-800 rounded-lg shadow-xl border-4 border-yellow-500 absolute"
+            style={{
+              height: '95vh',
+              maxHeight: '805px',
+              width: '320px',
+              left: '16px',
+              transform: 'translateX(-100%)',
+              top: 0,
+              zIndex: 9999
+            }}
+          >
+            <div className="p-4 h-full flex flex-col">
+              <h3 className="text-white font-bold mb-4 text-xl">REPORT PANEL IS VISIBLE</h3>
+              <p className="text-white mb-2">Modal Type: {modalType}</p>
+              <p className="text-white mb-4">If you see this, the panel is working!</p>
+              
+              {/* Enemy and Friendly Player Containers Side by Side */}
+              <div className="flex gap-3 flex-1 mb-4">
+                {/* Enemy Players - Left Side */}
+                <div className="w-1/2 bg-gray-900 border-2 border-red-500 rounded p-3 flex flex-col">
+                  <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
+                  <div className="flex-1 overflow-y-auto">
+                    <p className="text-xs text-gray-500">No enemies reported</p>
+                  </div>
+                </div>
+                
+                {/* Friendly Players - Right Side */}
+                <div className="w-1/2 bg-gray-900 border-2 border-green-500 rounded p-3 flex flex-col">
+                  <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
+                  <div className="flex-1 overflow-y-auto">
+                    <p className="text-xs text-gray-500">No friendlies reported</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Notes Container - Bottom */}
+              <div className="bg-gray-900 border-2 border-gray-600 rounded p-3 h-32">
+                <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
+                <textarea 
+                  className="w-full h-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 resize-none focus:outline-none focus:border-blue-500"
+                  placeholder="Enter notes..."
+                />
+              </div>
+              
+              {/* Create Report Button */}
+              <button className="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+                Create New Report
+              </button>
             </div>
           </div>
         )}
