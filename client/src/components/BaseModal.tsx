@@ -616,14 +616,7 @@ const BaseModal = ({
         </div>
       </div>
       
-      {/* Report ID Display */}
-      <div className="bg-gray-900 border border-blue-500 rounded p-2 mb-3">
-        <h4 className="text-blue-400 font-semibold text-sm mb-1">Report ID</h4>
-        <div className="text-gray-300 text-xs font-mono">
-          {editingLocation?.id || 'NEW-REPORT'}
-        </div>
-      </div>
-      
+
       {/* Notes Container */}
       <div className="bg-gray-900 border border-gray-600 rounded p-3">
         <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
@@ -820,6 +813,11 @@ const BaseModal = ({
             <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
               <span className="text-white font-mono font-bold text-3xl">
                 {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
+                {modalType === 'report' && (
+                  <span className="text-blue-300 text-sm ml-2">
+                    [{editingLocation?.id || 'NEW-REPORT'}]
+                  </span>
+                )}
               </span>
             </div>
           )}
