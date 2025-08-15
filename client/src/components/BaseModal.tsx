@@ -879,8 +879,8 @@ const BaseModal = ({
                   </div>
                 )}
                 {modalType === 'report' && (
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className="text-yellow-500 font-bold text-lg flex-shrink-0">
+                  <div className="flex items-center gap-3 flex-1" style={{marginTop: '5px'}}>
+                    <div className="text-black font-bold text-sm flex-shrink-0">
                       REPORT [{editingLocation?.id || 'NEW-REPORT'}]
                     </div>
                   </div>
