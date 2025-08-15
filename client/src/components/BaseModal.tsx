@@ -584,9 +584,9 @@ const BaseModal = ({
             </div>
           </div>
         </div>
-      <div className="absolute" style={{ top: '180px', left: '0px', width: '475px', height: '250px' }}>
+      <div className="mb-4 relative" style={{ height: '250px' }}>
         {/* Enemy Players */}
-        <div className="bg-gray-900 border border-red-500 rounded p-1 absolute" style={{ width: '240px', height: '250px', top: '0px', left: '0px' }}>
+        <div className="bg-gray-900 border border-red-500 rounded p-1 relative inline-block" style={{ width: '240px', height: '250px' }}>
           <h4 className="text-red-400 font-semibold text-xs absolute top-1 left-1">Enemy Players</h4>
           <div className="mt-3 overflow-hidden px-2 pb-1" style={{ height: '220px' }}>
             <PlayerSearchSelector
@@ -598,7 +598,7 @@ const BaseModal = ({
         </div>
         
         {/* Friendly Players */}
-        <div className="bg-gray-900 border border-green-500 rounded p-2 absolute" style={{ width: '223px', height: '178px', top: '72px', right: '0px' }}>
+        <div className="bg-gray-900 border border-green-500 rounded p-2 inline-block" style={{ width: '223px', height: '178px', marginLeft: '12px', position: 'absolute', bottom: '0', right: '0' }}>
           <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
           <div className="overflow-y-auto" style={{ height: '130px' }}>
             <textarea 
