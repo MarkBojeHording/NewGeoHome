@@ -1039,38 +1039,6 @@ const BaseModal = ({
           </div>
         </div>
         
-        {/* Report Panel */}
-        {showReportPanel && (
-          <div 
-            className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
-            style={{
-              height: '95vh',
-              maxHeight: '805px',
-              width: '320px',
-              left: '16px',
-              transform: 'translateX(-100%)',
-              top: 0,
-              zIndex: 45
-            }}
-          >
-            <div className="p-4 h-full flex flex-col">
-              <h3 className="text-white font-bold mb-4">Base Reports</h3>
-              
-              {/* List of reports for this base */}
-              <div className="flex-1 overflow-y-auto mb-4">
-                <div className="space-y-2">
-                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
-                  {/* Reports will be listed here */}
-                </div>
-              </div>
-              
-              {/* Create Report Button */}
-              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
-                Create New Report
-              </button>
-            </div>
-          </div>
-        )}
         
         {/* Advanced Panel */}
         {modalType === 'enemy' && showAdvancedPanel && (
@@ -1201,33 +1169,6 @@ const BaseModal = ({
               {/* Fetch and display reports for this base */}
               <BaseReportsContent baseName={editingLocation?.name} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
               
-              {/* Enemy and Friendly Player Containers Side by Side */}
-              <div className="flex gap-3 flex-1 mb-4">
-                {/* Enemy Players - Left Side */}
-                <div className="w-1/2 bg-gray-900 border-2 border-red-500 rounded p-3 flex flex-col">
-                  <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
-                  <div className="flex-1 overflow-y-auto">
-                    <p className="text-xs text-gray-500">No enemies reported</p>
-                  </div>
-                </div>
-                
-                {/* Friendly Players - Right Side */}
-                <div className="w-1/2 bg-gray-900 border-2 border-green-500 rounded p-3 flex flex-col">
-                  <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
-                  <div className="flex-1 overflow-y-auto">
-                    <p className="text-xs text-gray-500">No friendlies reported</p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Notes Container - Bottom */}
-              <div className="bg-gray-900 border-2 border-gray-600 rounded p-3 h-32">
-                <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
-                <textarea 
-                  className="w-full h-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 resize-none focus:outline-none focus:border-blue-500"
-                  placeholder="Enter notes..."
-                />
-              </div>
               
               {/* Create Report Button */}
               <button className="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
