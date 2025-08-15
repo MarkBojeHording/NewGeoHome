@@ -140,7 +140,7 @@ const BaseReportsContent = ({ baseName, onOpenReport }) => {
         const hasNotes = content.notes && content.notes.trim() !== ''
         
         return (
-          <div key={report.id} className="bg-gray-900 rounded-lg p-2 border border-gray-700">
+          <div key={report.id} className="bg-gray-900 rounded-lg p-3 border border-gray-700">
             <div className="flex justify-between items-start mb-2">
               <h4 className="text-white font-medium text-sm">
                 {FULL_CATEGORY_NAMES[content.type] || content.type}
@@ -535,23 +535,9 @@ const BaseModal = ({
   
   const renderReportModal = () => (
     <div>
-      <div className="flex gap-4 items-end mb-4 justify-end" style={{marginTop: '135px'}}>
-        <div>
-
-          <input 
-            type="time" 
-            value={formData.reportTime} 
-            onChange={(e) => setFormData(prev => ({ ...prev, reportTime: e.target.value }))} 
-            className="px-2 py-1 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
-          />
-        </div>
-      </div>
-      
-      {/* Enemy and Friendly Player Containers */}
-        
-        {/* Report Type Dropdown - positioned above friendly players */}
-        <div className="absolute" style={{ top: "282px", right: "12px", width: "230px", zIndex: "10" }}>
-
+      <div className="flex gap-4 items-end mb-4">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
           <div className="relative">
             <select 
               value={formData.type} 
@@ -563,7 +549,7 @@ const BaseModal = ({
                   reportOutcome: newType === 'report-farming' ? 'lost' : newType === 'report-loaded' ? 'won' : 'neutral'
                 }))
               }} 
-              className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+              className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
             >
               <option value="report-pvp">PVP General</option>
               <option value="report-spotted">Spotted Enemy</option>
@@ -584,11 +570,23 @@ const BaseModal = ({
             </div>
           </div>
         </div>
-      <div className="mb-4 relative" style={{ height: '250px' }}>
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-200">Time</label>
+          <input 
+            type="time" 
+            value={formData.reportTime} 
+            onChange={(e) => setFormData(prev => ({ ...prev, reportTime: e.target.value }))} 
+            className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
+          />
+        </div>
+      </div>
+      
+      {/* Enemy and Friendly Player Containers */}
+      <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
         {/* Enemy Players */}
-        <div className="bg-gray-900 border border-red-500 rounded p-1 relative inline-block" style={{ width: '240px', height: '250px' }}>
+        <div className="flex-1 bg-gray-900 border border-red-500 rounded p-1 flex flex-col relative">
           <h4 className="text-red-400 font-semibold text-xs absolute top-1 left-1">Enemy Players</h4>
-          <div className="mt-3 overflow-hidden px-2 pb-1" style={{ height: '220px' }}>
+          <div className="mt-3 flex-1 overflow-hidden px-2 pb-1">
             <PlayerSearchSelector
               selectedPlayers={formData.enemyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
@@ -598,9 +596,9 @@ const BaseModal = ({
         </div>
         
         {/* Friendly Players */}
-        <div className="bg-gray-900 border border-green-500 rounded p-2 inline-block" style={{ width: '223px', height: '178px', marginLeft: '12px', position: 'absolute', bottom: '0', right: '0' }}>
+        <div className="flex-1 bg-gray-900 border border-green-500 rounded p-3 flex flex-col">
           <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
-          <div className="overflow-y-auto" style={{ height: '130px' }}>
+          <div className="flex-1 overflow-y-auto">
             <textarea 
               value={formData.friendlyPlayers}
               onChange={(e) => setFormData(prev => ({ ...prev, friendlyPlayers: e.target.value }))}
@@ -618,7 +616,6 @@ const BaseModal = ({
       <div className="col-span-2 flex flex-col">
         <label className="block text-sm font-medium mb-1 text-gray-200">Base Type</label>
         <div className="relative mb-3">
-        
           <select 
             value={formData.type} 
             onChange={(e) => {
@@ -629,7 +626,7 @@ const BaseModal = ({
                 ownerCoordinates: (newType !== 'enemy-farm' && newType !== 'enemy-flank' && newType !== 'enemy-tower') ? '' : prev.ownerCoordinates
               }))
             }} 
-            className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
           >
             {modalType === 'friendly' && (
               <>
@@ -685,11 +682,11 @@ const BaseModal = ({
 
       <div className="col-span-3">
         {modalType === 'friendly' && (
-          <div className="border border-gray-600 rounded-lg p-2 bg-gray-700 mb-3">
+          <div className="border border-gray-600 rounded-lg p-3 bg-gray-700 mb-3">
             <label className="block text-sm font-medium mb-1 text-gray-300">Upkeep Tracker</label>
             <div className="space-y-2">
               {['wood', 'stone', 'metal', 'hqm'].map((resource) => (
-                <div key={resource} className="flex items-center gap-2">
+                <div key={resource} className="flex items-center gap-3">
                   <label className="text-xs font-medium text-gray-400 w-12 capitalize">{resource.toUpperCase()}</label>
                   <input 
                     type="number" 
@@ -731,7 +728,7 @@ const BaseModal = ({
           <textarea 
             value={formData.notes} 
             onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
-            className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md resize-none text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
+            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md resize-none text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
             placeholder="Add notes..." 
             style={{height: modalType === 'friendly' ? '190px' : modalType === 'enemy' ? '120px' : '340px', resize: 'none'}} 
           />
@@ -746,13 +743,13 @@ const BaseModal = ({
         <div className="relative">
           {modalType === 'enemy' && (
             <>
-              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1 border-2 border-red-500 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
+              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
                 <span className="text-white font-mono font-bold text-3xl">
                   {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)}
                 </span>
               </div>
               {(formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') && (
-                <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-800 rounded-lg px-2 py-1 border-2 border-gray-600 shadow-lg" style={{top: '28px', width: '90px', zIndex: 60}}>
+                <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-800 rounded-lg px-2 py-1.5 border-2 border-gray-600 shadow-lg" style={{top: '28px', width: '90px', zIndex: 60}}>
                   <input
                     ref={ownerInputRef}
                     type="text"
@@ -794,7 +791,7 @@ const BaseModal = ({
           )}
           
           {modalType === 'friendly' && (
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-green-600 rounded-lg px-3 py-1 border-2 border-green-500 shadow-lg" style={{zIndex: 60}}>
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-green-600 rounded-lg px-3 py-1.5 border-2 border-green-500 shadow-lg" style={{zIndex: 60}}>
               <span className="text-white font-mono font-bold text-3xl">
                 {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
               </span>
@@ -802,18 +799,18 @@ const BaseModal = ({
           )}
           
           {modalType === 'report' && (
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
               <span className="text-white font-mono font-bold text-3xl">
                 {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
               </span>
             </div>
           )}
 
-          <div className="bg-gray-800 rounded-lg shadow-xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', width: '515px', zIndex: 50}}>
+          <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
-                  <div className="flex items-center gap-2 flex-1">
+                  <div className="flex items-center gap-3 flex-1">
                     <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
                     <div className="flex gap-2 flex-wrap">
                       <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
@@ -847,7 +844,7 @@ const BaseModal = ({
                   </div>
                 )}
                 {modalType === 'friendly' && (
-                  <div className="flex items-center gap-2 flex-1">
+                  <div className="flex items-center gap-3 flex-1">
                     <div className="text-green-500 font-bold text-lg flex-shrink-0">FRIENDLY</div>
                     <div className="flex gap-2 flex-wrap">
                       <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
@@ -863,7 +860,7 @@ const BaseModal = ({
                   </div>
                 )}
                 {modalType === 'report' && (
-                  <div className="flex items-center gap-2 flex-1" style={{marginTop: '15px'}}>
+                  <div className="flex items-center gap-3 flex-1" style={{marginTop: '15px'}}>
                     <div className="text-gray-600 font-bold text-sm flex-shrink-0">
                       REPORT [{editingLocation?.id || 'NEW-REPORT'}]
                     </div>
@@ -886,9 +883,9 @@ const BaseModal = ({
             <div className="flex-1 px-4 pt-4 space-y-3 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
                 <div className="mb-3">
-
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-2 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '100px'}}>
-                    <svg className="h-6 w-6 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <label className="block text-sm font-medium mb-1 text-gray-200">Report Screenshots</label>
+                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '100px'}}>
+                    <svg className="h-7 w-7 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <p className="text-gray-400 text-xs">Click to upload screenshots</p>
@@ -899,7 +896,7 @@ const BaseModal = ({
               {modalType !== 'report' && (
                 <div className="mb-3">
                   <label className="block text-sm font-medium mb-1 text-gray-200">Base Screenshots</label>
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-2 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '160px', width: '65%', marginRight: 'auto'}}>
+                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '160px', width: '65%', marginRight: 'auto'}}>
                     <svg className="h-9 w-9 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -921,7 +918,7 @@ const BaseModal = ({
                       e.stopPropagation()
                       onCancel()
                     }} 
-                    className="bg-gray-700 text-gray-200 py-1 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+                    className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
                     type="button"
                   >
                     Cancel
@@ -958,7 +955,7 @@ const BaseModal = ({
                   </div>
                   
                   <button 
-                    className="bg-gray-700 text-gray-200 py-1 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+                    className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
                     type="button"
                   >
                     Advanced
@@ -969,7 +966,7 @@ const BaseModal = ({
                       e.stopPropagation()
                       handleSave()
                     }} 
-                    className="bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
+                    className="bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
                     type="button"
                   >
                     {editingLocation ? 'Update Report' : 'Save Report'}
@@ -1001,7 +998,7 @@ const BaseModal = ({
                       e.stopPropagation()
                       setShowReportPanel(!showReportPanel)
                     }} 
-                    className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
+                    className={`${showReportPanel ? 'bg-yellow-700' : 'bg-yellow-600'} text-white py-1.5 px-3 rounded-md hover:bg-yellow-700 transition-colors font-medium text-sm cursor-pointer`}
                     type="button"
                   >
                     Report {showReportPanel ? '◄' : ''}
@@ -1013,7 +1010,7 @@ const BaseModal = ({
                         e.stopPropagation()
                         handleSave()
                       }} 
-                      className="bg-blue-600 text-white py-1 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
+                      className="bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
                       type="button"
                     >
                       {editingLocation ? 'Update' : 'Save'}
@@ -1024,7 +1021,7 @@ const BaseModal = ({
                         e.stopPropagation()
                         onCancel()
                       }} 
-                      className="bg-gray-700 text-gray-200 py-1 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+                      className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
                       type="button"
                     >
                       Cancel
@@ -1036,7 +1033,7 @@ const BaseModal = ({
                           e.stopPropagation()
                           setShowAdvancedPanel(!showAdvancedPanel)
                         }} 
-                        className="bg-purple-600 text-white py-1 px-3 rounded-md hover:bg-purple-700 transition-colors font-medium text-sm cursor-pointer"
+                        className="bg-purple-600 text-white py-1.5 px-3 rounded-md hover:bg-purple-700 transition-colors font-medium text-sm cursor-pointer"
                         type="button"
                       >
                         Advanced
@@ -1049,7 +1046,7 @@ const BaseModal = ({
                           e.stopPropagation()
                           onDelete()
                         }} 
-                        className="bg-red-600 text-white py-1 px-3 rounded-md hover:bg-red-700 transition-colors font-medium text-sm cursor-pointer"
+                        className="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 transition-colors font-medium text-sm cursor-pointer"
                         type="button"
                       >
                         Delete
@@ -1087,7 +1084,7 @@ const BaseModal = ({
                     type="number" 
                     value={formData.oldestTC || ''} 
                     onChange={(e) => setFormData(prev => ({ ...prev, oldestTC: Math.min(360, Math.max(0, Number(e.target.value) || 0)) }))} 
-                    className="px-2 py-1 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
+                    className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
                     min="0" 
                     max="360" 
                     style={{width: '60px'}}
@@ -1147,7 +1144,7 @@ const BaseModal = ({
                     <select 
                       value={formData.library}
                       onChange={(e) => setFormData(prev => ({ ...prev, library: e.target.value }))}
-                      className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none appearance-none"
+                      className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none appearance-none"
                     >
                       <option value="">Select...</option>
                     </select>
@@ -1161,7 +1158,7 @@ const BaseModal = ({
                       value={formData.youtube}
                       onChange={(e) => setFormData(prev => ({ ...prev, youtube: e.target.value }))}
                       placeholder="Enter YouTube URL..."
-                      className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
+                      className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
                     />
                   </div>
                 </div>
