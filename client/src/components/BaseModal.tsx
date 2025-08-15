@@ -37,6 +37,125 @@ const BaseModal = ({
   const [showReportPanel, setShowReportPanel] = useState(false)
   
   const ownerInputRef = useRef(null)
+
+  // Labels for different types
+  const LABELS = {
+    'friendly-main': 'Main Base',
+    'friendly-farm': 'Farm Base',
+    'friendly-boat': 'Boat Base',
+    'friendly-garage': 'Garage Base',
+    'enemy-main': 'Main Base',
+    'enemy-small': 'Small Base',
+    'enemy-farm': 'Farm Base',
+    'enemy-flank': 'Flank Base',
+    'enemy-boat': 'Boat Base',
+    'enemy-garage': 'Garage Base',
+    'enemy-tower': 'Tower Base',
+    'enemy-decaying': 'Decaying Base',
+    'report-pvp': 'PVP General',
+    'report-spotted': 'Spotted Enemy',
+    'report-bradley': 'Countered/Took Bradley/Heli',
+    'report-oil': 'Countered/Took Oil/Cargo',
+    'report-monument': 'Big Score/Fight at Monument',
+    'report-farming': 'Killed While Farming',
+    'report-loaded': 'Killed Loaded Enemy',
+    'report-raid': 'Countered Raid'
+  }
+
+  // Helper function to get grid coordinate
+  const getGridCoordinate = (x, y) => {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    const col = Math.floor(x / 150)
+    const row = Math.floor(y / 150)
+    return `${letters[col] || 'Z'}${row}`
+  }
+
+  // Helper function to get color for different types
+  const getColor = (type) => {
+    if (type?.startsWith('friendly')) return 'text-green-400'
+    if (type?.startsWith('enemy')) return 'text-red-400'
+    if (type?.startsWith('report')) return 'text-blue-400'
+    return 'text-gray-400'
+  }
+
+  // Helper function to get icon for different types
+  const getIcon = (type) => {
+    switch (type) {
+      case 'friendly-main': return <Home className="h-3 w-3" />
+      case 'friendly-farm': return <Target className="h-3 w-3" />
+      case 'friendly-boat': return <Truck className="h-3 w-3" />
+      case 'friendly-garage': return <Shield className="h-3 w-3" />
+      case 'enemy-main': return <AlertTriangle className="h-3 w-3" />
+      case 'enemy-small': return <Eye className="h-3 w-3" />
+      case 'enemy-farm': return <Target className="h-3 w-3" />
+      case 'enemy-flank': return <Zap className="h-3 w-3" />
+      case 'enemy-boat': return <Truck className="h-3 w-3" />
+      case 'enemy-garage': return <Shield className="h-3 w-3" />
+      case 'enemy-tower': return <Crown className="h-3 w-3" />
+      case 'enemy-decaying': return <Skull className="h-3 w-3" />
+      case 'report-pvp': return <Swords className="h-3 w-3" />
+      case 'report-spotted': return <Eye className="h-3 w-3" />
+      case 'report-bradley': return <Flame className="h-3 w-3" />
+      case 'report-oil': return <Truck className="h-3 w-3" />
+      case 'report-monument': return <Crown className="h-3 w-3" />
+      case 'report-farming': return <Target className="h-3 w-3" />
+      case 'report-loaded': return <Star className="h-3 w-3" />
+      case 'report-raid': return <AlertTriangle className="h-3 w-3" />
+      default: return <Globe className="h-3 w-3" />
+    }
+  }
+
+  // Rocket Calculator Section Component
+  const RocketCalculatorSection = ({ onRocketUpdate }) => (
+    <div className="bg-gray-800 border border-gray-600 rounded p-3 mb-3">
+      <h4 className="text-orange-400 font-semibold text-sm mb-2 flex items-center gap-2">
+        <Calculator className="h-4 w-4" />
+        Rocket Calculator
+      </h4>
+      <div className="space-y-2">
+        <button 
+          onClick={() => onRocketUpdate(20)}
+          className="w-full text-left px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-200"
+        >
+          Stone Wall: 4 Rockets
+        </button>
+        <button 
+          onClick={() => onRocketUpdate(46)}
+          className="w-full text-left px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-200"
+        >
+          Armored Wall: 6 Rockets
+        </button>
+        <button 
+          onClick={() => onRocketUpdate(63)}
+          className="w-full text-left px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-200"
+        >
+          Sheet Metal Door: 3 Rockets
+        </button>
+      </div>
+    </div>
+  )
+
+  // Raided Out Prompt Component
+  const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
+    <div className="bg-red-900 border border-red-500 rounded p-3 mb-3">
+      <h4 className="text-red-400 font-semibold text-sm mb-2">Mark as Raided Out?</h4>
+      <p className="text-xs text-gray-300 mb-3">This will mark the base as raided out and remove it from active tracking.</p>
+      <div className="flex gap-2">
+        <button 
+          onClick={onConfirm}
+          className="flex-1 px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs"
+        >
+          Confirm
+        </button>
+        <button 
+          onClick={onCancel}
+          className="flex-1 px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
   
   const handleToggleRocketCalculator = useCallback((e) => {
     e.stopPropagation()
@@ -152,9 +271,10 @@ const BaseModal = ({
   
   const renderReportModal = () => (
     <div>
-      <div className="flex gap-4 items-end mb-4">
-        <div className="flex-1">
+      <div className="flex gap-3 mb-4">
+        <div className="flex-1 flex gap-4 items-end">
           <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
+          <div className="flex-1">
           <div className="relative">
             <select 
               value={formData.type} 
@@ -187,6 +307,7 @@ const BaseModal = ({
             </div>
           </div>
         </div>
+          </div>
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-200">Time</label>
           <input 
@@ -195,6 +316,9 @@ const BaseModal = ({
             onChange={(e) => setFormData(prev => ({ ...prev, reportTime: e.target.value }))} 
             className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
           />
+        <div className="flex-1">
+          {/* Empty space to match friendly players width */}
+        </div>
         </div>
       </div>
       
