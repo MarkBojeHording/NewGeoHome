@@ -397,7 +397,7 @@ const BaseModal = ({
     youtube: '',
     roofCamper: false,
     hostileSamsite: false,
-    raidedOut: false,
+
     primaryRockets: 0,
     enemyPlayers: '',
     friendlyPlayers: ''
@@ -405,7 +405,7 @@ const BaseModal = ({
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
-  const [showRaidedOutPrompt, setShowRaidedOutPrompt] = useState(false)
+
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
@@ -438,7 +438,7 @@ const BaseModal = ({
         youtube: editingLocation.youtube || '',
         roofCamper: editingLocation.roofCamper || false,
         hostileSamsite: editingLocation.hostileSamsite || false,
-        raidedOut: editingLocation.raidedOut || false,
+
         primaryRockets: editingLocation.primaryRockets || 0,
         enemyPlayers: editingLocation.enemyPlayers || '',
         friendlyPlayers: editingLocation.friendlyPlayers || ''
@@ -518,7 +518,7 @@ const BaseModal = ({
       youtube: modalType === 'enemy' ? formData.youtube : undefined,
       roofCamper: modalType === 'enemy' ? formData.roofCamper : undefined,
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
-      raidedOut: modalType === 'enemy' ? formData.raidedOut : undefined,
+
       primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined
     }
     
@@ -826,21 +826,6 @@ const BaseModal = ({
                           className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
                         />
                         <span>Hostile Samsite</span>
-                      </label>
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.raidedOut} 
-                          onChange={(e) => {
-                            if (!formData.raidedOut && e.target.checked) {
-                              setShowRaidedOutPrompt(true)
-                            } else {
-                              setFormData(prev => ({ ...prev, raidedOut: false }))
-                            }
-                          }}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                        />
-                        <span>Raided Out</span>
                       </label>
                     </div>
                   </div>
@@ -1178,18 +1163,6 @@ const BaseModal = ({
           </div>
         )}
         
-        {showRaidedOutPrompt && (
-          <RaidedOutPrompt 
-            onConfirm={() => {
-              setShowRaidedOutPrompt(false)
-              setFormData(prev => ({ ...prev, raidedOut: true }))
-            }}
-            onCancel={() => {
-              setShowRaidedOutPrompt(false)
-              setFormData(prev => ({ ...prev, raidedOut: true }))
-            }}
-          />
-        )}
       </div>
     </div>
   )

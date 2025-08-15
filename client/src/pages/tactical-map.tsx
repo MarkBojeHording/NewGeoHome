@@ -657,17 +657,6 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           </div>
         )}
         
-        {location.raidedOut && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style={{ zIndex: 10 }}>
-            <div className="w-4 h-4 bg-red-600 bg-opacity-80 rounded-full flex items-center justify-center" title="Raided Out">
-              <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </div>
-          </div>
-        )}
-        
         {location.oldestTC && location.oldestTC > 0 && (
           <div className="absolute inset-0 pointer-events-none">
             <svg width="28" height="28" viewBox="0 0 28 28" className="absolute" style={{top: '-2px', left: '-2px'}}>
@@ -870,40 +859,6 @@ const DecayingMenu = ({ style, onClose, onStartTimer, title = "Decay Calculator"
   )
 }
 
-const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
-  <div 
-    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4"
-    onClick={onCancel}
-  >
-    <div 
-      className="bg-gray-800 rounded-lg shadow-2xl border border-gray-600 p-6 max-w-sm w-full relative"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        onClick={onCancel}
-        className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
-      >
-        <X className="h-5 w-5" />
-      </button>
-      <h3 className="text-lg font-bold text-white mb-4">Base Raided Out</h3>
-      <p className="text-gray-300 mb-6">Would you like to report this raid?</p>
-      <div className="flex gap-3 justify-end">
-        <button
-          onClick={onConfirm}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
-        >
-          Make Report
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-700 text-gray-200 rounded-md hover:bg-gray-600 transition-colors font-medium"
-        >
-          Not right now
-        </button>
-      </div>
-    </div>
-  </div>
-)
 
 const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport, players, locations }) => {
   const [showActionMenu, setShowActionMenu] = useState(false)
@@ -1151,17 +1106,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           </div>
         )}
         
-        {location.raidedOut && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="w-4 h-4 bg-red-600 bg-opacity-80 rounded-full flex items-center justify-center shadow-lg border border-gray-800" title="Raided Out">
-              <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </div>
-          </div>
-        )}
-        
         <div className="absolute -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
           <div className="relative">
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 120 32">
@@ -1186,18 +1130,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
                 } ${
                   (location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates ? 'text-xl' : 'text-3xl'
                 }`}
-                style={{
-                  color: (() => {
-                    const groupColor = getGroupColor(location.id, locations)
-                    return groupColor || undefined
-                  })()
-                }}
               />
-              {(location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates && (
-                <span className="text-sm font-normal ml-1 opacity-80 text-white">
-                  ({location.ownerCoordinates})
-                </span>
-              )}
             </span>
           </div>
         </div>
@@ -1247,7 +1180,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               </div>
             </div>
           )}
-          {(location.roofCamper || location.hostileSamsite || location.raidedOut) && (
+          {(location.roofCamper || location.hostileSamsite) && (
             <div className="text-sm text-gray-400 flex gap-3 flex-wrap">
               {location.roofCamper && (
                 <span className="text-orange-400 font-medium flex items-center gap-1">
@@ -1263,15 +1196,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
                 <span className="text-yellow-400 font-medium flex items-center gap-1">
                   <span className="bg-yellow-500 text-black rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">!</span>
                   Hostile Samsite
-                </span>
-              )}
-              {location.raidedOut && (
-                <span className="text-red-400 font-medium flex items-center gap-1">
-                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                  Raided Out
                 </span>
               )}
             </div>
