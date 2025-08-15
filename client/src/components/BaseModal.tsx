@@ -873,3 +873,4 @@ const BaseModal = ({
     </div>
   )
 }
+export default BaseModal
