@@ -592,12 +592,11 @@ const BaseModal = ({
         {/* Enemy Players */}
         <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col">
           <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
-          <div className="flex-1 overflow-y-auto">
-            <textarea 
-              value={formData.enemyPlayers}
-              onChange={(e) => setFormData(prev => ({ ...prev, enemyPlayers: e.target.value }))}
-              className="w-full h-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-red-500"
-              placeholder="List enemy players..."
+          <div className="flex-1 overflow-hidden">
+            <PlayerSearchSelector
+              selectedPlayers={formData.enemyPlayers}
+              onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
+              maxHeight="100%"
             />
           </div>
         </div>
