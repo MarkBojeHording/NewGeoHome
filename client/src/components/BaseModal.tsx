@@ -883,7 +883,7 @@ const BaseModal = ({
               </div>
             </div>
             
-            <div className="flex-1 px-4 pt-4 space-y-3 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
+            <div className="flex-1 px-4 pt-4 overflow-y-auto text-gray-200 flex flex-col" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
                 <div className="mb-3 flex-1">
 
