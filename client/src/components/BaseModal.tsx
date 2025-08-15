@@ -584,7 +584,7 @@ const BaseModal = ({
       {/* Enemy and Friendly Player Containers */}
       <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
         {/* Enemy Players */}
-        <div className="flex-1 bg-gray-900 border border-red-500 rounded p-1 flex flex-col relative">
+        <div className="flex-[2] bg-gray-900 border border-red-500 rounded p-1 flex flex-col relative">
           <h4 className="text-red-400 font-semibold text-xs absolute top-1 left-1">Enemy Players</h4>
           <div className="mt-3 flex-1 overflow-hidden px-2 pb-1">
             <PlayerSearchSelector
@@ -596,7 +596,7 @@ const BaseModal = ({
         </div>
         
         {/* Friendly Players */}
-        <div className="w-48 flex-shrink-0 bg-gray-900 border border-green-500 rounded p-3 flex flex-col">
+        <div className="flex-[1] bg-gray-900 border border-green-500 rounded p-3 flex flex-col">
           <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
           <div className="flex-1 overflow-y-auto">
             <textarea 
