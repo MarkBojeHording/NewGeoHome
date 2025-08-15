@@ -397,6 +397,7 @@ const BaseModal = ({
     youtube: '',
     roofCamper: false,
     hostileSamsite: false,
+    abandoned: false,
 
     primaryRockets: 0,
     enemyPlayers: '',
@@ -438,6 +439,7 @@ const BaseModal = ({
         youtube: editingLocation.youtube || '',
         roofCamper: editingLocation.roofCamper || false,
         hostileSamsite: editingLocation.hostileSamsite || false,
+        abandoned: editingLocation.abandoned || false,
 
         primaryRockets: editingLocation.primaryRockets || 0,
         enemyPlayers: editingLocation.enemyPlayers || '',
@@ -827,10 +829,35 @@ const BaseModal = ({
                         />
                         <span>Hostile Samsite</span>
                       </label>
+                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.abandoned} 
+                          onChange={(e) => setFormData(prev => ({ ...prev, abandoned: e.target.checked }))}
+                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                        />
+                        <span>Abandoned</span>
+                      </label>
                     </div>
                   </div>
                 )}
-                {modalType !== 'enemy' && <div></div>}
+                {modalType === 'friendly' && (
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="text-green-500 font-bold text-lg flex-shrink-0">FRIENDLY</div>
+                    <div className="flex gap-2 flex-wrap">
+                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.abandoned} 
+                          onChange={(e) => setFormData(prev => ({ ...prev, abandoned: e.target.checked }))}
+                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                        />
+                        <span>Abandoned</span>
+                      </label>
+                    </div>
+                  </div>
+                )}
+                {modalType === 'report' && <div></div>}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()

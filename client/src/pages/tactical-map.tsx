@@ -1106,6 +1106,14 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           </div>
         )}
         
+        {location.abandoned && (
+          <div className="absolute -bottom-2 -left-2">
+            <div className="w-4 h-4 bg-gray-500 rounded-full flex items-center justify-center shadow-lg border border-gray-800" title="Abandoned">
+              <span className="text-[10px] font-bold text-white">A</span>
+            </div>
+          </div>
+        )}
+        
         <div className="absolute -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
           <div className="relative">
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 120 32">
@@ -1180,7 +1188,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               </div>
             </div>
           )}
-          {(location.roofCamper || location.hostileSamsite) && (
+          {(location.roofCamper || location.hostileSamsite || location.abandoned) && (
             <div className="text-sm text-gray-400 flex gap-3 flex-wrap">
               {location.roofCamper && (
                 <span className="text-orange-400 font-medium flex items-center gap-1">
@@ -1201,6 +1209,12 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             </div>
           )}
         </div>
+              {location.abandoned && (
+                <span className="text-gray-400 font-medium flex items-center gap-1">
+                  <span className="bg-gray-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">A</span>
+                  Abandoned
+                </span>
+              )}
       </div>
     </div>
   )

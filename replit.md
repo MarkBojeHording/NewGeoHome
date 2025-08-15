@@ -75,6 +75,7 @@ This is a Rust-themed tactical map and raid calculator application built with Re
 ✓ **Permanently fixed duplicate container issue in Report tab** - Removed recurring "No enemies reported"/"No friendlies reported" placeholder containers that kept reappearing (January 17, 2025)
 ✓ **Cleaned up Report Panel duplicates** - Eliminated both duplicate Report Panel sections, keeping only the functional implementation
 ✓ **Completely removed raided out functionality** - Deleted "Raided Out" checkbox, RaidedOutPrompt dialog, red X indicators, and all related code at user request (January 17, 2025)
+✓ **Added "Abandoned" checkbox functionality** - Implemented Abandoned checkbox in both enemy and friendly base modals with visual indicators and database storage (January 17, 2025)
 
 ## Current Features
 
