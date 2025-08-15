@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import { X, Calculator, HelpCircle } from 'lucide-react'
 
 // Grid configuration constants
 const GRID_CONFIG = {
