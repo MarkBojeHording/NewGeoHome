@@ -584,7 +584,7 @@ const BaseModal = ({
       {/* Enemy and Friendly Player Containers */}
       <div className="mb-4 relative" style={{ height: '200px' }}>
         {/* Enemy Players */}
-        <div className="bg-gray-900 border border-red-500 rounded p-1 relative inline-block" style={{ width: '300px', height: '200px' }}>
+        <div className="bg-gray-900 border border-red-500 rounded p-1 relative inline-block" style={{ width: '255px', height: '200px' }}>
           <h4 className="text-red-400 font-semibold text-xs absolute top-1 left-1">Enemy Players</h4>
           <div className="mt-3 overflow-hidden px-2 pb-1" style={{ height: '170px' }}>
             <PlayerSearchSelector
@@ -596,7 +596,7 @@ const BaseModal = ({
         </div>
         
         {/* Friendly Players */}
-        <div className="bg-gray-900 border border-green-500 rounded p-3 inline-block" style={{ width: '250px', height: '128px', marginLeft: '12px', position: 'absolute', bottom: '0', right: '0' }}>
+        <div className="bg-gray-900 border border-green-500 rounded p-3 inline-block" style={{ width: '213px', height: '128px', marginLeft: '12px', position: 'absolute', bottom: '0', right: '0' }}>
           <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
           <div className="overflow-y-auto" style={{ height: '80px' }}>
             <textarea 
@@ -806,7 +806,7 @@ const BaseModal = ({
             </div>
           )}
 
-          <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
+          <div className="bg-gray-800 rounded-lg shadow-xl w-full mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', maxWidth: '1056px', zIndex: 50}}>
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
