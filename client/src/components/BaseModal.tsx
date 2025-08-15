@@ -349,13 +349,9 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
                     }`}>
                       {playerName}
                     </span>
-                    {isPremium ? (
+                    {isPremium && (
                       <span className="text-xs text-orange-600">
                         (Premium)
-                      </span>
-                    ) : player && (
-                      <span className="text-xs text-gray-500">
-                        ({player.totalSessions} sessions)
                       </span>
                     )}
                   </div>
