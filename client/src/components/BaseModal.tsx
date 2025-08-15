@@ -818,12 +818,9 @@ const BaseModal = ({
           )}
           
           {modalType === 'report' && (
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-yellow-600 rounded-lg px-3 py-1.5 border-2 border-yellow-500 shadow-lg" style={{zIndex: 60}}>
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
               <span className="text-white font-mono font-bold text-3xl">
                 {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
-                <span className="text-blue-300 text-sm ml-2">
-                  [{editingLocation?.id || 'NEW-REPORT'}]
-                </span>
               </span>
             </div>
           )}
@@ -881,7 +878,13 @@ const BaseModal = ({
                     </div>
                   </div>
                 )}
-                {modalType === 'report' && <div></div>}
+                {modalType === 'report' && (
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="text-yellow-500 font-bold text-lg flex-shrink-0">
+                      REPORT [{editingLocation?.id || 'NEW-REPORT'}]
+                    </div>
+                  </div>
+                )}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()
