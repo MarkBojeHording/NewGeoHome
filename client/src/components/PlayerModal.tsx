@@ -213,7 +213,6 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                 <div className="w-3/4 overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
                   <div className="mb-4">
                     <h3 className="text-lg font-semibold text-white mb-2">Session History</h3>
-                    <div className="text-sm text-gray-400">{selectedPlayer}</div>
                     
                     {/* Base Tags Section */}
                     {playerBaseTags.length > 0 && (
