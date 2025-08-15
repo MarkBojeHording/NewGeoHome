@@ -809,15 +809,21 @@ const BaseModal = ({
             </>
           )}
           
-          {modalType !== 'enemy' && (
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
+          {modalType === 'friendly' && (
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-green-600 rounded-lg px-3 py-1.5 border-2 border-green-500 shadow-lg" style={{zIndex: 60}}>
               <span className="text-white font-mono font-bold text-3xl">
                 {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
-                {modalType === 'report' && (
-                  <span className="text-blue-300 text-sm ml-2">
-                    [{editingLocation?.id || 'NEW-REPORT'}]
-                  </span>
-                )}
+              </span>
+            </div>
+          )}
+          
+          {modalType === 'report' && (
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-yellow-600 rounded-lg px-3 py-1.5 border-2 border-yellow-500 shadow-lg" style={{zIndex: 60}}>
+              <span className="text-white font-mono font-bold text-3xl">
+                {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
+                <span className="text-blue-300 text-sm ml-2">
+                  [{editingLocation?.id || 'NEW-REPORT'}]
+                </span>
               </span>
             </div>
           )}
