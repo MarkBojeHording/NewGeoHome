@@ -564,8 +564,8 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
         <div className={`bg-gray-700 rounded-full shadow-md border border-gray-600 flex items-center justify-center ${
           location.type.startsWith('report') ? 'p-0.5 scale-[0.375]' : 'p-0.5 scale-75'
-        } ${location.raidedOut && !location.type.startsWith('report') ? 'opacity-75' : ''}`}>
-          <div className={`${location.raidedOut && !location.type.startsWith('report') ? 'bg-gray-500 text-gray-300' : getColor(location.type)} flex items-center justify-center`}>
+        }`}>
+          <div className={`${getColor(location.type)} flex items-center justify-center`}>
             {getIcon(location.type)}
           </div>
         </div>
@@ -657,6 +657,16 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           </div>
         )}
         
+        {location.raidedOut && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style={{ zIndex: 10 }}>
+            <div className="w-4 h-4 bg-red-600 bg-opacity-80 rounded-full flex items-center justify-center" title="Raided Out">
+              <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </div>
+          </div>
+        )}
         
         {location.oldestTC && location.oldestTC > 0 && (
           <div className="absolute inset-0 pointer-events-none">
@@ -1142,6 +1152,16 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         )}
         
         {location.raidedOut && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="w-4 h-4 bg-red-600 bg-opacity-80 rounded-full flex items-center justify-center shadow-lg border border-gray-800" title="Raided Out">
+              <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </div>
+          </div>
+        )}
+        
         <div className="absolute -top-9 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
           <div className="relative">
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 120 32">
