@@ -584,7 +584,7 @@ const BaseModal = ({
             </div>
           </div>
         </div>
-      <div className="mb-4 relative" style={{ height: '250px', marginTop: '100px' }}>
+      <div className="mb-4 relative" style={{ height: '250px' }}>
         {/* Enemy Players */}
         <div className="bg-gray-900 border border-red-500 rounded p-1 relative inline-block" style={{ width: '240px', height: '250px' }}>
           <h4 className="text-red-400 font-semibold text-xs absolute top-1 left-1">Enemy Players</h4>
