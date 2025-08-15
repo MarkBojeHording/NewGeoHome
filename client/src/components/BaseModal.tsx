@@ -152,9 +152,8 @@ const BaseModal = ({
   
   const renderReportModal = () => (
     <div>
-      <div className="flex gap-3 mb-4">
-        <div className="flex-1 flex gap-4 items-end">
-          <div className="flex-1">
+      <div className="flex gap-4 items-end mb-4">
+        <div className="flex-1">
           <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
           <div className="relative">
             <select 
@@ -187,7 +186,6 @@ const BaseModal = ({
               </svg>
             </div>
           </div>
-          </div>
         </div>
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-200">Time</label>
@@ -199,9 +197,6 @@ const BaseModal = ({
           />
         </div>
       </div>
-        <div className="flex-1">
-          {/* Empty space to match friendly players width */}
-        </div>
       
       {/* Enemy and Friendly Player Containers */}
       <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
