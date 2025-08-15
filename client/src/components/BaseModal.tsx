@@ -535,7 +535,7 @@ const BaseModal = ({
   
   const renderReportModal = () => (
     <div>
-      <div className="flex gap-4 items-end mb-4 justify-end">
+      <div className="flex gap-4 items-end mb-4 justify-end" style={{marginTop: '20px'}}>
         <div>
 
           <input 
