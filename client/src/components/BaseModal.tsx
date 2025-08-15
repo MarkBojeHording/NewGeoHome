@@ -550,7 +550,7 @@ const BaseModal = ({
       {/* Enemy and Friendly Player Containers */}
         
         {/* Report Type Dropdown - positioned above friendly players */}
-        <div className="absolute" style={{ top: "72px", right: "0", width: "230px", zIndex: "10" }}>
+        <div className="absolute" style={{ top: "150px", right: "0", width: "230px", zIndex: "10" }}>
           <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
           <div className="relative">
             <select 
