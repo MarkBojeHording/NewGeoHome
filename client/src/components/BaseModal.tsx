@@ -610,9 +610,9 @@ const BaseModal = ({
       </div>
       
 
-      {/* Notes Container */}
-      <div className="bg-gray-900 border border-gray-600 rounded p-3">
-        <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
+
+
+
         <textarea 
           value={formData.notes} 
           onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
