@@ -566,16 +566,13 @@ const BaseModal = ({
         </div>
       </div>
       
-      {/* Report Details */}
-      <div className="bg-gray-900 border border-gray-600 rounded-lg p-3 mt-4">
-        <h4 className="text-gray-300 font-semibold text-sm mb-2">Report Details</h4>
-        <textarea 
-          value={formData.notes} 
-          onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
-          className="w-full h-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-blue-500"
-          placeholder="Add report details..."
-        />
-      </div>
+      {/* Notes Field */}
+      <textarea 
+        value={formData.notes} 
+        onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
+        className="w-full h-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-blue-500"
+        placeholder="Add report details..."
+      />
     </div>
   )
   
