@@ -522,7 +522,8 @@ const BaseModal = ({
       roofCamper: modalType === 'enemy' ? formData.roofCamper : undefined,
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
 
-      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined
+      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined,
+      abandoned: formData.abandoned
     }
     
     onSave(baseData)
