@@ -140,7 +140,7 @@ const BaseReportsContent = ({ baseName, onOpenReport }) => {
         const hasNotes = content.notes && content.notes.trim() !== ''
         
         return (
-          <div key={report.id} className="bg-gray-900 rounded-lg p-3 border border-gray-700">
+          <div key={report.id} className="bg-gray-900 rounded-lg p-2 border border-gray-700">
             <div className="flex justify-between items-start mb-2">
               <h4 className="text-white font-medium text-sm">
                 {FULL_CATEGORY_NAMES[content.type] || content.type}
@@ -598,7 +598,7 @@ const BaseModal = ({
         </div>
         
         {/* Friendly Players */}
-        <div className="bg-gray-900 border border-green-500 rounded p-3 inline-block" style={{ width: '223px', height: '178px', marginLeft: '12px', position: 'absolute', bottom: '0', right: '0' }}>
+        <div className="bg-gray-900 border border-green-500 rounded p-2 inline-block" style={{ width: '223px', height: '178px', marginLeft: '12px', position: 'absolute', bottom: '0', right: '0' }}>
           <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
           <div className="overflow-y-auto" style={{ height: '130px' }}>
             <textarea 
@@ -685,11 +685,11 @@ const BaseModal = ({
 
       <div className="col-span-3">
         {modalType === 'friendly' && (
-          <div className="border border-gray-600 rounded-lg p-3 bg-gray-700 mb-3">
+          <div className="border border-gray-600 rounded-lg p-2 bg-gray-700 mb-3">
             <label className="block text-sm font-medium mb-1 text-gray-300">Upkeep Tracker</label>
             <div className="space-y-2">
               {['wood', 'stone', 'metal', 'hqm'].map((resource) => (
-                <div key={resource} className="flex items-center gap-3">
+                <div key={resource} className="flex items-center gap-2">
                   <label className="text-xs font-medium text-gray-400 w-12 capitalize">{resource.toUpperCase()}</label>
                   <input 
                     type="number" 
@@ -813,7 +813,7 @@ const BaseModal = ({
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
-                  <div className="flex items-center gap-3 flex-1">
+                  <div className="flex items-center gap-2 flex-1">
                     <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
                     <div className="flex gap-2 flex-wrap">
                       <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
@@ -847,7 +847,7 @@ const BaseModal = ({
                   </div>
                 )}
                 {modalType === 'friendly' && (
-                  <div className="flex items-center gap-3 flex-1">
+                  <div className="flex items-center gap-2 flex-1">
                     <div className="text-green-500 font-bold text-lg flex-shrink-0">FRIENDLY</div>
                     <div className="flex gap-2 flex-wrap">
                       <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
@@ -863,7 +863,7 @@ const BaseModal = ({
                   </div>
                 )}
                 {modalType === 'report' && (
-                  <div className="flex items-center gap-3 flex-1" style={{marginTop: '15px'}}>
+                  <div className="flex items-center gap-2 flex-1" style={{marginTop: '15px'}}>
                     <div className="text-gray-600 font-bold text-sm flex-shrink-0">
                       REPORT [{editingLocation?.id || 'NEW-REPORT'}]
                     </div>
@@ -886,9 +886,9 @@ const BaseModal = ({
             <div className="flex-1 px-4 pt-4 space-y-3 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
                 <div className="mb-3">
-                  <label className="block text-sm font-medium mb-1 text-gray-200">Report Screenshots</label>
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '100px'}}>
-                    <svg className="h-7 w-7 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-2 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '75px'}}>
+                    <svg className="h-6 w-6 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <p className="text-gray-400 text-xs">Click to upload screenshots</p>
@@ -899,7 +899,7 @@ const BaseModal = ({
               {modalType !== 'report' && (
                 <div className="mb-3">
                   <label className="block text-sm font-medium mb-1 text-gray-200">Base Screenshots</label>
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '160px', width: '65%', marginRight: 'auto'}}>
+                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-2 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '160px', width: '65%', marginRight: 'auto'}}>
                     <svg className="h-9 w-9 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
