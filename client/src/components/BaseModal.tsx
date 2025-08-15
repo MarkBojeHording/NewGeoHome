@@ -885,7 +885,7 @@ const BaseModal = ({
             
             <div className="flex-1 px-4 pt-4 overflow-y-auto text-gray-200 flex flex-col" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
-                <div className="mb-3 flex-1">
+                <div className="mb-3" style={{height: '120px'}}>
 
                   <div className="border-2 border-dashed border-gray-600 rounded-lg p-2 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center h-full min-h-[60px]">
                     <svg className="h-6 w-6 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
