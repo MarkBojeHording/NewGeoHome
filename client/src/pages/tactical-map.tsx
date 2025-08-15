@@ -620,15 +620,15 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
         {/* Badges */}
         {location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' && (
-          <div className="absolute -top-1 -right-1" style={{ zIndex: 10 }}>
+          <div className="absolute -top-0.5 -right-0.5" style={{ zIndex: 10 }}>
             {location.outcome === 'won' ? (
-              <div className="w-2 h-2 bg-green-500 rounded-full flex items-center justify-center">
+              <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex items-center justify-center">
                 <svg className="w-1.5 h-1.5 text-white" viewBox="0 0 16 16" fill="currentColor">
                   <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 111.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
                 </svg>
               </div>
             ) : (
-              <div className="w-2 h-2 bg-red-500 rounded-full flex items-center justify-center">
+              <div className="w-1.5 h-1.5 bg-red-500 rounded-full flex items-center justify-center">
                 <svg className="w-1.5 h-1.5 text-white" viewBox="0 0 16 16" fill="currentColor">
                   <path d="M4.28 3.22a.75.75 0 00-1.06 1.06L6.94 8l-3.72 3.72a.75.75 0 101.06 1.06L8 9.06l3.72 3.72a.75.75 0 101.06-1.06L9.06 8l3.72-3.72a.75.75 0 00-1.06-1.06L8 6.94 4.28 3.22z"/>
                 </svg>
