@@ -252,7 +252,7 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
   return (
     <div className="w-full h-full flex flex-col">
       {/* Search Input */}
-      <div className="relative p-2 border-b border-gray-600">
+      <div className="relative p-2">
         <div className="relative">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
           <input
@@ -586,7 +586,7 @@ const BaseModal = ({
         {/* Enemy Players */}
         <div className="flex-1 bg-gray-900 border border-red-500 rounded p-1 flex flex-col relative">
           <h4 className="text-red-400 font-semibold text-xs absolute top-1 left-1">Enemy Players</h4>
-          <div className="mt-5 flex-1 overflow-hidden px-2 pb-1">
+          <div className="mt-3 flex-1 overflow-hidden px-2 pb-1">
             <PlayerSearchSelector
               selectedPlayers={formData.enemyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
