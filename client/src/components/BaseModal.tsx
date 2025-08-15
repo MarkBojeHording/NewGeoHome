@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react'
-import { X, Calculator, HelpCircle } from 'lucide-react'
+import { X, Calculator, HelpCircle, MapPin, Home, Shield, Wheat, Castle, Tent } from 'lucide-react'
 
 // Grid configuration constants
 const GRID_CONFIG = {
@@ -26,6 +26,29 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   })
   
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
+}
+
+// Icon mapping for different base types
+const ICON_MAP = {
+  'friendly-main': Castle,
+  'friendly-flank': Shield,
+  'friendly-farm': Wheat,
+  'enemy-small': Tent,
+  'enemy-medium': Home,
+  'enemy-large': Castle,
+  'enemy-flank': Shield,
+  'enemy-farm': Wheat
+}
+
+// Utility functions
+const getColor = (type: string) => {
+  if (type.startsWith('report')) return 'text-purple-600'
+  return type.startsWith('friendly') ? 'text-green-600' : 'text-red-600'
+}
+
+const getIcon = (type: string) => {
+  const Icon = ICON_MAP[type] || MapPin
+  return <Icon className="h-3 w-3" />
 }
 
 const BaseModal = ({ 
