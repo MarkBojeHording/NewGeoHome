@@ -415,6 +415,13 @@ const BaseModal = ({
   
   const ownerInputRef = useRef(null)
   
+  // Generate stable report ID that doesn't change on re-renders
+  const stableReportId = useMemo(() => {
+    if (editingLocation?.id) return editingLocation.id
+    if (modalType === 'report') return `REP-${Date.now().toString().slice(-6)}`
+    return 'NEW'
+  }, [editingLocation?.id, modalType])
+  
   const handleToggleRocketCalculator = useCallback((e) => {
     e.stopPropagation()
     const rect = e.currentTarget.getBoundingClientRect()
@@ -613,7 +620,7 @@ const BaseModal = ({
       <div className="bg-gray-900 border border-blue-500 rounded p-2 mb-3">
         <h4 className="text-blue-400 font-semibold text-sm mb-1">Report ID</h4>
         <div className="text-gray-300 text-xs font-mono">
-          {editingLocation?.id || `REP-${Date.now().toString().slice(-6)}`}
+          {editingLocation?.id || 'NEW-REPORT'}
         </div>
       </div>
       
