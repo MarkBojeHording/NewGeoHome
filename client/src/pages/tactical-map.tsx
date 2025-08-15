@@ -620,7 +620,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
         {/* Badges */}
         {location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' && (
-          <div className="absolute top-0.5 right-0.5" style={{ zIndex: 10 }}>
+          <div className="absolute top-1 right-1" style={{ zIndex: 10 }}>
             {location.outcome === 'won' ? (
               <div className="w-1 h-1 bg-green-500 rounded-full flex items-center justify-center">
                 <svg className="w-0.5 h-0.5 text-white" viewBox="0 0 16 16" fill="currentColor">
