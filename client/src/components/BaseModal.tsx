@@ -1,22 +1,88 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react'
-import { X, Calculator, HelpCircle, MapPin, Home, Shield, Wheat, Castle, Tent } from 'lucide-react'
+import { useState, useRef, useEffect, useCallback, useMemo } from "react"
+import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, FileText, Image, Edit, Camera, StickyNote, Search, Plus, Minus } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { apiRequest, queryClient } from '@/lib/queryClient'
+import { RocketCalculatorSection } from './RocketCalculator'
+import type { ExternalPlayer } from '@shared/schema'
 
-// Grid configuration constants
-const GRID_CONFIG = {
-  COLS: 26,
-  ROWS: 26,
-  CELL_WIDTH_PERCENT: 3.846,
-  CELL_HEIGHT_PERCENT: 3.846
+// ============= CONSTANTS =============
+const LABELS = {
+  "friendly-main": "Main",
+  "friendly-flank": "Flank", 
+  "friendly-farm": "Farm",
+  "friendly-boat": "Boat",
+  "friendly-garage": "Garage",
+  "enemy-small": "Small",
+  "enemy-medium": "Medium",
+  "enemy-large": "Large",
+  "enemy-flank": "Flank",
+  "enemy-tower": "Tower",
+  "enemy-farm": "Farm",
+  "enemy-decaying": "Decaying",
+  "report-pvp": "PvP",
+  "report-heli": "Heli",
+  "report-bradley": "Bradley"
 }
 
-// Get grid coordinate for base positioning
+const ICON_MAP = {
+  "friendly-main": Home,
+  "friendly-flank": Shield,
+  "friendly-farm": Wheat,
+  "friendly-boat": Castle,
+  "friendly-garage": Castle,
+  "enemy-small": Tent,
+  "enemy-medium": Castle,
+  "enemy-large": Shield,
+  "enemy-flank": Shield,
+  "enemy-tower": Castle,
+  "enemy-farm": Wheat,
+  "enemy-decaying": Castle,
+  "report-pvp": Shield,
+  "report-heli": Shield,
+  "report-bradley": Shield
+}
+
+const getColor = (type: string) => {
+  if (type.startsWith("friendly")) return "text-green-400"
+  if (type.startsWith("enemy")) return "text-red-400"
+  return "text-yellow-400"
+}
+
+const getIcon = (type: string) => {
+  const Icon = ICON_MAP[type] || MapPin
+  return <Icon className="h-3 w-3" />
+}
+
+const MATERIAL_ICONS = {
+  wood: "🪵",
+  stone: "🪨",
+  metal: "🔩",
+  hqm: "⚙️"
+}
+
+const MATERIAL_LABELS = {
+  wood: "Wood",
+  stone: "Stone",
+  metal: "Metal",
+  hqm: "HQM"
+}
+
+// Grid configuration for coordinate calculation
+const GRID_CONFIG = {
+  COLS: 32,
+  ROWS: 24,
+  CELL_WIDTH_PERCENT: 3.125,
+  CELL_HEIGHT_PERCENT: 4.167
+}
+
+// Generate grid coordinate from x,y position
 const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], excludeId: string | null = null) => {
   const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
   const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
   const clampedCol = Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1)
   const clampedRow = Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
   const letter = clampedCol < 26 ? String.fromCharCode(65 + clampedCol) : `A${String.fromCharCode(65 + clampedCol - 26)}`
-  const number = clampedRow
+  const number = clampedRow + 1
   const baseCoord = `${letter}${number}`
   
   const duplicates = existingLocations.filter(loc => {
@@ -28,32 +94,285 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
 }
 
-// Icon mapping for different base types
-const ICON_MAP = {
-  'friendly-main': Castle,
-  'friendly-flank': Shield,
-  'friendly-farm': Wheat,
-  'enemy-small': Tent,
-  'enemy-medium': Home,
-  'enemy-large': Castle,
-  'enemy-flank': Shield,
-  'enemy-farm': Wheat
+// ============= BASE REPORTS CONTENT COMPONENT =============
+const BaseReportsContent = ({ baseName, onOpenReport }) => {
+  const { data: reports = [], isLoading } = useQuery({
+    queryKey: ['/api/reports']
+  })
+
+  // Filter reports for this specific base
+  const baseReports = reports.filter(report => {
+    if (!baseName) return false
+    return report.baseId || 
+           report.locationName === baseName ||
+           report.locationCoords === baseName ||
+           (report.content?.baseName === baseName) ||
+           (report.content?.baseCoords === baseName)
+  })
+
+  // Report type labels mapping
+  const FULL_CATEGORY_NAMES = {
+    'report-pvp': 'PvP Encounter',
+    'report-spotted': 'Spotted Enemy',
+    'report-bradley': 'Bradley/Heli Activity',
+    'report-oil': 'Oil/Cargo Activity', 
+    'report-monument': 'Monument Activity',
+    'report-farming': 'Farming Activity',
+    'report-loaded': 'Loaded Enemy',
+    'report-raid': 'Raid Activity'
+  }
+
+  if (isLoading) {
+    return <div className="text-gray-400 text-sm">Loading reports...</div>
+  }
+
+  if (baseReports.length === 0) {
+    return <div className="text-gray-400 text-sm italic">No reports for this base yet.</div>
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto space-y-3">
+      {baseReports.map((report) => {
+        const content = report.content || {}
+        const hasCamera = content.camera && content.camera.trim() !== ''
+        const hasNotes = content.notes && content.notes.trim() !== ''
+        
+        return (
+          <div key={report.id} className="bg-gray-900 rounded-lg p-3 border border-gray-700">
+            <div className="flex justify-between items-start mb-2">
+              <h4 className="text-white font-medium text-sm">
+                {FULL_CATEGORY_NAMES[content.type] || content.type}
+              </h4>
+              <span className="text-gray-400 text-xs">
+                {content.reportTime || 'No time'}
+              </span>
+            </div>
+            
+            <div className="flex gap-2 mb-2">
+              <div className={`flex items-center gap-1 ${hasCamera ? 'text-white' : 'text-gray-600'}`}>
+                <Camera className="w-3 h-3" />
+              </div>
+              <div className={`flex items-center gap-1 ${hasNotes ? 'text-white' : 'text-gray-600'}`}>
+                <StickyNote className="w-3 h-3" />
+              </div>
+            </div>
+            
+            {content.enemyPlayers && (
+              <div className="text-xs text-red-400 mb-1">
+                Enemies: {content.enemyPlayers}
+              </div>
+            )}
+            
+            {content.friendlyPlayers && (
+              <div className="text-xs text-green-400 mb-1">
+                Friendlies: {content.friendlyPlayers}
+              </div>
+            )}
+            
+            {hasNotes && (
+              <div className="text-xs text-gray-300 mt-2">
+                {content.notes.slice(0, 100)}{content.notes.length > 100 ? '...' : ''}
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
-// Utility functions
-const getColor = (type: string) => {
-  if (type.startsWith('report')) return 'text-purple-600'
-  return type.startsWith('friendly') ? 'text-green-600' : 'text-red-600'
-}
+// ============= PLAYER SEARCH SELECTOR COMPONENT =============
+const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) => {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showDropdown, setShowDropdown] = useState(false)
+  
+  // Fetch players from external API
+  const { data: players = [] } = useQuery<ExternalPlayer[]>({
+    queryKey: ['/api/players']
+  })
 
-const getIcon = (type: string) => {
-  const Icon = ICON_MAP[type] || MapPin
-  return <Icon className="h-3 w-3" />
-}
+  // Fetch premium players from our database
+  const { data: premiumPlayers = [] } = useQuery({
+    queryKey: ['/api/premium-players']
+  })
 
-const getBorderColor = (type: string) => {
-  if (type.startsWith('report')) return 'border-purple-500'
-  return type.startsWith('friendly') ? 'border-green-500' : 'border-red-500'
+  // Parse selected players from comma-separated string
+  const selectedPlayersList = selectedPlayers ? selectedPlayers.split(',').map(p => p.trim()).filter(p => p) : []
+  
+  // Filter regular players based on search term
+  const filteredPlayers = players.filter(player => 
+    player.playerName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    !selectedPlayersList.includes(player.playerName)
+  )
+
+  // Filter premium players based on search term
+  const filteredPremiumPlayers = premiumPlayers.filter(player => 
+    player.playerName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    !selectedPlayersList.includes(player.playerName)
+  )
+
+  // Check if we have any results
+  const hasResults = filteredPlayers.length > 0 || filteredPremiumPlayers.length > 0
+  
+
+
+  const addPlayer = (playerName) => {
+    const newPlayers = [...selectedPlayersList, playerName].join(', ')
+    onPlayersChange(newPlayers)
+    setSearchTerm('')
+    setShowDropdown(false)
+  }
+
+  const createPremiumPlayer = async () => {
+    if (!searchTerm.trim()) return
+    
+    try {
+      await apiRequest('/api/premium-players', {
+        method: 'POST',
+        body: { playerName: searchTerm.trim() }
+      })
+      
+      // Add the player to the selection
+      addPlayer(searchTerm.trim())
+      
+      // Invalidate premium players cache to refresh the data
+      queryClient.invalidateQueries({ queryKey: ['/api/premium-players'] })
+    } catch (error) {
+      console.error('Failed to create premium player:', error)
+    }
+  }
+
+  const removePlayer = (playerName) => {
+    const newPlayers = selectedPlayersList.filter(p => p !== playerName).join(', ')
+    onPlayersChange(newPlayers)
+  }
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      {/* Search Input */}
+      <div className="relative p-2 border-b border-gray-600">
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value)
+              setShowDropdown(true)
+            }}
+            onFocus={() => setShowDropdown(true)}
+            className="w-full pl-7 pr-2 py-1 bg-gray-800 border border-gray-600 rounded text-sm text-gray-200 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+            placeholder="Search players to add..."
+          />
+        </div>
+        
+        {/* Search Results Dropdown */}
+        {showDropdown && searchTerm.trim() && (
+          <div className="absolute top-full left-2 right-2 mt-1 bg-gray-800 border border-gray-600 rounded max-h-32 overflow-y-auto z-50">
+            {/* Regular Players */}
+            {filteredPlayers.slice(0, 10).map((player) => (
+              <button
+                key={`regular-${player.id}`}
+                onClick={() => addPlayer(player.playerName)}
+                className="w-full text-left px-2 py-1 hover:bg-gray-700 flex items-center gap-2 text-sm"
+              >
+                <div className={`w-2 h-2 rounded-full ${player.isOnline ? 'bg-green-500' : 'bg-gray-500'}`} />
+                <span className={player.isOnline ? 'text-green-400' : 'text-gray-400'}>
+                  {player.playerName}
+                </span>
+                <span className="text-xs text-gray-500">
+                  ({player.totalSessions} sessions)
+                </span>
+              </button>
+            ))}
+            
+            {/* Premium Players */}
+            {filteredPremiumPlayers.slice(0, 10).map((player) => (
+              <button
+                key={`premium-${player.id}`}
+                onClick={() => addPlayer(player.playerName)}
+                className="w-full text-left px-2 py-1 hover:bg-gray-700 flex items-center gap-2 text-sm"
+              >
+                <div className="w-2 h-2 rounded-full bg-orange-500" />
+                <span className="text-orange-400">
+                  {player.playerName}
+                </span>
+                <span className="text-xs text-orange-600">
+                  (Premium)
+                </span>
+              </button>
+            ))}
+            
+            {/* Create Premium Profile Option */}
+            {!hasResults && searchTerm.trim() && (
+              <button
+                onClick={createPremiumPlayer}
+                className="w-full text-left px-2 py-1 hover:bg-gray-700 flex items-center gap-2 text-sm border-t border-gray-600"
+              >
+                <Plus className="w-3 h-3 text-orange-400" />
+                <span className="text-orange-400">
+                  Create Premium profile: "{searchTerm.trim()}"
+                </span>
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Selected Players List */}
+      <div className="flex-1 overflow-y-auto p-2">
+        {selectedPlayersList.length === 0 ? (
+          <div className="text-gray-500 text-sm italic">No players selected</div>
+        ) : (
+          <div className="space-y-1">
+            {selectedPlayersList.map((playerName, index) => {
+              const player = players.find(p => p.playerName === playerName)
+              const premiumPlayer = premiumPlayers.find(p => p.playerName === playerName)
+              const isPremium = !!premiumPlayer
+              
+              return (
+                <div key={index} className="flex items-center justify-between bg-gray-800 rounded px-2 py-1">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${
+                      isPremium 
+                        ? 'bg-orange-500' 
+                        : player?.isOnline 
+                        ? 'bg-green-500' 
+                        : 'bg-gray-500'
+                    }`} />
+                    <span className={`text-sm ${
+                      isPremium 
+                        ? 'text-orange-400' 
+                        : player?.isOnline 
+                        ? 'text-green-400' 
+                        : 'text-gray-400'
+                    }`}>
+                      {playerName}
+                    </span>
+                    {isPremium ? (
+                      <span className="text-xs text-orange-600">
+                        (Premium)
+                      </span>
+                    ) : player && (
+                      <span className="text-xs text-gray-500">
+                        ({player.totalSessions} sessions)
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => removePlayer(playerName)}
+                    className="text-red-400 hover:text-red-300 p-1"
+                  >
+                    <Minus className="w-3 h-3" />
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 
 const BaseModal = ({ 
@@ -191,6 +510,7 @@ const BaseModal = ({
       outcome: modalType === 'report' ? formData.reportOutcome : undefined,
       enemyPlayers: modalType === 'report' ? formData.enemyPlayers : undefined,
       friendlyPlayers: modalType === 'report' ? formData.friendlyPlayers : undefined,
+      players: modalType === 'enemy' ? formData.players : undefined,
       isMainBase: modalType === 'enemy' ? true : undefined,
       oldestTC: modalType === 'enemy' && formData.oldestTC > 0 ? formData.oldestTC : undefined,
       ownerCoordinates: (formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') ? formData.ownerCoordinates : undefined,
@@ -356,11 +676,10 @@ const BaseModal = ({
         
         <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
         <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
-          <textarea 
-            value={formData.players} 
-            onChange={(e) => setFormData(prev => ({ ...prev, players: e.target.value }))} 
-            className="w-full h-full px-2 py-1.5 bg-transparent border-none rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-200 placeholder-gray-500" 
-            placeholder="List base owners here..." 
+          <PlayerSearchSelector 
+            selectedPlayers={formData.players}
+            onPlayersChange={(players) => setFormData(prev => ({ ...prev, players }))}
+            maxHeight={modalType === 'enemy' ? '160px' : '300px'}
           />
         </div>
       </div>
@@ -860,10 +1179,10 @@ const BaseModal = ({
           </div>
         )}
         
-        {/* Report Panel - Debug Version */}
+
         {showReportPanel && (
           <div 
-            className="bg-red-800 rounded-lg shadow-xl border-4 border-yellow-500 absolute"
+            className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
             style={{
               height: '95vh',
               maxHeight: '805px',
@@ -871,13 +1190,16 @@ const BaseModal = ({
               left: '16px',
               transform: 'translateX(-100%)',
               top: 0,
-              zIndex: 9999
+              zIndex: 45
             }}
           >
             <div className="p-4 h-full flex flex-col">
-              <h3 className="text-white font-bold mb-4 text-xl">REPORT PANEL IS VISIBLE</h3>
-              <p className="text-white mb-2">Modal Type: {modalType}</p>
-              <p className="text-white mb-4">If you see this, the panel is working!</p>
+
+
+              <h3 className="text-white font-bold mb-4">Base Reports</h3>
+              
+              {/* Fetch and display reports for this base */}
+              <BaseReportsContent baseName={editingLocation?.name} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
               
               {/* Enemy and Friendly Player Containers Side by Side */}
               <div className="flex gap-3 flex-1 mb-4">
