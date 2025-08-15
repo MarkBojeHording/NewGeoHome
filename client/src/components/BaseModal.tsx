@@ -548,6 +548,42 @@ const BaseModal = ({
       </div>
       
       {/* Enemy and Friendly Player Containers */}
+        
+        {/* Report Type Dropdown - positioned above friendly players */}
+        <div className="absolute" style={{ top: "0", right: "0", width: "230px", zIndex: "10" }}>
+          <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
+          <div className="relative">
+            <select 
+              value={formData.type} 
+              onChange={(e) => {
+                const newType = e.target.value
+                setFormData(prev => ({ 
+                  ...prev, 
+                  type: newType,
+                  reportOutcome: newType === 'report-farming' ? 'lost' : newType === 'report-loaded' ? 'won' : 'neutral'
+                }))
+              }} 
+              className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="report-pvp">PVP General</option>
+              <option value="report-spotted">Spotted Enemy</option>
+              <option value="report-bradley">Countered/Took Bradley/Heli</option>
+              <option value="report-oil">Countered/Took Oil/Cargo</option>
+              <option value="report-monument">Big Score/Fight at Monument</option>
+              <option value="report-farming">Killed While Farming</option>
+              <option value="report-loaded">Killed Loaded Enemy</option>
+              <option value="report-raid">Countered Raid</option>
+            </select>
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
+              <div className={`${getColor(formData.type, editingLocation)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+                {getIcon(formData.type)}
+              </div>
+              <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
       <div className="mb-4 relative" style={{ height: '250px' }}>
         {/* Enemy Players */}
         <div className="bg-gray-900 border border-red-500 rounded p-1 relative inline-block" style={{ width: '240px', height: '250px' }}>
@@ -583,41 +619,6 @@ const BaseModal = ({
         <label className="block text-sm font-medium mb-1 text-gray-200">Base Type</label>
         <div className="relative mb-3">
         
-        {/* Report Type Dropdown - positioned above friendly players */}
-        <div className="absolute" style={{ top: "-90px", right: "0", width: "230px" }}>
-          <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
-          <div className="relative">
-            <select 
-              value={formData.type} 
-              onChange={(e) => {
-                const newType = e.target.value
-                setFormData(prev => ({ 
-                  ...prev, 
-                  type: newType,
-                  reportOutcome: newType === 'report-farming' ? 'lost' : newType === 'report-loaded' ? 'won' : 'neutral'
-                }))
-              }} 
-              className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
-            >
-              <option value="report-pvp">PVP General</option>
-              <option value="report-spotted">Spotted Enemy</option>
-              <option value="report-bradley">Countered/Took Bradley/Heli</option>
-              <option value="report-oil">Countered/Took Oil/Cargo</option>
-              <option value="report-monument">Big Score/Fight at Monument</option>
-              <option value="report-farming">Killed While Farming</option>
-              <option value="report-loaded">Killed Loaded Enemy</option>
-              <option value="report-raid">Countered Raid</option>
-            </select>
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-              <div className={`${getColor(formData.type, editingLocation)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
-                {getIcon(formData.type)}
-              </div>
-              <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-        </div>
           <select 
             value={formData.type} 
             onChange={(e) => {
