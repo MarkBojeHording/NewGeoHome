@@ -610,9 +610,6 @@ const BaseModal = ({
           </div>
         </div>
       </div>
-    </div>
-  )
-  
 
       {/* Notes Section */}
       <div className="bg-gray-900 border border-gray-600 rounded p-3">
@@ -624,6 +621,10 @@ const BaseModal = ({
           placeholder="Add report details..."
         />
       </div>
+    </div>
+  )
+  
+
   const renderBaseModal = () => (
     <div className="grid grid-cols-5 gap-4">
       <div className="col-span-2 flex flex-col">
