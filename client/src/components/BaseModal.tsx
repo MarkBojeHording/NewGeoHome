@@ -1,6 +1,3 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
-import { Wrench, Calculator, X, Users, Globe, Target, Flame, Swords, Truck, AlertTriangle, Skull, Crown, Shield, Search, SquareX, Check, Star, Trash2, Zap, Eye, Gauge, Map, Home, UserX, Plus } from 'lucide-react'
-
 const BaseModal = ({ 
   modal, 
   modalType, 
@@ -153,7 +150,8 @@ const BaseModal = ({
   const renderReportModal = () => (
     <div>
       <div className="flex gap-3 mb-4">
-        <div className="flex-1">
+        <div className="flex-1 flex gap-4 items-end">
+          <div className="flex-1">
           <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
           <div className="relative">
             <select 
@@ -185,6 +183,7 @@ const BaseModal = ({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>
+          </div>
           </div>
         </div>
         <div>
