@@ -42,7 +42,8 @@ const ICON_MAP = {
   "report-bradley": Shield
 }
 
-const getColor = (type: string) => {
+const getColor = (type: string, location = null) => {
+  if (location?.abandoned) return "text-gray-400"
   if (type.startsWith("friendly")) return "text-green-400"
   if (type.startsWith("enemy")) return "text-red-400"
   return "text-yellow-400"
@@ -555,7 +556,7 @@ const BaseModal = ({
               <option value="report-raid">Countered Raid</option>
             </select>
             <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-              <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+              <div className={`${getColor(formData.type, data)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
                 {getIcon(formData.type)}
               </div>
               <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -656,7 +657,7 @@ const BaseModal = ({
             )}
           </select>
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-            <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+            <div className={`${getColor(formData.type, data)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
               {getIcon(formData.type)}
             </div>
             <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -783,7 +784,7 @@ const BaseModal = ({
                           }}
                           className="flex items-center gap-2 w-full text-left px-2 py-1 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
                         >
-                          <div className={`${getColor(suggestion.type)} flex-shrink-0 scale-75`}>
+                          <div className={`${getColor(suggestion.type, data)} flex-shrink-0 scale-75`}>
                             {getIcon(suggestion.type)}
                           </div>
                           <span>{suggestion.coord}</span>
@@ -1116,7 +1117,7 @@ const BaseModal = ({
                       {/* Base icon in center */}
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="bg-gray-700 rounded-full p-0.5 shadow-md border border-gray-600">
-                          <div className={getColor(formData.type)}>
+                          <div className={getColor(formData.type, data)}>
                             {getIcon(formData.type)}
                           </div>
                         </div>
