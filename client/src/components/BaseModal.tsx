@@ -551,7 +551,7 @@ const BaseModal = ({
         
         {/* Report Type Dropdown - positioned above friendly players */}
         <div className="absolute" style={{ top: "182px", right: "12px", width: "230px", zIndex: "10" }}>
-          <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
+
           <div className="relative">
             <select 
               value={formData.type} 
