@@ -33,9 +33,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
     enabled: isOpen,
   });
 
-
-
-  // Fetch session history for selected player (for heat map display)
+  // Fetch session history for selected player
   const { data: sessionHistory = [], isLoading: isLoadingHistory } = useQuery<any[]>({
     queryKey: ['/api/players', selectedPlayer, 'sessions'],
     enabled: !!selectedPlayer,
@@ -50,8 +48,8 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   // Filter players based on search criteria
   const filteredPlayers = players.filter(player => {
     const nameMatch = nameSearch === '' || player.playerName.toLowerCase().includes(nameSearch.toLowerCase());
-    // For now, no additional filtering for base number search
-    const sessionMatch = baseNumberSearch === '';
+    // For now, search by session count for base number search (you can customize this)
+    const sessionMatch = baseNumberSearch === '' || player.totalSessions.toString().includes(baseNumberSearch);
     return nameMatch && sessionMatch;
   });
 
@@ -143,7 +141,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   // Get heat map data for selected player
   const heatMapData = selectedPlayer ? generateHeatMapData(sessionHistory) : {};
 
-  // Helper function to get heat map color intensity
+  // Helper function to get heat map color intensity - simplified for single player view
   const getHeatMapColor = (intensity: number) => {
     if (intensity === 0) return { className: 'bg-gray-800', style: {} };
     // Simple white intensity - easier to read and will work better when combined with enemy base colors
@@ -185,7 +183,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
-              {selectedPlayer ? `${selectedPlayer} - Activity Heat Map` : 'Player Management'}
+              {selectedPlayer ? `${selectedPlayer} - Session History` : 'Player Management'}
               {!selectedPlayer && (
                 <Plus 
                   className="w-4 h-4 text-orange-400 cursor-pointer hover:text-orange-300" 
@@ -206,7 +204,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           </DialogHeader>
           
           <div className="space-y-4">
-            {/* Activity Heat Map View */}
+            {/* Session History View */}
             {selectedPlayer ? (
               <div className="h-[650px] flex gap-4">
                 {/* Left Column - Session History */}
@@ -324,16 +322,26 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                     </div>
                   </div>
                   
-                  {/* Player Status Summary */}
+                  {/* Activity Summary */}
                   <div className="mt-4 bg-gray-700 rounded-lg p-3">
-                    <h4 className="text-white font-medium mb-2">Player Status</h4>
-                    <div className="text-center">
-                      <div className={`font-bold text-lg ${players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'text-green-400' : 'text-gray-400'}`}>
-                        {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'ONLINE' : 'OFFLINE'}
+                    <h4 className="text-white font-medium mb-2">Activity Summary</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="text-center">
+                        <div className="text-green-400 font-bold text-lg">
+                          {sessionHistory.reduce((total, session) => total + session.durationHours, 0)}h
+                        </div>
+                        <div className="text-gray-400">Total Time</div>
                       </div>
-                      <div className="text-gray-400">Current Status</div>
+                      <div className="text-center">
+                        <div className={`font-bold text-lg ${players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'text-green-400' : 'text-gray-400'}`}>
+                          {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'ONLINE' : 'OFFLINE'}
+                        </div>
+                        <div className="text-gray-400">Status</div>
+                      </div>
                     </div>
                   </div>
+
+
                 </div>
               </div>
             ) : (
@@ -353,11 +361,11 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
-                      placeholder="Filter players..."
+                      placeholder="Search by sessions..."
                       value={baseNumberSearch}
                       onChange={(e) => setBaseNumberSearch(e.target.value)}
                       className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
-                      data-testid="input-player-filter"
+                      data-testid="input-base-number-search"
                     />
                   </div>
                 </div>

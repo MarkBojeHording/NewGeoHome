@@ -16,7 +16,8 @@ function getTempFakePlayers() {
     players.push({
       id: id++,
       playerName: name,
-      isOnline: true
+      isOnline: true,
+      totalSessions: Math.floor(Math.random() * (100 - 30) + 30) // Random 30-100 hours
     });
   });
   
@@ -25,7 +26,8 @@ function getTempFakePlayers() {
     players.push({
       id: id++,
       playerName: name,
-      isOnline: false
+      isOnline: false,
+      totalSessions: Math.floor(Math.random() * (100 - 30) + 30) // Random 30-100 hours
     });
   });
   
@@ -61,8 +63,6 @@ function generateFakeSessionHistory(playerName: string) {
   // Sort by most recent first
   return sessions.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
 }
-
-
 // END TEMPORARY FAKE DATA FUNCTIONS
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -209,7 +209,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const players = externalPlayers.map((player: any, index: number) => ({
         id: index + 1, // Generate temporary ID for UI
         playerName: player.playerName,
-        isOnline: player.isOnline
+        isOnline: player.isOnline,
+        totalSessions: player.totalSessions,
         // Add any other fields you want to display
       }));
       
@@ -222,10 +223,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get player session history
+  // TEMPORARY: Get player session history - TO BE DELETED LATER
   app.get("/api/players/:playerName/sessions", async (req, res) => {
     const { playerName } = req.params;
-    // Generate fake session history for heat map display
+    // Generate fake session history (30-100 hours over last week)
     const sessions = generateFakeSessionHistory(playerName);
     res.json(sessions);
   });
