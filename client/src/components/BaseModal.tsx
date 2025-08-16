@@ -540,14 +540,14 @@ const BaseModal = ({
   
   const renderReportModal = () => (
     <div className="relative">
-      {/* Report ID Display - Top Left Position */}
-      <div className="absolute top-0 left-0 z-10">
+      {/* Report ID Display - Top Left Margin */}
+      <div className="absolute -top-8 -left-2 z-10">
         <span className="text-yellow-400 font-bold text-xs bg-gray-800 px-1 py-0.5 rounded border border-yellow-600">
           {formData.reportId}
         </span>
       </div>
       
-      <div className="flex gap-4 items-end mb-4 mt-6">
+      <div className="flex gap-4 items-end mb-4">
         <div className="flex-1">
           <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
           <div className="relative">
