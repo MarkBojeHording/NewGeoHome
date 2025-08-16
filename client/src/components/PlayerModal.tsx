@@ -23,25 +23,22 @@ const PlayerReportsContent = ({ playerName }: { playerName: string | null }) => 
     if (!playerName) return false
     const content = report.content || {}
     
-    // Handle both string and array formats for enemy players
-    let enemyPlayers = content.enemyPlayers || []
-    if (typeof enemyPlayers === 'string') {
-      // If it's a string, split by comma and trim
-      enemyPlayers = enemyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0)
-    }
-    const isInEnemyPlayers = Array.isArray(enemyPlayers) ? enemyPlayers.some(enemy => 
-      typeof enemy === 'string' ? enemy === playerName : enemy?.playerName === playerName
-    ) : false
+    // Handle comma-separated string format (as used by PlayerSearchSelector)
+    const enemyPlayers = content.enemyPlayers || ''
+    const friendlyPlayers = content.friendlyPlayers || ''
     
-    // Handle both string and array formats for friendly players
-    let friendlyPlayers = content.friendlyPlayers || []
-    if (typeof friendlyPlayers === 'string') {
-      // If it's a string, split by comma and trim
-      friendlyPlayers = friendlyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0)
-    }
-    const isInFriendlyPlayers = Array.isArray(friendlyPlayers) ? friendlyPlayers.some(friendly => 
-      typeof friendly === 'string' ? friendly === playerName : friendly?.playerName === playerName
-    ) : false
+    // Convert strings to arrays for easier searching
+    const enemyPlayersList = typeof enemyPlayers === 'string' 
+      ? enemyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0)
+      : Array.isArray(enemyPlayers) ? enemyPlayers : []
+      
+    const friendlyPlayersList = typeof friendlyPlayers === 'string'
+      ? friendlyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0) 
+      : Array.isArray(friendlyPlayers) ? friendlyPlayers : []
+    
+    // Check if player name appears in either list
+    const isInEnemyPlayers = enemyPlayersList.includes(playerName)
+    const isInFriendlyPlayers = friendlyPlayersList.includes(playerName)
     
     return isInEnemyPlayers || isInFriendlyPlayers
   })
