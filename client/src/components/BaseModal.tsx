@@ -587,7 +587,7 @@ const BaseModal = ({
       </div>
       
       {/* Enemy and Friendly Player Containers */}
-      <div className="flex gap-3 mb-4" style={{ height: '320px' }}>
+      <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
         {/* Enemy Players */}
         <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col relative">
           <h4 className="absolute top-1 left-1 text-red-400 font-semibold text-xs z-10">Enemy Players</h4>
@@ -595,7 +595,7 @@ const BaseModal = ({
             <PlayerSearchSelector 
               selectedPlayers={formData.enemyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
-              maxHeight="280px"
+              maxHeight="160px"
             />
           </div>
         </div>
@@ -607,7 +607,7 @@ const BaseModal = ({
             <PlayerSearchSelector 
               selectedPlayers={formData.friendlyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, friendlyPlayers: players }))}
-              maxHeight="280px"
+              maxHeight="160px"
             />
           </div>
         </div>
@@ -874,7 +874,7 @@ const BaseModal = ({
               {modalType === 'report' && (
                 <div className="mb-3">
                   <label className="block text-sm font-medium mb-1 text-gray-200">Report Screenshots</label>
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '100px'}}>
+                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '200px'}}>
                     <svg className="h-7 w-7 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
