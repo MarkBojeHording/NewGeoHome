@@ -544,8 +544,7 @@ const BaseModal = ({
       players: modalType === 'enemy' ? formData.players : undefined,
       isMainBase: modalType === 'enemy' ? true : undefined,
       oldestTC: modalType === 'enemy' && formData.oldestTC > 0 ? formData.oldestTC : undefined,
-      ownerCoordinates: (formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') ? 
-        (formData.ownerCoordinates || findNearestMainBase(modal.x, modal.y, locations)) : undefined,
+      ownerCoordinates: (formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') ? formData.ownerCoordinates : undefined,
       library: modalType === 'enemy' ? formData.library : undefined,
       youtube: modalType === 'enemy' ? formData.youtube : undefined,
       roofCamper: modalType === 'enemy' ? formData.roofCamper : undefined,
