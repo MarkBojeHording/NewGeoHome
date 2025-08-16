@@ -184,6 +184,7 @@ const getGridPosition = (x: number, y: number) => {
 
 // Get group color for a base - MUCH SIMPLER STABLE APPROACH
 const getGroupColor = (baseId: string, locations: any[]) => {
+  if (!baseId || typeof baseId !== 'string') return null
   const currentBase = locations.find(loc => loc.id === baseId)
   if (!currentBase) return null
   
@@ -223,7 +224,7 @@ const getGroupColor = (baseId: string, locations: any[]) => {
       return mainBaseCoords === currentBase.ownerCoordinates
     })
     
-    if (ownerMainBase) {
+    if (ownerMainBase && ownerMainBase.id && typeof ownerMainBase.id === 'string') {
       // Use same color logic as the main base
       let hash = 0
       for (let i = 0; i < ownerMainBase.id.length; i++) {
