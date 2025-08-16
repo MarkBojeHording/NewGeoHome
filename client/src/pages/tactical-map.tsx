@@ -1174,6 +1174,12 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               <span className="text-green-400 font-medium">Friendlies: {location.friendlyPlayers}</span>
             </div>
           )}
+          {/* Display owner information for subordinate bases */}
+          {location.ownerCoordinates && (location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && (
+            <div className="text-sm text-gray-400">
+              <span className="text-orange-400 font-medium">Owner: {location.ownerCoordinates}</span>
+            </div>
+          )}
           {ownedBases.length > 0 && (
             <div className="text-sm text-gray-400">
               <span className="text-blue-400 font-medium">Owns {ownedBases.length} base{ownedBases.length > 1 ? 's' : ''}:</span>
@@ -1231,6 +1237,14 @@ export default function InteractiveTacticalMap() {
   const [modalType, setModalType] = useState('friendly')
   const [editingLocation, setEditingLocation] = useState(null)
   const [editingReport, setEditingReport] = useState(null)
+  
+  // Ensure all bases have proper IDs for grouping system to work
+  useEffect(() => {
+    setLocations(prev => prev.map(location => ({
+      ...location,
+      id: location.id || Date.now().toString() + Math.random().toString(36).substr(2, 9)
+    })))
+  }, [])
   
   // Central Report Library - Hidden storage for all reports
   const [reportLibrary, setReportLibrary] = useState<any[]>([])
