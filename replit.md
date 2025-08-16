@@ -12,6 +12,7 @@ IMPORTANT: Only implement exactly what is requested. Do not create mock/fake dat
 - **Scope Control**: Do not make extra changes outside the scope of what is being asked. If an extra task or feature seems like a good idea, ask first
 - **Targeted Changes**: Avoid making changes to other modals or modules other than the ones being targeted for change. If changes affect multiple components, inform user first
 - **Space Efficiency**: Avoid extra containers and dead space when making modals, screens or similar. Minimize margins and unnecessary spacing
+- **No Wrapper Containers**: Never create wrapper containers as they cause confusion in development
 
 # System Architecture
 
