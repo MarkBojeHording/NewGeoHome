@@ -185,7 +185,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
-              {selectedPlayer ? `${selectedPlayer} - Activity Heat Map` : 'Player Management'}
+              {selectedPlayer ? selectedPlayer : 'Player Management'}
               {!selectedPlayer && (
                 <Plus 
                   className="w-4 h-4 text-orange-400 cursor-pointer hover:text-orange-300" 
@@ -206,7 +206,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           </DialogHeader>
           
           <div className="space-y-4">
-            {/* Activity Heat Map View */}
+            {/* Player Profile View */}
             {selectedPlayer ? (
               <div className="h-[650px] flex gap-4">
                 {/* Left Column - Session History */}
