@@ -12,6 +12,109 @@ interface PlayerModalProps {
   onClose: () => void;
 }
 
+// Component to fetch and display reports for a specific player
+const PlayerReportsContent = ({ playerName }: { playerName: string | null }) => {
+  const { data: reports = [], isLoading } = useQuery({
+    queryKey: ['/api/reports']
+  })
+
+  // Filter reports where this player appears in enemy or friendly player lists
+  const playerReports = reports.filter(report => {
+    if (!playerName) return false
+    const content = report.content || {}
+    
+    // Check if player is in enemy players array
+    const enemyPlayers = content.enemyPlayers || []
+    const isInEnemyPlayers = enemyPlayers.some(enemy => 
+      typeof enemy === 'string' ? enemy === playerName : enemy?.playerName === playerName
+    )
+    
+    // Check if player is in friendly players array  
+    const friendlyPlayers = content.friendlyPlayers || []
+    const isInFriendlyPlayers = friendlyPlayers.some(friendly => 
+      typeof friendly === 'string' ? friendly === playerName : friendly?.playerName === playerName
+    )
+    
+    return isInEnemyPlayers || isInFriendlyPlayers
+  })
+
+  // Report type labels mapping
+  const FULL_CATEGORY_NAMES = {
+    'general': 'General Report',
+    'base': 'Base Report', 
+    'raid': 'Raid Report',
+    'pvp': 'PvP Encounter',
+    'resource': 'Resource Report',
+    'intel': 'Intelligence Report'
+  }
+
+  if (isLoading) {
+    return <div className="text-gray-400 text-sm">Loading reports...</div>
+  }
+
+  if (playerReports.length === 0) {
+    return <div className="text-gray-400 text-sm italic">No reports for this player yet.</div>
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto space-y-3">
+      {playerReports.map((report) => {
+        const content = report.content || {}
+        const hasCamera = content.camera && content.camera.trim() !== ''
+        const hasNotes = content.notes && content.notes.trim() !== ''
+        
+        return (
+          <div key={report.id} className="bg-gray-900 rounded-lg p-3 border border-gray-700">
+            <div className="flex justify-between items-start mb-2">
+              <h4 className="text-white font-medium text-sm">
+                {FULL_CATEGORY_NAMES[content.type] || content.type}
+              </h4>
+              <span className="text-gray-400 text-xs">
+                {content.reportTime || 'No time'}
+              </span>
+            </div>
+            
+            {/* Report ID */}
+            <div className="text-blue-400 text-xs mb-1">
+              {report.id ? `R${report.id.toString().padStart(6, '0')}` : 'No ID'}
+            </div>
+            
+            {/* Location info */}
+            {content.baseCoords && (
+              <div className="text-gray-400 text-xs mb-1">
+                Location: {content.baseCoords}
+              </div>
+            )}
+            
+            {/* Content indicators */}
+            <div className="flex gap-2 mt-2">
+              {hasCamera && (
+                <span className="text-xs bg-blue-600 text-blue-200 px-2 py-0.5 rounded">
+                  Camera
+                </span>
+              )}
+              {hasNotes && (
+                <span className="text-xs bg-green-600 text-green-200 px-2 py-0.5 rounded">
+                  Notes
+                </span>
+              )}
+              {content.reportOutcome && (
+                <span className={`text-xs px-2 py-0.5 rounded ${
+                  content.reportOutcome === 'won' ? 'bg-green-600 text-green-200' :
+                  content.reportOutcome === 'lost' ? 'bg-red-600 text-red-200' :
+                  'bg-gray-600 text-gray-200'
+                }`}>
+                  {content.reportOutcome.charAt(0).toUpperCase() + content.reportOutcome.slice(1)}
+                </span>
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   const [nameSearch, setNameSearch] = useState('');
   const [baseNumberSearch, setBaseNumberSearch] = useState('');
@@ -332,23 +435,10 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                     </div>
                   </div>
                   
-                  {/* Activity Summary */}
-                  <div className="mt-4 bg-gray-700 rounded-lg p-3">
-                    <h4 className="text-white font-medium mb-2">Activity Summary</h4>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="text-center">
-                        <div className="text-green-400 font-bold text-lg">
-                          {sessionHistory.reduce((total, session) => total + session.durationHours, 0)}h
-                        </div>
-                        <div className="text-gray-400">Total Time</div>
-                      </div>
-                      <div className="text-center">
-                        <div className={`font-bold text-lg ${players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'text-green-400' : 'text-gray-400'}`}>
-                          {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'ONLINE' : 'OFFLINE'}
-                        </div>
-                        <div className="text-gray-400">Status</div>
-                      </div>
-                    </div>
+                  {/* Player Reports */}
+                  <div className="mt-4 bg-gray-700 rounded-lg p-3 flex-1 flex flex-col">
+                    <h4 className="text-white font-medium mb-2">Player Reports</h4>
+                    <PlayerReportsContent playerName={selectedPlayer} />
                   </div>
 
 
