@@ -183,7 +183,18 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
-              {selectedPlayer ? `${selectedPlayer}` : 'Player Management'}
+              {selectedPlayer ? (
+                <div className="flex items-center gap-2">
+                  <span>{selectedPlayer}</span>
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    players.find(p => p.playerName === selectedPlayer)?.isOnline 
+                      ? 'bg-green-600 text-green-200' 
+                      : 'bg-gray-600 text-gray-300'
+                  }`}>
+                    {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'ONLINE' : 'OFFLINE'}
+                  </div>
+                </div>
+              ) : 'Player Management'}
               {!selectedPlayer && (
                 <Plus 
                   className="w-4 h-4 text-orange-400 cursor-pointer hover:text-orange-300" 
@@ -211,16 +222,6 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                 <div className="w-3/4 overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
                   <div className="mb-4">
                     <h3 className="text-lg font-semibold text-white mb-2"></h3>
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm text-gray-400">{selectedPlayer}</div>
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        players.find(p => p.playerName === selectedPlayer)?.isOnline 
-                          ? 'bg-green-600 text-green-200' 
-                          : 'bg-gray-600 text-gray-300'
-                      }`}>
-                        {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'ONLINE' : 'OFFLINE'}
-                      </div>
-                    </div>
                     
                     {/* Base Tags Section */}
                     {playerBaseTags.length > 0 && (
