@@ -7,6 +7,12 @@ This project is a Rust-themed tactical map and raid calculator application desig
 Preferred communication style: Simple, everyday language.
 IMPORTANT: Only implement exactly what is requested. Do not create mock/fake data or add unrequested features. Ask questions if unclear.
 
+## Development Rules (Updated)
+- **Layout Constraints**: Avoid flex containers for modals and containers as they are hard to modify locations of
+- **Scope Control**: Do not make extra changes outside the scope of what is being asked. If an extra task or feature seems like a good idea, ask first
+- **Targeted Changes**: Avoid making changes to other modals or modules other than the ones being targeted for change. If changes affect multiple components, inform user first
+- **Space Efficiency**: Avoid extra containers and dead space when making modals, screens or similar. Minimize margins and unnecessary spacing
+
 # System Architecture
 
 ## Frontend Architecture
