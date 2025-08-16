@@ -1240,10 +1240,66 @@ export default function InteractiveTacticalMap() {
   
   // Ensure all bases have proper IDs for grouping system to work
   useEffect(() => {
-    setLocations(prev => prev.map(location => ({
-      ...location,
-      id: location.id || Date.now().toString() + Math.random().toString(36).substr(2, 9)
-    })))
+    setLocations(prev => {
+      const updated = prev.map(location => ({
+        ...location,
+        id: location.id || Date.now().toString() + Math.random().toString(36).substr(2, 9)
+      }))
+      
+      // If we have existing bases, make sure subordinate bases have proper owner relationships
+      if (updated.length > 0) {
+        const updatedWithOwners = updated.map(base => {
+          // If Q5 is a tower without owner, make it subordinate to N5
+          if (base.name === "Q5" && base.type === "enemy-tower" && !base.ownerCoordinates) {
+            return { ...base, ownerCoordinates: "N5" }
+          }
+          return base
+        })
+        return updatedWithOwners
+      }
+      
+      // Add test bases if none exist to demonstrate grouping system
+      if (updated.length === 0) {
+        const testBases = [
+          {
+            id: "test_main_1",
+            name: "N5",
+            type: "enemy-medium",
+            x: 50,
+            y: 40,
+            players: "testplayer1",
+            enemyPlayers: "testplayer1",
+            friendlyPlayers: ""
+          },
+          {
+            id: "test_sub_1",
+            name: "N5(2)",
+            type: "enemy-farm",
+            x: 52,
+            y: 42,
+            ownerCoordinates: "N5",
+            players: "testplayer2",
+            enemyPlayers: "testplayer2", 
+            friendlyPlayers: ""
+          },
+          {
+            id: "test_sub_2",
+            name: "N5(3)",
+            type: "enemy-flank",
+            x: 48,
+            y: 38,
+            ownerCoordinates: "N5",
+            players: "testplayer3",
+            enemyPlayers: "testplayer3",
+            friendlyPlayers: ""
+          }
+        ]
+
+        return testBases
+      }
+      
+      return updated
+    })
   }, [])
   
   // Central Report Library - Hidden storage for all reports
