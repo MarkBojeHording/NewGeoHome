@@ -539,14 +539,7 @@ const BaseModal = ({
   }
   
   const renderReportModal = () => (
-    <div className="relative">
-      {/* Report ID Display - Top Left Corner */}
-      <div className="absolute top-2 left-2 z-10">
-        <span className="text-yellow-400 font-bold text-xs bg-gray-800 px-1 py-0.5 rounded border border-yellow-600">
-          {formData.reportId}
-        </span>
-      </div>
-      
+    <div>
       <div className="flex gap-4 items-end mb-4">
         <div className="flex-1">
           <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
@@ -821,6 +814,14 @@ const BaseModal = ({
           )}
 
           <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
+            {/* Report ID Display - Top Left of Modal */}
+            {modalType === 'report' && (
+              <div className="absolute top-2 left-2 z-20">
+                <span className="text-yellow-400 font-bold text-xs bg-gray-800 px-1 py-0.5 rounded border border-yellow-600">
+                  {formData.reportId}
+                </span>
+              </div>
+            )}
             <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
