@@ -104,12 +104,12 @@ const getBaseGroup = (baseId: string, locations: any[]) => {
   if (!currentBase) return []
   
   // Method 1: Player-based grouping (original logic)
-  if (currentBase.players && typeof currentBase.players === 'string' && currentBase.players.length > 0) {
+  if (currentBase.players && currentBase.players.length > 0) {
     const currentPlayers = currentBase.players.split(",").map(p => p.trim()).filter(p => p)
     if (currentPlayers.length > 0) {
       const playerGroupBases = locations.filter(loc => {
         if (loc.id === baseId) return true
-        if (!loc.players || typeof loc.players !== 'string' || !loc.players.length) return false
+        if (!loc.players?.length) return false
         
         const locPlayers = loc.players.split(",").map(p => p.trim()).filter(p => p)
         if (locPlayers.length === 0) return false
@@ -184,7 +184,6 @@ const getGridPosition = (x: number, y: number) => {
 
 // Get group color for a base - MUCH SIMPLER STABLE APPROACH
 const getGroupColor = (baseId: string, locations: any[]) => {
-  if (!baseId || typeof baseId !== 'string') return null
   const currentBase = locations.find(loc => loc.id === baseId)
   if (!currentBase) return null
   
@@ -224,7 +223,7 @@ const getGroupColor = (baseId: string, locations: any[]) => {
       return mainBaseCoords === currentBase.ownerCoordinates
     })
     
-    if (ownerMainBase && ownerMainBase.id && typeof ownerMainBase.id === 'string') {
+    if (ownerMainBase) {
       // Use same color logic as the main base
       let hash = 0
       for (let i = 0; i < ownerMainBase.id.length; i++) {
@@ -1174,12 +1173,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               <span className="text-green-400 font-medium">Friendlies: {location.friendlyPlayers}</span>
             </div>
           )}
-          {/* Display owner information for subordinate bases */}
-          {location.ownerCoordinates && (location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && (
-            <div className="text-sm text-gray-400">
-              <span className="text-orange-400 font-medium">Owner: {location.ownerCoordinates}</span>
-            </div>
-          )}
           {ownedBases.length > 0 && (
             <div className="text-sm text-gray-400">
               <span className="text-blue-400 font-medium">Owns {ownedBases.length} base{ownedBases.length > 1 ? 's' : ''}:</span>
@@ -1237,70 +1230,6 @@ export default function InteractiveTacticalMap() {
   const [modalType, setModalType] = useState('friendly')
   const [editingLocation, setEditingLocation] = useState(null)
   const [editingReport, setEditingReport] = useState(null)
-  
-  // Ensure all bases have proper IDs for grouping system to work
-  useEffect(() => {
-    setLocations(prev => {
-      const updated = prev.map(location => ({
-        ...location,
-        id: location.id || Date.now().toString() + Math.random().toString(36).substr(2, 9)
-      }))
-      
-      // If we have existing bases, make sure subordinate bases have proper owner relationships
-      if (updated.length > 0) {
-        const updatedWithOwners = updated.map(base => {
-          // If Q5 is a tower without owner, make it subordinate to N5
-          if (base.name === "Q5" && base.type === "enemy-tower" && !base.ownerCoordinates) {
-            return { ...base, ownerCoordinates: "N5" }
-          }
-          return base
-        })
-        return updatedWithOwners
-      }
-      
-      // Add test bases if none exist to demonstrate grouping system
-      if (updated.length === 0) {
-        const testBases = [
-          {
-            id: "test_main_1",
-            name: "N5",
-            type: "enemy-medium",
-            x: 50,
-            y: 40,
-            players: "testplayer1",
-            enemyPlayers: "testplayer1",
-            friendlyPlayers: ""
-          },
-          {
-            id: "test_sub_1",
-            name: "N5(2)",
-            type: "enemy-farm",
-            x: 52,
-            y: 42,
-            ownerCoordinates: "N5",
-            players: "testplayer2",
-            enemyPlayers: "testplayer2", 
-            friendlyPlayers: ""
-          },
-          {
-            id: "test_sub_2",
-            name: "N5(3)",
-            type: "enemy-flank",
-            x: 48,
-            y: 38,
-            ownerCoordinates: "N5",
-            players: "testplayer3",
-            enemyPlayers: "testplayer3",
-            friendlyPlayers: ""
-          }
-        ]
-
-        return testBases
-      }
-      
-      return updated
-    })
-  }, [])
   
   // Central Report Library - Hidden storage for all reports
   const [reportLibrary, setReportLibrary] = useState<any[]>([])

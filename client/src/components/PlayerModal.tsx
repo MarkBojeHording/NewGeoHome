@@ -185,19 +185,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
-              {selectedPlayer ? (
-                <span>
-                  {selectedPlayer} - <span className={(() => {
-                    const playerData = players.find(p => p.playerName === selectedPlayer);
-                    return playerData?.isOnline ? 'text-green-400' : 'text-red-400';
-                  })()}>
-                    {(() => {
-                      const playerData = players.find(p => p.playerName === selectedPlayer);
-                      return playerData?.isOnline ? 'Online' : 'Offline';
-                    })()}
-                  </span>
-                </span>
-              ) : 'Player Management'}
+              {selectedPlayer ? `${selectedPlayer} - Activity Heat Map` : 'Player Management'}
               {!selectedPlayer && (
                 <Plus 
                   className="w-4 h-4 text-orange-400 cursor-pointer hover:text-orange-300" 
@@ -218,12 +206,14 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           </DialogHeader>
           
           <div className="space-y-4">
-            {/* Player Profile View */}
+            {/* Activity Heat Map View */}
             {selectedPlayer ? (
-              <div className="h-[500px] flex gap-4">
+              <div className="h-[650px] flex gap-4">
                 {/* Left Column - Session History */}
-                <div className="w-1/2 overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
+                <div className="w-3/4 overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
                   <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">Session History</h3>
+                    <div className="text-sm text-gray-400">{selectedPlayer}</div>
                     
                     {/* Base Tags Section */}
                     {playerBaseTags.length > 0 && (
@@ -256,18 +246,18 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                           data-testid={`session-${session.id}`}
                         >
                           <div className="text-white">
-                            {(() => {
-                              const startDate = new Date(session.startTime);
-                              const endDate = new Date(session.endTime);
-                              const startDateStr = startDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-                              const endDateStr = endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-                              const startTimeStr = startDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
-                              const endTimeStr = endDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
-                              
-                              return startDateStr === endDateStr 
-                                ? `${startDateStr} ${startTimeStr} - ${endTimeStr}`
-                                : `${startDateStr} ${startTimeStr} - ${endDateStr} ${endTimeStr}`;
-                            })()}
+                            {new Date(session.startTime).toLocaleDateString(undefined, { 
+                              month: 'short', 
+                              day: 'numeric'
+                            })} {new Date(session.startTime).toLocaleTimeString(undefined, { 
+                              hour: '2-digit', 
+                              minute: '2-digit',
+                              hour12: false
+                            })} - {new Date(session.endTime).toLocaleTimeString(undefined, { 
+                              hour: '2-digit', 
+                              minute: '2-digit',
+                              hour12: false
+                            })}
                           </div>
                           <div className="text-gray-400 ml-2">
                             {session.durationHours}h
@@ -285,9 +275,11 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                 
                 {/* Right Section - Heat Map */}
                 <div className="flex-1 bg-gray-800 rounded-lg border border-gray-600 p-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Activity Heat Map</h3>
                   
                   {/* Functional Heat Map with Session Data */}
                   <div className="border border-gray-600 rounded-lg bg-gray-700 relative">
+                    <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Weekly Activity Pattern</label>
                     <div className="p-2 pt-3">
                       <div className="flex gap-1">
                         {/* Hour labels column */}
