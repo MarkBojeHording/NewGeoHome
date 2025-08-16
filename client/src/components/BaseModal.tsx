@@ -250,7 +250,7 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
   return (
     <div className="w-full h-full flex flex-col">
       {/* Search Input */}
-      <div className="relative p-2 border-b border-gray-600">
+      <div className="relative p-1">
         <div className="relative">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
           <input
