@@ -104,12 +104,12 @@ const getBaseGroup = (baseId: string, locations: any[]) => {
   if (!currentBase) return []
   
   // Method 1: Player-based grouping (original logic)
-  if (currentBase.players && currentBase.players.length > 0) {
+  if (currentBase.players && typeof currentBase.players === 'string' && currentBase.players.length > 0) {
     const currentPlayers = currentBase.players.split(",").map(p => p.trim()).filter(p => p)
     if (currentPlayers.length > 0) {
       const playerGroupBases = locations.filter(loc => {
         if (loc.id === baseId) return true
-        if (!loc.players?.length) return false
+        if (!loc.players || typeof loc.players !== 'string' || !loc.players.length) return false
         
         const locPlayers = loc.players.split(",").map(p => p.trim()).filter(p => p)
         if (locPlayers.length === 0) return false
