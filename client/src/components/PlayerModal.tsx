@@ -238,38 +238,40 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                       <div className="text-gray-400">Loading session history...</div>
                     </div>
                   ) : (
-                    <ul className="space-y-1">
+                    <div className="space-y-3">
                       {sessionHistory.map((session: any) => (
-                        <li
+                        <div
                           key={session.id}
-                          className="flex justify-between items-center text-xs py-1 px-2 hover:bg-gray-700/50 rounded"
+                          className="bg-gray-700 rounded-lg px-3 py-2 border border-gray-600"
                           data-testid={`session-${session.id}`}
                         >
-                          <div className="text-white">
-                            {new Date(session.startTime).toLocaleDateString(undefined, { 
-                              month: 'short', 
-                              day: 'numeric'
-                            })} {new Date(session.startTime).toLocaleTimeString(undefined, { 
-                              hour: '2-digit', 
-                              minute: '2-digit',
-                              hour12: false
-                            })} - {new Date(session.endTime).toLocaleTimeString(undefined, { 
-                              hour: '2-digit', 
-                              minute: '2-digit',
-                              hour12: false
-                            })}
+                          <div className="flex justify-between items-center text-xs whitespace-nowrap">
+                            <div className="text-white">
+                              {new Date(session.startTime).toLocaleDateString(undefined, { 
+                                month: 'short', 
+                                day: 'numeric'
+                              })} {new Date(session.startTime).toLocaleTimeString(undefined, { 
+                                hour: '2-digit', 
+                                minute: '2-digit',
+                                hour12: false
+                              })} - {new Date(session.endTime).toLocaleTimeString(undefined, { 
+                                hour: '2-digit', 
+                                minute: '2-digit',
+                                hour12: false
+                              })}
+                            </div>
+                            <div className="text-gray-400 ml-2">
+                              {session.durationHours}h
+                            </div>
                           </div>
-                          <div className="text-gray-400 ml-2">
-                            {session.durationHours}h
-                          </div>
-                        </li>
+                        </div>
                       ))}
                       {sessionHistory.length === 0 && (
                         <div className="text-center text-gray-400 py-8">
                           No session history available
                         </div>
                       )}
-                    </ul>
+                    </div>
                   )}
                 </div>
                 
