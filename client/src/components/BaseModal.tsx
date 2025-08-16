@@ -250,7 +250,7 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
   return (
     <div className="w-full h-full flex flex-col">
       {/* Search Input */}
-      <div className="relative px-2 pt-5 pb-2 border-b border-gray-600">
+      <div className="relative p-2 border-b border-gray-600">
         <div className="relative">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
           <input
@@ -261,14 +261,14 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
               setShowDropdown(true)
             }}
             onFocus={() => setShowDropdown(true)}
-            className="w-full pl-7 pr-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+            className="w-full pl-7 pr-2 py-1 bg-gray-800 border border-gray-600 rounded text-sm text-gray-200 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
             placeholder="Search players to add..."
           />
         </div>
         
         {/* Search Results Dropdown */}
         {showDropdown && searchTerm.trim() && (
-          <div className="absolute top-full left-2 right-2 mt-1 bg-gray-800 border border-gray-600 rounded max-h-28 overflow-y-auto z-50">
+          <div className="absolute top-full left-2 right-2 mt-1 bg-gray-800 border border-gray-600 rounded max-h-32 overflow-y-auto z-50">
             {/* Regular Players */}
             {filteredPlayers.slice(0, 10).map((player) => (
               <button
