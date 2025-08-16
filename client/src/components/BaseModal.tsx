@@ -402,7 +402,8 @@ const BaseModal = ({
 
     primaryRockets: 0,
     enemyPlayers: '',
-    friendlyPlayers: ''
+    friendlyPlayers: '',
+    reportId: modalType === "report" ? `R${Math.floor(Math.random() * 10000).toString().padStart(4, "0")}` : ""
   })
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
@@ -856,7 +857,11 @@ const BaseModal = ({
                     </div>
                   </div>
                 )}
-                {modalType === 'report' && <div></div>}
+                {modalType === 'report' && (
+                  <div className="text-blue-400 font-bold text-sm">
+                    ID: {formData.reportId}
+                  </div>
+                )}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()
