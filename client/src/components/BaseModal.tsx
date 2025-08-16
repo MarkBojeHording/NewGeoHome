@@ -587,7 +587,7 @@ const BaseModal = ({
       </div>
       
       {/* Enemy and Friendly Player Containers */}
-      <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
+      <div className="flex gap-3 mb-4" style={{ height: '320px' }}>
         {/* Enemy Players */}
         <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col relative">
           <h4 className="absolute top-1 left-1 text-red-400 font-semibold text-xs z-10">Enemy Players</h4>
@@ -595,7 +595,7 @@ const BaseModal = ({
             <PlayerSearchSelector 
               selectedPlayers={formData.enemyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
-              maxHeight="160px"
+              maxHeight="280px"
             />
           </div>
         </div>
@@ -607,22 +607,13 @@ const BaseModal = ({
             <PlayerSearchSelector 
               selectedPlayers={formData.friendlyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, friendlyPlayers: players }))}
-              maxHeight="160px"
+              maxHeight="280px"
             />
           </div>
         </div>
       </div>
       
-      {/* Notes Container */}
-      <div className="bg-gray-900 border border-gray-600 rounded p-3">
-        <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
-        <textarea 
-          value={formData.notes} 
-          onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
-          className="w-full h-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-blue-500"
-          placeholder="Add report details..."
-        />
-      </div>
+
     </div>
   )
   
