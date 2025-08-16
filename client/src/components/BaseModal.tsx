@@ -814,7 +814,7 @@ const BaseModal = ({
                           }}
                           className="flex items-center gap-2 w-full text-left px-2 py-1 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
                         >
-                          <div className={`${getColor(suggestion.type, null)} flex-shrink-0 scale-75`}>
+                          <div className={`${getColor(suggestion.type)} flex-shrink-0 scale-75`}>
                             {getIcon(suggestion.type)}
                           </div>
                           <span>{suggestion.coord}</span>
