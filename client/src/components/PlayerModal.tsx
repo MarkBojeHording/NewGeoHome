@@ -183,7 +183,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
-              {selectedPlayer ? `${selectedPlayer} - Session History` : 'Player Management'}
+              {selectedPlayer ? `${selectedPlayer}` : 'Player Management'}
               {!selectedPlayer && (
                 <Plus 
                   className="w-4 h-4 text-orange-400 cursor-pointer hover:text-orange-300" 
@@ -210,7 +210,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                 {/* Left Column - Session History */}
                 <div className="w-3/4 overflow-y-auto bg-gray-800 rounded-lg border border-gray-600 p-4">
                   <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-white mb-2">Session History</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2"></h3>
                     <div className="text-sm text-gray-400">{selectedPlayer}</div>
                     
                     {/* Base Tags Section */}
@@ -233,7 +233,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                   </div>
                   {isLoadingHistory ? (
                     <div className="flex justify-center py-8">
-                      <div className="text-gray-400">Loading session history...</div>
+                      <div className="text-gray-400">Loading...</div>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -266,7 +266,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                       ))}
                       {sessionHistory.length === 0 && (
                         <div className="text-center text-gray-400 py-8">
-                          No session history available
+                          No data available
                         </div>
                       )}
                     </div>
@@ -275,11 +275,11 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                 
                 {/* Right Section - Heat Map */}
                 <div className="flex-1 bg-gray-800 rounded-lg border border-gray-600 p-4">
-                  <h3 className="text-lg font-semibold text-white mb-4">Activity Heat Map</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4"></h3>
                   
                   {/* Functional Heat Map with Session Data */}
                   <div className="border border-gray-600 rounded-lg bg-gray-700 relative">
-                    <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Weekly Activity Pattern</label>
+                    <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5"></label>
                     <div className="p-2 pt-3">
                       <div className="flex gap-1">
                         {/* Hour labels column */}
