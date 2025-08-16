@@ -532,6 +532,7 @@ const BaseModal = ({
   }, [getMainBasesWithInfo])
   
   const handleSave = () => {
+    console.log("BaseModal handleSave - ownerCoordinates:", formData.ownerCoordinates, "type:", formData.type)
     const baseData = {
       type: formData.type,
       notes: formData.notes,
