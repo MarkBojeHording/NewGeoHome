@@ -3,7 +3,6 @@ import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, F
 import { useQuery } from "@tanstack/react-query"
 import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
-
 import type { ExternalPlayer } from '@shared/schema'
 
 // ============= CONSTANTS =============
@@ -415,13 +414,6 @@ const BaseModal = ({
   
   const ownerInputRef = useRef(null)
   
-  // Generate stable report ID that doesn't change on re-renders
-  const stableReportId = useMemo(() => {
-    if (editingLocation?.id) return editingLocation.id
-    if (modalType === 'report') return `REP-${Date.now().toString().slice(-6)}`
-    return 'NEW'
-  }, [editingLocation?.id, modalType])
-  
   const handleToggleRocketCalculator = useCallback((e) => {
     e.stopPropagation()
     const rect = e.currentTarget.getBoundingClientRect()
@@ -531,9 +523,7 @@ const BaseModal = ({
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
 
       primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined,
-      abandoned: formData.abandoned,
-      // Generate unique ID for reports if not editing existing one
-      id: modalType === 'report' && !editingLocation ? `report-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` : undefined
+      abandoned: formData.abandoned
     }
     
     onSave(baseData)
@@ -592,11 +582,12 @@ const BaseModal = ({
         {/* Enemy Players */}
         <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col">
           <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
-          <div className="flex-1 overflow-hidden">
-            <PlayerSearchSelector
-              selectedPlayers={formData.enemyPlayers}
-              onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
-              maxHeight="100%"
+          <div className="flex-1 overflow-y-auto">
+            <textarea 
+              value={formData.enemyPlayers}
+              onChange={(e) => setFormData(prev => ({ ...prev, enemyPlayers: e.target.value }))}
+              className="w-full h-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-red-500"
+              placeholder="List enemy players..."
             />
           </div>
         </div>
@@ -615,7 +606,6 @@ const BaseModal = ({
         </div>
       </div>
       
-
       {/* Notes Container */}
       <div className="bg-gray-900 border border-gray-600 rounded p-3">
         <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
@@ -808,15 +798,7 @@ const BaseModal = ({
             </>
           )}
           
-          {modalType === 'friendly' && (
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-green-600 rounded-lg px-3 py-1.5 border-2 border-green-500 shadow-lg" style={{zIndex: 60}}>
-              <span className="text-white font-mono font-bold text-3xl">
-                {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
-              </span>
-            </div>
-          )}
-          
-          {modalType === 'report' && (
+          {modalType !== 'enemy' && (
             <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
               <span className="text-white font-mono font-bold text-3xl">
                 {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
@@ -877,13 +859,7 @@ const BaseModal = ({
                     </div>
                   </div>
                 )}
-                {modalType === 'report' && (
-                  <div className="flex items-center gap-3 flex-1" style={{marginTop: '15px'}}>
-                    <div className="text-gray-600 font-bold text-sm flex-shrink-0">
-                      REPORT [{editingLocation?.id || 'NEW-REPORT'}]
-                    </div>
-                  </div>
-                )}
+                {modalType === 'report' && <div></div>}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()
