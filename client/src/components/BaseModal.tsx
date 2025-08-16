@@ -373,6 +373,30 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
   )
 }
 
+// Helper function to find the nearest main base for subordinate bases
+const findNearestMainBase = (x, y, allLocations) => {
+  if (!allLocations || allLocations.length === 0) return null
+  
+  const mainBases = allLocations.filter(loc => 
+    loc.type === 'enemy-small' || loc.type === 'enemy-medium' || loc.type === 'enemy-large'
+  )
+  
+  if (mainBases.length === 0) return null
+  
+  let nearestBase = null
+  let minDistance = Infinity
+  
+  mainBases.forEach(base => {
+    const distance = Math.sqrt((base.x - x) ** 2 + (base.y - y) ** 2)
+    if (distance < minDistance) {
+      minDistance = distance
+      nearestBase = base
+    }
+  })
+  
+  return nearestBase ? nearestBase.name.split('(')[0] : null // Remove duplicate suffix like (2)
+}
+
 const BaseModal = ({ 
   modal, 
   modalType, 
@@ -520,7 +544,8 @@ const BaseModal = ({
       players: modalType === 'enemy' ? formData.players : undefined,
       isMainBase: modalType === 'enemy' ? true : undefined,
       oldestTC: modalType === 'enemy' && formData.oldestTC > 0 ? formData.oldestTC : undefined,
-      ownerCoordinates: (formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') ? formData.ownerCoordinates : undefined,
+      ownerCoordinates: (formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') ? 
+        (formData.ownerCoordinates || findNearestMainBase(modal.x, modal.y, locations)) : undefined,
       library: modalType === 'enemy' ? formData.library : undefined,
       youtube: modalType === 'enemy' ? formData.youtube : undefined,
       roofCamper: modalType === 'enemy' ? formData.roofCamper : undefined,
