@@ -40,6 +40,19 @@ const PlayerReportsContent = ({ playerName }: { playerName: string | null }) => 
     const isInEnemyPlayers = enemyPlayersList.includes(playerName)
     const isInFriendlyPlayers = friendlyPlayersList.includes(playerName)
     
+    // Debug logging (remove this later)
+    if (playerName === 'timtom') {
+      console.log('Report filtering for timtom:', {
+        reportId: report.id,
+        enemyPlayers,
+        friendlyPlayers,
+        enemyPlayersList,
+        friendlyPlayersList,
+        isInEnemyPlayers,
+        isInFriendlyPlayers
+      })
+    }
+    
     return isInEnemyPlayers || isInFriendlyPlayers
   })
 
