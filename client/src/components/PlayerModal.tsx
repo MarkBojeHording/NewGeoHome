@@ -23,17 +23,25 @@ const PlayerReportsContent = ({ playerName }: { playerName: string | null }) => 
     if (!playerName) return false
     const content = report.content || {}
     
-    // Check if player is in enemy players array
-    const enemyPlayers = content.enemyPlayers || []
-    const isInEnemyPlayers = enemyPlayers.some(enemy => 
+    // Handle both string and array formats for enemy players
+    let enemyPlayers = content.enemyPlayers || []
+    if (typeof enemyPlayers === 'string') {
+      // If it's a string, split by comma and trim
+      enemyPlayers = enemyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0)
+    }
+    const isInEnemyPlayers = Array.isArray(enemyPlayers) ? enemyPlayers.some(enemy => 
       typeof enemy === 'string' ? enemy === playerName : enemy?.playerName === playerName
-    )
+    ) : false
     
-    // Check if player is in friendly players array  
-    const friendlyPlayers = content.friendlyPlayers || []
-    const isInFriendlyPlayers = friendlyPlayers.some(friendly => 
+    // Handle both string and array formats for friendly players
+    let friendlyPlayers = content.friendlyPlayers || []
+    if (typeof friendlyPlayers === 'string') {
+      // If it's a string, split by comma and trim
+      friendlyPlayers = friendlyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0)
+    }
+    const isInFriendlyPlayers = Array.isArray(friendlyPlayers) ? friendlyPlayers.some(friendly => 
       typeof friendly === 'string' ? friendly === playerName : friendly?.playerName === playerName
-    )
+    ) : false
     
     return isInEnemyPlayers || isInFriendlyPlayers
   })
