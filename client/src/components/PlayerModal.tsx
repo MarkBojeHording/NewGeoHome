@@ -186,10 +186,17 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
               {selectedPlayer ? (
-                (() => {
-                  const playerData = players.find(p => p.playerName === selectedPlayer);
-                  return `${selectedPlayer} - ${playerData?.isOnline ? 'Online' : 'Offline'}`;
-                })()
+                <span>
+                  {selectedPlayer} - <span className={(() => {
+                    const playerData = players.find(p => p.playerName === selectedPlayer);
+                    return playerData?.isOnline ? 'text-green-400' : 'text-red-400';
+                  })()}>
+                    {(() => {
+                      const playerData = players.find(p => p.playerName === selectedPlayer);
+                      return playerData?.isOnline ? 'Online' : 'Offline';
+                    })()}
+                  </span>
+                </span>
               ) : 'Player Management'}
               {!selectedPlayer && (
                 <Plus 
@@ -278,7 +285,10 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                 
                 {/* Right Section - Heat Map */}
                 <div className="flex-1 bg-gray-800 rounded-lg border border-gray-600 p-4">
-                  <h3 className="text-lg font-semibold text-white mb-4">
+                  <h3 className={`text-lg font-semibold mb-4 ${(() => {
+                    const playerData = players.find(p => p.playerName === selectedPlayer);
+                    return playerData?.isOnline ? 'text-green-400' : 'text-red-400';
+                  })()}`}>
                     {(() => {
                       const playerData = players.find(p => p.playerName === selectedPlayer);
                       return playerData?.isOnline ? 'Online' : 'Offline';
@@ -287,7 +297,10 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                   
                   {/* Functional Heat Map with Session Data */}
                   <div className="border border-gray-600 rounded-lg bg-gray-700 relative">
-                    <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">
+                    <label className={`absolute top-0 left-0 text-xs font-medium pl-0.5 ${(() => {
+                      const playerData = players.find(p => p.playerName === selectedPlayer);
+                      return playerData?.isOnline ? 'text-green-400' : 'text-red-400';
+                    })()}`}>
                       {(() => {
                         const playerData = players.find(p => p.playerName === selectedPlayer);
                         return playerData?.isOnline ? 'Online' : 'Offline';
