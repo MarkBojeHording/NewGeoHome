@@ -596,9 +596,9 @@ const BaseModal = ({
       {/* Enemy and Friendly Player Containers */}
       <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
         {/* Enemy Players */}
-        <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col">
-          <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
-          <div className="flex-1 border border-gray-600 rounded bg-gray-700">
+        <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col relative">
+          <h4 className="absolute top-1 left-1 text-red-400 font-semibold text-xs z-10">Enemy Players</h4>
+          <div className="flex-1 border border-gray-600 rounded bg-gray-700 mt-4">
             <PlayerSearchSelector 
               selectedPlayers={formData.enemyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
@@ -608,9 +608,9 @@ const BaseModal = ({
         </div>
         
         {/* Friendly Players */}
-        <div className="flex-1 bg-gray-900 border border-green-500 rounded p-3 flex flex-col">
-          <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
-          <div className="flex-1 border border-gray-600 rounded bg-gray-700">
+        <div className="flex-1 bg-gray-900 border border-green-500 rounded p-3 flex flex-col relative">
+          <h4 className="absolute top-1 left-1 text-green-400 font-semibold text-xs z-10">Friendly Players</h4>
+          <div className="flex-1 border border-gray-600 rounded bg-gray-700 mt-4">
             <PlayerSearchSelector 
               selectedPlayers={formData.friendlyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, friendlyPlayers: players }))}
