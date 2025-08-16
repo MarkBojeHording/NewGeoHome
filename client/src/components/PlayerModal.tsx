@@ -185,7 +185,12 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold flex items-center gap-2">
               <User className="w-5 h-5" />
-              {selectedPlayer ? selectedPlayer : 'Player Management'}
+              {selectedPlayer ? (
+                (() => {
+                  const playerData = players.find(p => p.playerName === selectedPlayer);
+                  return `${selectedPlayer} - ${playerData?.isOnline ? 'Online' : 'Offline'}`;
+                })()
+              ) : 'Player Management'}
               {!selectedPlayer && (
                 <Plus 
                   className="w-4 h-4 text-orange-400 cursor-pointer hover:text-orange-300" 
