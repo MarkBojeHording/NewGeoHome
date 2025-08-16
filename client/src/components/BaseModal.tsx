@@ -403,7 +403,7 @@ const BaseModal = ({
     primaryRockets: 0,
     enemyPlayers: '',
     friendlyPlayers: '',
-    reportId: modalType === "report" ? `R${Math.floor(Math.random() * 10000).toString().padStart(4, "0")}` : ""
+    reportId: modalType === "report" ? `R${Date.now().toString().slice(-4)}` : ""
   })
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
