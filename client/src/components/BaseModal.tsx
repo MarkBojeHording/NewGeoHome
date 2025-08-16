@@ -42,8 +42,7 @@ const ICON_MAP = {
   "report-bradley": Shield
 }
 
-const getColor = (type: string, location = null) => {
-  if (location?.abandoned) return "text-gray-400"
+const getColor = (type: string) => {
   if (type.startsWith("friendly")) return "text-green-400"
   if (type.startsWith("enemy")) return "text-red-400"
   return "text-yellow-400"
@@ -376,6 +375,16 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
   )
 }
 
+// ============= REPORT ID GENERATOR =============
+const generateReportId = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let result = 'R'
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
+}
+
 const BaseModal = ({ 
   modal, 
   modalType, 
@@ -398,17 +407,16 @@ const BaseModal = ({
     youtube: '',
     roofCamper: false,
     hostileSamsite: false,
-    abandoned: false,
-
+    raidedOut: false,
     primaryRockets: 0,
     enemyPlayers: '',
-    friendlyPlayers: '',
-    reportId: modalType === "report" ? `R${Math.random().toString(36).substr(2, 6).toUpperCase()}` : ""
+    friendlyPlayers: '',
+    reportId: generateReportId()
   })
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
-
+  const [showRaidedOutPrompt, setShowRaidedOutPrompt] = useState(false)
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
@@ -441,11 +449,11 @@ const BaseModal = ({
         youtube: editingLocation.youtube || '',
         roofCamper: editingLocation.roofCamper || false,
         hostileSamsite: editingLocation.hostileSamsite || false,
-        abandoned: editingLocation.abandoned || false,
-
+        raidedOut: editingLocation.raidedOut || false,
         primaryRockets: editingLocation.primaryRockets || 0,
         enemyPlayers: editingLocation.enemyPlayers || '',
-        friendlyPlayers: editingLocation.friendlyPlayers || ''
+        friendlyPlayers: editingLocation.friendlyPlayers || '',
+        reportId: editingLocation.reportId || generateReportId()
       })
     } else if (modalType === 'report') {
       const now = new Date()
@@ -514,6 +522,7 @@ const BaseModal = ({
       outcome: modalType === 'report' ? formData.reportOutcome : undefined,
       enemyPlayers: modalType === 'report' ? formData.enemyPlayers : undefined,
       friendlyPlayers: modalType === 'report' ? formData.friendlyPlayers : undefined,
+      reportId: modalType === 'report' ? formData.reportId : undefined,
       players: modalType === 'enemy' ? formData.players : undefined,
       isMainBase: modalType === 'enemy' ? true : undefined,
       oldestTC: modalType === 'enemy' && formData.oldestTC > 0 ? formData.oldestTC : undefined,
@@ -522,9 +531,8 @@ const BaseModal = ({
       youtube: modalType === 'enemy' ? formData.youtube : undefined,
       roofCamper: modalType === 'enemy' ? formData.roofCamper : undefined,
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
-
-      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined,
-      abandoned: formData.abandoned
+      raidedOut: modalType === 'enemy' ? formData.raidedOut : undefined,
+      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined
     }
     
     onSave(baseData)
@@ -532,6 +540,13 @@ const BaseModal = ({
   
   const renderReportModal = () => (
     <div>
+      {/* Report ID Display */}
+      <div className="mb-3">
+        <span className="text-yellow-400 font-bold text-sm bg-gray-800 px-2 py-1 rounded border border-yellow-600">
+          {formData.reportId}
+        </span>
+      </div>
+      
       <div className="flex gap-4 items-end mb-4">
         <div className="flex-1">
           <label className="block text-sm font-medium mb-1 text-gray-200">Report Type</label>
@@ -558,7 +573,7 @@ const BaseModal = ({
               <option value="report-raid">Countered Raid</option>
             </select>
             <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-              <div className={`${getColor(formData.type, editingLocation)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+              <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
                 {getIcon(formData.type)}
               </div>
               <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -583,12 +598,11 @@ const BaseModal = ({
         {/* Enemy Players */}
         <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col">
           <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
-          <div className="flex-1 overflow-y-auto">
-            <textarea 
-              value={formData.enemyPlayers}
-              onChange={(e) => setFormData(prev => ({ ...prev, enemyPlayers: e.target.value }))}
-              className="w-full h-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-red-500"
-              placeholder="List enemy players..."
+          <div className="flex-1 border border-gray-600 rounded bg-gray-700">
+            <PlayerSearchSelector 
+              selectedPlayers={formData.enemyPlayers}
+              onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
+              maxHeight="160px"
             />
           </div>
         </div>
@@ -596,24 +610,26 @@ const BaseModal = ({
         {/* Friendly Players */}
         <div className="flex-1 bg-gray-900 border border-green-500 rounded p-3 flex flex-col">
           <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
-          <div className="flex-1 overflow-y-auto">
-            <textarea 
-              value={formData.friendlyPlayers}
-              onChange={(e) => setFormData(prev => ({ ...prev, friendlyPlayers: e.target.value }))}
-              className="w-full h-full px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-green-500"
-              placeholder="List friendly players..."
+          <div className="flex-1 border border-gray-600 rounded bg-gray-700">
+            <PlayerSearchSelector 
+              selectedPlayers={formData.friendlyPlayers}
+              onPlayersChange={(players) => setFormData(prev => ({ ...prev, friendlyPlayers: players }))}
+              maxHeight="160px"
             />
           </div>
         </div>
       </div>
       
-
-      <textarea 
-        value={formData.notes} 
-        onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
-        className="w-full h-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-blue-500"
-        placeholder="Notes..."
-      />
+      {/* Notes Container */}
+      <div className="bg-gray-900 border border-gray-600 rounded p-3">
+        <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
+        <textarea 
+          value={formData.notes} 
+          onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
+          className="w-full h-24 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-blue-500"
+          placeholder="Add report details..."
+        />
+      </div>
     </div>
   )
   
@@ -656,7 +672,7 @@ const BaseModal = ({
             )}
           </select>
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-            <div className={`${getColor(formData.type, editingLocation)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+            <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
               {getIcon(formData.type)}
             </div>
             <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -783,7 +799,7 @@ const BaseModal = ({
                           }}
                           className="flex items-center gap-2 w-full text-left px-2 py-1 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
                         >
-                          <div className={`${getColor(suggestion.type, null)} flex-shrink-0 scale-75`}>
+                          <div className={`${getColor(suggestion.type)} flex-shrink-0 scale-75`}>
                             {getIcon(suggestion.type)}
                           </div>
                           <span>{suggestion.coord}</span>
@@ -832,36 +848,22 @@ const BaseModal = ({
                       <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
                         <input 
                           type="checkbox" 
-                          checked={formData.abandoned} 
-                          onChange={(e) => setFormData(prev => ({ ...prev, abandoned: e.target.checked }))}
+                          checked={formData.raidedOut} 
+                          onChange={(e) => {
+                            if (!formData.raidedOut && e.target.checked) {
+                              setShowRaidedOutPrompt(true)
+                            } else {
+                              setFormData(prev => ({ ...prev, raidedOut: false }))
+                            }
+                          }}
                           className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
                         />
-                        <span>Abandoned</span>
+                        <span>Raided Out</span>
                       </label>
                     </div>
                   </div>
                 )}
-                {modalType === 'friendly' && (
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className="text-green-500 font-bold text-lg flex-shrink-0">FRIENDLY</div>
-                    <div className="flex gap-2 flex-wrap">
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.abandoned} 
-                          onChange={(e) => setFormData(prev => ({ ...prev, abandoned: e.target.checked }))}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
-                        />
-                        <span>Abandoned</span>
-                      </label>
-                    </div>
-                  </div>
-                )}
-                {modalType === 'report' && (
-                  <div className="text-blue-400 font-bold text-sm">
-                    ID: {formData.reportId}
-                  </div>
-                )}
+                {modalType !== 'enemy' && <div></div>}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()
@@ -880,7 +882,7 @@ const BaseModal = ({
               {modalType === 'report' && (
                 <div className="mb-3">
                   <label className="block text-sm font-medium mb-1 text-gray-200">Report Screenshots</label>
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '200px'}}>
+                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '100px'}}>
                     <svg className="h-7 w-7 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -1055,6 +1057,38 @@ const BaseModal = ({
           </div>
         </div>
         
+        {/* Report Panel */}
+        {showReportPanel && (
+          <div 
+            className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
+            style={{
+              height: '95vh',
+              maxHeight: '805px',
+              width: '320px',
+              left: '16px',
+              transform: 'translateX(-100%)',
+              top: 0,
+              zIndex: 45
+            }}
+          >
+            <div className="p-4 h-full flex flex-col">
+              <h3 className="text-white font-bold mb-4">Base Reports</h3>
+              
+              {/* List of reports for this base */}
+              <div className="flex-1 overflow-y-auto mb-4">
+                <div className="space-y-2">
+                  <p className="text-gray-400 text-sm italic">No reports for this base yet.</p>
+                  {/* Reports will be listed here */}
+                </div>
+              </div>
+              
+              {/* Create Report Button */}
+              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+                Create New Report
+              </button>
+            </div>
+          </div>
+        )}
         
         {/* Advanced Panel */}
         {modalType === 'enemy' && showAdvancedPanel && (
@@ -1120,7 +1154,7 @@ const BaseModal = ({
                       {/* Base icon in center */}
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="bg-gray-700 rounded-full p-0.5 shadow-md border border-gray-600">
-                          <div className={getColor(formData.type, editingLocation)}>
+                          <div className={getColor(formData.type)}>
                             {getIcon(formData.type)}
                           </div>
                         </div>
@@ -1185,6 +1219,33 @@ const BaseModal = ({
               {/* Fetch and display reports for this base */}
               <BaseReportsContent baseName={editingLocation?.name} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
               
+              {/* Enemy and Friendly Player Containers Side by Side */}
+              <div className="flex gap-3 flex-1 mb-4">
+                {/* Enemy Players - Left Side */}
+                <div className="w-1/2 bg-gray-900 border-2 border-red-500 rounded p-3 flex flex-col">
+                  <h4 className="text-red-400 font-semibold text-sm mb-2">Enemy Players</h4>
+                  <div className="flex-1 overflow-y-auto">
+                    <p className="text-xs text-gray-500">No enemies reported</p>
+                  </div>
+                </div>
+                
+                {/* Friendly Players - Right Side */}
+                <div className="w-1/2 bg-gray-900 border-2 border-green-500 rounded p-3 flex flex-col">
+                  <h4 className="text-green-400 font-semibold text-sm mb-2">Friendly Players</h4>
+                  <div className="flex-1 overflow-y-auto">
+                    <p className="text-xs text-gray-500">No friendlies reported</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Notes Container - Bottom */}
+              <div className="bg-gray-900 border-2 border-gray-600 rounded p-3 h-32">
+                <h4 className="text-gray-300 font-semibold text-sm mb-2">Notes</h4>
+                <textarea 
+                  className="w-full h-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 resize-none focus:outline-none focus:border-blue-500"
+                  placeholder="Enter notes..."
+                />
+              </div>
               
               {/* Create Report Button */}
               <button className="mt-3 w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
@@ -1194,6 +1255,18 @@ const BaseModal = ({
           </div>
         )}
         
+        {showRaidedOutPrompt && (
+          <RaidedOutPrompt 
+            onConfirm={() => {
+              setShowRaidedOutPrompt(false)
+              setFormData(prev => ({ ...prev, raidedOut: true }))
+            }}
+            onCancel={() => {
+              setShowRaidedOutPrompt(false)
+              setFormData(prev => ({ ...prev, raidedOut: true }))
+            }}
+          />
+        )}
       </div>
     </div>
   )
