@@ -1640,9 +1640,8 @@ export default function InteractiveTacticalMap() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto mt-20 px-4">
+      <div className="pt-20 px-4">
 
-        <div className="relative">
           <div 
             ref={mapRef}
             className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 rounded-3xl shadow-2xl overflow-hidden cursor-default select-none"
