@@ -1534,7 +1534,7 @@ export default function InteractiveTacticalMap() {
   }, [setLocationTimers])
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-4 font-mono">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black font-mono">
 
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
@@ -1640,7 +1640,7 @@ export default function InteractiveTacticalMap() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto mt-20">
+      <div className="max-w-6xl mx-auto mt-20 px-4">
 
         <div className="relative">
           <div 
