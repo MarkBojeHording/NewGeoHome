@@ -100,7 +100,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteReport(id: number): Promise<boolean> {
     const result = await db.delete(reports).where(eq(reports.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Template management methods
@@ -141,7 +141,7 @@ export class DatabaseStorage implements IStorage {
 
   async deletePremiumPlayer(id: number): Promise<boolean> {
     const result = await db.delete(premiumPlayers).where(eq(premiumPlayers.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Player base tagging methods
@@ -167,12 +167,12 @@ export class DatabaseStorage implements IStorage {
 
   async deletePlayerBaseTag(id: number): Promise<boolean> {
     const result = await db.delete(playerBaseTags).where(eq(playerBaseTags.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   async deletePlayerBaseTagsByBaseId(baseId: string): Promise<boolean> {
     const result = await db.delete(playerBaseTags).where(eq(playerBaseTags.baseId, baseId));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Note: Regular player methods removed - using external API instead
