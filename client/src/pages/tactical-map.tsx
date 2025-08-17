@@ -1830,6 +1830,7 @@ export default function InteractiveTacticalMap() {
           onClose={() => setShowLogsModal(false)}
         />
       </div>
+      </div>
     </div>
   )
 }
