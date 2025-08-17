@@ -877,8 +877,8 @@ const BaseModal = ({
                           outcome === 'neutral' ? 'border-l border-r border-gray-600' : ''
                         } ${
                           formData.reportOutcome === outcome 
-                            ? outcome === 'won' ? 'bg-orange-600 text-white' : outcome === 'lost' ? 'bg-orange-800 text-white' : 'bg-gray-700 text-white'
-                            : outcome === 'won' ? 'bg-gray-800 text-orange-300 hover:bg-gray-700' : outcome === 'lost' ? 'bg-gray-800 text-orange-400 hover:bg-gray-700' : 'bg-gray-800 text-orange-400 hover:bg-gray-700'
+                            ? outcome === 'won' ? 'bg-green-500 text-white' : outcome === 'lost' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'
+                            : outcome === 'won' ? 'bg-gray-700 text-green-400 hover:bg-gray-600' : outcome === 'lost' ? 'bg-gray-700 text-red-400 hover:bg-gray-600' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
                         }`}
                       >
                         {outcome === 'won' ? (
