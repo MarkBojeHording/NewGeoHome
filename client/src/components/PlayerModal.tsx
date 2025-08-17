@@ -276,11 +276,11 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                       <div className="text-gray-400">Loading...</div>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-0">
                       {sessionHistory.map((session: any) => (
                         <div
                           key={session.id}
-                          className="bg-gray-700 rounded-lg px-3 py-2 border border-gray-600"
+                          className="bg-gray-700 px-3 py-2 border-b border-gray-600"
                           data-testid={`session-${session.id}`}
                         >
                           <div className="flex justify-between items-center text-xs whitespace-nowrap">
