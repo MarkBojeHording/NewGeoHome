@@ -121,11 +121,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create new report
   app.post("/api/reports", async (req, res) => {
     try {
-      console.log("Raw request body:", JSON.stringify(req.body, null, 2));
       const validatedData = insertReportSchema.parse(req.body);
-      console.log("Validated data:", JSON.stringify(validatedData, null, 2));
       const report = await storage.createReport(validatedData);
-      console.log("Created report:", JSON.stringify(report, null, 2));
       res.status(201).json(report);
     } catch (error) {
       console.error("Error creating report:", error);
