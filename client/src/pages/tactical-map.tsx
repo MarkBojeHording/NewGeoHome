@@ -1371,6 +1371,13 @@ export default function InteractiveTacticalMap() {
   const handleAddBase = useCallback((type) => {
     setContextMenu(prev => ({ ...prev, visible: false }))
     setEditingLocation(null)
+    
+    if (type === 'report') {
+      console.log("Opening general report modal")
+      setShowGeneralReportModal(true)
+      return
+    }
+
     setEditingReport(null)
     // Clear any stale base report data
     setBaseReportData({
