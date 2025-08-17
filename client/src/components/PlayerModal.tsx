@@ -6,129 +6,38 @@ import { Search, User, Plus } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import type { ExternalPlayer } from '@shared/schema';
+import { ReportPreview } from './ReportPreview';
 
 interface PlayerModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Component to fetch and display reports for a specific player
+// Component to fetch and display reports for a specific player using centralized API
 const PlayerReportsContent = ({ playerName }: { playerName: string | null }) => {
   const { data: reports = [], isLoading } = useQuery({
-    queryKey: ['/api/reports']
+    queryKey: ['/api/reports/player', playerName],
+    enabled: !!playerName
   })
-
-  // Filter reports where this player appears in enemy or friendly player lists
-  const playerReports = reports.filter(report => {
-    if (!playerName) return false
-    const content = report.content || {}
-    
-    // Handle comma-separated string format (as used by PlayerSearchSelector)
-    const enemyPlayers = content.enemyPlayers || ''
-    const friendlyPlayers = content.friendlyPlayers || ''
-    
-    // Convert strings to arrays for easier searching
-    const enemyPlayersList = typeof enemyPlayers === 'string' 
-      ? enemyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0)
-      : Array.isArray(enemyPlayers) ? enemyPlayers : []
-      
-    const friendlyPlayersList = typeof friendlyPlayers === 'string'
-      ? friendlyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0) 
-      : Array.isArray(friendlyPlayers) ? friendlyPlayers : []
-    
-    // Check if player name appears in either list
-    const isInEnemyPlayers = enemyPlayersList.includes(playerName)
-    const isInFriendlyPlayers = friendlyPlayersList.includes(playerName)
-    
-    // Debug logging (remove this later)
-    if (playerName === 'timtom') {
-      console.log('Report filtering for timtom:', {
-        reportId: report.id,
-        enemyPlayers,
-        friendlyPlayers,
-        enemyPlayersList,
-        friendlyPlayersList,
-        isInEnemyPlayers,
-        isInFriendlyPlayers
-      })
-    }
-    
-    return isInEnemyPlayers || isInFriendlyPlayers
-  })
-
-  // Report type labels mapping
-  const FULL_CATEGORY_NAMES = {
-    'general': 'General Report',
-    'base': 'Base Report', 
-    'raid': 'Raid Report',
-    'pvp': 'PvP Encounter',
-    'resource': 'Resource Report',
-    'intel': 'Intelligence Report'
-  }
 
   if (isLoading) {
-    return <div className="text-gray-400 text-sm">Loading reports...</div>
+    return <div className="text-center py-4">Loading reports...</div>
   }
 
-  if (playerReports.length === 0) {
-    return <div className="text-gray-400 text-sm italic">No reports for this player yet.</div>
+  if (reports.length === 0) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        <p>No reports found for this player</p>
+        <p className="text-sm mt-1">Reports will appear here when this player is tagged in reports</p>
+      </div>
+    )
   }
 
   return (
-    <div className="flex-1 overflow-y-auto space-y-3">
-      {playerReports.map((report) => {
-        const content = report.content || {}
-        const hasCamera = content.camera && content.camera.trim() !== ''
-        const hasNotes = content.notes && content.notes.trim() !== ''
-        
-        return (
-          <div key={report.id} className="bg-gray-900 rounded-lg p-3 border border-gray-700">
-            <div className="flex justify-between items-start mb-2">
-              <h4 className="text-white font-medium text-sm">
-                {FULL_CATEGORY_NAMES[content.type] || content.type}
-              </h4>
-              <span className="text-gray-400 text-xs">
-                {content.reportTime || 'No time'}
-              </span>
-            </div>
-            
-            {/* Report ID */}
-            <div className="text-blue-400 text-xs mb-1">
-              {report.id ? `R${report.id.toString().padStart(6, '0')}` : 'No ID'}
-            </div>
-            
-            {/* Location info */}
-            {content.baseCoords && (
-              <div className="text-gray-400 text-xs mb-1">
-                Location: {content.baseCoords}
-              </div>
-            )}
-            
-            {/* Content indicators */}
-            <div className="flex gap-2 mt-2">
-              {hasCamera && (
-                <span className="text-xs bg-blue-600 text-blue-200 px-2 py-0.5 rounded">
-                  Camera
-                </span>
-              )}
-              {hasNotes && (
-                <span className="text-xs bg-green-600 text-green-200 px-2 py-0.5 rounded">
-                  Notes
-                </span>
-              )}
-              {content.reportOutcome && (
-                <span className={`text-xs px-2 py-0.5 rounded ${
-                  content.reportOutcome === 'won' ? 'bg-green-600 text-green-200' :
-                  content.reportOutcome === 'lost' ? 'bg-red-600 text-red-200' :
-                  'bg-gray-600 text-gray-200'
-                }`}>
-                  {content.reportOutcome.charAt(0).toUpperCase() + content.reportOutcome.slice(1)}
-                </span>
-              )}
-            </div>
-          </div>
-        )
-      })}
+    <div className="space-y-2">
+      {reports.map((report) => (
+        <ReportPreview key={report.id} report={report} />
+      ))}
     </div>
   )
 }

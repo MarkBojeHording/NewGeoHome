@@ -45,8 +45,8 @@ IMPORTANT: Only implement exactly what is requested. Do not create mock/fake dat
 ## Core Features
 - **Interactive Tactical Map**: Features zoom/pan, base placement (friendly/enemy), rocket calculator, timers, location action menus, and report tracking. Includes a 26x26 grid system (A0-Z25) aligned with an authentic Rust game map.
 - **Base Management**: Comprehensive BaseModal for detailed base information, including rocket and ammo calculations, upkeep tracking, base types, and heat map integration for activity visualization. Supports duplicate base naming (e.g., A1, A1(2)).
-- **Reporting System**: Allows creation and display of various reports (e.g., PvP Encounter, Raid Activity), linked to bases via unique IDs. Reports support manual coordinate editing and automatic cascade deletion with base removal.
-- **Player Management System**: A comprehensive modal for tracking players with search, online/offline status, and session history. Includes a premium player system with dual creation methods. Player activity is visualized through a heatmap based on session data.
+- **Centralized Reporting System**: Unified report architecture supporting 3 types (general, base, action) with consistent data model. Reports use proper array-based player and base tagging, replacing old comma-separated strings. Features unified ReportPreview component for consistent display across BaseModal and PlayerModal.
+- **Player Management System**: A comprehensive modal for tracking players with search, online/offline status, and session history. Includes a premium player system with dual creation methods. Player activity is visualized through a heatmap based on session data. Now features player-specific report filtering using centralized API.
 - **Base Grouping & Visualization**: Implements player-based and proximity-based grouping of bases, displaying colored rings and connection lines between main and subordinate bases.
 - **User Interface Enhancements**: Features a consistent design with Shadcn/ui, optimized layouts, and visual indicators for various functionalities (e.g., player count circles, content indicators).
 

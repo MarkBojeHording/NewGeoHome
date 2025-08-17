@@ -17,20 +17,20 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
-// Reports table for central storage
+// Centralized reports table for all report types
 export const reports = pgTable("reports", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  title: text("title").notNull(),
-  reportType: text("report_type").notNull(), // 'general', 'base', 'raid', etc.
-  locationName: text("location_name"), // Associated location/base name
-  locationCoords: text("location_coords"), // Grid coordinates like "A1"
-  baseId: text("base_id"), // Unique base identifier for reliable linking
-  content: jsonb("content").notNull(), // Flexible JSON structure for different report types
-  tags: text("tags").array(), // Array of tags for categorization
-  priority: text("priority").default("medium"), // low, medium, high, critical
-  status: text("status").default("active"), // active, completed, archived
+  type: text("type").notNull(), // "general" | "base" | "action"
+  notes: text("notes").notNull(),
+  outcome: text("outcome").notNull(), // "good" | "neutral" | "bad"
+  playerTags: text("player_tags").array().default([]), // Array of player IDs
+  baseTags: text("base_tags").array().default([]), // Array of base IDs (only for base reports)
+  screenshots: text("screenshots").array().default([]), // Array of image URLs
+  location: jsonb("location").notNull(), // {gridX: number, gridY: number}
+  createdBy: text("created_by"), // User ID who created the report
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  completedBy: text("completed_by"), // User ID who completed (only for action reports)
+  completedAt: timestamp("completed_at"), // Completion timestamp (only for action reports)
 });
 
 // Standard report templates
@@ -42,7 +42,7 @@ export const reportTemplates = pgTable("report_templates", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertReportSchema = createInsertSchema(reports).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertReportSchema = createInsertSchema(reports).omit({ id: true, createdAt: true, completedAt: true });
 export const selectReportSchema = createInsertSchema(reports);
 export type InsertReport = z.infer<typeof insertReportSchema>;
 export type Report = typeof reports.$inferSelect;

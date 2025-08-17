@@ -9,12 +9,13 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
-  // Report management methods
+  // Centralized report management methods
   createReport(report: InsertReport): Promise<Report>;
   getReport(id: number): Promise<Report | undefined>;
   getAllReports(): Promise<Report[]>;
-  getReportsByType(reportType: string): Promise<Report[]>;
-  getReportsByLocation(locationName: string): Promise<Report[]>;
+  getReportsByType(type: string): Promise<Report[]>;
+  getReportsByPlayerTag(playerId: string): Promise<Report[]>;
+  getReportsByBaseTag(baseId: string): Promise<Report[]>;
   updateReport(id: number, report: Partial<InsertReport>): Promise<Report>;
   deleteReport(id: number): Promise<boolean>;
   
@@ -42,7 +43,7 @@ export interface IStorage {
 
 import { db } from "./db";
 import { users, reports, reportTemplates, premiumPlayers, playerBaseTags } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
@@ -81,18 +82,24 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(reports);
   }
 
-  async getReportsByType(reportType: string): Promise<Report[]> {
-    return await db.select().from(reports).where(eq(reports.reportType, reportType));
+  async getReportsByType(type: string): Promise<Report[]> {
+    return await db.select().from(reports).where(eq(reports.type, type));
   }
 
-  async getReportsByLocation(locationName: string): Promise<Report[]> {
-    return await db.select().from(reports).where(eq(reports.locationName, locationName));
+  async getReportsByPlayerTag(playerId: string): Promise<Report[]> {
+    const playerReports = await db.select().from(reports).where(sql`${reports.playerTags} @> ARRAY[${playerId}]`);
+    return playerReports;
+  }
+
+  async getReportsByBaseTag(baseId: string): Promise<Report[]> {
+    const baseReports = await db.select().from(reports).where(sql`${reports.baseTags} @> ARRAY[${baseId}]`);
+    return baseReports;
   }
 
   async updateReport(id: number, report: Partial<InsertReport>): Promise<Report> {
     const [updatedReport] = await db
       .update(reports)
-      .set({ ...report, updatedAt: new Date() })
+      .set(report)
       .where(eq(reports.id, id))
       .returning();
     return updatedReport;

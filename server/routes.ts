@@ -89,14 +89,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get reports by location
-  app.get("/api/reports/location/:location", async (req, res) => {
+  // Get reports by player tag
+  app.get("/api/reports/player/:playerId", async (req, res) => {
     try {
-      const { location } = req.params;
-      const reports = await storage.getReportsByLocation(location);
+      const { playerId } = req.params;
+      const reports = await storage.getReportsByPlayerTag(playerId);
       res.json(reports);
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch reports by location" });
+      res.status(500).json({ error: "Failed to fetch reports by player" });
+    }
+  });
+
+  // Get reports by base tag
+  app.get("/api/reports/base/:baseId", async (req, res) => {
+    try {
+      const { baseId } = req.params;
+      const reports = await storage.getReportsByBaseTag(baseId);
+      res.json(reports);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch reports by base" });
     }
   });
 
