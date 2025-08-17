@@ -1785,6 +1785,7 @@ export default function InteractiveTacticalMap() {
             />
           )}
         </div>
+      </div>
 
         {contextMenu.visible && (
           <ContextMenu 
