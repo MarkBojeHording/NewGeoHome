@@ -1512,11 +1512,11 @@ export default function InteractiveTacticalMap() {
   }, [setLocationTimers])
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-700 to-gray-900 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-4 font-mono">
       {/* Top Toolbar */}
       <div className="absolute top-4 left-4 right-4 z-30 flex justify-between items-center pointer-events-none">
-        <div className="text-white text-sm font-medium pointer-events-auto">
-          Tactical Map
+        <div className="text-orange-400 text-sm font-bold pointer-events-auto tracking-wider">
+          [TACTICAL OPERATIONS]
         </div>
 
       </div>
@@ -1593,9 +1593,9 @@ export default function InteractiveTacticalMap() {
       
       <div className="max-w-6xl mx-auto">
         <div className="mb-6">
-          <div className="bg-gradient-to-b from-gray-600 to-gray-800 rounded-lg shadow-2xl border border-gray-700 overflow-hidden">
-            <div className="bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 p-1">
-              <div className="bg-gradient-to-b from-gray-500 to-gray-700 p-3">
+          <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-900/30 via-gray-800 to-orange-900/30 p-1">
+              <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     {['Logs', 'Progression', 'Players', 'Teams', 'Bot Control', 'Turret Control'].map((btn) => (
@@ -1606,19 +1606,19 @@ export default function InteractiveTacticalMap() {
                           else if (btn === 'Logs') setShowLogsModal(true)
                         }} 
                         data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
-                        className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl"
+                        className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
                       >
-                        {btn}
+                        [{btn.toUpperCase()}]
                       </button>
                     ))}
                   </div>
-                  <button className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl">
-                    Menu
+                  <button className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide">
+                    [MENU]
                   </button>
                 </div>
               </div>
             </div>
-            <div className="h-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent opacity-50"></div>
+            <div className="h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-70"></div>
           </div>
         </div>
 
