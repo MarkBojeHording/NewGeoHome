@@ -34,7 +34,7 @@ const PlayerReportsContent = ({ playerName }: { playerName: string | null }) => 
   }
 
   return (
-    <div className="space-y-2">
+    <div className="border">
       {reports.map((report) => (
         <ReportPreview key={report.id} report={report} />
       ))}

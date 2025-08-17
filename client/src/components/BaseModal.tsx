@@ -116,7 +116,7 @@ const BaseReportsContent = ({ baseId, onOpenReport }) => {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="border">
       {reports.map((report) => (
         <ReportPreview 
           key={report.id} 
