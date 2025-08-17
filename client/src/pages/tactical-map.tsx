@@ -1429,6 +1429,20 @@ export default function InteractiveTacticalMap() {
           console.log('Report saved successfully')
           // Refresh reports in any open logs modal
           queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
+          
+          // Create a visual marker on the map for this report
+          const reportMarker = {
+            id: `report-${Date.now()}`,
+            name: getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null),
+            x: newBaseModal.x,
+            y: newBaseModal.y,
+            type: baseData.type,
+            notes: baseData.notes,
+            outcome: baseData.outcome,
+            time: new Date().toLocaleTimeString(),
+            isReportMarker: true // Flag to distinguish from regular bases
+          }
+          setLocations(prev => [...prev, reportMarker])
         } else {
           console.error('Failed to save report:', await response.text())
         }
