@@ -1315,7 +1315,7 @@ export default function InteractiveTacticalMap() {
 
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
-  const { zoom, setZoom, pan, isDragging, setIsDragging, isDraggingRef, dragStartRef, hasDraggedRef } = useMapInteraction()
+  const { zoom, setZoom, pan, setPan, isDragging, setIsDragging, isDraggingRef, dragStartRef, hasDraggedRef } = useMapInteraction()
   
   // Handle BaseModal report events
   useBaseReportEvents(setBaseReportData, setShowBaseReportModal)
