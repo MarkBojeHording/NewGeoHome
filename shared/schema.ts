@@ -17,16 +17,31 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
-// Reports table for central storage
+// Centralized Reports table for all report types
 export const reports = pgTable("reports", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   title: text("title").notNull(),
-  reportType: text("report_type").notNull(), // 'general', 'base', 'raid', etc.
+  reportType: text("report_type").notNull(), // 'general', 'base', 'action'
+  reportSubType: text("report_sub_type"), // 'pvp-general', 'spotted-enemy', 'raid-counter', etc.
   locationName: text("location_name"), // Associated location/base name
   locationCoords: text("location_coords"), // Grid coordinates like "A1"
   baseId: text("base_id"), // Unique base identifier for reliable linking
-  content: jsonb("content").notNull(), // Flexible JSON structure for different report types
-  tags: text("tags").array(), // Array of tags for categorization
+  notes: text("notes"), // Main text content from notes field
+  outcome: text("outcome"), // 'good', 'neutral', 'bad' for event reports
+  
+  // Tagging system for different entity types
+  playerTags: text("player_tags").array().default(sql`'{}'`), // Players involved in report
+  baseTags: text("base_tags").array().default(sql`'{}'`), // Bases associated with report
+  userTags: text("user_tags").array().default(sql`'{}'`), // Users who created/completed (for action reports)
+  
+  // Media support
+  screenshots: text("screenshots").array().default(sql`'{}'`), // Array of screenshot file paths
+  hasMedia: boolean("has_media").default(false), // Quick check for media presence
+  
+  // Legacy support and flexible content
+  content: jsonb("content"), // Flexible JSON for type-specific data
+  tags: text("tags").array(), // Legacy tags field
+  
   priority: text("priority").default("medium"), // low, medium, high, critical
   status: text("status").default("active"), // active, completed, archived
   createdAt: timestamp("created_at").defaultNow(),

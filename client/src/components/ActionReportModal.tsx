@@ -86,20 +86,36 @@ export default function ActionReportModal({
   const handleSave = () => {
     if (createReportMutation.isPending) return // Prevent multiple submissions
     
+    // Convert comma-separated player strings to arrays for tags
+    const enemyPlayersList = formData.enemyPlayers 
+      ? formData.enemyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0)
+      : []
+    const friendlyPlayersList = formData.friendlyPlayers 
+      ? formData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p.length > 0)
+      : []
+    
+    // Combine all players for playerTags array
+    const allPlayers = [...enemyPlayersList, ...friendlyPlayersList]
+    
     const reportData = {
       title: `${formData.type.replace('report-', '')} Report`,
-      reportType: "base",
+      reportType: formData.type, // Use the new centralized reportType field
       locationName: baseName || baseCoords || "",
       locationCoords: baseCoords || "",
-      baseId: baseId || "", // Link to specific base ID
+      notes: formData.notes,
+      playerTags: allPlayers, // New centralized player tagging
+      baseTags: baseId ? [baseId] : [], // Tag the base this report is about
+      userTags: [], // Action reports can tag users who created/completed them
+      screenshots: [], // Empty array for now, can be expanded later
       content: {
+        // Keep legacy content for backward compatibility
         type: formData.type,
         reportTime: formData.reportTime,
         enemyPlayers: formData.enemyPlayers,
         friendlyPlayers: formData.friendlyPlayers,
         notes: formData.notes,
         reportOutcome: formData.reportOutcome,
-        baseId: baseId || "", // Also store in content for backup
+        baseId: baseId || "",
         baseName: baseName || "",
         baseCoords: baseCoords || ""
       },
