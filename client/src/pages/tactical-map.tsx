@@ -1354,7 +1354,6 @@ export default function InteractiveTacticalMap() {
   const handleAddBase = useCallback((type) => {
     setContextMenu(prev => ({ ...prev, visible: false }))
     setEditingLocation(null)
-    setEditingReport(null)
     // Clear any stale base report data
     setBaseReportData({
       baseId: null,
@@ -1435,7 +1434,6 @@ export default function InteractiveTacticalMap() {
       
       setNewBaseModal(prev => ({ ...prev, visible: false }))
       setEditingLocation(null)
-      setEditingReport(null)
       return
     }
     
@@ -1459,13 +1457,11 @@ export default function InteractiveTacticalMap() {
     
     setNewBaseModal(prev => ({ ...prev, visible: false }))
     setEditingLocation(null)
-    setEditingReport(null)
   }, [editingLocation, newBaseModal, locations, modalType, queryClient])
   
   const handleCancel = useCallback(() => {
     setNewBaseModal(prev => ({ ...prev, visible: false }))
     setEditingLocation(null)
-    setEditingReport(null)
     setShowReportPanel(false)
     setShowAdvancedPanel(false)
   }, [])
