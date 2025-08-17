@@ -886,14 +886,14 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
   
   return (
     <div 
-      className="absolute bottom-0 left-0 bg-gray-900 bg-opacity-95 backdrop-blur-sm rounded-tr-lg shadow-2xl p-6 flex gap-5 border-t border-r border-gray-700 z-20 transition-all duration-300 ease-out"
+      className="absolute bottom-0 left-0 bg-gray-900 bg-opacity-95 backdrop-blur-sm rounded-tr-lg shadow-2xl p-6 flex gap-5 border-t border-r border-orange-600/50 z-20 transition-all duration-300 ease-out"
       style={{ width: '30%', minWidth: '350px', maxWidth: '450px', minHeight: '160px' }}
     >
       {!location.type.startsWith('report') && (
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-x-10 flex gap-3">
       {/* Rectangle - smaller size for enemy base preview */}
       <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none z-50">
-        <div className="w-52 h-28 bg-gray-800 border border-gray-600 shadow-lg">
+        <div className="w-52 h-28 bg-gray-800 border border-orange-600/50 shadow-lg">
           {/* Player snapshot grid - 2 columns x 5 rows */}
           <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
             {(() => {
@@ -928,7 +928,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               return slots.map((player, index) => (
                 <div 
                   key={index}
-                  className={`flex items-center justify-center text-xs font-medium border-r border-b border-gray-700 ${
+                  className={`flex items-center justify-center text-xs font-medium border-r border-b border-orange-600/30 ${
                     index % 2 === 1 ? 'border-r-0' : ''
                   } ${
                     index >= 8 ? 'border-b-0' : ''
@@ -954,19 +954,19 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         </div>
       </div>
       
-          <button className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center hover:from-blue-400 hover:to-blue-600 transition-all duration-200 border-2 border-blue-300 shadow-lg transform hover:scale-105" title="Linked Bases">
+          <button className="w-10 h-10 bg-gradient-to-br from-orange-600 to-orange-800 rounded-full flex items-center justify-center hover:from-orange-500 hover:to-orange-700 transition-all duration-200 border-2 border-orange-400 shadow-lg transform hover:scale-105" title="Linked Bases">
             <svg className="h-5 w-5 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          <button className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-700 rounded-full flex items-center justify-center hover:from-green-400 hover:to-green-600 transition-all duration-200 border-2 border-green-300 shadow-lg transform hover:scale-105" title="Notes" onClick={() => onEdit(location)}>
+          <button className="w-10 h-10 bg-gradient-to-br from-orange-700 to-orange-900 rounded-full flex items-center justify-center hover:from-orange-600 hover:to-orange-800 transition-all duration-200 border-2 border-orange-500 shadow-lg transform hover:scale-105" title="Notes" onClick={() => onEdit(location)}>
             <svg className="h-5 w-5 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none">
               <path d="M4 4v16c0 1.1.9 2 2 2h10l4-4V6c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2z" fill="white" stroke="white" strokeWidth="1"/>
               <path d="M16 18v-4h4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          <button className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center hover:from-purple-400 hover:to-purple-600 transition-all duration-200 border-2 border-purple-300 shadow-lg transform hover:scale-105" title="Help">
+          <button className="w-10 h-10 bg-gradient-to-br from-orange-800 to-orange-900 rounded-full flex items-center justify-center hover:from-orange-700 hover:to-orange-800 transition-all duration-200 border-2 border-orange-600 shadow-lg transform hover:scale-105" title="Help">
             <HelpCircle className="h-5 w-5 text-white drop-shadow-sm" />
           </button>
         </div>
@@ -1060,7 +1060,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       )}
       
       <div className="flex-shrink-0 mt-4 relative">
-        <div className="bg-gray-700 rounded-full p-4 shadow-xl border-2 border-gray-600">
+        <div className="bg-gray-800 rounded-full p-4 shadow-xl border-2 border-orange-600/50">
           <div className={getColor(location.type, location)}>
             <div className="transform scale-125">
               {getLargeIcon(location.type)}
@@ -1146,13 +1146,13 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         </div>
 
         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-          <span className="text-sm text-gray-300 font-medium bg-gray-800 bg-opacity-80 px-3 py-1 rounded shadow-md whitespace-nowrap">
-            {LABELS[location.type] || location.type}
+          <span className="text-sm text-orange-300 font-medium bg-gray-900 bg-opacity-90 px-3 py-1 rounded shadow-md whitespace-nowrap font-mono border border-orange-600/40">
+            [{LABELS[location.type] || location.type}]
           </span>
         </div>
       </div>
       
-      <div className="flex-1 text-white pr-12 mt-2">
+      <div className="flex-1 text-orange-200 pr-12 mt-2 font-mono">
         <div className="mt-8 flex flex-col gap-2">
           {location.type.startsWith('report') && location.time && (
             <div className="text-sm text-gray-400">
@@ -1161,7 +1161,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           )}
           {location.primaryRockets && location.primaryRockets > 0 && !location.type.startsWith('friendly') && !location.type.startsWith('report') && (
             <div className="text-sm text-gray-400">
-              <span className="text-red-400 font-medium">Rockets Required: {location.primaryRockets}</span>
+              <span className="text-orange-400 font-medium">[ROCKETS: {location.primaryRockets}]</span>
             </div>
           )}
           {location.enemyPlayers && location.type.startsWith('report') && (
@@ -1176,13 +1176,13 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           )}
           {ownedBases.length > 0 && (
             <div className="text-sm text-gray-400">
-              <span className="text-blue-400 font-medium">Owns {ownedBases.length} base{ownedBases.length > 1 ? 's' : ''}:</span>
+              <span className="text-orange-400 font-medium">[OWNS {ownedBases.length} BASE{ownedBases.length > 1 ? 'S' : ''}]:</span>
               <div className="mt-1 ml-2">
                 {ownedBases.map((base, index) => (
                   <button
                     key={index}
                     onClick={() => onSelectLocation(base)}
-                    className="text-xs text-gray-500 hover:text-blue-400 text-left transition-colors block"
+                    className="text-xs text-orange-400 hover:text-orange-300 text-left transition-colors block"
                   >
                     • {base.name} ({LABELS[base.type].replace('Friendly ', '').replace('Main ', '')})
                   </button>
