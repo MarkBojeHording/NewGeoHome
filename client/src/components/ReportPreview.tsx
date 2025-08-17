@@ -38,8 +38,8 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
   const gridReference = location ? `${String.fromCharCode(65 + location.gridX)}${location.gridY}` : 'Unknown'
 
   return (
-    <div className="flex items-center justify-between p-2 border-b border-orange-500/40 hover:bg-orange-900/40 transition-colors bg-gradient-to-r from-gray-800 to-orange-950/20">
-      <div className="flex items-center gap-2 flex-1 min-w-0">
+    <div className="flex items-center justify-between p-1 border-b border-orange-500/40 hover:bg-orange-900/40 transition-colors bg-gradient-to-r from-gray-800 to-orange-950/20">
+      <div className="flex items-center gap-1 flex-1 min-w-0">
         {/* Report Type & ID */}
         <div className="flex flex-col min-w-0">
           <span className="font-mono text-xs text-orange-400 font-bold">[{getReportTypeLabel(report.type).toUpperCase()}]</span>
