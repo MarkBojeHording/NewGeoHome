@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { useQuery } from "@tanstack/react-query"
 import { Search, FileText, Filter, X } from "lucide-react"
 import ReportPreview from "./ReportPreview"
+import type { Report } from "@shared/schema"
 
 interface LogsModalProps {
   isOpen: boolean
@@ -17,19 +18,19 @@ export default function LogsModal({ isOpen, onClose }: LogsModalProps) {
   const [filterType, setFilterType] = useState('all') // all, general, base, action
 
   // Fetch all reports for diagnosis
-  const { data: allReports = [], isLoading } = useQuery({
+  const { data: allReports = [], isLoading } = useQuery<Report[]>({
     queryKey: ['/api/reports']
   })
 
   // Filter reports based on search and type
-  const filteredReports = allReports.filter(report => {
+  const filteredReports = allReports.filter((report: Report) => {
     const matchesSearch = !searchTerm || 
       report.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       report.notes?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       report.locationName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       JSON.stringify(report.content || {}).toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (report.playerTags || []).some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (report.baseTags || []).some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      (report.playerTags || []).some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (report.baseTags || []).some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
 
     const matchesType = filterType === 'all' || report.reportType === filterType
 
@@ -137,7 +138,7 @@ export default function LogsModal({ isOpen, onClose }: LogsModalProps) {
               <div className="bg-gray-800 border border-gray-600 rounded-lg p-3">
                 <h4 className="text-white font-medium mb-3">Raw Report Data (First 3)</h4>
                 <div className="space-y-3 text-xs">
-                  {filteredReports.slice(0, 3).map((report, index) => (
+                  {filteredReports.slice(0, 3).map((report: Report, index: number) => (
                     <div key={report.id} className="bg-gray-700 rounded p-2">
                       <div className="text-white font-medium mb-1">Report #{report.id}</div>
                       <div className="text-gray-300 space-y-1">
