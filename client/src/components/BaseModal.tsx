@@ -500,7 +500,7 @@ const BaseModal = ({
                   reportOutcome: newType === 'report-farming' ? 'lost' : newType === 'report-loaded' ? 'won' : 'neutral'
                 }))
               }} 
-              className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+              className="w-full px-2 py-1.5 bg-gray-800 border border-orange-600/50 rounded-md appearance-none pr-16 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
             >
               <option value="report-pvp">PVP General</option>
               <option value="report-spotted">Spotted Enemy</option>
@@ -512,10 +512,10 @@ const BaseModal = ({
               <option value="report-raid">Countered Raid</option>
             </select>
             <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-              <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+              <div className={`${getColor(formData.type)} bg-gray-800 rounded p-0.5 border border-orange-600/50`}>
                 {getIcon(formData.type)}
               </div>
-              <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-3 w-3 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>
@@ -526,7 +526,7 @@ const BaseModal = ({
             type="time" 
             value={formData.reportTime} 
             onChange={(e) => setFormData(prev => ({ ...prev, reportTime: e.target.value }))} 
-            className="px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md text-gray-200 focus:border-blue-500 focus:outline-none" 
+            className="px-2 py-1.5 bg-gray-800 border border-orange-600/50 rounded-md text-orange-200 focus:border-orange-500 focus:outline-none font-mono" 
           />
         </div>
       </div>
@@ -534,9 +534,9 @@ const BaseModal = ({
       {/* Enemy and Friendly Player Containers */}
       <div className="flex gap-3 mb-4" style={{ height: '200px' }}>
         {/* Enemy Players */}
-        <div className="flex-1 bg-gray-900 border border-red-500 rounded p-3 flex flex-col relative">
-          <h4 className="absolute top-1 left-1 text-red-400 font-semibold text-xs z-10">Enemy Players</h4>
-          <div className="flex-1 border border-gray-600 rounded bg-gray-700 mt-4">
+        <div className="flex-1 bg-gray-900 border border-orange-600/60 rounded p-3 flex flex-col relative">
+          <h4 className="absolute top-1 left-1 text-orange-400 font-semibold text-xs z-10 font-mono tracking-wide">[ENEMY PLAYERS]</h4>
+          <div className="flex-1 border border-orange-600/40 rounded bg-gray-800 mt-4">
             <PlayerSearchSelector 
               selectedPlayers={formData.enemyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
@@ -546,9 +546,9 @@ const BaseModal = ({
         </div>
         
         {/* Friendly Players */}
-        <div className="flex-1 bg-gray-900 border border-green-500 rounded p-3 flex flex-col relative">
-          <h4 className="absolute top-1 left-1 text-green-400 font-semibold text-xs z-10">Friendly Players</h4>
-          <div className="flex-1 border border-gray-600 rounded bg-gray-700 mt-4">
+        <div className="flex-1 bg-gray-900 border border-orange-500/50 rounded p-3 flex flex-col relative">
+          <h4 className="absolute top-1 left-1 text-orange-300 font-semibold text-xs z-10 font-mono tracking-wide">[FRIENDLY PLAYERS]</h4>
+          <div className="flex-1 border border-orange-600/30 rounded bg-gray-800 mt-4">
             <PlayerSearchSelector 
               selectedPlayers={formData.friendlyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, friendlyPlayers: players }))}
@@ -562,8 +562,8 @@ const BaseModal = ({
         <textarea 
           value={formData.notes} 
           onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
-          className="w-full h-20 px-2 py-1 bg-gray-800 border border-gray-600 rounded text-xs text-gray-200 placeholder-gray-500 resize-none focus:outline-none focus:border-blue-500"
-          placeholder="Add notes..."
+          className="w-full h-20 px-2 py-1 bg-gray-800 border border-orange-600/50 rounded text-xs text-orange-200 placeholder-orange-500/60 resize-none focus:outline-none focus:border-orange-500 font-mono"
+          placeholder="[add notes...]"
         />
       )}
 
@@ -573,7 +573,7 @@ const BaseModal = ({
   const renderBaseModal = () => (
     <div className="grid grid-cols-5 gap-4">
       <div className="col-span-2 flex flex-col">
-        <label className="block text-sm font-medium mb-1 text-gray-200">Base Type</label>
+        <label className="block text-sm font-medium mb-1 text-orange-200 font-mono tracking-wide">[BASE TYPE]</label>
         <div className="relative mb-3">
           <select 
             value={formData.type} 
@@ -585,7 +585,7 @@ const BaseModal = ({
                 ownerCoordinates: (newType !== 'enemy-farm' && newType !== 'enemy-flank' && newType !== 'enemy-tower') ? '' : prev.ownerCoordinates
               }))
             }} 
-            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md appearance-none pr-16 text-gray-200 focus:border-blue-500 focus:outline-none"
+            className="w-full px-2 py-1.5 bg-gray-800 border border-orange-600/50 rounded-md appearance-none pr-16 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
           >
             {modalType === 'friendly' && (
               <>
@@ -609,10 +609,10 @@ const BaseModal = ({
             )}
           </select>
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
-            <div className={`${getColor(formData.type)} bg-gray-700 rounded p-0.5 border border-gray-600`}>
+            <div className={`${getColor(formData.type)} bg-gray-800 rounded p-0.5 border border-orange-600/50`}>
               {getIcon(formData.type)}
             </div>
-            <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-3 w-3 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
@@ -629,8 +629,8 @@ const BaseModal = ({
           />
         )}
         
-        <label className="block text-sm font-medium mb-1 text-gray-200">Base owners</label>
-        <div className="border border-gray-600 rounded-md bg-gray-700 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
+        <label className="block text-sm font-medium mb-1 text-orange-200 font-mono tracking-wide">[BASE OWNERS]</label>
+        <div className="border border-orange-600/50 rounded-md bg-gray-800 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
           <PlayerSearchSelector 
             selectedPlayers={formData.players}
             onPlayersChange={(players) => setFormData(prev => ({ ...prev, players }))}
@@ -641,12 +641,12 @@ const BaseModal = ({
 
       <div className="col-span-3">
         {modalType === 'friendly' && (
-          <div className="border border-gray-600 rounded-lg p-3 bg-gray-700 mb-3">
-            <label className="block text-sm font-medium mb-1 text-gray-300">Upkeep Tracker</label>
+          <div className="border border-orange-600/50 rounded-lg p-3 bg-gray-800 mb-3">
+            <label className="block text-sm font-medium mb-1 text-orange-300 font-mono tracking-wide">[UPKEEP TRACKER]</label>
             <div className="space-y-2">
               {['wood', 'stone', 'metal', 'hqm'].map((resource) => (
                 <div key={resource} className="flex items-center gap-3">
-                  <label className="text-xs font-medium text-gray-400 w-12 capitalize">{resource.toUpperCase()}</label>
+                  <label className="text-xs font-medium text-orange-400 w-12 capitalize font-mono">[{resource.toUpperCase()}]</label>
                   <input 
                     type="number" 
                     value={formData.upkeep[resource]} 
@@ -654,7 +654,7 @@ const BaseModal = ({
                       ...prev, 
                       upkeep: { ...prev.upkeep, [resource]: Math.max(0, Math.min(999999, Number(e.target.value))) }
                     }))} 
-                    className="flex-1 px-1.5 py-0.5 bg-gray-600 border border-gray-500 rounded text-sm text-gray-200 focus:border-blue-500 focus:outline-none" 
+                    className="flex-1 px-1.5 py-0.5 bg-gray-900 border border-orange-600/40 rounded text-sm text-orange-200 focus:border-orange-500 focus:outline-none font-mono" 
                     min="0"
                     max="999999"
                     style={{maxWidth: '100px'}}
@@ -666,14 +666,14 @@ const BaseModal = ({
         )}
         
         {modalType === 'enemy' && (
-          <div className="border border-gray-600 rounded-lg bg-gray-700 mb-3 relative">
-            <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Heat Map</label>
+          <div className="border border-orange-600/50 rounded-lg bg-gray-800 mb-3 relative">
+            <label className="absolute top-0 left-0 text-xs font-medium text-orange-300 pl-0.5 font-mono tracking-wide">[HEAT MAP]</label>
             <div className="p-2 pt-3">
               <div className="flex gap-1">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                   <div key={day} className="flex-1">
-                    <div className="text-[10px] text-gray-400 text-center">{day}</div>
-                    <div className="bg-gray-800 rounded" style={{height: '160px', position: 'relative'}}>
+                    <div className="text-[10px] text-orange-400 text-center font-mono">[{day.substring(0,2)}]</div>
+                    <div className="bg-gray-900 border border-orange-600/30 rounded" style={{height: '160px', position: 'relative'}}>
                     </div>
                   </div>
                 ))}
@@ -683,12 +683,12 @@ const BaseModal = ({
         )}
         
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-200">Notes</label>
+          <label className="block text-sm font-medium mb-1 text-orange-200 font-mono tracking-wide">[NOTES]</label>
           <textarea 
             value={formData.notes} 
             onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))} 
-            className="w-full px-2 py-1.5 bg-gray-700 border border-gray-600 rounded-md resize-none text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none" 
-            placeholder="Add notes..." 
+            className="w-full px-2 py-1.5 bg-gray-800 border border-orange-600/50 rounded-md resize-none text-orange-200 placeholder-orange-500/60 focus:border-orange-500 focus:outline-none font-mono" 
+            placeholder="[add notes...]" 
             style={{height: modalType === 'friendly' ? '190px' : modalType === 'enemy' ? '120px' : '340px', resize: 'none'}} 
           />
         </div>
@@ -860,10 +860,10 @@ const BaseModal = ({
                       e.stopPropagation()
                       onCancel()
                     }} 
-                    className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+                    className="bg-gray-800 text-orange-200 py-1.5 px-3 rounded-md hover:bg-gray-700 transition-colors font-medium text-sm cursor-pointer border border-orange-600/40 font-mono"
                     type="button"
                   >
-                    Cancel
+                    [CANCEL]
                   </button>
                   <div className="flex-1"></div>
                   
@@ -877,8 +877,8 @@ const BaseModal = ({
                           outcome === 'neutral' ? 'border-l border-r border-gray-600' : ''
                         } ${
                           formData.reportOutcome === outcome 
-                            ? outcome === 'won' ? 'bg-green-500 text-white' : outcome === 'lost' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'
-                            : outcome === 'won' ? 'bg-gray-700 text-green-400 hover:bg-gray-600' : outcome === 'lost' ? 'bg-gray-700 text-red-400 hover:bg-gray-600' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                            ? outcome === 'won' ? 'bg-orange-600 text-white' : outcome === 'lost' ? 'bg-orange-800 text-white' : 'bg-gray-700 text-white'
+                            : outcome === 'won' ? 'bg-gray-800 text-orange-300 hover:bg-gray-700' : outcome === 'lost' ? 'bg-gray-800 text-orange-400 hover:bg-gray-700' : 'bg-gray-800 text-orange-400 hover:bg-gray-700'
                         }`}
                       >
                         {outcome === 'won' ? (
@@ -897,10 +897,10 @@ const BaseModal = ({
                   </div>
                   
                   <button 
-                    className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+                    className="bg-gray-800 text-orange-200 py-1.5 px-3 rounded-md hover:bg-gray-700 transition-colors font-medium text-sm cursor-pointer border border-orange-600/40 font-mono"
                     type="button"
                   >
-                    Advanced
+                    [ADVANCED]
                   </button>
                   <button 
                     onClick={(e) => {
@@ -908,10 +908,10 @@ const BaseModal = ({
                       e.stopPropagation()
                       handleSave()
                     }} 
-                    className="bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
+                    className="bg-orange-600 text-white py-1.5 px-3 rounded-md hover:bg-orange-700 transition-colors font-medium text-sm cursor-pointer border border-orange-500 font-mono"
                     type="button"
                   >
-                    {editingLocation ? 'Update Report' : 'Save Report'}
+                    {editingLocation ? '[UPDATE REPORT]' : '[SAVE REPORT]'}
                   </button>
                 </div>
 
@@ -952,10 +952,10 @@ const BaseModal = ({
                         e.stopPropagation()
                         handleSave()
                       }} 
-                      className="bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm cursor-pointer"
+                      className="bg-orange-600 text-white py-1.5 px-3 rounded-md hover:bg-orange-700 transition-colors font-medium text-sm cursor-pointer border border-orange-500 font-mono"
                       type="button"
                     >
-                      {editingLocation ? 'Update' : 'Save'}
+                      {editingLocation ? '[UPDATE]' : '[SAVE]'}
                     </button>
                     <button 
                       onClick={(e) => {
@@ -963,10 +963,10 @@ const BaseModal = ({
                         e.stopPropagation()
                         onCancel()
                       }} 
-                      className="bg-gray-700 text-gray-200 py-1.5 px-3 rounded-md hover:bg-gray-600 transition-colors font-medium text-sm cursor-pointer"
+                      className="bg-gray-800 text-orange-200 py-1.5 px-3 rounded-md hover:bg-gray-700 transition-colors font-medium text-sm cursor-pointer border border-orange-600/40 font-mono"
                       type="button"
                     >
-                      Cancel
+                      [CANCEL]
                     </button>
                     {modalType === 'enemy' && (
                       <button 
@@ -975,10 +975,10 @@ const BaseModal = ({
                           e.stopPropagation()
                           setShowAdvancedPanel(!showAdvancedPanel)
                         }} 
-                        className="bg-purple-600 text-white py-1.5 px-3 rounded-md hover:bg-purple-700 transition-colors font-medium text-sm cursor-pointer"
+                        className="bg-orange-700 text-white py-1.5 px-3 rounded-md hover:bg-orange-800 transition-colors font-medium text-sm cursor-pointer border border-orange-600 font-mono"
                         type="button"
                       >
-                        Advanced
+                        [ADVANCED]
                       </button>
                     )}
                     {editingLocation && (
@@ -988,10 +988,10 @@ const BaseModal = ({
                           e.stopPropagation()
                           onDelete()
                         }} 
-                        className="bg-red-600 text-white py-1.5 px-3 rounded-md hover:bg-red-700 transition-colors font-medium text-sm cursor-pointer"
+                        className="bg-orange-800 text-white py-1.5 px-3 rounded-md hover:bg-orange-900 transition-colors font-medium text-sm cursor-pointer border border-orange-700 font-mono"
                         type="button"
                       >
-                        Delete
+                        [DELETE]
                       </button>
                     )}
                   </div>
