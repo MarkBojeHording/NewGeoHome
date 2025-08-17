@@ -697,18 +697,18 @@ const BaseModal = ({
   )
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 font-mono">
       <div className="relative">
         <div className="relative">
           {modalType === 'enemy' && (
             <>
-              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
-                <span className="text-white font-mono font-bold text-3xl">
+              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-orange-700 rounded-lg px-3 py-1.5 border-2 border-orange-600 shadow-lg whitespace-nowrap" style={{zIndex: 60}}>
+                <span className="text-orange-100 font-mono font-bold text-3xl tracking-wider">
                   {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, editingLocation?.id)}
                 </span>
               </div>
               {(formData.type === 'enemy-farm' || formData.type === 'enemy-flank' || formData.type === 'enemy-tower') && (
-                <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-800 rounded-lg px-2 py-1.5 border-2 border-gray-600 shadow-lg" style={{top: '28px', width: '90px', zIndex: 60}}>
+                <div className="absolute left-1/2 transform -translate-x-1/2 bg-gray-900 rounded-lg px-2 py-1.5 border-2 border-orange-600/50 shadow-lg" style={{top: '28px', width: '90px', zIndex: 60}}>
                   <input
                     ref={ownerInputRef}
                     type="text"
@@ -720,10 +720,10 @@ const BaseModal = ({
                     onFocus={() => setShowOwnerSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowOwnerSuggestions(false), 200)}
                     placeholder="Main?"
-                    className="px-1 py-0.5 bg-gray-700 border border-gray-600 rounded text-sm text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:outline-none w-full text-center"
+                    className="px-1 py-0.5 bg-gray-800 border border-orange-600/40 rounded text-sm text-orange-200 placeholder-orange-500/60 focus:border-orange-500 focus:outline-none w-full text-center font-mono"
                   />
                   {showOwnerSuggestions && getFilteredSuggestions(formData.ownerCoordinates).length > 0 && (
-                    <div className="absolute w-full mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg max-h-32 overflow-auto left-0 right-0" style={{minWidth: '120px', zIndex: 70}}>
+                    <div className="absolute w-full mt-1 bg-gray-900 border border-orange-600/50 rounded-md shadow-lg max-h-32 overflow-auto left-0 right-0" style={{minWidth: '120px', zIndex: 70}}>
                       {getFilteredSuggestions(formData.ownerCoordinates).map((suggestion, index) => (
                         <button
                           key={index}
@@ -734,7 +734,7 @@ const BaseModal = ({
                             setShowOwnerSuggestions(false)
                             ownerInputRef.current?.focus()
                           }}
-                          className="flex items-center gap-2 w-full text-left px-2 py-1 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
+                          className="flex items-center gap-2 w-full text-left px-2 py-1 text-sm text-orange-200 hover:bg-orange-900/30 transition-colors font-mono"
                         >
                           <div className={`${getColor(suggestion.type)} flex-shrink-0 scale-75`}>
                             {getIcon(suggestion.type)}
@@ -757,7 +757,7 @@ const BaseModal = ({
             </div>
           )}
 
-          <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 border border-gray-700 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
+          <div className="bg-gray-900 rounded-lg shadow-xl w-full max-w-4xl mx-4 border-2 border-orange-600/50 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
             {/* Report ID Display - Top Left of Modal */}
             {modalType === 'report' && (
               <div className="absolute top-2 left-2 z-20">
@@ -766,31 +766,31 @@ const BaseModal = ({
                 </span>
               </div>
             )}
-            <div className="p-4 border-b border-gray-700" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
+            <div className="p-4 border-b border-orange-600/50" style={{paddingTop: modalType === 'enemy' ? '32px' : '16px'}}>
               <div className="flex items-center justify-between">
                 {modalType === 'enemy' && (
                   <div className="flex items-center gap-3 flex-1">
-                    <div className="text-red-500 font-bold text-lg flex-shrink-0">ENEMY</div>
+                    <div className="text-orange-400 font-bold text-lg flex-shrink-0 tracking-wider">[ENEMY]</div>
                     <div className="flex gap-2 flex-wrap">
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                      <label className="flex items-center gap-1.5 text-xs text-orange-200 cursor-pointer font-mono">
                         <input 
                           type="checkbox" 
                           checked={formData.roofCamper} 
                           onChange={(e) => setFormData(prev => ({ ...prev, roofCamper: e.target.checked }))}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                          className="w-3.5 h-3.5 text-orange-600 bg-gray-800 border-orange-600/50 rounded focus:ring-orange-500 focus:ring-1"
                         />
-                        <span>Roof Camper</span>
+                        <span>[ROOF CAMPER]</span>
                       </label>
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                      <label className="flex items-center gap-1.5 text-xs text-orange-200 cursor-pointer font-mono">
                         <input 
                           type="checkbox" 
                           checked={formData.hostileSamsite} 
                           onChange={(e) => setFormData(prev => ({ ...prev, hostileSamsite: e.target.checked }))}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                          className="w-3.5 h-3.5 text-orange-600 bg-gray-800 border-orange-600/50 rounded focus:ring-orange-500 focus:ring-1"
                         />
-                        <span>Hostile Samsite</span>
+                        <span>[HOSTILE SAMSITE]</span>
                       </label>
-                      <label className="flex items-center gap-1.5 text-xs text-gray-200 cursor-pointer">
+                      <label className="flex items-center gap-1.5 text-xs text-orange-200 cursor-pointer font-mono">
                         <input 
                           type="checkbox" 
                           checked={formData.raidedOut} 
@@ -801,9 +801,9 @@ const BaseModal = ({
                               setFormData(prev => ({ ...prev, raidedOut: false }))
                             }
                           }}
-                          className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-1"
+                          className="w-3.5 h-3.5 text-orange-600 bg-gray-800 border-orange-600/50 rounded focus:ring-orange-500 focus:ring-1"
                         />
-                        <span>Raided Out</span>
+                        <span>[RAIDED OUT]</span>
                       </label>
                     </div>
                   </div>
@@ -815,7 +815,7 @@ const BaseModal = ({
                     e.stopPropagation()
                     onCancel()
                   }} 
-                  className="text-gray-400 hover:text-gray-200 cursor-pointer"
+                  className="text-orange-400 hover:text-orange-200 cursor-pointer"
                   type="button"
                 >
                   <X className="h-5 w-5" />
@@ -823,27 +823,27 @@ const BaseModal = ({
               </div>
             </div>
             
-            <div className="flex-1 px-4 pt-4 space-y-3 overflow-y-auto text-gray-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
+            <div className="flex-1 px-4 pt-4 space-y-3 overflow-y-auto text-orange-200" style={{paddingTop: modalType === 'enemy' ? '24px' : '12px', position: 'relative', zIndex: 1}}>
               {modalType === 'report' && (
                 <div className="mb-3">
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '240px'}}>
-                    <svg className="h-7 w-7 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="border-2 border-dashed border-orange-600/50 rounded-lg p-8 text-center hover:border-orange-500/70 transition-colors flex flex-col items-center justify-center" style={{height: '240px'}}>
+                    <svg className="h-7 w-7 text-orange-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <p className="text-gray-400 text-xs">Click to upload screenshots</p>
+                    <p className="text-orange-400 text-xs font-mono">[CLICK TO UPLOAD SCREENSHOTS]</p>
                   </div>
                 </div>
               )}
               
               {modalType !== 'report' && (
                 <div className="mb-3">
-                  <label className="block text-sm font-medium mb-1 text-gray-200">Base Screenshots</label>
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-3 text-center hover:border-gray-500 transition-colors flex flex-col items-center justify-center" style={{height: '160px', width: '65%', marginRight: 'auto'}}>
-                    <svg className="h-9 w-9 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <label className="block text-sm font-medium mb-1 text-orange-200 font-mono tracking-wide">[BASE SCREENSHOTS]</label>
+                  <div className="border-2 border-dashed border-orange-600/50 rounded-lg p-3 text-center hover:border-orange-500/70 transition-colors flex flex-col items-center justify-center" style={{height: '160px', width: '65%', marginRight: 'auto'}}>
+                    <svg className="h-9 w-9 text-orange-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <p className="text-gray-400 text-sm">Click to upload screenshots or drag and drop</p>
-                    <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
+                    <p className="text-orange-400 text-sm font-mono">[CLICK TO UPLOAD OR DRAG AND DROP]</p>
+                    <p className="text-xs text-orange-500/80 mt-1 font-mono">[PNG, JPG UP TO 10MB]</p>
                   </div>
                 </div>
               )}
