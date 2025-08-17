@@ -1393,7 +1393,55 @@ export default function InteractiveTacticalMap() {
     setNewBaseModal({ x: location.x, y: location.y, visible: true })
   }, [])
   
-  const handleSaveBase = useCallback((baseData) => {
+  const handleSaveBase = useCallback(async (baseData) => {
+    // If this is a report, save to database instead of creating a map location
+    if (modalType === 'report') {
+      const playerTags = []
+      if (baseData.enemyPlayers) {
+        playerTags.push(...baseData.enemyPlayers.split(',').map(p => p.trim()).filter(p => p))
+      }
+      if (baseData.friendlyPlayers) {
+        playerTags.push(...baseData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p))
+      }
+      
+      const reportData = {
+        type: "general",
+        notes: baseData.notes || `${baseData.type.replace('report-', '')} report`,
+        outcome: baseData.outcome === 'won' ? 'good' : baseData.outcome === 'lost' ? 'bad' : 'neutral',
+        playerTags: playerTags,
+        baseTags: [],
+        screenshots: [],
+        location: { 
+          gridX: Math.floor(newBaseModal.x / 3.125), 
+          gridY: Math.floor(newBaseModal.y / 4.167) 
+        }
+      }
+      
+      console.log('Saving report:', reportData)
+      try {
+        const response = await fetch('/api/reports', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(reportData)
+        })
+        if (response.ok) {
+          console.log('Report saved successfully')
+          // Refresh reports in any open logs modal
+          queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
+        } else {
+          console.error('Failed to save report:', await response.text())
+        }
+      } catch (error) {
+        console.error('Error saving report:', error)
+      }
+      
+      setNewBaseModal(prev => ({ ...prev, visible: false }))
+      setEditingLocation(null)
+      setEditingReport(null)
+      return
+    }
+    
+    // Regular base/location saving logic below:
     if (editingLocation) {
       setLocations(prev => prev.map(loc => 
         loc.id === editingLocation.id ? { ...loc, ...baseData } : loc
@@ -1414,7 +1462,7 @@ export default function InteractiveTacticalMap() {
     setNewBaseModal(prev => ({ ...prev, visible: false }))
     setEditingLocation(null)
     setEditingReport(null)
-  }, [editingLocation, newBaseModal, locations])
+  }, [editingLocation, newBaseModal, locations, modalType, queryClient])
   
   const handleCancel = useCallback(() => {
     setNewBaseModal(prev => ({ ...prev, visible: false }))
