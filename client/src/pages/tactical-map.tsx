@@ -1608,7 +1608,7 @@ export default function InteractiveTacticalMap() {
       `}</style>
       
       {/* Fixed Main Toolbar - Buttons for Logs, Players, etc. */}
-      <div className="fixed top-0 left-0 right-0 z-40 p-4">
+      <div className="fixed top-0 left-0 right-0 z-50 p-0 m-0" style={{top: 0, left: 0, right: 0, position: 'fixed'}}>
         <div className="max-w-6xl mx-auto">
           <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50 overflow-hidden">
             <div className="bg-gradient-to-r from-orange-900/30 via-gray-800 to-orange-900/30 p-1">
