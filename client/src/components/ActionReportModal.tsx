@@ -86,27 +86,39 @@ export default function ActionReportModal({
   const handleSave = () => {
     if (createReportMutation.isPending) return // Prevent multiple submissions
     
+    // Convert player strings to arrays
+    const playerTags = []
+    if (formData.enemyPlayers) {
+      playerTags.push(...formData.enemyPlayers.split(',').map(p => p.trim()).filter(p => p))
+    }
+    if (formData.friendlyPlayers) {
+      playerTags.push(...formData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p))
+    }
+    
     const reportData = {
-      title: `${formData.type.replace('report-', '')} Report`,
-      reportType: "base",
-      locationName: baseName || baseCoords || "",
-      locationCoords: baseCoords || "",
-      baseId: baseId || "", // Link to specific base ID
-      content: {
-        type: formData.type,
-        reportTime: formData.reportTime,
-        enemyPlayers: formData.enemyPlayers,
-        friendlyPlayers: formData.friendlyPlayers,
-        notes: formData.notes,
-        reportOutcome: formData.reportOutcome,
-        baseId: baseId || "", // Also store in content for backup
-        baseName: baseName || "",
-        baseCoords: baseCoords || ""
-      },
-      status: "active"
+      type: "base", // Report type for database
+      notes: formData.notes || `${formData.type.replace('report-', '')} report at ${baseName || baseCoords}`,
+      outcome: formData.reportOutcome,
+      playerTags: playerTags,
+      baseTags: baseId ? [baseId] : [],
+      screenshots: [],
+      location: baseCoords ? parseCoordinates(baseCoords) : { gridX: 0, gridY: 0 }
     }
     
     createReportMutation.mutate(reportData)
+  }
+
+  // Helper function to parse coordinates like "A1" to {gridX: 0, gridY: 1}
+  const parseCoordinates = (coords) => {
+    if (!coords) return { gridX: 0, gridY: 0 }
+    const match = coords.match(/([A-Z])(\d+)/)
+    if (match) {
+      return {
+        gridX: match[1].charCodeAt(0) - 65, // A=0, B=1, etc.
+        gridY: parseInt(match[2])
+      }
+    }
+    return { gridX: 0, gridY: 0 }
   }
 
   if (!isVisible) return null
