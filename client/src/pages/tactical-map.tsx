@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, User, Plus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import { LogsModal } from '../components/LogsModal'
@@ -1224,6 +1224,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
 
 // ============= MAIN COMPONENT =============
 export default function InteractiveTacticalMap() {
+  const queryClient = useQueryClient()
   const [locations, setLocations] = useState<any[]>([])
   const [selectedLocation, setSelectedLocation] = useState(null)
   const [contextMenu, setContextMenu] = useState({ x: 0, y: 0, visible: false })
