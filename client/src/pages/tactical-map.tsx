@@ -1607,6 +1607,7 @@ export default function InteractiveTacticalMap() {
         }
       `}</style>
       
+      <>
       {/* Fixed Main Toolbar - Buttons for Logs, Players, etc. */}
       <div className="fixed top-0 left-0 right-0 z-50 p-0 m-0" style={{top: 0, left: 0, right: 0, position: 'fixed'}}>
         <div className="max-w-6xl mx-auto">
@@ -1833,4 +1834,4 @@ export default function InteractiveTacticalMap() {
       </div>
     </div>
   )
-}
+      </>
