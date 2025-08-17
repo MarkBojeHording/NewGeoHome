@@ -3,13 +3,13 @@ import { X, Shield, MapPin } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { apiRequest } from "@/lib/queryClient"
 
-const getColor = (type) => {
+const getColor = (type: string) => {
   if (type.startsWith("friendly")) return "text-green-400"
   if (type.startsWith("enemy")) return "text-red-400"
   return "text-yellow-400"
 }
 
-const getIcon = (type) => {
+const getIcon = (type: string) => {
   return <Shield className="h-3 w-3" />
 }
 
@@ -73,13 +73,18 @@ export default function ActionReportModal({
   }, [isVisible, editingReport])
 
   const createReportMutation = useMutation({
-    mutationFn: async (reportData) => {
+    mutationFn: async (reportData: any) => {
+      console.log('Creating report with data:', reportData)
       const response = await apiRequest("POST", "/api/reports", reportData)
+      console.log('Report creation response:', response)
       return response
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
       onClose()
+    },
+    onError: (error) => {
+      console.error('Report creation failed:', error)
     }
   })
 
@@ -109,7 +114,7 @@ export default function ActionReportModal({
   }
 
   // Helper function to parse coordinates like "A1" to {gridX: 0, gridY: 1}
-  const parseCoordinates = (coords) => {
+  const parseCoordinates = (coords: string) => {
     if (!coords) return { gridX: 0, gridY: 0 }
     const match = coords.match(/([A-Z])(\d+)/)
     if (match) {
