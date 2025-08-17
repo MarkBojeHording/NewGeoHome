@@ -2,6 +2,12 @@
 
 This project is a Rust-themed tactical map and raid calculator application designed for strategic planning and resource management in the game Rust. It provides players with an interactive map interface, comprehensive raid cost calculations for various material types, and tools for tracking bases, reports, and player activity. The application aims to be a specialized gaming utility to enhance strategic gameplay and resource management.
 
+## Recent Changes (January 2025)
+- **Fixed Toolbar Positioning**: Successfully implemented fixed toolbar system with main button toolbar positioned at absolute top of browser viewport (top-0) using CSS fixed positioning with inline style overrides
+- **Removed Duplicate Toolbars**: Eliminated moving duplicate toolbar sections that were interfering with map zoom/pan operations
+- **Simplified Interface**: Removed [TACTICAL OPERATIONS] branding text for cleaner interface focusing on essential functionality
+- **Zoom/Pan Improvements**: Enhanced mouse-cursor-relative zooming with proper pan adjustment and smooth transitions
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
