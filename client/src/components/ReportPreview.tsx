@@ -26,7 +26,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
       case 'bad':
         return <Badge variant="default" className="bg-red-500 hover:bg-red-600 text-white">Lost</Badge>
       case 'neutral':
-        return <Badge variant="secondary">Neutral</Badge>
+        return <Badge variant="secondary" className="bg-gray-500 hover:bg-gray-600 text-white">Neutral</Badge>
       default:
         return <Badge variant="outline">{outcome}</Badge>
     }
@@ -48,7 +48,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
 
         {/* Content Indicators */}
         <div className="flex items-center gap-1 shrink-0">
-          {hasScreenshots && <Camera className="w-3 h-3 text-blue-500" />}
+          {hasScreenshots && <Camera className="w-3 h-3 text-gray-400" />}
           {hasNotes && <FileText className="w-3 h-3 text-gray-500" />}
         </div>
 
