@@ -1540,20 +1540,6 @@ export default function InteractiveTacticalMap() {
         <div className="text-orange-400 text-sm font-bold pointer-events-auto tracking-wider">
           [TACTICAL OPERATIONS]
         </div>
-        <div className="flex gap-2 pointer-events-auto">
-          <button className="px-3 py-1 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border border-orange-600/50 transition-all duration-200 text-xs tracking-wide">
-            [ZOOM: {zoom.toFixed(1)}x]
-          </button>
-          <button 
-            onClick={() => {
-              setZoom(1)
-              setPan({ x: 0, y: 0 })
-            }}
-            className="px-3 py-1 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border border-orange-600/50 transition-all duration-200 text-xs tracking-wide"
-          >
-            [RESET VIEW]
-          </button>
-        </div>
       </div>
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
