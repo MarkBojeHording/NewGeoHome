@@ -1642,9 +1642,9 @@ export default function InteractiveTacticalMap() {
 
       <div className="pt-20 px-4">
 
-          <div 
+        <div 
             ref={mapRef}
-            className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 rounded-3xl shadow-2xl overflow-hidden cursor-default select-none"
+            className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 rounded-3xl shadow-2xl overflow-hidden cursor-default select-none mx-auto max-w-6xl"
             style={{ aspectRatio: '4/3', touchAction: 'none' }}
             onContextMenu={handleContextMenu}
             onClick={handleClick}
