@@ -66,27 +66,27 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col bg-gray-900 border-gray-700 text-white">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-white">
             <Calendar className="w-5 h-5" />
             All Reports Log
-            <Badge variant="secondary" className="ml-2">
+            <Badge variant="secondary" className="ml-2 bg-gray-700 text-gray-200">
               {sortedReports.length} reports
             </Badge>
           </DialogTitle>
         </DialogHeader>
 
         {/* Filters and Search */}
-        <div className="flex gap-3 flex-wrap items-center border-b pb-4">
+        <div className="flex gap-3 flex-wrap items-center border-b border-gray-700 pb-4">
           {/* Search */}
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               placeholder="Search reports..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
             />
           </div>
 
@@ -94,7 +94,7 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2 border rounded-md bg-background"
+            className="px-3 py-2 border border-gray-600 rounded-md bg-gray-800 text-white"
           >
             <option value="all">All Types</option>
             {getTypeOptions().map(option => (
@@ -108,7 +108,7 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
           <select
             value={outcomeFilter}
             onChange={(e) => setOutcomeFilter(e.target.value)}
-            className="px-3 py-2 border rounded-md bg-background"
+            className="px-3 py-2 border border-gray-600 rounded-md bg-gray-800 text-white"
           >
             <option value="all">All Outcomes</option>
             {getOutcomeOptions().map(option => (
@@ -128,6 +128,7 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
                 setTypeFilter('all')
                 setOutcomeFilter('all')
               }}
+              className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
             >
               Clear
             </Button>
@@ -138,13 +139,13 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="text-muted-foreground">Loading reports...</div>
+              <div className="text-gray-400">Loading reports...</div>
             </div>
           ) : sortedReports.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Calendar className="w-12 h-12 text-muted-foreground mb-4" />
-              <div className="text-lg font-medium mb-2">No reports found</div>
-              <div className="text-muted-foreground">
+              <Calendar className="w-12 h-12 text-gray-400 mb-4" />
+              <div className="text-lg font-medium mb-2 text-white">No reports found</div>
+              <div className="text-gray-400">
                 {searchTerm || typeFilter !== 'all' || outcomeFilter !== 'all' 
                   ? 'Try adjusting your filters'
                   : 'Reports will appear here when created'
@@ -152,29 +153,15 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
               </div>
             </div>
           ) : (
-            <div className="space-y-0">
-              {sortedReports.map((report, index) => (
-                <div key={report.id} className={index > 0 ? 'border-t' : ''}>
-                  <ReportPreview report={report} />
-                </div>
+            <div className="space-y-0 border border-gray-700">
+              {sortedReports.map((report) => (
+                <ReportPreview key={report.id} report={report} />
               ))}
             </div>
           )}
         </div>
 
-        {/* Summary Stats */}
-        {!isLoading && sortedReports.length > 0 && (
-          <div className="border-t pt-3 flex gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <User className="w-4 h-4" />
-              {[...new Set(sortedReports.flatMap(r => r.playerTags))].length} players involved
-            </div>
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              {[...new Set(sortedReports.flatMap(r => r.baseTags))].length} bases referenced
-            </div>
-          </div>
-        )}
+
       </DialogContent>
     </Dialog>
   )
