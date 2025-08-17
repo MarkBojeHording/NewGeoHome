@@ -1231,11 +1231,6 @@ export default function InteractiveTacticalMap() {
   const [newBaseModal, setNewBaseModal] = useState({ x: 0, y: 0, visible: false })
   const [modalType, setModalType] = useState('friendly')
   const [editingLocation, setEditingLocation] = useState(null)
-  const [editingReport, setEditingReport] = useState(null)
-  
-  // Central Report Library - Hidden storage for all reports
-  const [reportLibrary, setReportLibrary] = useState<any[]>([])
-  const [reportCounter, setReportCounter] = useState(1)
   const [showReportPanel, setShowReportPanel] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
   
@@ -1251,19 +1246,7 @@ export default function InteractiveTacticalMap() {
     baseType: null
   })
   
-  // Add report to library (for use in BaseModal)
-  const addToReportLibrary = useCallback((reportData) => {
-    setReportLibrary(prev => [...prev, reportData])
-  }, [])
 
-  // Update existing report in library
-  const updateReportLibrary = useCallback((updatedReport) => {
-    setReportLibrary(prev => 
-      prev.map(report => 
-        report.id === updatedReport.id ? updatedReport : report
-      )
-    )
-  }, [])
 
   
   // Report Modal Handlers
@@ -1868,10 +1851,10 @@ export default function InteractiveTacticalMap() {
             onCancel={handleCancel}
             onDelete={handleDeleteLocation}
             onOpenBaseReport={onOpenBaseReport}
-            editingReport={editingReport}
-            reportLibrary={reportLibrary}
-            addToReportLibrary={addToReportLibrary}
-            updateReportLibrary={updateReportLibrary}
+
+
+
+
           />
         )}
 
