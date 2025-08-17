@@ -1476,8 +1476,30 @@ export default function InteractiveTacticalMap() {
   const handleWheel = useCallback((e) => {
     e.preventDefault()
     const delta = e.deltaY > 0 ? -0.3 : 0.3
-    setZoom(Math.min(Math.max(zoom + delta, 1), 3.75))
-  }, [zoom, setZoom])
+    const rect = mapRef.current?.getBoundingClientRect()
+    if (rect) {
+      const mouseX = e.clientX - rect.left
+      const mouseY = e.clientY - rect.top
+      const centerX = rect.width / 2
+      const centerY = rect.height / 2
+      
+      const offsetX = mouseX - centerX
+      const offsetY = mouseY - centerY
+      
+      const newZoom = Math.min(Math.max(zoom + delta, 1), 3.75)
+      
+      if (newZoom !== zoom) {
+        const zoomRatio = newZoom / zoom
+        const newPanX = pan.x - offsetX * (zoomRatio - 1)
+        const newPanY = pan.y - offsetY * (zoomRatio - 1)
+        
+        setZoom(newZoom)
+        setPan({ x: newPanX, y: newPanY })
+      }
+    } else {
+      setZoom(Math.min(Math.max(zoom + delta, 1), 3.75))
+    }
+  }, [zoom, setZoom, pan, setPan])
   
   const handleMouseDown = useCallback((e) => {
     if (e.button === 0) {
@@ -1513,12 +1535,25 @@ export default function InteractiveTacticalMap() {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-4 font-mono">
-      {/* Top Toolbar */}
-      <div className="absolute top-4 left-4 right-4 z-30 flex justify-between items-center pointer-events-none">
+      {/* Fixed Top Toolbar - Outside of map zoom/pan */}
+      <div className="fixed top-4 left-4 right-4 z-50 flex justify-between items-center pointer-events-none">
         <div className="text-orange-400 text-sm font-bold pointer-events-auto tracking-wider">
           [TACTICAL OPERATIONS]
         </div>
-
+        <div className="flex gap-2 pointer-events-auto">
+          <button className="px-3 py-1 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border border-orange-600/50 transition-all duration-200 text-xs tracking-wide">
+            [ZOOM: {zoom.toFixed(1)}x]
+          </button>
+          <button 
+            onClick={() => {
+              setZoom(1)
+              setPan({ x: 0, y: 0 })
+            }}
+            className="px-3 py-1 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border border-orange-600/50 transition-all duration-200 text-xs tracking-wide"
+          >
+            [RESET VIEW]
+          </button>
+        </div>
       </div>
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
@@ -1591,7 +1626,7 @@ export default function InteractiveTacticalMap() {
         }
       `}</style>
       
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto mt-16">
         <div className="mb-6">
           <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50 overflow-hidden">
             <div className="bg-gradient-to-r from-orange-900/30 via-gray-800 to-orange-900/30 p-1">
