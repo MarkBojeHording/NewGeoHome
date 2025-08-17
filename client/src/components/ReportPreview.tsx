@@ -38,7 +38,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
   const gridReference = location ? `${String.fromCharCode(65 + location.gridX)}${location.gridY}` : 'Unknown'
 
   return (
-    <div className="flex items-center justify-between p-2 border-b border-orange-600/30 hover:bg-orange-950/30 transition-colors bg-gradient-to-r from-black to-orange-950/10">
+    <div className="flex items-center justify-between p-2 border-b border-orange-500/40 hover:bg-orange-900/40 transition-colors bg-gradient-to-r from-gray-800 to-orange-950/20">
       <div className="flex items-center gap-2 flex-1 min-w-0">
         {/* Report Type & ID */}
         <div className="flex flex-col min-w-0">
