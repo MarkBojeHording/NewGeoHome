@@ -1607,7 +1607,6 @@ export default function InteractiveTacticalMap() {
         }
       `}</style>
       
-      <>
       {/* Fixed Main Toolbar - Buttons for Logs, Players, etc. */}
       <div className="fixed top-0 left-0 right-0 z-50 p-0 m-0" style={{top: 0, left: 0, right: 0, position: 'fixed'}}>
         <div className="max-w-6xl mx-auto">
@@ -1641,11 +1640,12 @@ export default function InteractiveTacticalMap() {
         </div>
       </div>
 
-      <div className="pt-20 px-4">
+      <div className="max-w-6xl mx-auto mt-20 px-4">
 
-        <div 
+        <div className="relative">
+          <div 
             ref={mapRef}
-            className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 rounded-3xl shadow-2xl overflow-hidden cursor-default select-none mx-auto max-w-6xl"
+            className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 rounded-3xl shadow-2xl overflow-hidden cursor-default select-none"
             style={{ aspectRatio: '4/3', touchAction: 'none' }}
             onContextMenu={handleContextMenu}
             onClick={handleClick}
@@ -1786,9 +1786,8 @@ export default function InteractiveTacticalMap() {
             />
           )}
         </div>
-      </div>
 
-      {contextMenu.visible && (
+        {contextMenu.visible && (
           <ContextMenu 
             x={contextMenu.x}
             y={contextMenu.y}
@@ -1796,7 +1795,7 @@ export default function InteractiveTacticalMap() {
           />
         )}
 
-      {newBaseModal.visible && (
+        {newBaseModal.visible && (
           <BaseModal 
             modal={newBaseModal}
             modalType={modalType}
@@ -1814,7 +1813,7 @@ export default function InteractiveTacticalMap() {
         )}
 
 
-      <ActionReportModal
+        <ActionReportModal
           isVisible={showBaseReportModal}
           onClose={() => setShowBaseReportModal(false)}
           baseId={baseReportData.baseId || ''}
@@ -1834,4 +1833,4 @@ export default function InteractiveTacticalMap() {
       </div>
     </div>
   )
-      </>
+}

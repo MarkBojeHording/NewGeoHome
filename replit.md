@@ -7,7 +7,6 @@ This project is a Rust-themed tactical map and raid calculator application desig
 - **Removed Duplicate Toolbars**: Eliminated moving duplicate toolbar sections that were interfering with map zoom/pan operations
 - **Simplified Interface**: Removed [TACTICAL OPERATIONS] branding text for cleaner interface focusing on essential functionality
 - **Zoom/Pan Improvements**: Enhanced mouse-cursor-relative zooming with proper pan adjustment and smooth transitions
-- **Container Optimization**: Removed unnecessary wrapper container around map that was interfering with zoom functionality, improving direct interaction with zoom/pan transforms
 
 # User Preferences
 
