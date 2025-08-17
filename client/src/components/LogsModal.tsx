@@ -66,27 +66,27 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col bg-gray-900 border-gray-700 text-white">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-white">
-            <Calendar className="w-5 h-5" />
-            All Reports Log
-            <Badge variant="secondary" className="ml-2 bg-gray-700 text-gray-200">
-              {sortedReports.length} reports
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col bg-black border-2 border-orange-600 text-orange-100 shadow-2xl shadow-orange-900/50">
+        <DialogHeader className="border-b border-orange-600/50 pb-3">
+          <DialogTitle className="flex items-center gap-2 text-orange-400 font-mono text-lg tracking-wider">
+            <Calendar className="w-5 h-5 text-orange-500" />
+            [SYSTEM LOGS]
+            <Badge className="ml-2 bg-orange-900/50 text-orange-300 border border-orange-600/50 font-mono">
+              {sortedReports.length} ENTRIES
             </Badge>
           </DialogTitle>
         </DialogHeader>
 
         {/* Filters and Search */}
-        <div className="flex gap-3 flex-wrap items-center border-b border-gray-700 pb-4">
+        <div className="flex gap-3 flex-wrap items-center border-b border-orange-600/30 pb-4 bg-gradient-to-r from-orange-950/20 to-black p-3 -mx-6">
           {/* Search */}
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500 w-4 h-4" />
             <Input
-              placeholder="Search reports..."
+              placeholder="[SEARCH QUERY]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+              className="pl-10 bg-black border-2 border-orange-600/50 text-orange-200 placeholder-orange-600/70 font-mono focus:border-orange-400"
             />
           </div>
 
@@ -94,12 +94,12 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-600 rounded-md bg-gray-800 text-white"
+            className="px-3 py-2 border-2 border-orange-600/50 bg-black text-orange-200 font-mono focus:border-orange-400"
           >
-            <option value="all">All Types</option>
+            <option value="all">ALL TYPES</option>
             {getTypeOptions().map(option => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {option.label.toUpperCase()}
               </option>
             ))}
           </select>
@@ -108,12 +108,12 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
           <select
             value={outcomeFilter}
             onChange={(e) => setOutcomeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-600 rounded-md bg-gray-800 text-white"
+            className="px-3 py-2 border-2 border-orange-600/50 bg-black text-orange-200 font-mono focus:border-orange-400"
           >
-            <option value="all">All Outcomes</option>
+            <option value="all">ALL OUTCOMES</option>
             {getOutcomeOptions().map(option => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {option.label.toUpperCase()}
               </option>
             ))}
           </select>
@@ -128,32 +128,32 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
                 setTypeFilter('all')
                 setOutcomeFilter('all')
               }}
-              className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
+              className="bg-orange-900/30 border-2 border-orange-600 text-orange-200 hover:bg-orange-800/50 font-mono tracking-wide"
             >
-              Clear
+              [CLEAR]
             </Button>
           )}
         </div>
 
         {/* Reports List */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-gradient-to-b from-black via-orange-950/10 to-black">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="text-gray-400">Loading reports...</div>
+              <div className="text-orange-400 font-mono animate-pulse">[LOADING SYSTEM DATA...]</div>
             </div>
           ) : sortedReports.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Calendar className="w-12 h-12 text-gray-400 mb-4" />
-              <div className="text-lg font-medium mb-2 text-white">No reports found</div>
-              <div className="text-gray-400">
+            <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-orange-600/30 m-4 bg-orange-950/20">
+              <Calendar className="w-12 h-12 text-orange-600 mb-4" />
+              <div className="text-lg font-medium mb-2 text-orange-300 font-mono">[NO DATA FOUND]</div>
+              <div className="text-orange-600/80 font-mono text-sm">
                 {searchTerm || typeFilter !== 'all' || outcomeFilter !== 'all' 
-                  ? 'Try adjusting your filters'
-                  : 'Reports will appear here when created'
+                  ? '[ADJUST SEARCH PARAMETERS]'
+                  : '[AWAITING SYSTEM ENTRIES]'
                 }
               </div>
             </div>
           ) : (
-            <div className="space-y-0 border border-gray-700">
+            <div className="space-y-0 border-2 border-orange-600/50 m-2 bg-black/80">
               {sortedReports.map((report) => (
                 <ReportPreview key={report.id} report={report} />
               ))}

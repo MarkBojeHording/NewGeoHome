@@ -22,13 +22,13 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
   const getOutcomeBadge = (outcome: string) => {
     switch (outcome) {
       case 'good':
-        return <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-white">Won</Badge>
+        return <Badge className="bg-green-900/50 border-2 border-green-600 text-green-400 font-mono text-xs">[SUCCESS]</Badge>
       case 'bad':
-        return <Badge variant="default" className="bg-red-500 hover:bg-red-600 text-white">Lost</Badge>
+        return <Badge className="bg-red-900/50 border-2 border-red-600 text-red-400 font-mono text-xs">[FAILURE]</Badge>
       case 'neutral':
-        return <Badge variant="secondary" className="bg-gray-500 hover:bg-gray-600 text-white">Neutral</Badge>
+        return <Badge className="bg-orange-900/50 border-2 border-orange-600 text-orange-400 font-mono text-xs">[NEUTRAL]</Badge>
       default:
-        return <Badge variant="outline">{outcome}</Badge>
+        return <Badge className="bg-orange-900/30 border border-orange-600 text-orange-500 font-mono text-xs">[{outcome.toUpperCase()}]</Badge>
     }
   }
 
@@ -38,30 +38,30 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
   const gridReference = location ? `${String.fromCharCode(65 + location.gridX)}${location.gridY}` : 'Unknown'
 
   return (
-    <div className="flex items-center justify-between p-2 border-b hover:bg-accent/50 transition-colors">
+    <div className="flex items-center justify-between p-2 border-b border-orange-600/30 hover:bg-orange-950/30 transition-colors bg-gradient-to-r from-black to-orange-950/10">
       <div className="flex items-center gap-2 flex-1 min-w-0">
         {/* Report Type & ID */}
         <div className="flex flex-col min-w-0">
-          <span className="font-medium text-xs">[{getReportTypeLabel(report.type)}]</span>
-          <span className="text-xs text-muted-foreground">R{String(report.id).padStart(6, '0')}</span>
+          <span className="font-mono text-xs text-orange-400 font-bold">[{getReportTypeLabel(report.type).toUpperCase()}]</span>
+          <span className="text-xs text-orange-600 font-mono">#{String(report.id).padStart(6, '0')}</span>
         </div>
 
         {/* Content Indicators */}
         <div className="flex items-center gap-1 shrink-0">
-          {hasScreenshots && <Camera className="w-3 h-3 text-gray-400" />}
-          {hasNotes && <FileText className="w-3 h-3 text-gray-500" />}
+          {hasScreenshots && <Camera className="w-3 h-3 text-orange-500" />}
+          {hasNotes && <FileText className="w-3 h-3 text-orange-600" />}
         </div>
 
         {/* Notes Preview */}
         <div className="flex-1 min-w-0">
-          <p className="text-xs truncate" title={report.notes}>
-            {report.notes || "No notes"}
+          <p className="text-xs truncate font-mono text-orange-200" title={report.notes}>
+            {report.notes || "[NO DATA]"}
           </p>
         </div>
 
         {/* Location */}
-        <div className="text-xs text-muted-foreground shrink-0">
-          {gridReference}
+        <div className="text-xs text-orange-500 shrink-0 font-mono">
+          [{gridReference}]
         </div>
 
         {/* Outcome Badge */}
@@ -70,7 +70,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
         </div>
 
         {/* Timestamp */}
-        <div className="text-xs text-muted-foreground shrink-0">
+        <div className="text-xs text-orange-600 shrink-0 font-mono">
           {format(new Date(report.createdAt), 'MMM d, HH:mm')}
         </div>
 
@@ -80,7 +80,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
             variant="ghost"
             size="sm"
             onClick={() => onViewReport(report.id)}
-            className="shrink-0 h-6 w-6 p-0"
+            className="shrink-0 h-6 w-6 p-0 hover:bg-orange-900/50 text-orange-400"
           >
             <ExternalLink className="w-3 h-3" />
           </Button>
