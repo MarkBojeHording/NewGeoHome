@@ -1535,12 +1535,7 @@ export default function InteractiveTacticalMap() {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-4 font-mono">
-      {/* Fixed Top Toolbar - Outside of map zoom/pan */}
-      <div className="fixed top-4 left-4 right-4 z-50 flex justify-between items-center pointer-events-none">
-        <div className="text-orange-400 text-sm font-bold pointer-events-auto tracking-wider">
-          [TACTICAL OPERATIONS]
-        </div>
-      </div>
+
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
