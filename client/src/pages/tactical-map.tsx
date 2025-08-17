@@ -1660,35 +1660,6 @@ export default function InteractiveTacticalMap() {
       </div>
 
       <div className="max-w-6xl mx-auto mt-32">
-        <div className="mb-6">
-          <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50 overflow-hidden">
-            <div className="bg-gradient-to-r from-orange-900/30 via-gray-800 to-orange-900/30 p-1">
-              <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-2">
-                    {['Logs', 'Progression', 'Players', 'Teams', 'Bot Control', 'Turret Control'].map((btn) => (
-                      <button 
-                        key={btn} 
-                        onClick={() => {
-                          if (btn === 'Players') setShowPlayerModal(true)
-                          else if (btn === 'Logs') setShowLogsModal(true)
-                        }} 
-                        data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
-                        className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
-                      >
-                        [{btn.toUpperCase()}]
-                      </button>
-                    ))}
-                  </div>
-                  <button className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide">
-                    [MENU]
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-70"></div>
-          </div>
-        </div>
 
         <div className="relative">
           <div 
