@@ -68,17 +68,13 @@ function generateFakeSessionHistory(playerName: string) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Reports API routes
   
-  // Get all reports (temporary direct query bypass)
+  // Get all reports
   app.get("/api/reports", async (req, res) => {
     try {
-      // Direct query bypass until storage TypeScript issues are resolved
-      const { db } = await import("./db");
-      const { reports } = await import("@shared/schema");
-      const reportsList = await db.select().from(reports);
-      res.json(reportsList);
+      const reports = await storage.getAllReports();
+      res.json(reports);
     } catch (error) {
-      console.error("Error fetching reports:", error);
-      res.status(500).json({ error: "Failed to fetch reports", details: error?.message || "Unknown error" });
+      res.status(500).json({ error: "Failed to fetch reports" });
     }
   });
 
@@ -125,8 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const report = await storage.createReport(validatedData);
       res.status(201).json(report);
     } catch (error) {
-      console.error("Error creating report:", error);
-      res.status(400).json({ error: "Invalid report data", details: error.message });
+      res.status(400).json({ error: "Invalid report data" });
     }
   });
 

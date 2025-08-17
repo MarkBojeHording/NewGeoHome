@@ -4,8 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import ActionReportModal from '../components/ActionReportModal'
-import GeneralReportModal from '../components/GeneralReportModal'
-import LogsModal from '../components/LogsModal'
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
 // ============= CONSTANTS =============
@@ -1241,8 +1239,7 @@ export default function InteractiveTacticalMap() {
   
   // New Report System State
   const [showPlayerModal, setShowPlayerModal] = useState(false)
-  const [showLogsModal, setShowLogsModal] = useState(false)
-  const [showGeneralReportModal, setShowGeneralReportModal] = useState(false)
+
   const [showBaseReportModal, setShowBaseReportModal] = useState(false)
   const [baseReportData, setBaseReportData] = useState({
     baseId: null,
@@ -1371,13 +1368,6 @@ export default function InteractiveTacticalMap() {
   const handleAddBase = useCallback((type) => {
     setContextMenu(prev => ({ ...prev, visible: false }))
     setEditingLocation(null)
-    
-    if (type === 'report') {
-      console.log("Opening general report modal")
-      setShowGeneralReportModal(true)
-      return
-    }
-
     setEditingReport(null)
     // Clear any stale base report data
     setBaseReportData({
@@ -1607,10 +1597,7 @@ export default function InteractiveTacticalMap() {
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     {['Logs', 'Progression', 'Players', 'Teams', 'Bot Control', 'Turret Control'].map((btn) => (
-                      <button key={btn} onClick={() => {
-                        if (btn === 'Players') setShowPlayerModal(true)
-                        else if (btn === 'Logs') setShowLogsModal(true)
-                      }} data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl">
+                      <button key={btn} onClick={() => btn === 'Players' ? setShowPlayerModal(true) : undefined} data-testid={btn === 'Players' ? 'button-open-player-modal' : undefined} className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl">
                         {btn}
                       </button>
                     ))}
@@ -1796,12 +1783,6 @@ export default function InteractiveTacticalMap() {
         )}
 
 
-        <GeneralReportModal
-          isVisible={showGeneralReportModal}
-          onClose={() => setShowGeneralReportModal(false)}
-          coordinates=""
-        />
-
         <ActionReportModal
           isVisible={showBaseReportModal}
           onClose={() => setShowBaseReportModal(false)}
@@ -1813,11 +1794,6 @@ export default function InteractiveTacticalMap() {
         <PlayerModal
           isOpen={showPlayerModal}
           onClose={() => setShowPlayerModal(false)}
-        />
-
-        <LogsModal
-          isOpen={showLogsModal}
-          onClose={() => setShowLogsModal(false)}
         />
       </div>
     </div>

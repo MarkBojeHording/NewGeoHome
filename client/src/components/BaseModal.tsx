@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query"
 import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
 import type { ExternalPlayer } from '@shared/schema'
-import ReportPreview, { useFilteredReports } from './ReportPreview'
 
 // ============= CONSTANTS =============
 const LABELS = {
@@ -96,47 +95,89 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
 }
 
 // ============= BASE REPORTS CONTENT COMPONENT =============
-const BaseReportsContent = ({ baseName, baseId, onOpenReport }) => {
-  const { data: allReports = [], isLoading } = useQuery({
+const BaseReportsContent = ({ baseName, onOpenReport }) => {
+  const { data: reports = [], isLoading } = useQuery({
     queryKey: ['/api/reports']
   })
 
-  // Use the new centralized filtering system for base tags
-  const baseReports = useFilteredReports(allReports, 'base', baseId || baseName || '')
-
-  // Fallback: Also check legacy fields for backward compatibility
-  const legacyFilteredReports = allReports.filter(report => {
+  // Filter reports for this specific base
+  const baseReports = reports.filter(report => {
     if (!baseName) return false
-    return report.baseId === baseId || 
+    return report.baseId || 
            report.locationName === baseName ||
            report.locationCoords === baseName ||
            (report.content?.baseName === baseName) ||
            (report.content?.baseCoords === baseName)
   })
 
-  // Combine new and legacy results, removing duplicates
-  const combinedReports = [...baseReports]
-  legacyFilteredReports.forEach(report => {
-    if (!combinedReports.find(r => r.id === report.id)) {
-      combinedReports.push(report)
-    }
-  })
+  // Report type labels mapping
+  const FULL_CATEGORY_NAMES = {
+    'report-pvp': 'PvP Encounter',
+    'report-spotted': 'Spotted Enemy',
+    'report-bradley': 'Bradley/Heli Activity',
+    'report-oil': 'Oil/Cargo Activity', 
+    'report-monument': 'Monument Activity',
+    'report-farming': 'Farming Activity',
+    'report-loaded': 'Loaded Enemy',
+    'report-raid': 'Raid Activity'
+  }
 
-  const handleOpenReport = (reportId: number) => {
-    if (onOpenReport) {
-      onOpenReport(reportId)
-    } else {
-      // TODO: Implement default report modal/detail view
-      console.log('Opening report:', reportId)
-    }
+  if (isLoading) {
+    return <div className="text-gray-400 text-sm">Loading reports...</div>
+  }
+
+  if (baseReports.length === 0) {
+    return <div className="text-gray-400 text-sm italic">No reports for this base yet.</div>
   }
 
   return (
-    <ReportPreview 
-      reports={combinedReports}
-      isLoading={isLoading}
-      onOpenReport={handleOpenReport}
-    />
+    <div className="flex-1 overflow-y-auto space-y-3">
+      {baseReports.map((report) => {
+        const content = report.content || {}
+        const hasCamera = content.camera && content.camera.trim() !== ''
+        const hasNotes = content.notes && content.notes.trim() !== ''
+        
+        return (
+          <div key={report.id} className="bg-gray-900 rounded-lg p-3 border border-gray-700">
+            <div className="flex justify-between items-start mb-2">
+              <h4 className="text-white font-medium text-sm">
+                {FULL_CATEGORY_NAMES[content.type] || content.type}
+              </h4>
+              <span className="text-gray-400 text-xs">
+                {content.reportTime || 'No time'}
+              </span>
+            </div>
+            
+            <div className="flex gap-2 mb-2">
+              <div className={`flex items-center gap-1 ${hasCamera ? 'text-white' : 'text-gray-600'}`}>
+                <Camera className="w-3 h-3" />
+              </div>
+              <div className={`flex items-center gap-1 ${hasNotes ? 'text-white' : 'text-gray-600'}`}>
+                <StickyNote className="w-3 h-3" />
+              </div>
+            </div>
+            
+            {content.enemyPlayers && (
+              <div className="text-xs text-red-400 mb-1">
+                Enemies: {content.enemyPlayers}
+              </div>
+            )}
+            
+            {content.friendlyPlayers && (
+              <div className="text-xs text-green-400 mb-1">
+                Friendlies: {content.friendlyPlayers}
+              </div>
+            )}
+            
+            {hasNotes && (
+              <div className="text-xs text-gray-300 mt-2">
+                {content.notes.slice(0, 100)}{content.notes.length > 100 ? '...' : ''}
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
   )
 }
 
@@ -1173,7 +1214,7 @@ const BaseModal = ({
               <h3 className="text-white font-bold mb-4">Base Reports</h3>
               
               {/* Fetch and display reports for this base */}
-              <BaseReportsContent baseName={editingLocation?.name} baseId={editingLocation?.id} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
+              <BaseReportsContent baseName={editingLocation?.name} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
               
               {/* Enemy and Friendly Player Containers Side by Side */}
               <div className="flex gap-3 flex-1 mb-4">

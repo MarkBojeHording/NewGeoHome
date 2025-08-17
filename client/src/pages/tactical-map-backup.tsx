@@ -1,19 +1,278 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, User, Plus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator } from 'lucide-react'
 import BaseModal from '../components/BaseModal'
-import { PlayerModal } from '../components/PlayerModal'
-import ActionReportModal from '../components/ActionReportModal'
-import GeneralReportModal from '../components/GeneralReportModal'
-import LogsModal from '../components/LogsModal'
-import type { ExternalPlayer } from '@shared/schema'
-import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
+
+// ============= ROCKET CALCULATOR CONSTANTS =============
+const SLIDER_DESCRIPTIONS = {
+  75: "Will panic with doors open",
+  100: "Potato",
+  150: "Normal defender",
+  200: "Good PVPers",
+  250: "Probably cheating"
+}
+
+const RAID_MULTIPLIERS = {
+  sheetMetal: 1,
+  wood: 2,
+  garage: 3,
+  stone: 4,
+  metal: 8,
+  hqm: 15
+}
+
+// ============= ROCKET CALCULATOR UTILITY FUNCTIONS =============
+const calculateRocketAmmo = (rocketCount, isPrimary, modifier = 150) => {
+  if (isPrimary) {
+    const adjustedRockets = rocketCount > 12 ? 6 + Math.floor((rocketCount - 12) / 8) * 3 : rocketCount
+    const hv = adjustedRockets * 1
+    const incin = Math.floor(rocketCount / 20)
+    const explo = 10 + (rocketCount * 6)
+    return { rockets: adjustedRockets, hv, incin, explo }
+  } else {
+    const baseRockets = Math.min(rocketCount, 4)
+    const extraRockets = Math.max(0, rocketCount - 4)
+    const adjustedRockets = baseRockets + Math.floor(extraRockets * (modifier / 100))
+    const hv = 9 + Math.floor(adjustedRockets / 6) * 3
+    const incin = Math.floor(adjustedRockets / 12)
+    const explo = 10 + (rocketCount * 6)
+    return { rockets: adjustedRockets, hv, incin, explo }
+  }
+}
+
+// ============= ROCKET CALCULATOR SUB-COMPONENTS =============
+const RocketCalculatorModal = ({ position, onClose, onCalculate }) => {
+  const [values, setValues] = useState({
+    sheetMetal: 0, wood: 0, garage: 0, stone: 0, metal: 0, hqm: 0
+  })
+  
+  const handleChange = (type, value) => {
+    const numValue = Math.min(99, Math.max(0, Number(value) || 0))
+    const newValues = { ...values, [type]: numValue }
+    setValues(newValues)
+    
+    let total = 0
+    Object.keys(newValues).forEach(key => {
+      total += newValues[key] * RAID_MULTIPLIERS[key]
+    })
+    onCalculate(total)
+  }
+  
+  const items = [
+    { key: 'sheetMetal', label: 'Sheet Metal Door' },
+    { key: 'wood', label: 'Wood Wall/High Wall' },
+    { key: 'garage', label: 'Garage Door/Window' },
+    { key: 'stone', label: 'Stone Wall/High Wall' },
+    { key: 'metal', label: 'Metal Wall' },
+    { key: 'hqm', label: 'HQM Wall' }
+  ]
+  
+  return (
+    <div 
+      className="fixed pointer-events-none" 
+      style={{ zIndex: 99999, left: position.x + 'px', top: position.y + 'px' }}
+    >
+      <div className="bg-gray-800 rounded-lg shadow-2xl border-2 border-gray-600 p-4 w-96 pointer-events-auto" style={{boxShadow: '0 25px 60px rgba(0, 0, 0, 0.9)'}}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-bold text-white">Raid Calculator</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-200 transition-colors">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-6 gap-2">
+          {items.map((item) => (
+            <div key={item.key} className="text-center">
+              <label className="block text-[10px] font-medium text-gray-300 mb-1 h-6 leading-tight">
+                {item.label}
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={values[item.key]}
+                  onChange={(e) => handleChange(item.key, e.target.value)}
+                  className="w-full pl-1 pr-6 py-1 bg-gray-700 border border-gray-600 rounded text-center text-white font-bold text-sm focus:border-blue-500 focus:outline-none"
+                  min="0"
+                  max="99"
+                  placeholder="0"
+                />
+                <div className="absolute right-0.5 top-0.5 bottom-0.5 flex flex-col" style={{width: '14px'}}>
+                  <button
+                    type="button"
+                    onClick={() => handleChange(item.key, Math.min(99, (values[item.key] || 0) + 1))}
+                    className="flex items-center justify-center h-1/2 bg-gray-600 hover:bg-gray-500 rounded-t text-gray-300 transition-colors border-b border-gray-700"
+                    style={{fontSize: '8px', lineHeight: '0'}}
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleChange(item.key, Math.max(0, (values[item.key] || 0) - 1))}
+                    className="flex items-center justify-center h-1/2 bg-gray-600 hover:bg-gray-500 rounded-b text-gray-300 transition-colors"
+                    style={{fontSize: '8px', lineHeight: '0'}}
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
+              <div className="text-[10px] text-gray-500 mt-0.5">×{RAID_MULTIPLIERS[item.key]}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============= ROCKET CALCULATOR SECTION COMPONENT =============
+const RocketCalculatorSection = ({ 
+  primaryRockets, 
+  onPrimaryRocketsChange,
+  showCalculatorModal,
+  calculatorPosition,
+  onToggleCalculator,
+  onCloseCalculator
+}) => {
+  const [onlineRaidModifier, setOnlineRaidModifier] = useState(150)
+  const [showSliderTooltip, setShowSliderTooltip] = useState(false)
+  
+  const ammo = useMemo(() => calculateRocketAmmo(primaryRockets, true), [primaryRockets])
+  const onlineAmmo = useMemo(() => calculateRocketAmmo(primaryRockets, false, onlineRaidModifier), [primaryRockets, onlineRaidModifier])
+  
+  return (
+    <>
+      <div className="border border-gray-600 rounded-lg p-0 bg-gray-700 mb-3 relative">
+        <button 
+          className={`absolute top-1 right-1 rounded p-0.5 transition-colors cursor-pointer ${
+            showCalculatorModal ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-gray-600'
+          }`}
+          onClick={onToggleCalculator}
+          type="button"
+        >
+          <Calculator className={`h-5 w-5 ${showCalculatorModal ? 'text-white' : 'text-blue-500'}`} />
+        </button>
+        <div className="px-1">
+          <div className="flex items-center gap-1">
+            <label className="text-[10px] font-medium text-gray-300 mr-1">Primary Raid</label>
+            <div className="flex gap-1 text-center">
+              <div className="flex flex-col items-center">
+                <div className="text-[9px] font-medium text-gray-400">Rocket</div>
+                <input 
+                  type="number" 
+                  value={primaryRockets} 
+                  onChange={(e) => onPrimaryRocketsChange(Math.min(999, Math.max(0, Number(e.target.value))))} 
+                  className="w-full px-0 py-0 bg-gray-600 border border-gray-500 rounded text-xs font-bold text-center text-gray-200 focus:border-blue-500 focus:outline-none" 
+                  min="0" 
+                  max="999" 
+                  style={{width: '32px', fontSize: '10px'}} 
+                />
+              </div>
+              {['HV', 'Incin', 'Explo'].map((type, i) => (
+                <div key={type} className="flex flex-col items-center">
+                  <div className="text-[9px] font-medium text-gray-400">{type}</div>
+                  <div className="w-full px-0.5 py-0 bg-gray-600 rounded text-xs font-bold text-center text-gray-200" style={{width: '32px', fontSize: '10px'}}>
+                    {[ammo.hv, ammo.incin, ammo.explo][i]}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-1 px-1 pb-0">
+          <div className="flex items-center gap-1">
+            <label className="text-[10px] font-medium text-gray-300 mr-1">Online Raid</label>
+            <div className="flex gap-1 text-center">
+              <div className="flex flex-col items-center">
+                <div className="text-[9px] font-medium text-gray-400">Rocket</div>
+                <div className="w-full px-0.5 py-0 bg-gray-600 rounded text-xs font-bold text-center text-gray-200" style={{width: '32px', fontSize: '10px'}}>
+                  {Math.min(primaryRockets, 4) + Math.floor(Math.max(0, primaryRockets - 4) * (onlineRaidModifier / 100))}
+                </div>
+              </div>
+              {['HV', 'Incin', 'Explo'].map((type, i) => (
+                <div key={type} className="flex flex-col items-center">
+                  <div className="text-[9px] font-medium text-gray-400">{type}</div>
+                  <div className="w-full px-0.5 py-0 bg-gray-600 rounded text-xs font-bold text-center text-gray-200" style={{width: '32px', fontSize: '10px'}}>
+                    {[onlineAmmo.hv, onlineAmmo.incin, onlineAmmo.explo][i]}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-1 px-1 pb-1 relative">
+          <div className="relative h-3 mx-0.5">
+            <div className="absolute inset-x-0 top-1 h-0.5 bg-gray-600 rounded-full">
+              <div className="absolute left-0 top-0 h-full bg-blue-400 rounded-full transition-all duration-150"
+                   style={{width: `${[75, 100, 150, 200, 250].indexOf(onlineRaidModifier) * 25}%`}} />
+            </div>
+            {[0, 25, 50, 75, 100].map((position, index) => (
+              <div
+                key={index}
+                className="absolute w-1.5 h-1.5 bg-gray-500 rounded-full"
+                style={{
+                  left: `${position}%`,
+                  top: '3px',
+                  transform: 'translateX(-50%)'
+                }}
+              />
+            ))}
+            <input
+              type="range"
+              min="0"
+              max="4"
+              value={[75, 100, 150, 200, 250].indexOf(onlineRaidModifier)}
+              onChange={(e) => {
+                const values = [75, 100, 150, 200, 250]
+                setOnlineRaidModifier(values[parseInt(e.target.value)])
+              }}
+              onMouseDown={() => setShowSliderTooltip(true)}
+              onMouseUp={() => setShowSliderTooltip(false)}
+              onMouseLeave={() => setShowSliderTooltip(false)}
+              className="absolute inset-x-0 top-0 w-full h-3 opacity-0 cursor-pointer"
+            />
+            <div
+              className={`absolute w-2.5 h-2.5 bg-blue-500 rounded-full shadow-md pointer-events-none transition-all duration-150 ${showSliderTooltip ? 'scale-125' : ''}`}
+              style={{
+                left: `${[75, 100, 150, 200, 250].indexOf(onlineRaidModifier) * 25}%`,
+                top: '1px',
+                transform: 'translateX(-50%)'
+              }}
+            />
+            {showSliderTooltip && (
+              <div className="absolute -top-8 pointer-events-none transition-opacity duration-200 z-20"
+                   style={{
+                     left: `${Math.max(15, Math.min(85, [75, 100, 150, 200, 250].indexOf(onlineRaidModifier) * 25))}%`,
+                     transform: 'translateX(-50%)'
+                   }}>
+                <div className="bg-gray-900 text-white text-[10px] rounded px-1.5 py-0.5 whitespace-nowrap">
+                  <div className="font-bold text-center">{onlineRaidModifier}%</div>
+                  <div className="text-[9px] mt-0">{SLIDER_DESCRIPTIONS[onlineRaidModifier] || ""}</div>
+                </div>
+                <div className="absolute left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[3px] border-r-[3px] border-t-[3px] border-transparent border-t-gray-900"></div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      {showCalculatorModal && (
+        <RocketCalculatorModal 
+          position={calculatorPosition}
+          onClose={onCloseCalculator}
+          onCalculate={onPrimaryRocketsChange}
+        />
+      )}
+    </>
+  )
+}
+
 // ============= CONSTANTS =============
 const GRID_CONFIG = {
-  COLS: 26,
-  ROWS: 26,
-  CELL_WIDTH_PERCENT: 3.846,
-  CELL_HEIGHT_PERCENT: 3.846
+  COLS: 32,
+  ROWS: 24,
+  CELL_WIDTH_PERCENT: 3.125,
+  CELL_HEIGHT_PERCENT: 4.167
 }
 
 const ICON_MAP = {
@@ -56,39 +315,24 @@ const DECAY_TIMES = {
   hqm: { max: 2000, hours: 12 }
 }
 
-const GROUP_COLORS = [
-  '#ff6b6b', // Red
-  '#4ecdc4', // Teal  
-  '#45b7d1', // Blue
-  '#96ceb4', // Green
-  '#ffeaa7', // Yellow
-  '#dda0dd', // Plum
-  '#ffa726', // Orange
-  '#ab47bc', // Purple
-  '#26a69a', // Cyan
-  '#ef5350'  // Pink
-]
-
-
 // ============= UTILITY FUNCTIONS =============
-const getColor = (type: string, location = null) => {
-  if (location?.abandoned) return 'text-gray-400'
+const getColor = (type) => {
   if (type.startsWith('report')) return 'text-purple-600'
   return type.startsWith('friendly') ? 'text-green-600' : 'text-red-600'
 }
 
-const getBorderColor = (type: string) => {
+const getBorderColor = (type) => {
   if (type.startsWith('report')) return 'border-purple-500'
   return type.startsWith('friendly') ? 'border-green-500' : 'border-red-500'
 }
 
-const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], excludeId: string | null = null) => {
+const getGridCoordinate = (x, y, existingLocations = [], excludeId = null) => {
   const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
   const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
   const clampedCol = Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1)
   const clampedRow = Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
   const letter = clampedCol < 26 ? String.fromCharCode(65 + clampedCol) : `A${String.fromCharCode(65 + clampedCol - 26)}`
-  const number = clampedRow
+  const number = clampedRow + 1
   const baseCoord = `${letter}${number}`
   
   const duplicates = existingLocations.filter(loc => {
@@ -100,147 +344,6 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
   return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
 }
 
-// Get all bases that belong to the same group (share common players OR are subordinate bases near main bases)
-const getBaseGroup = (baseId: string, locations: any[]) => {
-  const currentBase = locations.find(loc => loc.id === baseId)
-  if (!currentBase) return []
-  
-  // Method 1: Player-based grouping (original logic)
-  if (currentBase.players && currentBase.players.length > 0) {
-    const currentPlayers = currentBase.players.split(",").map(p => p.trim()).filter(p => p)
-    if (currentPlayers.length > 0) {
-      const playerGroupBases = locations.filter(loc => {
-        if (loc.id === baseId) return true
-        if (!loc.players?.length) return false
-        
-        const locPlayers = loc.players.split(",").map(p => p.trim()).filter(p => p)
-        if (locPlayers.length === 0) return false
-        
-        return currentPlayers.some(player => locPlayers.includes(player))
-      })
-      
-      if (playerGroupBases.length > 1) return playerGroupBases
-    }
-  }
-  
-  // Method 2: Proximity-based grouping for subordinate bases ONLY
-  const isMainBase = currentBase.type === "enemy-small" || currentBase.type === "enemy-medium" || currentBase.type === "enemy-large"
-  const isSubordinateBase = currentBase.type === "enemy-flank" || currentBase.type === "enemy-farm" || currentBase.type === "enemy-tower"
-  
-  if (isMainBase) {
-    // Group main bases with subordinate bases that have this main base as owner
-    const currentBaseCoords = currentBase.name.split('(')[0] // Remove (2), (3) etc
-    const linkedBases = locations.filter(loc => {
-      if (loc.id === baseId) return true
-      
-      const isSubordinate = (loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower")
-      if (!isSubordinate) return false
-      
-      // Check if this subordinate is linked to this main base via ownerCoordinates
-      return loc.ownerCoordinates === currentBaseCoords
-    })
-    
-    return linkedBases.length > 1 ? linkedBases : [currentBase]
-  }
-  
-  if (isSubordinateBase) {
-    // Find the main base this subordinate is linked to via ownerCoordinates
-    if (currentBase.ownerCoordinates) {
-      const ownerMainBase = locations.find(loc => {
-        const isMainBase = loc.type === "enemy-small" || loc.type === "enemy-medium" || loc.type === "enemy-large"
-        if (!isMainBase) return false
-        
-        const mainBaseCoords = loc.name.split('(')[0] // Remove (2), (3) etc
-        return mainBaseCoords === currentBase.ownerCoordinates
-      })
-      
-      if (ownerMainBase) {
-        // Include the main base and all subordinates linked to it
-        const groupBases = locations.filter(loc => {
-          if (loc.id === ownerMainBase.id) return true
-          if (loc.id === baseId) return true
-          
-          const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
-          if (!isSubordinate) return false
-          
-          return loc.ownerCoordinates === currentBase.ownerCoordinates
-        })
-        
-        return groupBases
-      }
-    }
-  }
-  
-  return [currentBase]
-}
-
-// Helper function to get grid position
-const getGridPosition = (x: number, y: number) => {
-  const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
-  const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
-  return {
-    col: Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1),
-    row: Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
-  }
-}
-
-// Get group color for a base - MUCH SIMPLER STABLE APPROACH
-const getGroupColor = (baseId: string, locations: any[]) => {
-  const currentBase = locations.find(loc => loc.id === baseId)
-  if (!currentBase) return null
-  
-  // SIMPLE RULE: Only main bases (small/medium/large) that have subordinates get colors
-  const isMainBase = currentBase.type === "enemy-small" || currentBase.type === "enemy-medium" || currentBase.type === "enemy-large"
-  
-  if (isMainBase) {
-    // Check if this main base has any subordinates linked to it
-    const currentBaseCoords = currentBase.name.split('(')[0] // Remove (2), (3) etc
-    const hasSubordinates = locations.some(loc => {
-      const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
-      return isSubordinate && loc.ownerCoordinates === currentBaseCoords
-    })
-    
-    if (hasSubordinates) {
-      // Use simple hash of main base ID (which never changes) for stable color
-      let hash = 0
-      for (let i = 0; i < baseId.length; i++) {
-        const char = baseId.charCodeAt(i)
-        hash = ((hash << 5) - hash) + char
-        hash = hash & hash
-      }
-      return GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
-    }
-  }
-  
-  // SIMPLE RULE: Subordinate bases get the same color as their owner main base
-  const isSubordinateBase = currentBase.type === "enemy-flank" || currentBase.type === "enemy-farm" || currentBase.type === "enemy-tower"
-  
-  if (isSubordinateBase && currentBase.ownerCoordinates) {
-    // Find the main base this subordinate is linked to
-    const ownerMainBase = locations.find(loc => {
-      const isMainBase = loc.type === "enemy-small" || loc.type === "enemy-medium" || loc.type === "enemy-large"
-      if (!isMainBase) return false
-      
-      const mainBaseCoords = loc.name.split('(')[0]
-      return mainBaseCoords === currentBase.ownerCoordinates
-    })
-    
-    if (ownerMainBase) {
-      // Use same color logic as the main base
-      let hash = 0
-      for (let i = 0; i < ownerMainBase.id.length; i++) {
-        const char = ownerMainBase.id.charCodeAt(i)
-        hash = ((hash << 5) - hash) + char
-        hash = hash & hash
-      }
-      return GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
-    }
-  }
-  
-  return null // No color for bases without grouping
-}
-
-
 const formatTime = (seconds) => {
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
@@ -248,7 +351,7 @@ const formatTime = (seconds) => {
   if (hours > 0) {
     return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
-  return `${minutes}:${secs.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  return `${minutes}:${secs.toString().padStart(2, '0')}`
 }
 
 // ============= CUSTOM HOOKS =============
@@ -279,25 +382,6 @@ const useLocationTimers = () => {
   }, [])
 
   return [locationTimers, setLocationTimers]
-}
-
-const useBaseReportEvents = (setBaseReportData, setShowBaseReportModal) => {
-  useEffect(() => {
-    const handleOpenBaseReport = (event) => {
-      const { location } = event.detail
-      // Use the same logic as the onOpenBaseReport function
-      setBaseReportData({
-        baseId: location.id,
-        baseName: location.name,
-        baseCoords: location.coordinates,
-        baseType: location.type
-      })
-      setShowBaseReportModal(true)
-    }
-    
-    window.addEventListener('openBaseReport', handleOpenBaseReport)
-    return () => window.removeEventListener('openBaseReport', handleOpenBaseReport)
-  }, [setBaseReportData, setShowBaseReportModal])
 }
 
 const useMapInteraction = () => {
@@ -438,38 +522,8 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
   )
 }
 
-const LocationMarker = ({ location, locations = [], isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport }) => {
+const LocationMarker = ({ location, isSelected, onClick, timers, onRemoveTimer, getOwnedBases }) => {
   const ownedBases = getOwnedBases(location.name)
-
-  // Calculate online player count for this base (regular players only, premium players are always counted as online)
-  const onlinePlayerCount = useMemo(() => {
-    if (!location.players) return 0
-    
-    const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
-    return basePlayerNames.filter(playerName => 
-      players.some(player => player.playerName === playerName && player.isOnline)
-    ).length
-  }, [location.players, players])
-
-  // Calculate premium player count for this base
-  const premiumPlayerCount = useMemo(() => {
-    if (!location.players) return 0
-    
-    const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
-    return basePlayerNames.filter(playerName => 
-      players.some(player => player.playerName === playerName && player.createdAt !== undefined)
-    ).length
-  }, [location.players, players])
-
-  // Calculate offline player count for this base (regular players only, premium players are not counted as offline)
-  const offlinePlayerCount = useMemo(() => {
-    if (!location.players) return 0
-    
-    const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
-    return basePlayerNames.filter(playerName => 
-      players.some(player => player.playerName === playerName && !player.isOnline && player.createdAt === undefined)
-    ).length
-  }, [location.players, players])
   
   return (
     <button
@@ -483,92 +537,15 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
       }}
     >
       <div className="relative">
-        {/* Group Color Ring - shows for bases that belong to a group */}
-        {(() => {
-          const groupColor = getGroupColor(location.id, locations)
-          if (!groupColor) return null
-          
-          return (
-            <div 
-              className="absolute rounded-full"
-              style={{
-                width: "18px", // Smaller group circle
-                height: "18px",
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
-                backgroundColor: groupColor,
-                zIndex: 0, // Behind the icon
-                opacity: 0.6 // Slightly more transparent since it's filled
-              }}
-            />
-          )
-        })()}
         {!location.type.startsWith('report') && (
           <TimerDisplay 
             timers={timers} 
             onRemoveTimer={onRemoveTimer}
           />
         )}
-
-        {/* Online player count display - only show for enemy bases with players */}
-        {location.type.startsWith("enemy") && onlinePlayerCount > 0 && (
-          <div 
-            className="absolute text-xs font-bold text-green-400 bg-black/80 rounded-full flex items-center justify-center border border-green-400/50"
-            style={{
-              width: "9px", // 75% of original 12px
-              height: "9px",
-              left: "-6px", // Adjusted proportionally
-              top: "-1.5px", // Adjusted proportionally
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              fontSize: "7px" // Proportionally smaller font
-            }}
-          >
-            {onlinePlayerCount}
-          </div>
-        )}
-
-        {/* Premium player count display - orange circle, 35% smaller, to the right of green */}
-        {location.type.startsWith("enemy") && premiumPlayerCount > 0 && (
-          <div 
-            className="absolute text-xs font-bold text-orange-400 bg-black/80 rounded-full flex items-center justify-center border border-orange-400/50"
-            style={{
-              width: "6px", // 75% of original 7.8px
-              height: "6px",
-              left: "3px", // Adjusted proportionally
-              top: "-3px", // Adjusted proportionally
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              fontSize: "5px" // Proportionally smaller font
-            }}
-          >
-            {premiumPlayerCount}
-          </div>
-        )}
-
-        {/* Offline player count display - grey circle, below green */}
-        {location.type.startsWith("enemy") && offlinePlayerCount > 0 && (
-          <div 
-            className="absolute text-xs font-bold text-gray-400 bg-black/80 rounded-full flex items-center justify-center border border-gray-400/50"
-            style={{
-              width: "6px", // 75% of original 7.8px
-              height: "6px",
-              left: "-6px", // Adjusted proportionally 
-              top: "6px", // Adjusted proportionally
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              fontSize: "5px" // Proportionally smaller font
-            }}
-          >
-            {offlinePlayerCount}
-          </div>
-        )}
         
-        <div className={`bg-gray-700 rounded-full shadow-md border border-gray-600 flex items-center justify-center ${location.abandoned ? 'opacity-40' : ''} ${
-          location.type.startsWith('report') ? 'p-0.5 scale-[0.375]' : 'p-0.5 scale-75'
-        }`}>
-          <div className={`${getColor(location.type, location)} flex items-center justify-center`}>
+        <div className={`bg-gray-700 rounded-full p-0.5 shadow-md border border-gray-600 flex items-center justify-center`}>
+          <div className={`${getColor(location.type)} flex items-center justify-center`}>
             {getIcon(location.type)}
           </div>
         </div>
@@ -578,12 +555,12 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: location.type.startsWith('report') ? '10px' : '20px',
-            height: location.type.startsWith('report') ? '10px' : '20px',
+            width: '26px',
+            height: '26px',
             zIndex: 5
           }}>
             <div className="selection-ring" style={{ width: '100%', height: '100%' }}>
-              <svg width={location.type.startsWith('report') ? "10" : "20"} height={location.type.startsWith('report') ? "10" : "20"} viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+              <svg width="26" height="26" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id={`greyGradient-${location.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stopColor="#D8D8D8"/>
@@ -639,6 +616,13 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           </div>
         )}
         
+        {ownedBases.length > 0 && (
+          <div className="absolute -bottom-1 -left-1" style={{ zIndex: 10 }}>
+            <div className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
+              <span className="text-[8px] text-white font-bold">{ownedBases.length}</span>
+            </div>
+          </div>
+        )}
         
         {location.roofCamper && (
           <div className="absolute -top-1 -left-1" style={{ zIndex: 10 }}>
@@ -653,9 +637,20 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         )}
         
         {location.hostileSamsite && (
-          <div className={`absolute ${location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' ? '-right-2.5' : '-right-1'} ${"-bottom-1"}`} style={{ zIndex: 10 }}>
+          <div className={`absolute ${location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' ? '-right-2.5' : '-right-1'} ${ownedBases.length > 0 ? '-bottom-2.5' : '-bottom-1'}`} style={{ zIndex: 10 }}>
             <div className="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center" title="Hostile Samsite">
               <span className="text-[8px] font-bold text-black">!</span>
+            </div>
+          </div>
+        )}
+        
+        {location.raidedOut && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style={{ zIndex: 10 }}>
+            <div className="w-4 h-4 bg-red-600 bg-opacity-80 rounded-full flex items-center justify-center" title="Raided Out">
+              <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </div>
           </div>
         )}
@@ -697,7 +692,7 @@ const ContextMenu = ({ x, y, onAddBase }) => (
   </div>
 )
 
-const ActionMenu = ({ location, style, onClose, onAction, onOpenBaseReport }) => {
+const ActionMenu = ({ location, style, onClose, onAction }) => {
   const isFriendly = location.type.startsWith('friendly')
   
   if (isFriendly) {
@@ -709,8 +704,8 @@ const ActionMenu = ({ location, style, onClose, onAction, onOpenBaseReport }) =>
       >
         <div className="space-y-2">
           {[
-            { label: 'Needs pickup', actions: ['Ore', 'Loot', 'Detailed'] },
-
+            { label: 'Ore needs pick up', actions: ['Simple', 'Detailed'] },
+            { label: 'Loot needs pick up', actions: ['Simple', 'Detailed'] },
             { label: 'Base needs kits', actions: ['Simple', 'Detailed'] },
             { label: 'Needs Repair/Upgrade', actions: ['Simple', 'Detailed'] }
           ].map(({ label, actions }) => (
@@ -745,18 +740,6 @@ const ActionMenu = ({ location, style, onClose, onAction, onOpenBaseReport }) =>
               onClick={() => onAction('Intentional Decay')}
             >
               Set Timer
-            </button>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-gray-200 text-sm whitespace-nowrap">Write Report</span>
-            <button 
-              className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors font-medium cursor-pointer"
-              onClick={() => {
-                onOpenBaseReport(location)
-                onClose()
-              }}
-            >
-              Create
             </button>
           </div>
         </div>
@@ -862,28 +845,45 @@ const DecayingMenu = ({ style, onClose, onStartTimer, title = "Decay Calculator"
   )
 }
 
+const RaidedOutPrompt = ({ onConfirm, onCancel }) => (
+  <div 
+    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4"
+    onClick={onCancel}
+  >
+    <div 
+      className="bg-gray-800 rounded-lg shadow-2xl border border-gray-600 p-6 max-w-sm w-full relative"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        onClick={onCancel}
+        className="absolute top-4 right-4 text-gray-400 hover:text-gray-200 transition-colors"
+      >
+        <X className="h-5 w-5" />
+      </button>
+      <h3 className="text-lg font-bold text-white mb-4">Base Raided Out</h3>
+      <p className="text-gray-300 mb-6">Would you like to report this raid?</p>
+      <div className="flex gap-3 justify-end">
+        <button
+          onClick={onConfirm}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+        >
+          Make Report
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 bg-gray-700 text-gray-200 rounded-md hover:bg-gray-600 transition-colors font-medium"
+        >
+          Not right now
+        </button>
+      </div>
+    </div>
+  </div>
+)
 
-const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport, players, locations }) => {
+const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer }) => {
   const [showActionMenu, setShowActionMenu] = useState(false)
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
-  
-  // Get players from the location data (same as BaseModal)
-  // For subsidiary bases, get players from their main base
-  const locationPlayers = (() => {
-    if (location.ownerCoordinates && 
-        (location.type.includes('flank') || 
-         location.type.includes('tower') || 
-         location.type.includes('farm'))) {
-      const mainBase = locations.find(loc => 
-        loc.name.split('(')[0] === location.ownerCoordinates.split('(')[0]
-      )
-      if (mainBase && mainBase.players) {
-        return mainBase.players
-      }
-    }
-    return location.players || ''
-  })()
   
   return (
     <div 
@@ -891,70 +891,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       style={{ width: '30%', minWidth: '350px', maxWidth: '450px', minHeight: '160px' }}
     >
       {!location.type.startsWith('report') && (
-        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-x-10 flex gap-3">
-      {/* Rectangle - smaller size for enemy base preview */}
-      <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none z-50">
-        <div className="w-52 h-28 bg-gray-800 border border-gray-600 shadow-lg">
-          {/* Player snapshot grid - 2 columns x 5 rows */}
-          <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
-            {(() => {
-              // Parse selected players from comma-separated string (same as BaseModal)
-              const selectedPlayersList = locationPlayers ? locationPlayers.split(',').map(p => p.trim()).filter(p => p) : []
-              
-              // Filter players to only show those assigned to this base
-              const taggedPlayers = players.filter(p => selectedPlayersList.includes(p.playerName));
-              
-              // Separate premium and regular players
-              const premiumTaggedPlayers = taggedPlayers.filter(p => p.createdAt !== undefined); // Premium players have createdAt
-              const regularTaggedPlayers = taggedPlayers.filter(p => p.createdAt === undefined);
-              
-              // Get online and offline players from regular players only (premium players are always offline)
-              const onlinePlayers = regularTaggedPlayers.filter(p => p.isOnline) || [];
-              const offlinePlayers = regularTaggedPlayers.filter(p => !p.isOnline) || [];
-              
-              // Combine in priority order: online first, then offline, then premium
-              const onlineCount = onlinePlayers.length;
-              const offlineCount = offlinePlayers.length;
-              const prioritizedPlayers = [
-                ...onlinePlayers.slice(0, 10), // Take up to 10 online players first
-                ...offlinePlayers.slice(0, Math.max(0, 10 - onlineCount)), // Offline players after online
-                ...premiumTaggedPlayers.slice(0, Math.max(0, 10 - onlineCount - offlineCount)) // Premium players last
-              ].slice(0, 10);
-              
-              // Fill remaining slots with empty boxes
-              const slots = Array(10).fill(null).map((_, index) => 
-                prioritizedPlayers[index] || null
-              );
-              
-              return slots.map((player, index) => (
-                <div 
-                  key={index}
-                  className={`flex items-center justify-center text-xs font-medium border-r border-b border-gray-700 ${
-                    index % 2 === 1 ? 'border-r-0' : ''
-                  } ${
-                    index >= 8 ? 'border-b-0' : ''
-                  } ${
-                    player 
-                      ? player.createdAt !== undefined // Premium player
-                        ? 'bg-orange-900 text-orange-300' 
-                        : player.isOnline 
-                          ? 'bg-green-900 text-green-300' 
-                          : 'bg-gray-700 text-gray-400'
-                      : 'bg-gray-800'
-                  }`}
-                >
-                  {player ? (
-                    <span className="truncate px-1" title={player.playerName}>
-                      {player.playerName.length > 8 ? player.playerName.slice(0, 8) : player.playerName}
-                    </span>
-                  ) : null}
-                </div>
-              ));
-            })()}
-          </div>
-        </div>
-      </div>
-      
+        <div className="absolute -top-7 left-1/2 transform -translate-x-1/2 flex gap-3">
           <button className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center hover:from-blue-400 hover:to-blue-600 transition-all duration-200 border-2 border-blue-300 shadow-lg transform hover:scale-105" title="Linked Bases">
             <svg className="h-5 w-5 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1005,24 +942,11 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             zIndex: 30
           }}
           onClose={() => setShowActionMenu(false)}
-          onOpenBaseReport={onOpenBaseReport}
           onAction={(action) => {
             console.log(action)
             setShowActionMenu(false)
             if (action === 'Intentional Decay' || action === 'Decaying') {
               setShowDecayingMenu(true)
-            }
-             else if (action === 'Write report') {
-              onOpenBaseReport(location)
-            }
-            else if (action === 'Add Base Report') {
-              setBaseReportData({
-                baseId: location.id,
-                baseName: location.name,
-                baseCoords: location.coordinates || getGridCoordinate(location.x, location.y, locations, null),
-                baseType: location.type
-              })
-              setShowBaseReportModal(true)
             }
           }}
         />
@@ -1062,7 +986,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       
       <div className="flex-shrink-0 mt-4 relative">
         <div className="bg-gray-700 rounded-full p-4 shadow-xl border-2 border-gray-600">
-          <div className={getColor(location.type, location)}>
+          <div className={getColor(location.type)}>
             <div className="transform scale-125">
               {getLargeIcon(location.type)}
             </div>
@@ -1088,11 +1012,18 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           </div>
         )}
         
+        {ownedBases.length > 0 && (
+          <div className="absolute -bottom-1 -right-1">
+            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg border-2 border-gray-800">
+              <span className="text-xs text-white font-bold">{ownedBases.length}</span>
+            </div>
+          </div>
+        )}
         
         {location.roofCamper && (
           <div className="absolute -top-2 -left-2">
-            <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center shadow-lg border border-gray-800" title="Roof Camper">
-              <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center shadow-lg border-2 border-gray-800" title="Roof Camper">
+              <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <circle cx="12" cy="12" r="8" />
                 <line x1="12" y1="8" x2="12" y2="16" />
                 <line x1="8" y1="12" x2="16" y2="12" />
@@ -1103,16 +1034,19 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         
         {location.hostileSamsite && (
           <div className="absolute -top-2 -right-2">
-            <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg border border-gray-800" title="Hostile Samsite">
-              <span className="text-[10px] font-bold text-black">!</span>
+            <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg border-2 border-gray-800" title="Hostile Samsite">
+              <span className="text-xs font-bold text-black">!</span>
             </div>
           </div>
         )}
         
-        {location.abandoned && (
-          <div className="absolute -bottom-2 -left-2">
-            <div className="w-4 h-4 bg-gray-500 rounded-full flex items-center justify-center shadow-lg border border-gray-800" title="Abandoned">
-              <span className="text-[10px] font-bold text-white">A</span>
+        {location.raidedOut && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="w-6 h-6 bg-red-600 bg-opacity-80 rounded-full flex items-center justify-center shadow-lg border-2 border-gray-800" title="Raided Out">
+              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </div>
           </div>
         )}
@@ -1134,14 +1068,16 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             } ${
               (location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates ? 'px-3 py-1' : 'px-4 py-1.5'
             }`}>
-              <LocationName 
-                name={location.name} 
-                className={`${
-                  location.type.startsWith('report') ? 'text-purple-300' : location.type.startsWith('enemy') ? 'text-red-300' : 'text-green-300'
-                } ${
-                  (location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates ? 'text-xl' : 'text-3xl'
-                }`}
-              />
+              <LocationName name={location.name} className={`${
+                location.type.startsWith('report') ? 'text-purple-300' : location.type.startsWith('enemy') ? 'text-red-300' : 'text-green-300'
+              } ${
+                (location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates ? 'text-xl' : 'text-3xl'
+              }`} />
+              {(location.type === 'enemy-farm' || location.type === 'enemy-flank' || location.type === 'enemy-tower') && location.ownerCoordinates && (
+                <span className="text-sm font-normal ml-1 opacity-80 text-white">
+                  ({location.ownerCoordinates})
+                </span>
+              )}
             </span>
           </div>
         </div>
@@ -1191,7 +1127,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               </div>
             </div>
           )}
-          {(location.roofCamper || location.hostileSamsite || location.abandoned) && (
+          {(location.roofCamper || location.hostileSamsite || location.raidedOut) && (
             <div className="text-sm text-gray-400 flex gap-3 flex-wrap">
               {location.roofCamper && (
                 <span className="text-orange-400 font-medium flex items-center gap-1">
@@ -1209,15 +1145,18 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
                   Hostile Samsite
                 </span>
               )}
+              {location.raidedOut && (
+                <span className="text-red-400 font-medium flex items-center gap-1">
+                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                  Raided Out
+                </span>
+              )}
             </div>
           )}
         </div>
-              {location.abandoned && (
-                <span className="text-gray-400 font-medium flex items-center gap-1">
-                  <span className="bg-gray-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">A</span>
-                  Abandoned
-                </span>
-              )}
       </div>
     </div>
   )
@@ -1225,7 +1164,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
 
 // ============= MAIN COMPONENT =============
 export default function InteractiveTacticalMap() {
-  const [locations, setLocations] = useState<any[]>([])
+  const [locations, setLocations] = useState([])
   const [selectedLocation, setSelectedLocation] = useState(null)
   const [contextMenu, setContextMenu] = useState({ x: 0, y: 0, visible: false })
   const [newBaseModal, setNewBaseModal] = useState({ x: 0, y: 0, visible: false })
@@ -1234,22 +1173,10 @@ export default function InteractiveTacticalMap() {
   const [editingReport, setEditingReport] = useState(null)
   
   // Central Report Library - Hidden storage for all reports
-  const [reportLibrary, setReportLibrary] = useState<any[]>([])
+  const [reportLibrary, setReportLibrary] = useState([])
   const [reportCounter, setReportCounter] = useState(1)
   const [showReportPanel, setShowReportPanel] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
-  
-  // New Report System State
-  const [showPlayerModal, setShowPlayerModal] = useState(false)
-  const [showLogsModal, setShowLogsModal] = useState(false)
-  const [showGeneralReportModal, setShowGeneralReportModal] = useState(false)
-  const [showBaseReportModal, setShowBaseReportModal] = useState(false)
-  const [baseReportData, setBaseReportData] = useState({
-    baseId: null,
-    baseName: null,
-    baseCoords: null,
-    baseType: null
-  })
   
   // Add report to library (for use in BaseModal)
   const addToReportLibrary = useCallback((reportData) => {
@@ -1266,83 +1193,10 @@ export default function InteractiveTacticalMap() {
   }, [])
 
   
-  // Report Modal Handlers
-  const onOpenReport = useCallback((location) => {
-    setBaseReportData({
-      baseId: location.id,
-      baseName: location.name,
-      baseCoords: location.coordinates,
-      baseType: location.type
-    })
-    setShowBaseReportModal(true)
-  }, [])
-
-  const onOpenBaseReport = useCallback((location) => {
-    setBaseReportData({
-      baseId: location.id,
-      baseName: location.name,
-      baseCoords: location.coordinates,
-      baseType: location.type
-    })
-    setShowBaseReportModal(true)
-  }, [])
-
-  // Fetch player data for online count display
-  const { data: externalPlayers = [] } = useQuery<ExternalPlayer[]>({
-    queryKey: ['/api/players'],
-    staleTime: 60000, // Cache for 1 minute
-    refetchOnWindowFocus: false, // Don't refetch on focus to reduce requests
-    retry: 1, // Minimal retries
-    throwOnError: false, // Don't crash on errors
-  })
-
-  const { data: premiumPlayers = [] } = useQuery({
-    queryKey: ['/api/premium-players'],
-    staleTime: 60000,
-    refetchOnWindowFocus: false,
-    retry: 1,
-    throwOnError: false,
-  })
-
-  // Combine external and premium players
-  const players = [
-    ...externalPlayers,
-    ...premiumPlayers.map(p => ({
-      ...p,
-      isOnline: false, // Premium players are considered offline for display
-      totalSessions: 0
-    }))
-  ]
-
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
   const { zoom, setZoom, pan, isDragging, setIsDragging, isDraggingRef, dragStartRef, hasDraggedRef } = useMapInteraction()
   
-  // Handle BaseModal report events
-  useBaseReportEvents(setBaseReportData, setShowBaseReportModal)
-  
-  // Handle subordinate base modal navigation
-  useEffect(() => {
-    const handleOpenBaseModal = (event) => {
-      const { location, modalType } = event.detail
-      if (location && modalType === 'enemy') {
-        setEditingLocation(location)
-        setModalType('enemy')
-        setNewBaseModal({ 
-          visible: true,
-          x: location.x, 
-          y: location.y 
-        })
-      }
-    }
-
-    window.addEventListener('openBaseModal', handleOpenBaseModal)
-    
-    return () => {
-      window.removeEventListener('openBaseModal', handleOpenBaseModal)
-    }
-  }, [])
-
   const getOwnedBases = useCallback((ownerName) => {
     const ownerBase = ownerName.split('(')[0]
     return locations.filter(loc => 
@@ -1372,13 +1226,6 @@ export default function InteractiveTacticalMap() {
     setContextMenu(prev => ({ ...prev, visible: false }))
     setEditingLocation(null)
     setEditingReport(null)
-    // Clear any stale base report data
-    setBaseReportData({
-      baseId: null,
-      baseName: null,
-      baseCoords: null,
-      baseType: null
-    })
     setModalType(type)
     console.log("Modal type set to:", type, "Modal should be visible:", true)
     setNewBaseModal(prev => ({ ...prev, visible: true }))
@@ -1425,44 +1272,8 @@ export default function InteractiveTacticalMap() {
     setShowAdvancedPanel(false)
   }, [])
   
-  const handleDeleteLocation = useCallback(async () => {
+  const handleDeleteLocation = useCallback(() => {
     if (editingLocation) {
-      // Delete associated reports from database if this is a base with a name
-      if (editingLocation.name) {
-        try {
-          // Fetch all reports for this base
-          const response = await fetch('/api/reports')
-          const allReports = await response.json()
-          
-          // Find reports that belong to this base using base ID (primary) and name (fallback)
-          const reportsToDelete = allReports.filter(report => 
-            report.baseId === editingLocation.id ||
-            report.locationName === editingLocation.name ||
-            report.locationCoords === editingLocation.name ||
-            (report.content?.baseName === editingLocation.name) ||
-            (report.content?.baseCoords === editingLocation.name)
-          )
-          
-          // Delete each report
-          for (const report of reportsToDelete) {
-            await fetch(`/api/reports/${report.id}`, {
-              method: 'DELETE'
-            })
-          }
-        } catch (error) {
-          console.error('Error deleting associated reports:', error)
-        }
-      }
-
-      // Delete associated player base tags
-      try {
-        await fetch(`/api/player-base-tags/base/${editingLocation.id}`, {
-          method: 'DELETE'
-        })
-      } catch (error) {
-        console.error('Error deleting associated player base tags:', error)
-      }
-      
       setLocations(prev => prev.filter(loc => loc.id !== editingLocation.id))
       setSelectedLocation(null)
       setLocationTimers(prev => {
@@ -1514,13 +1325,6 @@ export default function InteractiveTacticalMap() {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-700 to-gray-900 p-4">
-      {/* Top Toolbar */}
-      <div className="absolute top-4 left-4 right-4 z-30 flex justify-between items-center pointer-events-none">
-        <div className="text-white text-sm font-medium pointer-events-auto">
-          Tactical Map
-        </div>
-
-      </div>
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
@@ -1600,10 +1404,7 @@ export default function InteractiveTacticalMap() {
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     {['Logs', 'Progression', 'Players', 'Teams', 'Bot Control', 'Turret Control'].map((btn) => (
-                      <button key={btn} onClick={() => {
-                        if (btn === 'Players') setShowPlayerModal(true)
-                        else if (btn === 'Logs') setShowLogsModal(true)
-                      }} data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl">
+                      <button key={btn} className="px-4 py-2 bg-gradient-to-b from-gray-400 to-gray-600 hover:from-gray-300 hover:to-gray-500 text-white font-semibold rounded shadow-lg border border-gray-500 transition-all duration-200 hover:shadow-xl">
                         {btn}
                       </button>
                     ))}
@@ -1639,17 +1440,17 @@ export default function InteractiveTacticalMap() {
               }}
             >
               <div className="absolute inset-0">
-                <svg className="w-full h-full" viewBox="0 0 800 800">
+                <svg className="w-full h-full" viewBox="0 0 800 600">
                   <defs>
                     <pattern id="waves" x="0" y="0" width="40" height="20" patternUnits="userSpaceOnUse">
                       <path d="M0,10 Q10,0 20,10 T40,10" stroke="#0f766e" strokeWidth="2" fill="none" opacity="0.4"/>
                     </pattern>
                   </defs>
-                  <image href={rustMapImage} width="100%" height="100%" preserveAspectRatio="xMinYMin slice" style={{filter: 'brightness(0.9) contrast(1.1)'}}/>
+                  <rect width="100%" height="100%" fill="url(#waves)" />
                 </svg>
               </div>
 
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 800" style={{display: 'none'}}>
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 600">
                 <path d="M150,200 Q200,100 350,80 Q500,60 600,150 Q700,250 650,400 Q600,500 450,520 Q300,540 200,450 Q100,350 150,200 Z"
                       fill="#fbbf24" stroke="#d97706" strokeWidth="3"/>
                 <path d="M160,210 Q210,110 350,90 Q490,70 590,160 Q680,260 640,390 Q590,490 450,510 Q310,530 210,440 Q110,360 160,210 Z"
@@ -1657,19 +1458,19 @@ export default function InteractiveTacticalMap() {
               </svg>
 
               <div className="absolute inset-0 pointer-events-none">
-                <svg className="w-full h-full" viewBox="0 0 800 800">
-                  {Array.from({ length: 27 }, (_, i) => (
-                    <line key={`v-${i}`} x1={i * 30.77} y1="0" x2={i * 30.77} y2="800" stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
+                <svg className="w-full h-full" viewBox="0 0 800 600">
+                  {Array.from({ length: 33 }, (_, i) => (
+                    <line key={`v-${i}`} x1={i * 25} y1="0" x2={i * 25} y2="600" stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
                   ))}
-                  {Array.from({ length: 27 }, (_, i) => (
-                    <line key={`h-${i}`} x1="0" y1={i * 30.77} x2="800" y2={i * 30.77} stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
+                  {Array.from({ length: 25 }, (_, i) => (
+                    <line key={`h-${i}`} x1="0" y1={i * 25} x2="800" y2={i * 25} stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
                   ))}
-                  {Array.from({ length: 26 }, (_, col) => 
-                    Array.from({ length: 26 }, (_, row) => {
+                  {Array.from({ length: 32 }, (_, col) => 
+                    Array.from({ length: 24 }, (_, row) => {
                       const letter = col < 26 ? String.fromCharCode(65 + col) : `A${String.fromCharCode(65 + col - 26)}`
                       return (
-                        <text key={`label-${col}-${row}`} x={col * 30.77 + 1} y={row * 30.77 + 7} fill="black" fontSize="7" fontWeight="600" textAnchor="start">
-                          {letter}{row}
+                        <text key={`label-${col}-${row}`} x={col * 25 + 1} y={row * 25 + 7} fill="black" fontSize="7" fontWeight="600" textAnchor="start" stroke="rgba(255,255,255,0.4)" strokeWidth="0.3">
+                          {letter}{row + 1}
                         </text>
                       )
                     })
@@ -1677,63 +1478,15 @@ export default function InteractiveTacticalMap() {
                 </svg>
               </div>
 
-{/* Connection lines between grouped bases when one is selected */}
-              {selectedLocation && (() => {
-                const selectedGroupColor = getGroupColor(selectedLocation.id, locations)
-                if (!selectedGroupColor) return null
-                
-                const groupBases = getBaseGroup(selectedLocation.id, locations)
-                if (groupBases.length <= 1) return null
-                
-                const mainBase = groupBases.find(base => 
-                  base.type === "enemy-small" || base.type === "enemy-medium" || base.type === "enemy-large"
-                )
-                
-                if (!mainBase) return null
-                
-                const subordinates = groupBases.filter(base => 
-                  base.type === "enemy-flank" || base.type === "enemy-farm" || base.type === "enemy-tower"
-                )
-                
-                return (
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{zIndex: 0}}>
-                    {subordinates.map(subordinate => (
-                      <line
-                        key={`line-${mainBase.id}-${subordinate.id}`}
-                        x1={`${mainBase.x}%`}
-                        y1={`${mainBase.y}%`}
-                        x2={`${subordinate.x}%`}
-                        y2={`${subordinate.y}%`}
-                        stroke={selectedGroupColor}
-                        strokeWidth="3"
-                        opacity="0.6"
-                      />
-                    ))}
-                  </svg>
-                )
-              })()}
-
               {locations.map((location) => (
                 <LocationMarker
                   key={location.id}
                   location={location}
-                  locations={locations}
                   isSelected={selectedLocation?.id === location.id}
                   onClick={setSelectedLocation}
                   timers={locationTimers[location.id]}
                   onRemoveTimer={(timerId) => handleRemoveTimer(location.id, timerId)}
                   getOwnedBases={getOwnedBases}
-                  players={players}
-                  onOpenReport={onOpenBaseReport}
-                  onOpenBaseReport={(location) => {
-                    setBaseReportData({
-                      baseId: location.id,
-                      baseName: location.name,
-                      baseCoords: location.coordinates,
-                      baseType: location.type
-                    })
-                    setShowBaseReportModal(true)
-                  }}
                 />
               ))}
             </div>
@@ -1747,18 +1500,6 @@ export default function InteractiveTacticalMap() {
               onSelectLocation={setSelectedLocation}
               locationTimers={locationTimers}
               onAddTimer={handleAddTimer}
-              onOpenReport={onOpenBaseReport}
-              players={players}
-              locations={locations}
-              onOpenBaseReport={(location) => {
-                setBaseReportData({
-                  baseId: location.id,
-                  baseName: location.name,
-                  baseCoords: location.coordinates,
-                  baseType: location.type
-                })
-                setShowBaseReportModal(true)
-              }}
             />
           )}
         </div>
@@ -1780,38 +1521,12 @@ export default function InteractiveTacticalMap() {
             onSave={handleSaveBase}
             onCancel={handleCancel}
             onDelete={handleDeleteLocation}
-            onOpenBaseReport={onOpenBaseReport}
             editingReport={editingReport}
             reportLibrary={reportLibrary}
             addToReportLibrary={addToReportLibrary}
             updateReportLibrary={updateReportLibrary}
           />
         )}
-
-
-        <GeneralReportModal
-          isVisible={showGeneralReportModal}
-          onClose={() => setShowGeneralReportModal(false)}
-          coordinates=""
-        />
-
-        <ActionReportModal
-          isVisible={showBaseReportModal}
-          onClose={() => setShowBaseReportModal(false)}
-          baseId={baseReportData.baseId || ''}
-          baseName={baseReportData.baseName || ''}
-          baseCoords={baseReportData.baseCoords || ''}
-        />
-
-        <PlayerModal
-          isOpen={showPlayerModal}
-          onClose={() => setShowPlayerModal(false)}
-        />
-
-        <LogsModal
-          isOpen={showLogsModal}
-          onClose={() => setShowLogsModal(false)}
-        />
       </div>
     </div>
   )
