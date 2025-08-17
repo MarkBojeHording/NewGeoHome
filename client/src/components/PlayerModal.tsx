@@ -218,7 +218,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                   <span>[{selectedPlayer.toUpperCase()}]</span>
                   <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                     players.find(p => p.playerName === selectedPlayer)?.isOnline 
-                      ? 'bg-green-600 text-green-200' 
+                      ? 'bg-yellow-600 text-yellow-200' 
                       : 'bg-gray-600 text-gray-300'
                   }`}>
                     {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'ONLINE' : 'OFFLINE'}
@@ -447,13 +447,13 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                             <div className="flex items-center gap-2">
                               <div
                                 className={`w-2 h-2 rounded-full ${
-                                  player.isOnline ? 'bg-green-500' : 'bg-gray-500'
+                                  player.isOnline ? 'bg-yellow-500' : 'bg-gray-500'
                                 }`}
                                 data-testid={`status-indicator-${index}`}
                               />
                               <span
                                 className={`font-medium ${
-                                  player.isOnline ? 'text-green-400' : 'text-gray-400'
+                                  player.isOnline ? 'text-yellow-400' : 'text-gray-400'
                                 }`}
                                 data-testid={`player-name-${index}`}
                               >
@@ -461,7 +461,7 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                               </span>
                               <span
                                 className={`text-sm ${
-                                  player.isOnline ? 'text-green-300' : 'text-gray-500'
+                                  player.isOnline ? 'text-yellow-300' : 'text-gray-500'
                                 }`}
                                 data-testid={`player-status-${index}`}
                               >
