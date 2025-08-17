@@ -1787,7 +1787,7 @@ export default function InteractiveTacticalMap() {
         </div>
       </div>
 
-        {contextMenu.visible && (
+      {contextMenu.visible && (
           <ContextMenu 
             x={contextMenu.x}
             y={contextMenu.y}
@@ -1795,7 +1795,7 @@ export default function InteractiveTacticalMap() {
           />
         )}
 
-        {newBaseModal.visible && (
+      {newBaseModal.visible && (
           <BaseModal 
             modal={newBaseModal}
             modalType={modalType}
@@ -1813,7 +1813,7 @@ export default function InteractiveTacticalMap() {
         )}
 
 
-        <ActionReportModal
+      <ActionReportModal
           isVisible={showBaseReportModal}
           onClose={() => setShowBaseReportModal(false)}
           baseId={baseReportData.baseId || ''}
