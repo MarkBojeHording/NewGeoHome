@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import ActionReportModal from '../components/ActionReportModal'
+import GeneralReportModal from '../components/GeneralReportModal'
 import LogsModal from '../components/LogsModal'
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
@@ -1241,7 +1242,7 @@ export default function InteractiveTacticalMap() {
   // New Report System State
   const [showPlayerModal, setShowPlayerModal] = useState(false)
   const [showLogsModal, setShowLogsModal] = useState(false)
-
+  const [showGeneralReportModal, setShowGeneralReportModal] = useState(false)
   const [showBaseReportModal, setShowBaseReportModal] = useState(false)
   const [baseReportData, setBaseReportData] = useState({
     baseId: null,
@@ -1787,6 +1788,12 @@ export default function InteractiveTacticalMap() {
           />
         )}
 
+
+        <GeneralReportModal
+          isVisible={showGeneralReportModal}
+          onClose={() => setShowGeneralReportModal(false)}
+          coordinates=""
+        />
 
         <ActionReportModal
           isVisible={showBaseReportModal}
