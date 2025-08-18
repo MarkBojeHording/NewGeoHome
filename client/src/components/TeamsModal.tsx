@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Castle, Home, Tent, Shield, Wheat, FileText, Clock, Skull } from 'lucide-react'
+import { X, Castle, Home, Tent, Shield, Wheat, FileText, Clock, Skull, Rocket, Users } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import type { ExternalPlayer } from '@shared/schema'
 
@@ -16,9 +16,10 @@ interface TeamsModalProps {
   onClose: () => void
   locations: any[]
   players: ExternalPlayer[]
+  onOpenBaseModal?: (base: any) => void
 }
 
-export function TeamsModal({ isOpen, onClose, locations, players }: TeamsModalProps) {
+export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModal }: TeamsModalProps) {
   if (!isOpen) return null
 
   // Filter to only enemy main bases (small, medium, large)
@@ -92,6 +93,24 @@ export function TeamsModal({ isOpen, onClose, locations, players }: TeamsModalPr
     return { level: 'NONE', color: 'text-gray-400 bg-gray-900/20' }
   }
 
+  const getRocketCost = (baseLocation: any) => {
+    if (baseLocation.estimatedRocketCost && baseLocation.estimatedRocketCost > 0) {
+      return baseLocation.estimatedRocketCost
+    }
+    return null
+  }
+
+  const getAllies = (baseLocation: any) => {
+    if (!baseLocation.players) return []
+    return baseLocation.players.split(",").map((p: string) => p.trim()).filter((p: string) => p)
+  }
+
+  const handleBaseClick = (base: any) => {
+    if (onOpenBaseModal) {
+      onOpenBaseModal(base)
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div 
@@ -126,8 +145,9 @@ export function TeamsModal({ isOpen, onClose, locations, players }: TeamsModalPr
                 return (
                   <div 
                     key={base.id}
-                    className="bg-gray-800 border border-gray-700 p-4 flex items-center gap-4 hover:bg-gray-750 transition-colors"
+                    className="bg-gray-800 border border-gray-700 p-4 flex items-start gap-4 hover:bg-gray-750 transition-colors cursor-pointer"
                     data-testid={`team-entry-${base.name}`}
+                    onClick={() => handleBaseClick(base)}
                   >
                     {/* Base Icon */}
                     <div className="flex-shrink-0">
@@ -152,7 +172,7 @@ export function TeamsModal({ isOpen, onClose, locations, players }: TeamsModalPr
                       </div>
 
                       {/* Stats Row */}
-                      <div className="grid grid-cols-4 gap-4 mb-3">
+                      <div className="grid grid-cols-5 gap-3 mb-3">
                         {/* Online Players */}
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 bg-red-500 border border-red-400"></div>
@@ -166,6 +186,14 @@ export function TeamsModal({ isOpen, onClose, locations, players }: TeamsModalPr
                           <div className="w-3 h-3 bg-gray-500 border border-gray-400"></div>
                           <span className="text-sm text-gray-300 font-mono">
                             {totalCount} TOTAL
+                          </span>
+                        </div>
+
+                        {/* Rocket Cost */}
+                        <div className="flex items-center gap-2">
+                          <Rocket className="w-3 h-3 text-blue-400" />
+                          <span className="text-sm text-blue-300 font-mono">
+                            {getRocketCost(base) ? `${getRocketCost(base)} ROCKETS` : 'UNKNOWN'}
                           </span>
                         </div>
 
@@ -186,12 +214,39 @@ export function TeamsModal({ isOpen, onClose, locations, players }: TeamsModalPr
                         </div>
                       </div>
 
+                      {/* Allies Section */}
+                      <div className="mb-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Users className="w-4 h-4 text-green-400" />
+                          <span className="text-sm font-medium text-green-400 font-mono">ALLIES ({getAllies(base).length})</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {getAllies(base).slice(0, 6).map((ally, index) => (
+                            <span 
+                              key={index}
+                              className="text-xs bg-green-900/20 text-green-300 px-2 py-1 border border-green-600/30 font-mono"
+                            >
+                              {ally.length > 10 ? `${ally.slice(0, 10)}...` : ally}
+                            </span>
+                          ))}
+                          {getAllies(base).length > 6 && (
+                            <span className="text-xs text-gray-400 font-mono">
+                              +{getAllies(base).length - 6} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
                       {/* Base Notes Preview */}
                       {base.notes && (
                         <div className="mb-2">
-                          <p className="text-sm text-gray-400 font-mono bg-gray-800/50 p-2 border-l-2 border-orange-600/30">
-                            {base.notes.length > 80 ? `${base.notes.slice(0, 80)}...` : base.notes}
-                          </p>
+                          <div className="text-xs text-gray-500 font-mono mb-1">NOTES:</div>
+                          <div 
+                            className="text-sm text-gray-400 font-mono bg-gray-800/50 p-2 border-l-2 border-orange-600/30 max-h-16 overflow-hidden"
+                            style={{ lineHeight: '1.4' }}
+                          >
+                            {base.notes.length > 120 ? `${base.notes.slice(0, 120)}...` : base.notes}
+                          </div>
                         </div>
                       )}
                     </div>

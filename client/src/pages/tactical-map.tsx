@@ -1882,6 +1882,12 @@ export default function InteractiveTacticalMap() {
           onClose={() => setShowTeamsModal(false)}
           locations={locations}
           players={players}
+          onOpenBaseModal={(base) => {
+            setEditingLocation(base)
+            setModalType(base.type.startsWith('friendly') ? 'friendly' : 'enemy')
+            setNewBaseModal({ x: 0, y: 0, visible: true })
+            setShowTeamsModal(false)
+          }}
         />
       </div>
     </div>
