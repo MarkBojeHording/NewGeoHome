@@ -77,21 +77,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
     return 'Recent'
   }
 
-  const getThreatLevel = (baseLocation: any) => {
-    const onlineCount = getOnlinePlayerCount(baseLocation)
-    const totalCount = getTotalPlayerCount(baseLocation)
-    const recentReports = reports.filter((report: any) => {
-      if (!report.baseTags || !report.baseTags.includes(baseLocation.id)) return false
-      const reportTime = new Date(report.createdAt).getTime()
-      const dayAgo = Date.now() - (24 * 60 * 60 * 1000)
-      return reportTime > dayAgo
-    }).length
 
-    if (onlineCount >= 3 || recentReports >= 2) return { level: 'HIGH', color: 'text-red-400 bg-red-900/20' }
-    if (onlineCount >= 1 || recentReports >= 1) return { level: 'MED', color: 'text-yellow-400 bg-yellow-900/20' }
-    if (totalCount > 0) return { level: 'LOW', color: 'text-green-400 bg-green-900/20' }
-    return { level: 'NONE', color: 'text-gray-400 bg-gray-900/20' }
-  }
 
   const getRocketCost = (baseLocation: any) => {
     if (baseLocation.estimatedRocketCost && baseLocation.estimatedRocketCost > 0) {
@@ -145,93 +131,90 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                 return (
                   <div 
                     key={base.id}
-                    className="bg-gray-800 border border-gray-700 p-4 flex items-start gap-4 hover:bg-gray-750 transition-colors cursor-pointer"
+                    className="bg-gray-800 border border-gray-700 p-3 flex items-start gap-3 hover:bg-gray-750 transition-colors cursor-pointer"
                     data-testid={`team-entry-${base.name}`}
                     onClick={() => handleBaseClick(base)}
                   >
                     {/* Base Icon */}
                     <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-red-900/30 border border-red-600/50 flex items-center justify-center">
-                        <IconComponent className="h-12 w-12 text-red-400" />
+                      <div className="w-12 h-12 bg-red-900/30 border border-red-600/50 flex items-center justify-center">
+                        <IconComponent className="h-8 w-8 text-red-400" />
                       </div>
                     </div>
 
                     {/* Base Information */}
                     <div className="flex-1">
-                      {/* Base Name, Type and Threat Level */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <h3 className="text-lg font-semibold text-white font-mono">
+                      {/* Base Name and Type */}
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-base font-semibold text-white font-mono">
                           {base.name}
                         </h3>
-                        <span className="text-sm text-gray-400 bg-gray-700 px-2 py-1 font-mono">
+                        <span className="text-xs text-gray-400 bg-gray-700 px-2 py-1 font-mono">
                           {base.type.replace('enemy-', '').toUpperCase()}
-                        </span>
-                        <span className={`text-xs px-2 py-1 font-mono border ${getThreatLevel(base).color}`}>
-                          {getThreatLevel(base).level} THREAT
                         </span>
                       </div>
 
                       {/* Stats Row */}
-                      <div className="grid grid-cols-5 gap-3 mb-3">
+                      <div className="grid grid-cols-5 gap-2 mb-2">
                         {/* Online Players */}
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-red-500 border border-red-400"></div>
-                          <span className="text-sm text-red-300 font-mono">
-                            {onlineCount} ONLINE
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-red-500 border border-red-400"></div>
+                          <span className="text-xs text-red-300 font-mono">
+                            {onlineCount} ON
                           </span>
                         </div>
                         
                         {/* Total Players */}
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-gray-500 border border-gray-400"></div>
-                          <span className="text-sm text-gray-300 font-mono">
-                            {totalCount} TOTAL
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-gray-500 border border-gray-400"></div>
+                          <span className="text-xs text-gray-300 font-mono">
+                            {totalCount} TOT
                           </span>
                         </div>
 
                         {/* Rocket Cost */}
-                        <div className="flex items-center gap-2">
-                          <Rocket className="w-3 h-3 text-blue-400" />
-                          <span className="text-sm text-blue-300 font-mono">
-                            {getRocketCost(base) ? `${getRocketCost(base)} ROCKETS` : 'UNKNOWN'}
+                        <div className="flex items-center gap-1">
+                          <Rocket className="w-2 h-2 text-blue-400" />
+                          <span className="text-xs text-blue-300 font-mono">
+                            {getRocketCost(base) ? `${getRocketCost(base)}R` : 'UNK'}
                           </span>
                         </div>
 
                         {/* Report Count */}
-                        <div className="flex items-center gap-2">
-                          <FileText className="w-3 h-3 text-purple-400" />
-                          <span className="text-sm text-purple-300 font-mono">
-                            {getReportCount(base)} REPORTS
+                        <div className="flex items-center gap-1">
+                          <FileText className="w-2 h-2 text-purple-400" />
+                          <span className="text-xs text-purple-300 font-mono">
+                            {getReportCount(base)}RPT
                           </span>
                         </div>
 
                         {/* Last Activity */}
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-3 h-3 text-orange-400" />
-                          <span className="text-sm text-orange-300 font-mono">
-                            {getLastActivityTime(base) || 'NO ACTIVITY'}
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-2 h-2 text-orange-400" />
+                          <span className="text-xs text-orange-300 font-mono">
+                            {getLastActivityTime(base) || 'NONE'}
                           </span>
                         </div>
                       </div>
 
                       {/* Allies Section */}
-                      <div className="mb-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Users className="w-4 h-4 text-green-400" />
-                          <span className="text-sm font-medium text-green-400 font-mono">ALLIES ({getAllies(base).length})</span>
+                      <div className="mb-2">
+                        <div className="flex items-center gap-1 mb-1">
+                          <Users className="w-3 h-3 text-green-400" />
+                          <span className="text-xs font-medium text-green-400 font-mono">ALLIES ({getAllies(base).length})</span>
                         </div>
                         <div className="flex flex-wrap gap-1">
-                          {getAllies(base).slice(0, 6).map((ally, index) => (
+                          {getAllies(base).slice(0, 4).map((ally, index) => (
                             <span 
                               key={index}
-                              className="text-xs bg-green-900/20 text-green-300 px-2 py-1 border border-green-600/30 font-mono"
+                              className="text-xs bg-green-900/20 text-green-300 px-1 py-0.5 border border-green-600/30 font-mono"
                             >
-                              {ally.length > 10 ? `${ally.slice(0, 10)}...` : ally}
+                              {ally.length > 8 ? `${ally.slice(0, 8)}...` : ally}
                             </span>
                           ))}
-                          {getAllies(base).length > 6 && (
+                          {getAllies(base).length > 4 && (
                             <span className="text-xs text-gray-400 font-mono">
-                              +{getAllies(base).length - 6} more
+                              +{getAllies(base).length - 4}
                             </span>
                           )}
                         </div>
@@ -239,13 +222,13 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
 
                       {/* Base Notes Preview */}
                       {base.notes && (
-                        <div className="mb-2">
+                        <div className="mb-1">
                           <div className="text-xs text-gray-500 font-mono mb-1">NOTES:</div>
                           <div 
-                            className="text-sm text-gray-400 font-mono bg-gray-800/50 p-2 border-l-2 border-orange-600/30 max-h-16 overflow-hidden"
-                            style={{ lineHeight: '1.4' }}
+                            className="text-xs text-gray-400 font-mono bg-gray-800/50 p-1 border-l-2 border-orange-600/30 max-h-10 overflow-hidden"
+                            style={{ lineHeight: '1.3' }}
                           >
-                            {base.notes.length > 120 ? `${base.notes.slice(0, 120)}...` : base.notes}
+                            {base.notes.length > 80 ? `${base.notes.slice(0, 80)}...` : base.notes}
                           </div>
                         </div>
                       )}
