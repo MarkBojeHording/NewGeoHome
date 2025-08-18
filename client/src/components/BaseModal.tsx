@@ -1195,11 +1195,11 @@ const BaseModal = ({
 
         {showReportPanel && (
           <div 
-            className="bg-gray-900 rounded-lg shadow-xl border-2 border-red-600 absolute"
+            className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 absolute"
             style={{
               height: '95vh',
               maxHeight: '805px',
-              width: '380px',
+              width: '320px',
               left: '16px',
               transform: 'translateX(-100%)',
               top: 0,
@@ -1207,107 +1207,17 @@ const BaseModal = ({
             }}
           >
             <div className="p-4 h-full flex flex-col">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4 border-b border-red-600/50 pb-2">
-                <h3 className="text-red-400 font-bold text-lg font-mono tracking-wider">[ENEMY INTEL]</h3>
-                <button 
-                  onClick={() => setShowReportPanel(false)}
-                  className="text-red-400 hover:text-red-300 transition-colors"
-                >
-                  ✕
-                </button>
+              <h3 className="text-white font-bold mb-4">Base Reports</h3>
+              
+              {/* Reports List */}
+              <div className="flex-1 overflow-y-auto mb-4">
+                <BaseReportsContent baseId={editingLocation?.id} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
               </div>
-
-              {/* Threat Status */}
-              <div className="bg-red-900/30 border border-red-600/50 rounded p-3 mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-red-300 font-medium text-sm">THREAT LEVEL</span>
-                  <span className={`px-2 py-1 rounded text-xs font-bold ${
-                    formData.roofCamper || formData.hostileSamsite ? 'bg-red-600 text-white' : 
-                    formData.raidedOut ? 'bg-gray-600 text-gray-300' : 'bg-yellow-600 text-black'
-                  }`}>
-                    {formData.raidedOut ? 'INACTIVE' : formData.roofCamper || formData.hostileSamsite ? 'HIGH' : 'MODERATE'}
-                  </span>
-                </div>
-                <div className="flex gap-2 text-xs">
-                  {formData.roofCamper && <span className="bg-red-700 px-1 rounded">ROOF CAMPER</span>}
-                  {formData.hostileSamsite && <span className="bg-red-700 px-1 rounded">SAM SITE</span>}
-                  {formData.raidedOut && <span className="bg-gray-700 px-1 rounded">RAIDED OUT</span>}
-                </div>
-              </div>
-
-              {/* Live Activity */}
-              <div className="bg-gray-800 border border-orange-600/50 rounded p-3 mb-4">
-                <h4 className="text-orange-300 font-medium text-sm mb-2 font-mono">[LIVE ACTIVITY]</h4>
-                <div className="space-y-1 max-h-24 overflow-y-auto">
-                  <LivePlayerActivity 
-                    baseId={editingLocation?.id} 
-                    modalType={modalType}
-                  />
-                </div>
-              </div>
-
-              {/* Quick Intel */}
-              <div className="bg-gray-800 border border-orange-600/50 rounded p-3 mb-4">
-                <h4 className="text-orange-300 font-medium text-sm mb-2 font-mono">[QUICK INTEL]</h4>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-gray-900 p-2 rounded">
-                    <div className="text-gray-400">TC Direction</div>
-                    <div className="text-white font-bold">{formData.oldestTC > 0 ? `${formData.oldestTC}°` : 'Unknown'}</div>
-                  </div>
-                  <div className="bg-gray-900 p-2 rounded">
-                    <div className="text-gray-400">Rockets Req.</div>
-                    <div className="text-white font-bold">{formData.primaryRockets || 'TBD'}</div>
-                  </div>
-                  <div className="bg-gray-900 p-2 rounded">
-                    <div className="text-gray-400">Main Base</div>
-                    <div className="text-white font-bold">{formData.ownerCoordinates || 'Unknown'}</div>
-                  </div>
-                  <div className="bg-gray-900 p-2 rounded">
-                    <div className="text-gray-400">Last Seen</div>
-                    <div className="text-white font-bold">{'2h ago'}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Recent Reports */}
-              <div className="bg-gray-800 border border-orange-600/50 rounded p-3 flex-1 mb-4">
-                <h4 className="text-orange-300 font-medium text-sm mb-2 font-mono">[RECENT REPORTS]</h4>
-                <div className="space-y-2 max-h-32 overflow-y-auto">
-                  <BaseReportsContent baseId={editingLocation?.id} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="space-y-2">
-                <button 
-                  className="w-full bg-yellow-600 hover:bg-yellow-700 text-black py-2 rounded text-sm font-bold transition-colors font-mono"
-                  onClick={() => {
-                    // This should trigger a quick report modal
-                    console.log('Quick sighting report')
-                  }}
-                >
-                  [REPORT SIGHTING]
-                </button>
-                <div className="grid grid-cols-2 gap-2">
-                  <button 
-                    className="bg-red-600 hover:bg-red-700 text-white py-1.5 rounded text-xs font-medium transition-colors"
-                    onClick={() => {
-                      setFormData(prev => ({ ...prev, roofCamper: !prev.roofCamper }))
-                    }}
-                  >
-                    {formData.roofCamper ? 'CLEAR CAMPER' : 'MARK CAMPER'}
-                  </button>
-                  <button 
-                    className="bg-orange-600 hover:bg-orange-700 text-white py-1.5 rounded text-xs font-medium transition-colors"
-                    onClick={() => {
-                      setFormData(prev => ({ ...prev, raidedOut: !prev.raidedOut }))
-                    }}
-                  >
-                    {formData.raidedOut ? 'MARK ACTIVE' : 'MARK RAIDED'}
-                  </button>
-                </div>
-              </div>
+              
+              {/* Create Report Button */}
+              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+                Create New Report
+              </button>
             </div>
           </div>
         )}
