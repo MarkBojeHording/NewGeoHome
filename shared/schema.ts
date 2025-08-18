@@ -43,12 +43,10 @@ export const reportTemplates = pgTable("report_templates", {
 });
 
 export const insertReportSchema = createInsertSchema(reports).omit({ id: true, createdAt: true, completedAt: true });
-export const selectReportSchema = createInsertSchema(reports);
 export type InsertReport = z.infer<typeof insertReportSchema>;
 export type Report = typeof reports.$inferSelect;
 
 export const insertReportTemplateSchema = createInsertSchema(reportTemplates).omit({ id: true, createdAt: true });
-export const selectReportTemplateSchema = createInsertSchema(reportTemplates);
 export type InsertReportTemplate = z.infer<typeof insertReportTemplateSchema>;
 export type ReportTemplate = typeof reportTemplates.$inferSelect;
 
@@ -76,6 +74,20 @@ export const playerBaseTags = pgTable("player_base_tags", {
 export const insertPlayerBaseTagSchema = createInsertSchema(playerBaseTags).omit({ id: true, taggedAt: true });
 export type InsertPlayerBaseTag = z.infer<typeof insertPlayerBaseTagSchema>;
 export type PlayerBaseTag = typeof playerBaseTags.$inferSelect;
+
+// Player profiles table for storing aliases and notes
+export const playerProfiles = pgTable("player_profiles", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  playerName: text("player_name").notNull().unique(),
+  aliases: text("aliases").default(""), // Comma-separated aliases
+  notes: text("notes").default(""),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPlayerProfileSchema = createInsertSchema(playerProfiles).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertPlayerProfile = z.infer<typeof insertPlayerProfileSchema>;
+export type PlayerProfile = typeof playerProfiles.$inferSelect;
 
 // External player data structure to match your API
 export const externalPlayerSchema = z.object({

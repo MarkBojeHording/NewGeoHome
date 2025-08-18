@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer, type PlayerBaseTag, type InsertPlayerBaseTag } from "@shared/schema";
+import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer, type PlayerBaseTag, type InsertPlayerBaseTag, type PlayerProfile, type InsertPlayerProfile } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 // modify the interface with any CRUD methods
@@ -38,11 +38,18 @@ export interface IStorage {
   deletePlayerBaseTag(id: number): Promise<boolean>;
   deletePlayerBaseTagsByBaseId(baseId: string): Promise<boolean>;
   
+  // Player profile methods
+  createPlayerProfile(profile: InsertPlayerProfile): Promise<PlayerProfile>;
+  getPlayerProfile(playerName: string): Promise<PlayerProfile | undefined>;
+  updatePlayerProfile(playerName: string, profile: Partial<InsertPlayerProfile>): Promise<PlayerProfile>;
+  getAllPlayerProfiles(): Promise<PlayerProfile[]>;
+  deletePlayerProfile(playerName: string): Promise<boolean>;
+  
   // Note: Regular player data comes from external API, no local storage needed
 }
 
 import { db } from "./db";
-import { users, reports, reportTemplates, premiumPlayers, playerBaseTags } from "@shared/schema";
+import { users, reports, reportTemplates, premiumPlayers, playerBaseTags, playerProfiles } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
@@ -179,6 +186,47 @@ export class DatabaseStorage implements IStorage {
 
   async deletePlayerBaseTagsByBaseId(baseId: string): Promise<boolean> {
     const result = await db.delete(playerBaseTags).where(eq(playerBaseTags.baseId, baseId));
+    return result.rowCount > 0;
+  }
+
+  // Player profile methods
+  async createPlayerProfile(profile: InsertPlayerProfile): Promise<PlayerProfile> {
+    const [newProfile] = await db
+      .insert(playerProfiles)
+      .values({
+        ...profile,
+        updatedAt: new Date()
+      })
+      .returning();
+    return newProfile;
+  }
+
+  async getPlayerProfile(playerName: string): Promise<PlayerProfile | undefined> {
+    const [profile] = await db
+      .select()
+      .from(playerProfiles)
+      .where(eq(playerProfiles.playerName, playerName));
+    return profile || undefined;
+  }
+
+  async updatePlayerProfile(playerName: string, profile: Partial<InsertPlayerProfile>): Promise<PlayerProfile> {
+    const [updatedProfile] = await db
+      .update(playerProfiles)
+      .set({
+        ...profile,
+        updatedAt: new Date()
+      })
+      .where(eq(playerProfiles.playerName, playerName))
+      .returning();
+    return updatedProfile;
+  }
+
+  async getAllPlayerProfiles(): Promise<PlayerProfile[]> {
+    return await db.select().from(playerProfiles);
+  }
+
+  async deletePlayerProfile(playerName: string): Promise<boolean> {
+    const result = await db.delete(playerProfiles).where(eq(playerProfiles.playerName, playerName));
     return result.rowCount > 0;
   }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,11 +11,12 @@ import { ReportPreview } from './ReportPreview';
 interface PlayerModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenBaseModal?: (baseId: string, baseName: string) => void;
 }
 
 // Component to fetch and display reports for a specific player using centralized API
 const PlayerReportsContent = ({ playerName }: { playerName: string | null }) => {
-  const { data: reports = [], isLoading } = useQuery({
+  const { data: reports = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/reports/player', playerName],
     enabled: !!playerName
   })
@@ -35,14 +36,14 @@ const PlayerReportsContent = ({ playerName }: { playerName: string | null }) => 
 
   return (
     <div className="border">
-      {reports.map((report) => (
+      {reports.map((report: any) => (
         <ReportPreview key={report.id} report={report} />
       ))}
     </div>
   )
 }
 
-export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
+export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalProps) {
   const [nameSearch, setNameSearch] = useState('');
   const [baseNumberSearch, setBaseNumberSearch] = useState('');
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
@@ -74,6 +75,55 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
     queryKey: ['/api/player-base-tags/player', selectedPlayer],
     enabled: !!selectedPlayer,
   })
+
+  // Fetch player profile for selected player
+  const { data: playerProfile } = useQuery<any>({
+    queryKey: ['/api/player-profiles', selectedPlayer],
+    enabled: !!selectedPlayer,
+  })
+
+  // State for profile form
+  const [profileData, setProfileData] = useState({
+    aliases: '',
+    notes: ''
+  })
+
+  // Update profile data when player profile is loaded
+  useEffect(() => {
+    if (playerProfile) {
+      setProfileData({
+        aliases: playerProfile.aliases || '',
+        notes: playerProfile.notes || ''
+      })
+    } else if (selectedPlayer) {
+      // Reset form for new player without profile
+      setProfileData({
+        aliases: '',
+        notes: ''
+      })
+    }
+  }, [playerProfile, selectedPlayer])
+
+  // Save player profile
+  const savePlayerProfile = async () => {
+    if (!selectedPlayer) return
+    
+    try {
+      await apiRequest('/api/player-profiles', {
+        method: 'POST',
+        body: JSON.stringify({
+          playerName: selectedPlayer,
+          aliases: profileData.aliases,
+          notes: profileData.notes
+        })
+      })
+      
+      // Invalidate and refetch the profile
+      queryClient.invalidateQueries({ queryKey: ['/api/player-profiles', selectedPlayer] })
+    } catch (error) {
+      console.error('Error saving player profile:', error)
+    }
+  }
 
   // Fetch all player base tags for determining enemy/friendly status
   const { data: allPlayerBaseTags = [] } = useQuery<any[]>({
@@ -268,23 +318,88 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                   <div className="mb-4">
                     <h3 className="text-lg font-semibold text-white mb-2"></h3>
                     
-                    {/* Base Tags Section */}
-                    {playerBaseTags.length > 0 && (
-                      <div className="mt-3">
-                        <div className="text-sm text-gray-400 mb-1">Base Ownership</div>
-                        <div className="flex gap-2 flex-wrap">
-                          {playerBaseTags.map((tag: any) => (
-                            <span
-                              key={tag.id}
-                              className="px-2 py-1 bg-blue-600 text-blue-200 text-xs rounded-full"
-                              title={`${tag.baseType} base at ${tag.baseCoords}`}
-                            >
-                              {tag.baseName}
-                            </span>
-                          ))}
+                    {/* Player Profile Information */}
+                    <div className="space-y-3 mb-4">
+                      {/* Aliases Field */}
+                      <div>
+                        <div className="text-sm text-gray-400 mb-1">Aliases</div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Enter known aliases..."
+                            value={profileData.aliases}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, aliases: e.target.value }))}
+                            className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-white text-sm"
+                          />
+                          <button
+                            onClick={savePlayerProfile}
+                            className="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded transition-colors"
+                          >
+                            Save
+                          </button>
                         </div>
                       </div>
-                    )}
+
+                      {/* Notes Section */}
+                      <div>
+                        <div className="text-sm text-gray-400 mb-1">Notes</div>
+                        <textarea
+                          placeholder="Add notes about this player..."
+                          rows={3}
+                          value={profileData.notes}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, notes: e.target.value }))}
+                          className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-white text-sm resize-none"
+                        />
+                      </div>
+
+                      {/* Main Base Links */}
+                      {playerBaseTags.filter((tag: any) => tag.baseType.includes('-main') || tag.baseType.includes('-large')).length > 0 && (
+                        <div>
+                          <div className="text-sm text-gray-400 mb-1">Main Bases</div>
+                          <div className="flex gap-2 flex-wrap">
+                            {playerBaseTags
+                              .filter((tag: any) => tag.baseType.includes('-main') || tag.baseType.includes('-large'))
+                              .map((tag: any) => (
+                                <button
+                                  key={tag.id}
+                                  className="px-2 py-1 bg-blue-600 hover:bg-blue-500 text-blue-200 text-xs rounded-full transition-colors cursor-pointer"
+                                  title={`Open ${tag.baseType} base at ${tag.baseCoords || tag.baseName}`}
+                                  onClick={() => {
+                                    if (onOpenBaseModal) {
+                                      onOpenBaseModal(tag.baseId, tag.baseName)
+                                      onClose() // Close player modal when opening base modal
+                                    }
+                                  }}
+                                >
+                                  📍 {tag.baseName}
+                                </button>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* All Base Tags */}
+                      {playerBaseTags.length > 0 && (
+                        <div>
+                          <div className="text-sm text-gray-400 mb-1">All Base Associations</div>
+                          <div className="flex gap-2 flex-wrap">
+                            {playerBaseTags.map((tag: any) => (
+                              <span
+                                key={tag.id}
+                                className={`px-2 py-1 text-xs rounded-full ${
+                                  tag.baseType.startsWith('enemy') 
+                                    ? 'bg-red-600 text-red-200' 
+                                    : 'bg-green-600 text-green-200'
+                                }`}
+                                title={`${tag.baseType} base at ${tag.baseCoords || tag.baseName}`}
+                              >
+                                {tag.baseName}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {isLoadingHistory ? (
                     <div className="flex justify-center py-8">

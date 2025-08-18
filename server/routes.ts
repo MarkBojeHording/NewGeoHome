@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertReportSchema, insertReportTemplateSchema, insertPremiumPlayerSchema, insertPlayerBaseTagSchema } from "@shared/schema";
+import { insertReportSchema, insertReportTemplateSchema, insertPremiumPlayerSchema, insertPlayerBaseTagSchema, insertPlayerProfileSchema } from "@shared/schema";
 
 // TEMPORARY FAKE DATA FUNCTIONS - TO BE DELETED LATER
 function getTempFakePlayers() {
@@ -364,6 +364,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting base tags:", error);
       res.status(500).json({ error: "Failed to delete base tags" });
+    }
+  });
+
+  // Player Profile API routes
+  
+  // Get player profile
+  app.get("/api/player-profiles/:playerName", async (req, res) => {
+    try {
+      const profile = await storage.getPlayerProfile(req.params.playerName);
+      if (profile) {
+        res.json(profile);
+      } else {
+        res.status(404).json({ error: "Player profile not found" });
+      }
+    } catch (error) {
+      console.error("Error getting player profile:", error);
+      res.status(500).json({ error: "Failed to get player profile" });
+    }
+  });
+
+  // Create or update player profile
+  app.post("/api/player-profiles", async (req, res) => {
+    try {
+      const validatedProfile = insertPlayerProfileSchema.parse(req.body);
+      
+      // Check if profile exists
+      const existingProfile = await storage.getPlayerProfile(validatedProfile.playerName);
+      
+      let profile;
+      if (existingProfile) {
+        // Update existing profile
+        profile = await storage.updatePlayerProfile(validatedProfile.playerName, validatedProfile);
+      } else {
+        // Create new profile
+        profile = await storage.createPlayerProfile(validatedProfile);
+      }
+      
+      res.json(profile);
+    } catch (error) {
+      console.error("Error creating/updating player profile:", error);
+      res.status(400).json({ error: "Failed to create/update player profile" });
+    }
+  });
+
+  // Update player profile
+  app.patch("/api/player-profiles/:playerName", async (req, res) => {
+    try {
+      const profile = await storage.updatePlayerProfile(req.params.playerName, req.body);
+      res.json(profile);
+    } catch (error) {
+      console.error("Error updating player profile:", error);
+      res.status(500).json({ error: "Failed to update player profile" });
+    }
+  });
+
+  // Delete player profile
+  app.delete("/api/player-profiles/:playerName", async (req, res) => {
+    try {
+      const success = await storage.deletePlayerProfile(req.params.playerName);
+      if (success) {
+        res.json({ success: true });
+      } else {
+        res.status(404).json({ error: "Player profile not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting player profile:", error);
+      res.status(500).json({ error: "Failed to delete player profile" });
     }
   });
 
