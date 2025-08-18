@@ -86,3 +86,17 @@ export const externalPlayerSchema = z.object({
 });
 
 export type ExternalPlayer = z.infer<typeof externalPlayerSchema>;
+
+// Teams table for organizing enemy bases
+export const teams = pgTable("teams", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  color: text("color").notNull(), // Hex color for team identification
+  mainBaseId: text("main_base_id"), // ID of the main base for this team
+  notes: text("notes").default(""),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertTeamSchema = createInsertSchema(teams).omit({ id: true, createdAt: true });
+export type InsertTeam = z.infer<typeof insertTeamSchema>;
+export type Team = typeof teams.$inferSelect;

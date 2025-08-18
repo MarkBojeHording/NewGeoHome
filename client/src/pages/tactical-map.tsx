@@ -5,6 +5,7 @@ import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import { LogsModal } from '../components/LogsModal'
 import ActionReportModal from '../components/ActionReportModal'
+import { TeamsModal } from '../components/TeamsModal'
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
 // ============= CONSTANTS =============
@@ -1238,7 +1239,7 @@ export default function InteractiveTacticalMap() {
   
   // New Report System State
   const [showPlayerModal, setShowPlayerModal] = useState(false)
-
+  const [showTeamsModal, setShowTeamsModal] = useState(false)
   const [showBaseReportModal, setShowBaseReportModal] = useState(false)
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [baseReportData, setBaseReportData] = useState({
@@ -1665,6 +1666,7 @@ export default function InteractiveTacticalMap() {
                         onClick={() => {
                           if (btn === 'Players') setShowPlayerModal(true)
                           else if (btn === 'Logs') setShowLogsModal(true)
+                          else if (btn === 'Teams') setShowTeamsModal(true)
                         }} 
                         data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
                         className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
@@ -1873,6 +1875,13 @@ export default function InteractiveTacticalMap() {
         <LogsModal
           isOpen={showLogsModal}
           onClose={() => setShowLogsModal(false)}
+        />
+
+        <TeamsModal
+          isOpen={showTeamsModal}
+          onClose={() => setShowTeamsModal(false)}
+          locations={locations}
+          players={players}
         />
       </div>
     </div>
