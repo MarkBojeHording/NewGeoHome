@@ -1,5 +1,4 @@
 import { type Report } from "@shared/schema"
-import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import { Camera, FileText, ExternalLink } from "lucide-react"
 import { format } from "date-fns"
@@ -19,18 +18,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
     }
   }
 
-  const getOutcomeBadge = (outcome: string) => {
-    switch (outcome) {
-      case 'good':
-        return <Badge className="bg-green-900/50 border-2 border-green-600 text-green-400 font-mono text-xs">[SUCCESS]</Badge>
-      case 'bad':
-        return <Badge className="bg-red-900/50 border-2 border-red-600 text-red-400 font-mono text-xs">[FAILURE]</Badge>
-      case 'neutral':
-        return <Badge className="bg-orange-900/50 border-2 border-orange-600 text-orange-400 font-mono text-xs">[NEUTRAL]</Badge>
-      default:
-        return <Badge className="bg-orange-900/30 border border-orange-600 text-orange-500 font-mono text-xs">[{outcome.toUpperCase()}]</Badge>
-    }
-  }
+
 
   const hasScreenshots = report.screenshots && report.screenshots.length > 0
   const hasNotes = report.notes && report.notes.trim().length > 0
@@ -64,10 +52,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
           [{gridReference}]
         </div>
 
-        {/* Outcome Badge */}
-        <div className="shrink-0">
-          {getOutcomeBadge(report.outcome)}
-        </div>
+
 
         {/* Timestamp */}
         <div className="text-xs text-orange-600 shrink-0 font-mono">
