@@ -390,7 +390,8 @@ const BaseModal = ({
   locations,
   onSave,
   onCancel,
-  onDelete
+  onDelete,
+  onOpenBaseReport
 }) => {
   const [formData, setFormData] = useState({
     type: modalType === 'friendly' ? 'friendly-main' : modalType === 'enemy' ? 'enemy-small' : 'report-pvp',
@@ -1211,7 +1212,7 @@ const BaseModal = ({
               
               {/* Reports List */}
               <div className="flex-1 overflow-y-auto mb-4">
-                <BaseReportsContent baseId={editingLocation?.id} onOpenReport={editingLocation ? () => window.onOpenBaseReport(editingLocation) : null} />
+                <BaseReportsContent baseId={editingLocation?.id} onOpenReport={editingLocation ? () => onOpenBaseReport(editingLocation) : null} />
               </div>
               
               {/* Create Report Button */}
@@ -1221,8 +1222,8 @@ const BaseModal = ({
                   // Close report panel and open base report modal
                   setShowReportPanel(false)
                   // This should trigger opening the base report modal with this base pre-selected
-                  if (editingLocation && window.onOpenBaseReport) {
-                    window.onOpenBaseReport(editingLocation)
+                  if (editingLocation && onOpenBaseReport) {
+                    onOpenBaseReport(editingLocation)
                   }
                 }}
               >
