@@ -246,7 +246,7 @@ export default function ActionReportModal({
               )}
               <div className="overflow-y-auto max-h-32 text-xs text-gray-300">
                 {formData.friendlyPlayers.split(',').filter(name => name.trim()).map((name, index) => (
-                  <div key={index} className="text-green-300 mb-1">{name.trim()}</div>
+                  <div key={index} className="text-yellow-300 mb-1">{name.trim()}</div>
                 ))}
               </div>
             </div>

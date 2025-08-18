@@ -223,8 +223,8 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
                 onClick={() => addPlayer(player.playerName)}
                 className="w-full text-left px-2 py-1 hover:bg-gray-700 flex items-center gap-2 text-sm"
               >
-                <div className={`w-2 h-2 rounded-full ${player.isOnline ? 'bg-green-500' : 'bg-gray-500'}`} />
-                <span className={player.isOnline ? 'text-green-400' : 'text-gray-400'}>
+                <div className={`w-2 h-2 rounded-full ${player.isOnline ? 'bg-yellow-500' : 'bg-gray-500'}`} />
+                <span className={player.isOnline ? 'text-yellow-400' : 'text-gray-400'}>
                   {player.playerName}
                 </span>
                 <span className="text-xs text-gray-500">
@@ -284,14 +284,14 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
                       isPremium 
                         ? 'bg-orange-500' 
                         : player?.isOnline 
-                        ? 'bg-green-500' 
+                        ? 'bg-yellow-500' 
                         : 'bg-gray-500'
                     }`} />
                     <span className={`text-sm ${
                       isPremium 
                         ? 'text-orange-400' 
                         : player?.isOnline 
-                        ? 'text-green-400' 
+                        ? 'text-yellow-400' 
                         : 'text-gray-400'
                     }`}>
                       {playerName}
