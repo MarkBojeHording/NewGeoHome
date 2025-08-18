@@ -180,7 +180,7 @@ const LivePlayerActivity = ({ baseId, modalType }) => {
 }
 
 // ============= PLAYER SEARCH SELECTOR COMPONENT =============
-const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) => {
+const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight, modalType }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
   
@@ -593,6 +593,7 @@ const BaseModal = ({
               selectedPlayers={formData.enemyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, enemyPlayers: players }))}
               maxHeight="160px"
+              modalType={modalType}
             />
           </div>
         </div>
@@ -605,6 +606,7 @@ const BaseModal = ({
               selectedPlayers={formData.friendlyPlayers}
               onPlayersChange={(players) => setFormData(prev => ({ ...prev, friendlyPlayers: players }))}
               maxHeight="160px"
+              modalType={modalType}
             />
           </div>
         </div>
@@ -687,6 +689,7 @@ const BaseModal = ({
             selectedPlayers={formData.players}
             onPlayersChange={(players) => setFormData(prev => ({ ...prev, players }))}
             maxHeight={modalType === 'enemy' ? '160px' : '300px'}
+            modalType={modalType}
           />
         </div>
       </div>
