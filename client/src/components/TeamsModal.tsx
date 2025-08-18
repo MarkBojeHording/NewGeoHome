@@ -32,7 +32,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
   // Fetch reports data
   const { data: reports = [] } = useQuery({
     queryKey: ['/api/reports'],
-  })
+  }) as { data: any[] }
 
   const getBaseIcon = (type: string) => {
     const IconComponent = ICON_MAP[type as keyof typeof ICON_MAP] || Tent
@@ -86,9 +86,18 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
     return null
   }
 
-  const getAllies = (baseLocation: any) => {
+  const getTeamMembers = (baseLocation: any) => {
     if (!baseLocation.players) return []
     return baseLocation.players.split(",").map((p: string) => p.trim()).filter((p: string) => p)
+  }
+
+  const getSubordinateBases = (mainBase: any) => {
+    return locations.filter(location => 
+      location.groupId === mainBase.id && 
+      location.id !== mainBase.id &&
+      (location.type === 'enemy-small' || location.type === 'enemy-medium' || location.type === 'enemy-large' || 
+       location.type === 'enemy-outpost' || location.type === 'enemy-flank' || location.type === 'enemy-farm')
+    )
   }
 
   const handleBaseClick = (base: any) => {
@@ -131,7 +140,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                 return (
                   <div 
                     key={base.id}
-                    className="bg-gray-800 border border-gray-700 p-3 flex items-start gap-3 hover:bg-gray-750 transition-colors cursor-pointer"
+                    className="bg-gray-800 border border-gray-700 p-2 flex items-start gap-2 hover:bg-gray-750 transition-colors cursor-pointer"
                     data-testid={`team-entry-${base.name}`}
                     onClick={() => handleBaseClick(base)}
                   >
@@ -145,22 +154,22 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                     {/* Base Information */}
                     <div className="flex-1">
                       {/* Base Name and Type */}
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-1">
                         <h3 className="text-base font-semibold text-white font-mono">
                           {base.name}
                         </h3>
-                        <span className="text-xs text-gray-400 bg-gray-700 px-2 py-1 font-mono">
+                        <span className="text-xs text-gray-400 bg-gray-700 px-1 py-0.5 font-mono">
                           {base.type.replace('enemy-', '').toUpperCase()}
                         </span>
                       </div>
 
                       {/* Stats Row */}
-                      <div className="grid grid-cols-5 gap-2 mb-2">
+                      <div className="grid grid-cols-5 gap-1 mb-1">
                         {/* Online Players */}
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 bg-red-500 border border-red-400"></div>
                           <span className="text-xs text-red-300 font-mono">
-                            {onlineCount} ON
+                            {onlineCount} ONLINE
                           </span>
                         </div>
                         
@@ -168,7 +177,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 bg-gray-500 border border-gray-400"></div>
                           <span className="text-xs text-gray-300 font-mono">
-                            {totalCount} TOT
+                            {totalCount} TOTAL
                           </span>
                         </div>
 
@@ -176,7 +185,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                         <div className="flex items-center gap-1">
                           <Rocket className="w-2 h-2 text-blue-400" />
                           <span className="text-xs text-blue-300 font-mono">
-                            {getRocketCost(base) ? `${getRocketCost(base)}R` : 'UNK'}
+                            {getRocketCost(base) ? `${getRocketCost(base)} ROCKETS` : 'UNKNOWN'}
                           </span>
                         </div>
 
@@ -184,7 +193,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                         <div className="flex items-center gap-1">
                           <FileText className="w-2 h-2 text-purple-400" />
                           <span className="text-xs text-purple-300 font-mono">
-                            {getReportCount(base)}RPT
+                            {getReportCount(base)} REPORTS
                           </span>
                         </div>
 
@@ -192,43 +201,63 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                         <div className="flex items-center gap-1">
                           <Clock className="w-2 h-2 text-orange-400" />
                           <span className="text-xs text-orange-300 font-mono">
-                            {getLastActivityTime(base) || 'NONE'}
+                            {getLastActivityTime(base) || 'NO ACTIVITY'}
                           </span>
                         </div>
                       </div>
 
-                      {/* Allies Section */}
-                      <div className="mb-2">
+                      {/* Team Members Section */}
+                      <div className="mb-1">
                         <div className="flex items-center gap-1 mb-1">
                           <Users className="w-3 h-3 text-green-400" />
-                          <span className="text-xs font-medium text-green-400 font-mono">ALLIES ({getAllies(base).length})</span>
+                          <span className="text-xs font-medium text-green-400 font-mono">TEAM MEMBERS ({getTeamMembers(base).length})</span>
                         </div>
                         <div className="flex flex-wrap gap-1">
-                          {getAllies(base).slice(0, 4).map((ally, index) => (
+                          {getTeamMembers(base).slice(0, 6).map((member: string, index: number) => (
                             <span 
                               key={index}
                               className="text-xs bg-green-900/20 text-green-300 px-1 py-0.5 border border-green-600/30 font-mono"
                             >
-                              {ally.length > 8 ? `${ally.slice(0, 8)}...` : ally}
+                              {member}
                             </span>
                           ))}
-                          {getAllies(base).length > 4 && (
+                          {getTeamMembers(base).length > 6 && (
                             <span className="text-xs text-gray-400 font-mono">
-                              +{getAllies(base).length - 4}
+                              +{getTeamMembers(base).length - 6} more
                             </span>
                           )}
                         </div>
                       </div>
 
+                      {/* Subordinate Bases Section */}
+                      {getSubordinateBases(base).length > 0 && (
+                        <div className="mb-1">
+                          <div className="flex items-center gap-1 mb-1">
+                            <Castle className="w-3 h-3 text-orange-400" />
+                            <span className="text-xs font-medium text-orange-400 font-mono">SUBORDINATE BASES ({getSubordinateBases(base).length})</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {getSubordinateBases(base).map((subBase, index) => (
+                              <span 
+                                key={index}
+                                className="text-xs bg-orange-900/20 text-orange-300 px-1 py-0.5 border border-orange-600/30 font-mono"
+                              >
+                                {subBase.name} ({subBase.type.replace('enemy-', '').toUpperCase()})
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Base Notes Preview */}
                       {base.notes && (
-                        <div className="mb-1">
+                        <div>
                           <div className="text-xs text-gray-500 font-mono mb-1">NOTES:</div>
                           <div 
-                            className="text-xs text-gray-400 font-mono bg-gray-800/50 p-1 border-l-2 border-orange-600/30 max-h-10 overflow-hidden"
+                            className="text-xs text-gray-400 font-mono bg-gray-800/50 p-1 border-l-2 border-orange-600/30 max-h-12 overflow-hidden"
                             style={{ lineHeight: '1.3' }}
                           >
-                            {base.notes.length > 80 ? `${base.notes.slice(0, 80)}...` : base.notes}
+                            {base.notes.length > 120 ? `${base.notes.slice(0, 120)}...` : base.notes}
                           </div>
                         </div>
                       )}
