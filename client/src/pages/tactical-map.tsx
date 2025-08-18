@@ -513,7 +513,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         {/* Online player count display - only show for enemy bases with players */}
         {location.type.startsWith("enemy") && onlinePlayerCount > 0 && (
           <div 
-            className="absolute text-xs font-bold text-yellow-400 bg-black/80 rounded-full flex items-center justify-center border border-yellow-400/50"
+            className="absolute text-xs font-bold text-red-400 bg-black/80 rounded-full flex items-center justify-center border border-red-400/50"
             style={{
               width: "9px", // 75% of original 12px
               height: "9px",
@@ -937,7 +937,9 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
                       ? player.createdAt !== undefined // Premium player
                         ? 'bg-orange-900 text-orange-300' 
                         : player.isOnline 
-                          ? 'bg-yellow-900 text-yellow-300' 
+                          ? location.type.startsWith('enemy') 
+                            ? 'bg-red-900 text-red-300'
+                            : 'bg-yellow-900 text-yellow-300'
                           : 'bg-gray-700 text-gray-400'
                       : 'bg-gray-800'
                   }`}
