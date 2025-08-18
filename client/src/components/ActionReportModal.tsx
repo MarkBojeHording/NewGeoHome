@@ -81,6 +81,8 @@ export default function ActionReportModal({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
+      // Also invalidate base-specific reports cache
+      queryClient.invalidateQueries({ queryKey: ['/api/reports/base'] })
       onClose()
     },
     onError: (error) => {
