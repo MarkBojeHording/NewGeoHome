@@ -1215,7 +1215,17 @@ const BaseModal = ({
               </div>
               
               {/* Create Report Button */}
-              <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors">
+              <button 
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded text-sm font-medium transition-colors"
+                onClick={() => {
+                  // Close report panel and open base report modal
+                  setShowReportPanel(false)
+                  // This should trigger opening the base report modal with this base pre-selected
+                  if (editingLocation && window.onOpenBaseReport) {
+                    window.onOpenBaseReport(editingLocation)
+                  }
+                }}
+              >
                 Create New Report
               </button>
             </div>
