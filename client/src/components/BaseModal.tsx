@@ -284,14 +284,14 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight }) =
                       isPremium 
                         ? 'bg-orange-500' 
                         : player?.isOnline 
-                        ? 'bg-yellow-500' 
+                        ? (modalType === 'enemy' ? 'bg-red-500' : 'bg-yellow-500')
                         : 'bg-gray-500'
                     }`} />
                     <span className={`text-sm ${
                       isPremium 
                         ? 'text-orange-400' 
                         : player?.isOnline 
-                        ? 'text-yellow-400' 
+                        ? (modalType === 'enemy' ? 'text-red-400' : 'text-yellow-400')
                         : 'text-gray-400'
                     }`}>
                       {playerName}

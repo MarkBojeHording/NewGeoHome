@@ -73,7 +73,22 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
   const { data: playerBaseTags = [] } = useQuery<any[]>({
     queryKey: ['/api/player-base-tags/player', selectedPlayer],
     enabled: !!selectedPlayer,
-  });
+  })
+
+  // Fetch all player base tags for determining enemy/friendly status
+  const { data: allPlayerBaseTags = [] } = useQuery<any[]>({
+    queryKey: ['/api/player-base-tags'],
+    enabled: isOpen,
+  })
+
+  // Helper function to determine if a player is primarily associated with enemy bases
+  const isEnemyPlayer = (playerName: string) => {
+    const playerTags = allPlayerBaseTags.filter((tag: any) => tag.playerName === playerName)
+    if (playerTags.length === 0) return false
+    
+    const enemyTags = playerTags.filter((tag: any) => tag.baseType.startsWith('enemy'))
+    return enemyTags.length > playerTags.length / 2 // More than half enemy bases
+  };
 
   // Filter players based on search criteria
   const filteredPlayers = players.filter(player => {
@@ -447,13 +462,17 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                             <div className="flex items-center gap-2">
                               <div
                                 className={`w-2 h-2 rounded-full ${
-                                  player.isOnline ? 'bg-yellow-500' : 'bg-gray-500'
+                                  player.isOnline 
+                                    ? (isEnemyPlayer(player.playerName) ? 'bg-red-500' : 'bg-yellow-500')
+                                    : 'bg-gray-500'
                                 }`}
                                 data-testid={`status-indicator-${index}`}
                               />
                               <span
                                 className={`font-medium ${
-                                  player.isOnline ? 'text-yellow-400' : 'text-gray-400'
+                                  player.isOnline 
+                                    ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
+                                    : 'text-gray-400'
                                 }`}
                                 data-testid={`player-name-${index}`}
                               >
@@ -461,7 +480,9 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                               </span>
                               <span
                                 className={`text-sm ${
-                                  player.isOnline ? 'text-yellow-300' : 'text-gray-500'
+                                  player.isOnline 
+                                    ? (isEnemyPlayer(player.playerName) ? 'text-red-300' : 'text-yellow-300')
+                                    : 'text-gray-500'
                                 }`}
                                 data-testid={`player-status-${index}`}
                               >
@@ -471,7 +492,11 @@ export function PlayerModal({ isOpen, onClose }: PlayerModalProps) {
                           </div>
                           <div className="text-right">
                             <div 
-                              className="text-sm text-gray-400"
+                              className={`text-sm ${
+                                player.isOnline 
+                                  ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
+                                  : 'text-gray-400'
+                              }`}
                               data-testid={`online-status-${index}`}
                             >
                               {player.isOnline ? 'Currently Online' : 'Offline'}
