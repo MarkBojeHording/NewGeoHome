@@ -937,7 +937,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
                       ? player.createdAt !== undefined // Premium player
                         ? 'bg-orange-900 text-orange-300' 
                         : player.isOnline 
-                          ? 'bg-green-900 text-green-300' 
+                          ? 'bg-yellow-900 text-yellow-300' 
                           : 'bg-gray-700 text-gray-400'
                       : 'bg-gray-800'
                   }`}
