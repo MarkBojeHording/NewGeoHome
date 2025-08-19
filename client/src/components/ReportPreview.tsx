@@ -22,8 +22,6 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
 
   const hasScreenshots = report.screenshots && report.screenshots.length > 0
   const hasNotes = report.notes && report.notes.trim().length > 0
-  const location = report.location as { gridX: number, gridY: number }
-  const gridReference = location ? `${String.fromCharCode(65 + location.gridX)}${location.gridY}` : 'Unknown'
 
   return (
     <div className="flex items-center justify-between p-1 border-b border-orange-500/40 hover:bg-orange-900/40 transition-colors bg-gradient-to-r from-gray-800 to-orange-950/20">
@@ -47,10 +45,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
           </p>
         </div>
 
-        {/* Location */}
-        <div className="text-xs text-orange-500 shrink-0 font-mono">
-          [{gridReference}]
-        </div>
+
 
 
 
