@@ -7,6 +7,11 @@ This project is a Rust-themed tactical map and raid calculator application desig
 - **Removed Duplicate Toolbars**: Eliminated moving duplicate toolbar sections that were interfering with map zoom/pan operations
 - **Simplified Interface**: Removed [TACTICAL OPERATIONS] branding text for cleaner interface focusing on essential functionality
 - **Zoom/Pan Improvements**: Enhanced mouse-cursor-relative zooming with proper pan adjustment and smooth transitions
+- **Fixed Base Reports System**: Resolved enemy base report tab display with simplified report previews list and functional "Create New Report" button
+- **Enhanced Cache Invalidation**: Fixed report creation workflow to properly invalidate base-specific report queries for immediate display
+- **Removed Report Outcomes**: Cleaned up base report previews by removing outcome displays since base reports don't use outcomes
+- **Fixed Player Tagging**: Resolved modalType scoping issue in PlayerSearchSelector component for proper player status indicators
+- **Restored Base Owner Display**: Fixed base modal initialization to properly display existing base owners from database
 
 # User Preferences
 
