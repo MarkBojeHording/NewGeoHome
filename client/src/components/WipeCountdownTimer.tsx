@@ -360,31 +360,72 @@ export default function WipeCountdownTimer() {
         title="Add Custom Item"
       >
         <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Item name"
-            value={newItem.name}
-            onChange={e => setNewItem({ ...newItem, name: e.target.value })}
-            className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
-          />
+          <div>
+            <label className="block text-sm mb-1 text-orange-300 font-mono">ITEM NAME</label>
+            <input
+              type="text"
+              placeholder="Enter item name"
+              value={newItem.name}
+              onChange={e => setNewItem({ ...newItem, name: e.target.value })}
+              className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm mb-1 text-orange-300 font-mono">ITEM IMAGE</label>
+            <div 
+              className="w-full h-20 border-2 border-dashed border-orange-600/50 rounded-lg flex items-center justify-center cursor-pointer hover:border-orange-600"
+              onClick={() => document.getElementById('itemImageInput')?.click()}
+            >
+              {newItem.image ? (
+                <img src={newItem.image} alt="Item" className="w-full h-full object-cover rounded-lg" />
+              ) : (
+                <span className="text-sm text-orange-400 font-mono">Click to upload image</span>
+              )}
+            </div>
+            <input
+              id="itemImageInput"
+              type="file"
+              accept="image/*"
+              onChange={e => {
+                const file = e.target.files[0]
+                if (file) {
+                  const reader = new FileReader()
+                  reader.onloadend = () => setNewItem({ ...newItem, image: reader.result })
+                  reader.readAsDataURL(file)
+                }
+              }}
+              className="hidden"
+            />
+          </div>
+          
           {['stone', 'metal', 'hqm'].map(type => (
-            <div key={type} className="grid grid-cols-2 gap-2">
-              <input
-                type="number"
-                placeholder={`${type} cost`}
-                value={newItem[`${type}Cost`]}
-                onChange={e => setNewItem({ ...newItem, [`${type}Cost`]: Number(e.target.value) })}
-                className="border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
-                min="0"
-              />
-              <input
-                type="number"
-                placeholder={`${type} upkeep`}
-                value={newItem[`${type}Upkeep`]}
-                onChange={e => setNewItem({ ...newItem, [`${type}Upkeep`]: Number(e.target.value) })}
-                className="border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
-                min="0"
-              />
+            <div key={type}>
+              <label className="block text-sm mb-1 text-orange-300 font-mono">{type.toUpperCase()} RESOURCES</label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs text-orange-400 font-mono mb-1">Cost</label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={newItem[`${type}Cost`]}
+                    onChange={e => setNewItem({ ...newItem, [`${type}Cost`]: Number(e.target.value) })}
+                    className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-orange-400 font-mono mb-1">Daily Upkeep</label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={newItem[`${type}Upkeep`]}
+                    onChange={e => setNewItem({ ...newItem, [`${type}Upkeep`]: Number(e.target.value) })}
+                    className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
+                    min="0"
+                  />
+                </div>
+              </div>
             </div>
           ))}
           <div className="flex justify-end space-x-2">
