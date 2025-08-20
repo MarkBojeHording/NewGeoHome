@@ -149,6 +149,19 @@ const TCBox = ({ type, countdown, showGrid, setShowGrid, showBackpack, setShowBa
   )
 }
 
+const Modal = ({ show, onClose, title, children }) => {
+  if (!show) return null
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]" onClick={onClose}>
+      <div className="bg-gray-900 border-2 border-orange-600 rounded-lg p-6 w-96 text-orange-300" onClick={e => e.stopPropagation()}>
+        <h3 className="text-lg font-bold mb-4 font-mono">[{title.toUpperCase()}]</h3>
+        {children}
+      </div>
+    </div>
+  )
+}
+
 const TCInfo = ({ type, countdown, capacity }) => {
   const tc = TC_TYPES[type]
   const fractionalDays = countdown.days + (countdown.hours / 24)
@@ -211,8 +224,24 @@ function calculateTCCapacity(tcType, countdown, includeBackpack) {
 export default function WipeCountdownTimer() {
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0 })
   const [showMainBox, setShowMainBox] = useState(false)
+  const [showModals, setShowModals] = useState({ item: false, upkeep: false })
   const [showGrids, setShowGrids] = useState({ stone: false, metal: false, hqm: false })
   const [showBackpacks, setShowBackpacks] = useState({ stone: false, metal: false, hqm: false })
+  const [customItems, setCustomItems] = useState([])
+  const [upkeepEntries, setUpkeepEntries] = useState([])
+  const [mainImage, setMainImage] = useState(null)
+  const [editingUpkeepId, setEditingUpkeepId] = useState(null)
+  
+  const mainImageInputRef = useRef(null)
+  
+  const [newUpkeepEntry, setNewUpkeepEntry] = useState({
+    name: '', stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0
+  })
+  
+  const [newItem, setNewItem] = useState({
+    name: '', stoneCost: 0, stoneUpkeep: 0, metalCost: 0, 
+    metalUpkeep: 0, hqmCost: 0, hqmUpkeep: 0, image: null
+  })
   
   // Update countdown
   useEffect(() => {
@@ -237,11 +266,43 @@ export default function WipeCountdownTimer() {
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
         setShowMainBox(false)
+        setShowModals({ item: false, upkeep: false })
       }
     }
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
   }, [])
+  
+  const totalUpkeep = useMemo(() => 
+    upkeepEntries.reduce((acc, entry) => ({
+      stone: acc.stone + entry.stoneUpkeep,
+      metal: acc.metal + entry.metalUpkeep,
+      hqm: acc.hqm + entry.hqmUpkeep
+    }), { stone: 0, metal: 0, hqm: 0 })
+  , [upkeepEntries])
+  
+  const handleAddUpkeep = useCallback(() => {
+    if (!newUpkeepEntry.name.trim()) return
+    
+    if (editingUpkeepId) {
+      setUpkeepEntries(entries => entries.map(e => 
+        e.id === editingUpkeepId ? { ...e, ...newUpkeepEntry } : e
+      ))
+      setEditingUpkeepId(null)
+    } else {
+      setUpkeepEntries(entries => [...entries, { id: Date.now().toString(), ...newUpkeepEntry }])
+    }
+    
+    setNewUpkeepEntry({ name: '', stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0 })
+    setShowModals(m => ({ ...m, upkeep: false }))
+  }, [newUpkeepEntry, editingUpkeepId])
+  
+  const handleAddItem = useCallback(() => {
+    if (!newItem.name.trim()) return
+    setCustomItems(items => [...items, { id: Date.now().toString(), ...newItem }])
+    setNewItem({ name: '', stoneCost: 0, stoneUpkeep: 0, metalCost: 0, metalUpkeep: 0, hqmCost: 0, hqmUpkeep: 0, image: null })
+    setShowModals(m => ({ ...m, item: false }))
+  }, [newItem])
   
   return (
     <div className="relative">
@@ -253,32 +314,245 @@ export default function WipeCountdownTimer() {
         [WIPE: {countdown.days}D {countdown.hours}H {countdown.minutes}M]
       </div>
       
+      {/* Modals */}
+      <Modal 
+        show={showModals.upkeep} 
+        onClose={() => setShowModals(m => ({ ...m, upkeep: false }))}
+        title={editingUpkeepId ? 'Edit Upkeep' : 'Add Upkeep'}
+      >
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Name"
+            value={newUpkeepEntry.name}
+            onChange={e => setNewUpkeepEntry({ ...newUpkeepEntry, name: e.target.value })}
+            className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
+          />
+          {['stone', 'metal', 'hqm'].map(type => (
+            <div key={type}>
+              <label className="block text-sm mb-1 text-orange-300 font-mono">{type.toUpperCase()} Upkeep (per day)</label>
+              <input
+                type="number"
+                value={newUpkeepEntry[`${type}Upkeep`]}
+                onChange={e => setNewUpkeepEntry({ ...newUpkeepEntry, [`${type}Upkeep`]: Number(e.target.value) })}
+                className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
+                min="0"
+              />
+            </div>
+          ))}
+          <div className="flex justify-end space-x-2">
+            <button onClick={() => setShowModals(m => ({ ...m, upkeep: false }))} className="px-4 py-2 border border-orange-600/50 rounded bg-gray-800 text-orange-300">Cancel</button>
+            <button onClick={handleAddUpkeep} className="px-4 py-2 bg-orange-600 text-white rounded">Save</button>
+          </div>
+        </div>
+      </Modal>
+      
+      <Modal 
+        show={showModals.item} 
+        onClose={() => setShowModals(m => ({ ...m, item: false }))}
+        title="Add Custom Item"
+      >
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Item name"
+            value={newItem.name}
+            onChange={e => setNewItem({ ...newItem, name: e.target.value })}
+            className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
+          />
+          {['stone', 'metal', 'hqm'].map(type => (
+            <div key={type} className="grid grid-cols-2 gap-2">
+              <input
+                type="number"
+                placeholder={`${type} cost`}
+                value={newItem[`${type}Cost`]}
+                onChange={e => setNewItem({ ...newItem, [`${type}Cost`]: Number(e.target.value) })}
+                className="border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
+                min="0"
+              />
+              <input
+                type="number"
+                placeholder={`${type} upkeep`}
+                value={newItem[`${type}Upkeep`]}
+                onChange={e => setNewItem({ ...newItem, [`${type}Upkeep`]: Number(e.target.value) })}
+                className="border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
+                min="0"
+              />
+            </div>
+          ))}
+          <div className="flex justify-end space-x-2">
+            <button onClick={() => setShowModals(m => ({ ...m, item: false }))} className="px-4 py-2 border border-orange-600/50 rounded bg-gray-800 text-orange-300">Cancel</button>
+            <button onClick={handleAddItem} className="px-4 py-2 bg-orange-600 text-white rounded">Save</button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Detailed view */}
       {showMainBox && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 mt-2 bg-gray-900 border-2 border-orange-600 rounded-lg shadow-2xl p-4 z-[60] min-w-96">
-          <div className="text-orange-300 text-sm font-mono mb-4">
-            <div className="text-lg font-bold mb-2">[WIPE COUNTDOWN]</div>
-            <div className="mb-4">
-              Next wipe: <span className="text-orange-100">{countdown.days} days, {countdown.hours} hours, {countdown.minutes} minutes</span>
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 mt-2 bg-gray-900 border-2 border-orange-600 rounded-lg shadow-2xl p-4 z-[60]" style={{ width: '870px' }}>
+          <div className="flex space-x-4">
+            {/* Left side */}
+            <div className="flex flex-col space-y-2" style={{ width: '490px' }}>
+              <div className="flex justify-between">
+                <div 
+                  className="w-64 h-32 border-2 border-dashed border-orange-600/50 rounded-lg flex items-center justify-center cursor-pointer hover:border-orange-600"
+                  onClick={() => mainImageInputRef.current?.click()}
+                >
+                  {mainImage ? (
+                    <img src={mainImage} alt="Base" className="w-full h-full object-cover rounded-lg" />
+                  ) : (
+                    <span className="text-sm text-orange-400 font-mono">Click to upload</span>
+                  )}
+                </div>
+                <input
+                  ref={mainImageInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    const file = e.target.files[0]
+                    if (file) {
+                      const reader = new FileReader()
+                      reader.onloadend = () => setMainImage(reader.result)
+                      reader.readAsDataURL(file)
+                    }
+                  }}
+                  className="hidden"
+                />
+                
+                {/* Upkeep Summary */}
+                <div className="bg-gray-800 border border-orange-600/50 rounded p-2 w-56 text-xs text-orange-300">
+                  <div className="font-medium mb-1 font-mono">[DAILY UPKEEP]</div>
+                  {Object.entries(totalUpkeep).map(([type, value]) => (
+                    <div key={type} className="font-mono">{type}: <span className="font-bold text-red-400">{formatNumber(value)}</span></div>
+                  ))}
+                  <div className="mt-2 pt-2 border-t border-orange-600/50">
+                    <div className="font-medium mb-1 font-mono">[UNTIL WIPE]</div>
+                    {Object.entries(totalUpkeep).map(([type, value]) => {
+                      const total = Math.ceil(value * (countdown.days + countdown.hours / 24))
+                      const boxSize = type === 'hqm' ? 4800 : 48000
+                      const boxes = Math.ceil(total / boxSize)
+                      return (
+                        <div key={type} className="font-mono">
+                          {type}: <span className="font-bold text-red-400">{formatNumber(total)}</span>
+                          {total > 0 && <span className="text-orange-500 ml-1 text-[11px]">({boxes} {boxes === 1 ? 'box' : 'boxes'})</span>}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Upkeep List */}
+              <div className="border border-orange-600/50 rounded max-h-40 overflow-y-auto overflow-x-hidden bg-gray-800">
+                <div className="flex justify-between items-center p-2 border-b border-orange-600/50 text-xs font-medium text-orange-300 font-mono">
+                  <div className="flex">
+                    <span className="w-20">[GOOD FOR WIPE]</span>
+                    <span className="border-l border-orange-600/50 pl-2 w-32">[NAME]</span>
+                  </div>
+                  <div className="flex items-center space-x-8">
+                    <span className="w-40 text-center">[UPKEEP PER DAY]</span>
+                    <div className="flex items-center space-x-1">
+                      <span>[EDITS]</span>
+                      <button
+                        onClick={() => setShowModals(m => ({ ...m, upkeep: true }))}
+                        className="w-4 h-4 bg-orange-600 text-white rounded-full text-xs hover:bg-orange-700 flex-shrink-0"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {upkeepEntries.length === 0 ? (
+                  <div className="p-3 text-xs text-orange-500 text-center font-mono">No upkeep entries added</div>
+                ) : (
+                  upkeepEntries.map(entry => (
+                    <div key={entry.id} className="flex justify-between text-xs p-2 border-b border-orange-600/30 last:border-b-0 text-orange-300">
+                      <div className="flex">
+                        <span className="w-20 font-mono">{/* TODO: Add Good for wipe function */}</span>
+                        <span className="border-l border-orange-600/30 pl-2 w-32 truncate font-mono">{entry.name}</span>
+                      </div>
+                      <div className="flex items-center space-x-8">
+                        <div className="flex space-x-2 w-40 justify-center font-mono">
+                          {entry.stoneUpkeep > 0 && <span>S:{entry.stoneUpkeep}</span>}
+                          {entry.metalUpkeep > 0 && <span>M:{entry.metalUpkeep}</span>}
+                          {entry.hqmUpkeep > 0 && <span>H:{entry.hqmUpkeep}</span>}
+                        </div>
+                        <div className="flex space-x-1">
+                          <button
+                            onClick={() => {
+                              setNewUpkeepEntry(entry)
+                              setEditingUpkeepId(entry.id)
+                              setShowModals(m => ({ ...m, upkeep: true }))
+                            }}
+                            className="text-blue-400 flex-shrink-0"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            onClick={() => setUpkeepEntries(entries => entries.filter(e => e.id !== entry.id))}
+                            className="text-red-400 flex-shrink-0"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
-          </div>
-          
-          {/* TC Calculator */}
-          <div className="border-t border-orange-600/50 pt-4">
-            <div className="text-orange-300 text-sm font-mono font-bold mb-3">[TC CALCULATOR]</div>
-            <div className="flex gap-6">
+            
+            {/* Middle - TC Boxes */}
+            <div className="flex flex-col space-y-2">
               {Object.keys(TC_TYPES).map(type => (
-                <TCBox
+                <TCBox 
                   key={type}
                   type={type}
                   countdown={countdown}
                   showGrid={showGrids[type]}
-                  setShowGrid={(show) => setShowGrids(prev => ({ ...prev, [type]: show }))}
+                  setShowGrid={show => setShowGrids(g => ({ ...g, [type]: show }))}
                   showBackpack={showBackpacks[type]}
-                  setShowBackpack={(show) => setShowBackpacks(prev => ({ ...prev, [type]: show }))}
+                  setShowBackpack={show => setShowBackpacks(b => ({ ...b, [type]: show }))}
                 />
               ))}
+              
+              {/* Custom Items */}
+              {customItems.map(item => {
+                const fractionalDays = countdown.days + (countdown.hours / 24)
+                return (
+                  <div key={item.id} className="border-t border-orange-600/50 pt-2">
+                    <div className="flex justify-between mb-1">
+                      <span className="text-xs font-medium text-orange-300 font-mono">{item.name}</span>
+                      <button
+                        onClick={() => setCustomItems(items => items.filter(i => i.id !== item.id))}
+                        className="text-red-400 text-xs"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                    <div className="text-xs text-orange-400 font-mono">
+                      <div>Cost: {item.stoneCost > 0 && `S:${item.stoneCost} `}{item.metalCost > 0 && `M:${item.metalCost} `}{item.hqmCost > 0 && `H:${item.hqmCost}`}</div>
+                      <div>Upkeep: {item.stoneUpkeep > 0 && `S:${item.stoneUpkeep} `}{item.metalUpkeep > 0 && `M:${item.metalUpkeep} `}{item.hqmUpkeep > 0 && `H:${item.hqmUpkeep}`}</div>
+                      <div>Total: {Math.ceil(item.stoneCost + item.stoneUpkeep * fractionalDays) > 0 && `S:${Math.ceil(item.stoneCost + item.stoneUpkeep * fractionalDays)} `}{Math.ceil(item.metalCost + item.metalUpkeep * fractionalDays) > 0 && `M:${Math.ceil(item.metalCost + item.metalUpkeep * fractionalDays)} `}{Math.ceil(item.hqmCost + item.hqmUpkeep * fractionalDays) > 0 && `H:${Math.ceil(item.hqmCost + item.hqmUpkeep * fractionalDays)}`}</div>
+                    </div>
+                  </div>
+                )
+              })}
+              
+              {/* Add Custom Item Button */}
+              <button
+                onClick={() => setShowModals(m => ({ ...m, item: true }))}
+                className="text-xs bg-orange-600 text-white rounded px-2 py-1 hover:bg-orange-700 font-mono"
+              >
+                [ADD CUSTOM ITEM]
+              </button>
             </div>
+          </div>
+          
+          {/* Bottom countdown info */}
+          <div className="mt-4 pt-4 border-t border-orange-600/50 text-orange-300 text-sm font-mono">
+            <div className="text-lg font-bold mb-2">[WIPE COUNTDOWN]</div>
+            <div>Next wipe: <span className="text-orange-100">{countdown.days} days, {countdown.hours} hours, {countdown.minutes} minutes</span></div>
           </div>
         </div>
       )}
