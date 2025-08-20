@@ -400,13 +400,18 @@ export default function WipeCountdownTimer() {
           </div>
           
           <div className="space-y-2">
-            <label className="block text-xs text-orange-300 font-mono">RESOURCES</label>
+            <div className="grid grid-cols-4 gap-2 items-center">
+              <label className="text-xs text-orange-300 font-mono">RESOURCES</label>
+              <label className="text-xs text-orange-400 font-mono text-center">BUILD COST</label>
+              <label className="text-xs text-orange-400 font-mono text-center">DAILY UPKEEP</label>
+              <div></div>
+            </div>
             {['stone', 'metal', 'hqm'].map(type => (
               <div key={type} className="grid grid-cols-4 gap-2 items-center">
                 <label className="text-xs text-orange-400 font-mono">{type.toUpperCase()}</label>
                 <input
                   type="number"
-                  placeholder="Cost"
+                  placeholder="0"
                   value={newItem[`${type}Cost`]}
                   onChange={e => setNewItem({ ...newItem, [`${type}Cost`]: Number(e.target.value) })}
                   className="border border-orange-600/50 rounded px-2 py-1 bg-gray-800 text-orange-300 text-sm"
@@ -414,12 +419,13 @@ export default function WipeCountdownTimer() {
                 />
                 <input
                   type="number"
-                  placeholder="Upkeep"
+                  placeholder="0"
                   value={newItem[`${type}Upkeep`]}
                   onChange={e => setNewItem({ ...newItem, [`${type}Upkeep`]: Number(e.target.value) })}
                   className="border border-orange-600/50 rounded px-2 py-1 bg-gray-800 text-orange-300 text-sm"
                   min="0"
                 />
+                <div></div>
               </div>
             ))}
           </div>
