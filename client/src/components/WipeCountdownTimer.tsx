@@ -548,12 +548,6 @@ export default function WipeCountdownTimer() {
               </button>
             </div>
           </div>
-          
-          {/* Bottom countdown info */}
-          <div className="mt-4 pt-4 border-t border-orange-600/50 text-orange-300 text-sm font-mono">
-            <div className="text-lg font-bold mb-2">[WIPE COUNTDOWN]</div>
-            <div>Next wipe: <span className="text-orange-100">{countdown.days} days, {countdown.hours} hours, {countdown.minutes} minutes</span></div>
-          </div>
         </div>
       )}
     </div>
