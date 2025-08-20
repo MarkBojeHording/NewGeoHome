@@ -7,6 +7,7 @@ import { LogsModal } from '../components/LogsModal'
 import ActionReportModal from '../components/ActionReportModal'
 import { TeamsModal } from '../components/TeamsModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
+import WipeCountdownTimer from '../components/WipeCountdownTimer'
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
 // ============= CONSTANTS =============
@@ -1665,7 +1666,7 @@ export default function InteractiveTacticalMap() {
       
       {/* Fixed Main Toolbar - Buttons for Logs, Players, etc. */}
       <div className="fixed top-0 left-0 right-0 z-50 p-0 m-0" style={{top: 0, left: 0, right: 0, position: 'fixed'}}>
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50 overflow-hidden">
             <div className="bg-gradient-to-r from-orange-900/30 via-gray-800 to-orange-900/30 p-1">
               <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-3">
@@ -1686,9 +1687,12 @@ export default function InteractiveTacticalMap() {
                       </button>
                     ))}
                   </div>
-                  <button className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide">
-                    [MENU]
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <WipeCountdownTimer />
+                    <button className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide">
+                      [MENU]
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
