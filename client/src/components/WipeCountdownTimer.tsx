@@ -175,7 +175,7 @@ const TCInfo = ({ type, countdown, capacity }) => {
   
   return (
     <div className="text-xs text-orange-300">
-      <div>Cost: {type === 'stone' && <img src={STONE_IMG} alt="Stone" className="w-4 h-4 inline mx-1" />}<span className="font-semibold">{formatNumber(tc.cost)}</span></div>
+      <div>Cost: <span className="font-semibold">{formatNumber(tc.cost)}</span></div>
       <div>Upkeep: <span className="font-semibold">{formatNumber(tc.upkeep)}</span></div>
       <div>EOW: <span className="font-bold text-red-400">{formatNumber(endOfWipe)}</span></div>
       <div>Total: <span className="font-bold text-red-400">{formatNumber(total)}</span></div>
