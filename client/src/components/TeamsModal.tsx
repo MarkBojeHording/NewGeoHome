@@ -232,19 +232,29 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                       {/* Subordinate Bases Section */}
                       {getSubordinateBases(base).length > 0 && (
                         <div className="mb-1">
-                          <div className="flex items-center gap-1 mb-1">
+                          <div className="flex items-center gap-1 mb-2">
                             <Castle className="w-3 h-3 text-orange-400" />
                             <span className="text-xs font-medium text-orange-400 font-mono">SUBORDINATE BASES ({getSubordinateBases(base).length})</span>
                           </div>
-                          <div className="flex flex-wrap gap-1">
-                            {getSubordinateBases(base).map((subBase, index) => (
-                              <span 
-                                key={index}
-                                className="text-xs bg-orange-900/20 text-orange-300 px-1 py-0.5 border border-orange-600/30 font-mono"
-                              >
-                                {subBase.name} ({subBase.type.replace('enemy-', '').toUpperCase()})
-                              </span>
-                            ))}
+                          <div className="flex gap-2 overflow-x-auto pb-1">
+                            {getSubordinateBases(base).map((subBase, index) => {
+                              const SubIconComponent = getBaseIcon(subBase.type)
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex-shrink-0 flex items-center gap-1 bg-orange-900/20 text-orange-300 px-2 py-1 border border-orange-600/30 font-mono cursor-pointer hover:bg-orange-900/30 transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleBaseClick(subBase)
+                                  }}
+                                >
+                                  <SubIconComponent className="w-3 h-3 text-orange-400" />
+                                  <span className="text-xs whitespace-nowrap">
+                                    {subBase.name}
+                                  </span>
+                                </div>
+                              )
+                            })}
                           </div>
                         </div>
                       )}
