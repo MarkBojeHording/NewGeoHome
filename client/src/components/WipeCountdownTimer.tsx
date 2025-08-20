@@ -1,5 +1,53 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 
+// Types
+interface UpkeepEntry {
+  id: string
+  name: string
+  stoneUpkeep: number
+  metalUpkeep: number
+  hqmUpkeep: number
+}
+
+interface CustomItem {
+  id: string
+  name: string
+  stoneCost: number
+  stoneUpkeep: number
+  metalCost: number
+  metalUpkeep: number
+  hqmCost: number
+  hqmUpkeep: number
+  image: string | null
+}
+
+interface Countdown {
+  days: number
+  hours: number
+  minutes: number
+  seconds?: number
+}
+
+interface TCType {
+  cost: number
+  upkeep: number
+  color: string
+  stackLimit: number
+}
+
+interface TCCapacity {
+  maxTCs: number
+  totalWood: number
+  totalMaterial: number
+  woodSlots: number
+  materialSlots: number
+  woodAmounts: number[]
+  materialAmounts: number[]
+  woodNeeded: number
+  materialNeeded: number
+  totalSlots: number
+}
+
 // Constants
 const TC_TYPES = {
   stone: { cost: 1125, upkeep: 113, color: 'gray', stackLimit: 1000 },
@@ -11,7 +59,7 @@ const WOOD_STACK = 1000
 const SLOTS = { base: 22, backpack: 30 }
 
 // Utility functions
-const formatNumber = (num) => num.toLocaleString()
+const formatNumber = (num: number): string => num.toLocaleString()
 
 const getNextFirstThursday = () => {
   const now = new Date()
@@ -29,11 +77,15 @@ const getNextFirstThursday = () => {
 }
 
 // Components
-const TCGrid = ({ type, showBackpack, capacity }) => {
+const TCGrid = ({ type, showBackpack, capacity }: { 
+  type: keyof typeof TC_TYPES, 
+  showBackpack: boolean, 
+  capacity: TCCapacity 
+}) => {
   const { color } = TC_TYPES[type]
   const totalSlots = showBackpack ? SLOTS.base + SLOTS.backpack : SLOTS.base
   
-  const getSlotInfo = (index, offset = 0) => {
+  const getSlotInfo = (index: number, offset = 0) => {
     const adjIndex = index + offset - 2
     if (index === 0 && offset === 0) return { type: 'ammo', content: 'Ammo', color: 'red' }
     if (index === 1 && offset === 0) return { type: 'split', content: 'RW', amount: '1000' }
@@ -110,7 +162,14 @@ const TCGrid = ({ type, showBackpack, capacity }) => {
   )
 }
 
-const TCBox = ({ type, countdown, showGrid, setShowGrid, showBackpack, setShowBackpack }) => {
+const TCBox = ({ type, countdown, showGrid, setShowGrid, showBackpack, setShowBackpack }: {
+  type: keyof typeof TC_TYPES,
+  countdown: Countdown,
+  showGrid: boolean,
+  setShowGrid: (show: boolean) => void,
+  showBackpack: boolean,
+  setShowBackpack: (show: boolean) => void
+}) => {
   const tc = TC_TYPES[type]
   const capacity = useMemo(() => calculateTCCapacity(type, countdown, showBackpack), [type, countdown, showBackpack])
   
@@ -154,7 +213,12 @@ const TCBox = ({ type, countdown, showGrid, setShowGrid, showBackpack, setShowBa
   )
 }
 
-const Modal = ({ show, onClose, title, children }) => {
+const Modal = ({ show, onClose, title, children }: {
+  show: boolean,
+  onClose: () => void,
+  title: string,
+  children: React.ReactNode
+}) => {
   if (!show) return null
   
   return (
@@ -167,7 +231,11 @@ const Modal = ({ show, onClose, title, children }) => {
   )
 }
 
-const TCInfo = ({ type, countdown, capacity }) => {
+const TCInfo = ({ type, countdown, capacity }: {
+  type: keyof typeof TC_TYPES,
+  countdown: Countdown,
+  capacity: TCCapacity
+}) => {
   const tc = TC_TYPES[type]
   const fractionalDays = countdown.days + (countdown.hours / 24)
   const endOfWipe = Math.ceil(tc.upkeep * fractionalDays)
@@ -185,7 +253,11 @@ const TCInfo = ({ type, countdown, capacity }) => {
 }
 
 // Helper functions
-function calculateTCCapacity(tcType, countdown, includeBackpack) {
+function calculateTCCapacity(
+  tcType: keyof typeof TC_TYPES, 
+  countdown: Countdown, 
+  includeBackpack: boolean
+): TCCapacity {
   const tc = TC_TYPES[tcType]
   const fractionalDays = countdown.days + (countdown.hours / 24)
   const materialPerTC = Math.ceil(tc.cost + tc.upkeep * fractionalDays)
@@ -215,6 +287,8 @@ function calculateTCCapacity(tcType, countdown, includeBackpack) {
   
   return {
     maxTCs,
+    totalWood,
+    totalMaterial,
     woodNeeded: totalWood,
     materialNeeded: totalMaterial,
     woodSlots,
@@ -232,12 +306,12 @@ export default function WipeCountdownTimer() {
   const [showModals, setShowModals] = useState({ item: false, upkeep: false })
   const [showGrids, setShowGrids] = useState({ stone: false, metal: false, hqm: false })
   const [showBackpacks, setShowBackpacks] = useState({ stone: false, metal: false, hqm: false })
-  const [customItems, setCustomItems] = useState([])
-  const [upkeepEntries, setUpkeepEntries] = useState([])
-  const [mainImage, setMainImage] = useState(null)
-  const [editingUpkeepId, setEditingUpkeepId] = useState(null)
+  const [customItems, setCustomItems] = useState<CustomItem[]>([])
+  const [upkeepEntries, setUpkeepEntries] = useState<UpkeepEntry[]>([])
+  const [mainImage, setMainImage] = useState<string | null>(null)
+  const [editingUpkeepId, setEditingUpkeepId] = useState<string | null>(null)
   
-  const mainImageInputRef = useRef(null)
+  const mainImageInputRef = useRef<HTMLInputElement>(null)
   
   const [newUpkeepEntry, setNewUpkeepEntry] = useState({
     name: '', stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0
@@ -245,7 +319,7 @@ export default function WipeCountdownTimer() {
   
   const [newItem, setNewItem] = useState({
     name: '', stoneCost: 0, stoneUpkeep: 0, metalCost: 0, 
-    metalUpkeep: 0, hqmCost: 0, hqmUpkeep: 0, image: null
+    metalUpkeep: 0, hqmCost: 0, hqmUpkeep: 0, image: null as string | null
   })
   
   // Update countdown
@@ -268,7 +342,7 @@ export default function WipeCountdownTimer() {
   
   // Keyboard handlers
   useEffect(() => {
-    const handleEscape = (e) => {
+    const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setShowMainBox(false)
         setShowModals({ item: false, upkeep: false })
@@ -330,16 +404,16 @@ export default function WipeCountdownTimer() {
             type="text"
             placeholder="Name"
             value={newUpkeepEntry.name}
-            onChange={e => setNewUpkeepEntry({ ...newUpkeepEntry, name: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewUpkeepEntry({ ...newUpkeepEntry, name: e.target.value })}
             className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
           />
-          {['stone', 'metal', 'hqm'].map(type => (
+          {(['stone', 'metal', 'hqm'] as const).map(type => (
             <div key={type}>
               <label className="block text-sm mb-1 text-orange-300 font-mono">{type.toUpperCase()} Upkeep (per day)</label>
               <input
                 type="number"
-                value={newUpkeepEntry[`${type}Upkeep`]}
-                onChange={e => setNewUpkeepEntry({ ...newUpkeepEntry, [`${type}Upkeep`]: Number(e.target.value) })}
+                value={newUpkeepEntry[`${type}Upkeep` as keyof typeof newUpkeepEntry]}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewUpkeepEntry({ ...newUpkeepEntry, [`${type}Upkeep`]: Number(e.target.value) })}
                 className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
                 min="0"
               />
@@ -364,7 +438,7 @@ export default function WipeCountdownTimer() {
               type="text"
               placeholder="Enter item name"
               value={newItem.name}
-              onChange={e => setNewItem({ ...newItem, name: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem({ ...newItem, name: e.target.value })}
               className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
             />
           </div>
@@ -385,11 +459,11 @@ export default function WipeCountdownTimer() {
               id="itemImageInput"
               type="file"
               accept="image/*"
-              onChange={e => {
-                const file = e.target.files[0]
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const file = e.target.files?.[0]
                 if (file) {
                   const reader = new FileReader()
-                  reader.onloadend = () => setNewItem({ ...newItem, image: reader.result })
+                  reader.onloadend = () => setNewItem({ ...newItem, image: reader.result as string })
                   reader.readAsDataURL(file)
                 }
               }}
@@ -404,22 +478,22 @@ export default function WipeCountdownTimer() {
               <label className="text-xs text-orange-400 font-mono text-center">DAILY UPKEEP</label>
               <div></div>
             </div>
-            {['stone', 'metal', 'hqm'].map(type => (
+            {(['stone', 'metal', 'hqm'] as const).map(type => (
               <div key={type} className="grid grid-cols-4 gap-2 items-center">
                 <label className="text-xs text-orange-400 font-mono">{type.toUpperCase()}</label>
                 <input
                   type="number"
                   placeholder="0"
-                  value={newItem[`${type}Cost`]}
-                  onChange={e => setNewItem({ ...newItem, [`${type}Cost`]: Number(e.target.value) })}
+                  value={newItem[`${type}Cost` as keyof typeof newItem] || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem({ ...newItem, [`${type}Cost`]: Number(e.target.value) })}
                   className="border border-orange-600/50 rounded px-2 py-1 bg-gray-800 text-orange-300 text-sm"
                   min="0"
                 />
                 <input
                   type="number"
                   placeholder="0"
-                  value={newItem[`${type}Upkeep`]}
-                  onChange={e => setNewItem({ ...newItem, [`${type}Upkeep`]: Number(e.target.value) })}
+                  value={newItem[`${type}Upkeep` as keyof typeof newItem] || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem({ ...newItem, [`${type}Upkeep`]: Number(e.target.value) })}
                   className="border border-orange-600/50 rounded px-2 py-1 bg-gray-800 text-orange-300 text-sm"
                   min="0"
                 />
@@ -455,11 +529,11 @@ export default function WipeCountdownTimer() {
                   ref={mainImageInputRef}
                   type="file"
                   accept="image/*"
-                  onChange={e => {
-                    const file = e.target.files[0]
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const file = e.target.files?.[0]
                     if (file) {
                       const reader = new FileReader()
-                      reader.onloadend = () => setMainImage(reader.result)
+                      reader.onloadend = () => setMainImage(reader.result as string)
                       reader.readAsDataURL(file)
                     }
                   }}
@@ -551,15 +625,15 @@ export default function WipeCountdownTimer() {
             
             {/* Middle - TC Boxes */}
             <div className="flex flex-col space-y-2">
-              {Object.keys(TC_TYPES).map(type => (
+              {(Object.keys(TC_TYPES) as Array<keyof typeof TC_TYPES>).map(type => (
                 <TCBox 
                   key={type}
                   type={type}
                   countdown={countdown}
                   showGrid={showGrids[type]}
-                  setShowGrid={show => setShowGrids(g => ({ ...g, [type]: show }))}
+                  setShowGrid={(show: boolean) => setShowGrids(g => ({ ...g, [type]: show }))}
                   showBackpack={showBackpacks[type]}
-                  setShowBackpack={show => setShowBackpacks(b => ({ ...b, [type]: show }))}
+                  setShowBackpack={(show: boolean) => setShowBackpacks(b => ({ ...b, [type]: show }))}
                 />
               ))}
               
