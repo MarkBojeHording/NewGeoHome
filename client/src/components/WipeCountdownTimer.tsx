@@ -20,7 +20,14 @@ const getNextFirstThursday = () => {
   let d = new Date(now.getFullYear(), now.getMonth(), 1)
   while (d.getDay() !== 4) d.setDate(d.getDate() + 1)
   d.setHours(14, 0, 0, 0)
-  return d > now ? d : new Date(d.setMonth(d.getMonth() + 1))
+  
+  if (d <= now) {
+    d = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+    while (d.getDay() !== 4) d.setDate(d.getDate() + 1)
+    d.setHours(14, 0, 0, 0)
+  }
+  
+  return d
 }
 
 // Components
