@@ -6,6 +6,7 @@ import { PlayerModal } from '../components/PlayerModal'
 import { LogsModal } from '../components/LogsModal'
 import ActionReportModal from '../components/ActionReportModal'
 import { TeamsModal } from '../components/TeamsModal'
+import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
 // ============= CONSTANTS =============
@@ -1249,6 +1250,16 @@ export default function InteractiveTacticalMap() {
     baseType: null
   })
   
+  // Heat map configuration state
+  const [heatMapConfig, setHeatMapConfig] = useState<HeatMapConfig>({
+    enabled: false,
+    radius: 50,
+    maxIntensity: 10,
+    opacity: 0.6,
+    colorScheme: 'red'
+  })
+  const [showHeatMapControls, setShowHeatMapControls] = useState(false)
+  
 
 
   
@@ -1746,6 +1757,15 @@ export default function InteractiveTacticalMap() {
                   )}
                 </svg>
               </div>
+
+{/* Heat Map Overlay */}
+              <HeatMapOverlay
+                locations={locations}
+                players={players || []}
+                config={heatMapConfig}
+                mapDimensions={{ width: 800, height: 800 }}
+                onConfigChange={setHeatMapConfig}
+              />
 
 {/* Connection lines between grouped bases when one is selected */}
               {selectedLocation && (() => {
