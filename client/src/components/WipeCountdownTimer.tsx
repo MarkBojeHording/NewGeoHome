@@ -374,7 +374,7 @@ export default function WipeCountdownTimer() {
           <div>
             <label className="block text-xs mb-1 text-orange-300 font-mono">ITEM IMAGE</label>
             <div 
-              className="w-full h-36 border-2 border-dashed border-orange-600/50 rounded-lg flex items-center justify-center cursor-pointer hover:border-orange-600"
+              className="w-full h-48 border-2 border-dashed border-orange-600/50 rounded-lg flex items-center justify-center cursor-pointer hover:border-orange-600"
               onClick={() => document.getElementById('itemImageInput')?.click()}
             >
               {newItem.image ? (
