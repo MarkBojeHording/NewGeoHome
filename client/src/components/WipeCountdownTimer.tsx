@@ -161,7 +161,7 @@ const Modal = ({ show, onClose, title, children }) => {
   
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]" onClick={onClose}>
-      <div className="bg-gray-900 border-2 border-orange-600 rounded-lg p-6 w-96 text-orange-300" onClick={e => e.stopPropagation()}>
+      <div className="bg-gray-900 border-2 border-orange-600 rounded-lg p-6 w-[500px] max-h-[90vh] overflow-y-auto text-orange-300" onClick={e => e.stopPropagation()}>
         <h3 className="text-lg font-bold mb-4 font-mono">[{title.toUpperCase()}]</h3>
         {children}
       </div>
@@ -359,9 +359,9 @@ export default function WipeCountdownTimer() {
         onClose={() => setShowModals(m => ({ ...m, item: false }))}
         title="Add Custom Item"
       >
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div>
-            <label className="block text-sm mb-1 text-orange-300 font-mono">ITEM NAME</label>
+            <label className="block text-xs mb-1 text-orange-300 font-mono">ITEM NAME</label>
             <input
               type="text"
               placeholder="Enter item name"
@@ -372,9 +372,9 @@ export default function WipeCountdownTimer() {
           </div>
           
           <div>
-            <label className="block text-sm mb-1 text-orange-300 font-mono">ITEM IMAGE</label>
+            <label className="block text-xs mb-1 text-orange-300 font-mono">ITEM IMAGE</label>
             <div 
-              className="w-full h-20 border-2 border-dashed border-orange-600/50 rounded-lg flex items-center justify-center cursor-pointer hover:border-orange-600"
+              className="w-full h-32 border-2 border-dashed border-orange-600/50 rounded-lg flex items-center justify-center cursor-pointer hover:border-orange-600"
               onClick={() => document.getElementById('itemImageInput')?.click()}
             >
               {newItem.image ? (
@@ -399,35 +399,30 @@ export default function WipeCountdownTimer() {
             />
           </div>
           
-          {['stone', 'metal', 'hqm'].map(type => (
-            <div key={type}>
-              <label className="block text-sm mb-1 text-orange-300 font-mono">{type.toUpperCase()} RESOURCES</label>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs text-orange-400 font-mono mb-1">Cost</label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    value={newItem[`${type}Cost`]}
-                    onChange={e => setNewItem({ ...newItem, [`${type}Cost`]: Number(e.target.value) })}
-                    className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
-                    min="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-orange-400 font-mono mb-1">Daily Upkeep</label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    value={newItem[`${type}Upkeep`]}
-                    onChange={e => setNewItem({ ...newItem, [`${type}Upkeep`]: Number(e.target.value) })}
-                    className="w-full border border-orange-600/50 rounded px-3 py-2 bg-gray-800 text-orange-300"
-                    min="0"
-                  />
-                </div>
+          <div className="space-y-2">
+            <label className="block text-xs text-orange-300 font-mono">RESOURCES</label>
+            {['stone', 'metal', 'hqm'].map(type => (
+              <div key={type} className="grid grid-cols-4 gap-2 items-center">
+                <label className="text-xs text-orange-400 font-mono">{type.toUpperCase()}</label>
+                <input
+                  type="number"
+                  placeholder="Cost"
+                  value={newItem[`${type}Cost`]}
+                  onChange={e => setNewItem({ ...newItem, [`${type}Cost`]: Number(e.target.value) })}
+                  className="border border-orange-600/50 rounded px-2 py-1 bg-gray-800 text-orange-300 text-sm"
+                  min="0"
+                />
+                <input
+                  type="number"
+                  placeholder="Upkeep"
+                  value={newItem[`${type}Upkeep`]}
+                  onChange={e => setNewItem({ ...newItem, [`${type}Upkeep`]: Number(e.target.value) })}
+                  className="border border-orange-600/50 rounded px-2 py-1 bg-gray-800 text-orange-300 text-sm"
+                  min="0"
+                />
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
           <div className="flex justify-end space-x-2">
             <button onClick={() => setShowModals(m => ({ ...m, item: false }))} className="px-4 py-2 border border-orange-600/50 rounded bg-gray-800 text-orange-300">Cancel</button>
             <button onClick={handleAddItem} className="px-4 py-2 bg-orange-600 text-white rounded">Save</button>
