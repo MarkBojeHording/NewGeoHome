@@ -721,13 +721,58 @@ const BaseModal = ({
             <label className="absolute top-0 left-0 text-xs font-medium text-orange-300 pl-0.5 font-mono tracking-wide">[HEAT MAP]</label>
             <div className="p-2 pt-3">
               <div className="flex gap-1">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, dayIndex) => (
                   <div key={day} className="flex-1">
                     <div className="text-[10px] text-orange-400 text-center font-mono">[{day.substring(0,2)}]</div>
-                    <div className="bg-gray-900 border border-orange-600/30 rounded" style={{height: '160px', position: 'relative'}}>
+                    <div className="bg-gray-900 border border-orange-600/30 rounded relative" style={{height: '160px'}}>
+                      {/* Heat Map Visualization for this day */}
+                      <div className="absolute inset-1 flex flex-col">
+                        {Array.from({length: 24}, (_, hour) => {
+                          // Calculate activity intensity for this hour and day based on tagged players
+                          const selectedPlayersList = formData.players.split(',').map(p => p.trim()).filter(p => p)
+                          let activityCount = 0
+                          
+                          // Check player sessions for this specific day/hour combination
+                          selectedPlayersList.forEach(playerName => {
+                            const player = players.find(p => p.playerName === playerName)
+                            if (player && player.totalSessions) {
+                              // Simple activity simulation based on player online status and session count
+                              // In real implementation, this would use actual session timestamp data
+                              const baseActivity = Math.floor(player.totalSessions / 10)
+                              const hourWeight = hour >= 16 && hour <= 23 ? 2 : hour >= 8 && hour <= 15 ? 1.5 : 1
+                              const dayWeight = dayIndex >= 5 ? 1.5 : 1.2 // Weekend boost
+                              activityCount += Math.floor(baseActivity * hourWeight * dayWeight * (player.isOnline ? 1.3 : 1))
+                            }
+                          })
+                          
+                          // Normalize activity to opacity (0-1)
+                          const maxActivity = 20 // Arbitrary max for normalization
+                          const intensity = Math.min(activityCount / maxActivity, 1)
+                          const opacity = intensity > 0 ? 0.1 + (intensity * 0.9) : 0.05
+                          
+                          return (
+                            <div
+                              key={hour}
+                              className="flex-1 border-r border-orange-600/10 last:border-r-0"
+                              style={{
+                                backgroundColor: `rgba(239, 68, 68, ${opacity})`, // Red for enemy activity
+                                minHeight: '1px'
+                              }}
+                              title={`${hour}:00 - Activity: ${activityCount}`}
+                            />
+                          )
+                        })}
+                      </div>
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="mt-2 flex justify-between text-[9px] text-orange-500 font-mono">
+                <span>[0:00]</span>
+                <span>[6:00]</span>
+                <span>[12:00]</span>
+                <span>[18:00]</span>
+                <span>[23:59]</span>
               </div>
             </div>
           </div>
