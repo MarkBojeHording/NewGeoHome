@@ -255,7 +255,7 @@ export default function WipeCountdownTimer() {
       
       {/* Detailed view */}
       {showMainBox && (
-        <div className="absolute top-full left-0 mt-2 bg-gray-900 border-2 border-orange-600 rounded-lg shadow-2xl p-4 z-50 min-w-96">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 mt-2 bg-gray-900 border-2 border-orange-600 rounded-lg shadow-2xl p-4 z-[60] min-w-96">
           <div className="text-orange-300 text-sm font-mono mb-4">
             <div className="text-lg font-bold mb-2">[WIPE COUNTDOWN]</div>
             <div className="mb-4">
