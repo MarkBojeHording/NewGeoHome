@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 
 // Constants
-const STONE_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAGJxJREFUeF7temuMXdd13rf3Pu9z3zP3zgyHrxkO3xIli5VkUg9LjmzXdeFHYidQICNxkKRAfgQoUKCoHbgO4NRFfhh9umlTJHFTNEFs2YldO5Il25Ioi5JJkdTMcB58DOdx5965j3PPc5/drM2hYKskRTlxa0M8wODM3HvmnL2+tda3vrX2YXiLH+wtbj9uAnAzAt7iCNxMgbd4ANwkwZspcDMF3uII3EyB6wXA7t27J/M8f4hzfhCArZRa4JzPc843EqXWDaUWpqenmz/LQXTNCLjzzjtfetvbbrvrrn90J0bHtmYFR7CV1VX0+oGK44itrDVFKhmazVWsra4uzZ+dPxkEwUnF1IJS6tm5ubljPwvAXBOAd77z ...[Truncated]'
-
 const TC_TYPES = {
   stone: { cost: 1125, upkeep: 113, color: 'gray', stackLimit: 1000 },
   metal: { cost: 750, upkeep: 75, color: 'gray', stackLimit: 1000 },
