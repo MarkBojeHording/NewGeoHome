@@ -579,13 +579,13 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               y={centerY}
               textAnchor="middle"
               dominantBaseline="middle"
-              fontSize="6"
+              fontSize="12"
               fontWeight="bold"
               fill="white"
               className="select-none"
-              style={{ textShadow: '0.5px 0.5px 1px rgba(0,0,0,0.8)' }}
+              style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.9)' }}
             >
-              Action
+              ACTION
             </text>
           </g>
         </svg>
