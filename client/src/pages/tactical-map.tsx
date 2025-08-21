@@ -902,24 +902,19 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             <div 
               className="absolute" 
               style={{
-                top: '0px',
-                right: '0px',
-                width: '360px',
-                height: '360px',
-                transform: 'translate(50%, -50%)',
+                top: '-108px',
+                right: '-108px',
+                width: '216px',
+                height: '216px',
                 pointerEvents: 'auto'
               }}
             >
               <div style={{
                 transform: 'scale(0.6)', 
-                transformOrigin: 'center', 
                 width: '600px', 
                 height: '600px',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: '-300px',
-                marginLeft: '-300px'
+                marginTop: '-192px',
+                marginLeft: '-192px'
               }}>
                 <RadialMenu />
               </div>
