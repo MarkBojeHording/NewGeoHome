@@ -8,7 +8,7 @@ import ActionReportModal from '../components/ActionReportModal'
 import { TeamsModal } from '../components/TeamsModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
 import WipeCountdownTimer from '../components/WipeCountdownTimer'
-import RadialMenu from '../components/RadialMenu'
+
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
 // ============= CONSTANTS =============
@@ -1002,8 +1002,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       )}
       
       {showActionMenu && !location.type.startsWith('report') && (
-        location.type.startsWith('enemy') ? (
-          <RadialMenu 
+        <ActionMenu 
           location={location}
           style={{
             top: '20px',
