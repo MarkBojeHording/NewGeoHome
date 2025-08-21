@@ -993,8 +993,8 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           location={location}
           style={{
             position: 'absolute',
-            top: '-26px',
-            right: '-26px',
+            top: '-52px',
+            right: '-52px',
             zIndex: 30
           }}
           onClose={() => {}}
