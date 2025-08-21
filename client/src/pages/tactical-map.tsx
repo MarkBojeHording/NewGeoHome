@@ -988,8 +988,8 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           <span className="text-white text-[11px] font-bold">DETAILS</span>
         </button>
       ) : location.type.startsWith('enemy') ? (
-        <div className="absolute -top-2 -right-2" style={{width: '120px', height: '120px'}}>
-          <div style={{transform: 'scale(0.2)', transformOrigin: 'center', width: '600px', height: '600px', marginTop: '-240px', marginLeft: '-240px'}}>
+        <div className="absolute -top-8 -right-8" style={{width: '360px', height: '360px'}}>
+          <div style={{transform: 'scale(0.6)', transformOrigin: 'center', width: '600px', height: '600px', marginTop: '-120px', marginLeft: '-120px'}}>
             <RadialMenu />
           </div>
         </div>
