@@ -9,6 +9,7 @@ import { TeamsModal } from '../components/TeamsModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
 import WipeCountdownTimer from '../components/WipeCountdownTimer'
 import RadialMenu from '../components/RadialMenu'
+import FarmRadialMenu from '../components/FarmRadialMenu'
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
 // ============= CONSTANTS =============
@@ -916,6 +917,32 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             marginLeft: '-300px'
           }}>
             <RadialMenu />
+          </div>
+        </div>
+      )}
+      {location.type.startsWith('friendly') && (
+        <div 
+          className="absolute" 
+          style={{
+            top: '-108px',
+            right: '-108px',
+            width: '216px',
+            height: '216px',
+            pointerEvents: 'auto'
+          }}
+        >
+          <div style={{
+            transform: 'scale(0.6)', 
+            transformOrigin: 'center',
+            width: '440px', 
+            height: '500px',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            marginTop: '-250px',
+            marginLeft: '-220px'
+          }}>
+            <FarmRadialMenu />
           </div>
         </div>
       )}
