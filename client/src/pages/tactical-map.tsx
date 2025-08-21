@@ -897,7 +897,14 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-x-10 flex gap-3">
       {/* Rectangle - smaller size for enemy base preview */}
       <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none z-50">
-        <div className="w-52 h-28 bg-gray-800 border border-orange-600/50 shadow-lg">
+        <div className="w-52 h-28 bg-gray-800 border border-orange-600/50 shadow-lg relative">
+          {location.type.startsWith('enemy') && (
+            <div className="absolute top-0 right-0" style={{transform: 'translate(50%, -50%)'}}>
+              <div style={{transform: 'scale(0.6)', transformOrigin: 'center', width: '600px', height: '600px', marginTop: '-180px', marginLeft: '-180px'}}>
+                <RadialMenu />
+              </div>
+            </div>
+          )}
           {/* Player snapshot grid - 2 columns x 5 rows */}
           <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
             {(() => {
@@ -987,12 +994,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         >
           <span className="text-white text-[11px] font-bold">DETAILS</span>
         </button>
-      ) : location.type.startsWith('enemy') ? (
-        <div className="absolute top-0 right-0" style={{width: '360px', height: '360px', transform: 'translate(50%, -50%)'}}>
-          <div style={{transform: 'scale(0.6)', transformOrigin: 'center', width: '600px', height: '600px', marginTop: '-180px', marginLeft: '-180px'}}>
-            <RadialMenu />
-          </div>
-        </div>
       ) : (
         <button 
           className="absolute -top-4 -right-4 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors border-2 border-gray-800 shadow-lg" 
