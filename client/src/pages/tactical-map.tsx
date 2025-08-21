@@ -8,6 +8,7 @@ import ActionReportModal from '../components/ActionReportModal'
 import { TeamsModal } from '../components/TeamsModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
 import WipeCountdownTimer from '../components/WipeCountdownTimer'
+import RadialMenu from '../components/RadialMenu'
 
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
@@ -1002,7 +1003,28 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       )}
       
       {showActionMenu && !location.type.startsWith('report') && (
-        <ActionMenu 
+        location.type.startsWith('enemy') ? (
+          <RadialMenu 
+            location={location}
+            style={{
+              top: '20px',
+              left: 'calc(100% + 3px)',
+              zIndex: 30
+            }}
+            onClose={() => setShowActionMenu(false)}
+            onAction={(action) => {
+              console.log(action)
+              setShowActionMenu(false)
+              if (action === 'Decaying') {
+                setShowDecayingMenu(true)
+              }
+              else if (action === 'Write Report') {
+                onOpenBaseReport(location)
+              }
+            }}
+          />
+        ) : (
+          <ActionMenu 
           location={location}
           style={{
             top: '20px',
@@ -1020,15 +1042,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
              else if (action === 'Write report') {
               onOpenBaseReport(location)
             }
-            else if (action === 'Add Base Report') {
-              setBaseReportData({
-                baseId: location.id,
-                baseName: location.name,
-                baseCoords: location.coordinates || getGridCoordinate(location.x, location.y, locations, null),
-                baseType: location.type
-              })
-              setShowBaseReportModal(true)
-            }
+
           }}
         />
       )}
