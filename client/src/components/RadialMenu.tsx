@@ -18,12 +18,12 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
     hqm: 0
   });
   
-  // Configuration - much larger size for better visibility (160px x 160px)
-  const centerX = 80;
-  const centerY = 80;
-  const innerRadius = 25;
-  const middleRadius = 60;
-  const outerRadius = 80;
+  // Configuration - scaled down from original (600x600 to 200x200)
+  const centerX = 100;
+  const centerY = 100;
+  const innerRadius = 13;
+  const middleRadius = 50;
+  const outerRadius = 63;
   const startAngle = 180;
   const segments = 5;
   const totalAngle = 180;
@@ -352,7 +352,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
           }
         `}</style>
         
-        <svg width="160" height="160" viewBox="0 0 160 160" preserveAspectRatio="xMidYMid meet">
+        <svg width="200" height="200" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
           <defs>
             {/* Filters */}
             <filter id="actionButtonShadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -423,7 +423,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
                     d={createPath(innerRadius, middleRadius, index)}
                     fill={getColor(index, false)}
                     stroke="rgba(255, 255, 255, 0.2)"
-                    strokeWidth="1"
+                    strokeWidth="2"
                     className="cursor-pointer transition-all duration-300 hover:brightness-110"
                     onMouseEnter={() => setHoveredSegment(`inner-${index}`)}
                     onMouseLeave={() => setHoveredSegment(null)}
@@ -452,7 +452,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
                     d={createPath(middleRadius + 5, outerRadius, index)}
                     fill={getColor(index, true)}
                     stroke="rgba(255, 255, 255, 0.2)"
-                    strokeWidth="1"
+                    strokeWidth="2"
                     className="cursor-pointer transition-all duration-300 hover:brightness-110"
                     onMouseEnter={() => setHoveredSegment(`outer-${index}`)}
                     onMouseLeave={() => setHoveredSegment(null)}
@@ -583,7 +583,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               fontWeight="bold"
               fill="white"
               className="select-none"
-              style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.9)' }}
+              style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
             >
               ACTION
             </text>
