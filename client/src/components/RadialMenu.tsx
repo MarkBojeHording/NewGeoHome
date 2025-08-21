@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-interface RadialMenuProps {
-  location: any;
-  onAction: (action: string) => void;
-  onClose: () => void;
-  style?: React.CSSProperties;
-}
-
-const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, style }) => {
-  const [selectedInner, setSelectedInner] = useState<number | null>(null);
-  const [selectedOuter, setSelectedOuter] = useState<number | null>(null);
-  const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
+const RadialMenu = () => {
+  const [selectedInner, setSelectedInner] = useState(null);
+  const [selectedOuter, setSelectedOuter] = useState(null);
+  const [hoveredSegment, setHoveredSegment] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [resources, setResources] = useState({
     stone: 0,
@@ -18,7 +11,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
     hqm: 0
   });
   
-  // Configuration - original dimensions scaled to map size
+  // Configuration
   const centerX = 300;
   const centerY = 300;
   const innerRadius = 40;
@@ -45,7 +38,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
   const INNER_LABELS = ['⚔️', '❓', '💰', '💀', '📋'];
   
   // Get label position
-  const getLabelPosition = (radius: number, segmentIndex: number) => {
+  const getLabelPosition = (radius, segmentIndex) => {
     const midAngle = startAngle + (segmentIndex * segmentAngle) + (segmentAngle / 2);
     const angleRad = (midAngle * Math.PI) / 180;
     const x = centerX + radius * Math.cos(angleRad);
@@ -55,7 +48,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
   
   // Handle escape key
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (event) => {
       if (event.key === 'Escape') {
         if (isExpanded) {
           setIsExpanded(false);
@@ -67,18 +60,16 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
             metal: 0,
             hqm: 0
           });
-        } else {
-          onClose();
         }
       }
     };
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isExpanded, onClose]);
+  }, [isExpanded]);
   
   // Create SVG path
-  const createPath = (startRadius: number, endRadius: number, segmentIndex: number) => {
+  const createPath = (startRadius, endRadius, segmentIndex) => {
     const startSegmentAngle = startAngle + (segmentIndex * segmentAngle);
     const endSegmentAngle = startSegmentAngle + segmentAngle;
     
@@ -106,7 +97,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
   };
   
   // Create curved path for text
-  const createTextPath = (radius: number, segmentIndex: number, startOffset = 3, endOffset = 3) => {
+  const createTextPath = (radius, segmentIndex, startOffset = 3, endOffset = 3) => {
     const startSegmentAngle = startAngle + (segmentIndex * segmentAngle) + startOffset;
     const endSegmentAngle = startAngle + ((segmentIndex + 1) * segmentAngle) - endOffset;
     
@@ -122,7 +113,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
   };
   
   // Get color for segments
-  const getColor = (index: number, isOuter: boolean) => {
+  const getColor = (index, isOuter) => {
     const segmentId = isOuter ? `outer-${index}` : `inner-${index}`;
     const isHovered = hoveredSegment === segmentId;
     
@@ -146,27 +137,20 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
   };
   
   // Handle clicks
-  const handleClick = (type: 'inner' | 'outer', index: number) => {
+  const handleClick = (type, index) => {
     if (type === 'inner') {
       setSelectedInner(index);
-      // Handle actions based on inner segment
-      const actions = ['Schedule Raid', 'Need Names', 'They Moved Loot', 'Decaying', 'Write report'];
-      if (index !== 3) { // Not decaying
-        onAction(actions[index]);
-        setIsExpanded(false);
-        onClose();
-      }
     } else {
       setSelectedOuter(index);
     }
   };
   
   // Render pulsating overlay
-  const renderPulsatingOverlay = (segmentIndex: number, condition: boolean, overlayText: string) => {
+  const renderPulsatingOverlay = (segmentIndex, condition, overlayText) => {
     if (!condition) return null;
     
     const segmentCenterAngle = startAngle + (segmentIndex * segmentAngle) + (segmentAngle / 2);
-    const segmentCenterRadius = (middleRadius + 5 + outerRadius) / 2;
+    const segmentCenterRadius = (middleRadius + 20 + outerRadius) / 2;
     const angleRad = (segmentCenterAngle * Math.PI) / 180;
     const transformX = centerX + segmentCenterRadius * Math.cos(angleRad);
     const transformY = centerY + segmentCenterRadius * Math.sin(angleRad);
@@ -177,7 +161,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
       const startSegmentAngle = startAngle + (segmentIndex * segmentAngle);
       
       // Create path for left half (IN - green)
-      const createHalfPath = (isLeftHalf: boolean) => {
+      const createHalfPath = (isLeftHalf) => {
         const startAngleOffset = isLeftHalf ? 0 : halfSegmentAngle;
         const endAngleOffset = isLeftHalf ? halfSegmentAngle : segmentAngle;
         
@@ -206,7 +190,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
       };
       
       // Calculate text position for each half
-      const textRadius = (middleRadius + 5 + outerRadius) / 2;
+      const textRadius = (middleRadius + 20 + outerRadius) / 2;
       
       return (
         <g style={{
@@ -219,26 +203,24 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
             fill="hsl(120, 70%, 45%)"
             fillOpacity="1"
             stroke="hsl(120, 80%, 35%)"
-            strokeWidth="1"
+            strokeWidth="3"
             className="cursor-pointer hover:brightness-110"
             filter="url(#greenGlow)"
             onClick={(e) => {
               e.stopPropagation();
-              onAction('Loot moved in');
-              setIsExpanded(false);
-              onClose();
+              setSelectedInner(null);
             }}
           />
           <text
             x={centerX + textRadius * Math.cos((startSegmentAngle + halfSegmentAngle/2) * Math.PI / 180)}
             y={centerY + textRadius * Math.sin((startSegmentAngle + halfSegmentAngle/2) * Math.PI / 180)}
             fill="white"
-            fontSize="8"
+            fontSize="14"
             fontWeight="bold"
             textAnchor="middle"
             dominantBaseline="middle"
             className="pointer-events-none select-none"
-            style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.9)' }}
+            style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
           >
             IN
           </text>
@@ -249,26 +231,24 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
             fill="hsl(0, 70%, 50%)"
             fillOpacity="1"
             stroke="hsl(0, 80%, 40%)"
-            strokeWidth="1"
+            strokeWidth="3"
             className="cursor-pointer hover:brightness-110"
             filter="url(#redGlow)"
             onClick={(e) => {
               e.stopPropagation();
-              onAction('Loot moved out');
-              setIsExpanded(false);
-              onClose();
+              setSelectedInner(null);
             }}
           />
           <text
             x={centerX + textRadius * Math.cos((startSegmentAngle + segmentAngle - halfSegmentAngle/2) * Math.PI / 180)}
             y={centerY + textRadius * Math.sin((startSegmentAngle + segmentAngle - halfSegmentAngle/2) * Math.PI / 180)}
             fill="white"
-            fontSize="8"
+            fontSize="14"
             fontWeight="bold"
             textAnchor="middle"
             dominantBaseline="middle"
             className="pointer-events-none select-none"
-            style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.9)' }}
+            style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
           >
             OUT
           </text>
@@ -291,20 +271,15 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
           filter="url(#redGlow)"
           onClick={(e) => {
             e.stopPropagation();
-            if (segmentIndex === 0) onAction('Schedule Raid');
-            else if (segmentIndex === 1) onAction('Need Names');
-            else if (segmentIndex === 3) onAction('Start Decay Timer');
-            else if (segmentIndex === 4) onAction('Write report');
-            setIsExpanded(false);
-            onClose();
+            setSelectedInner(null);
           }}
         />
         <text 
           fill="white" 
-          fontSize="8" 
+          fontSize="15" 
           fontWeight="bold" 
           className="pointer-events-none select-none" 
-          style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.9)' }}
+          style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
         >
           <textPath href={`#outerTextPath-${segmentIndex}`} startOffset="50%" textAnchor="middle">
             {overlayText}
@@ -315,18 +290,23 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
   };
 
   return (
-    <div 
-      className="absolute"
-      style={{
-        ...style,
-        zIndex: 50
-      }}
-      onClick={(e) => e.stopPropagation()}
-    >
+    <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <style>{`
           @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
+          }
+          @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+          }
+          @keyframes deployFromCenter {
+            0% { opacity: 0; transform: scale(0); }
+            100% { opacity: 1; transform: scale(1); }
+          }
+          .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+            transform-origin: ${centerX}px ${centerY}px;
           }
           @keyframes actionPulse {
             0%, 100% { 
@@ -346,13 +326,9 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
             animation: deployFromCenter 0.3s ease-out;
             transform-origin: ${centerX}px ${centerY}px;
           }
-          @keyframes deployFromCenter {
-            0% { opacity: 0; transform: scale(0); }
-            100% { opacity: 1; transform: scale(1); }
-          }
         `}</style>
         
-        <svg width="320" height="320" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet">
+        <svg width="600" height="600" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet">
           <defs>
             {/* Filters */}
             <filter id="actionButtonShadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -466,7 +442,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               
               {/* Gap text */}
               {GAP_TEXTS.map((text, index) => (
-                <text key={`gap-text-${index}`} fill="rgba(255,255,255,0.9)" fontSize={index === 2 ? "10" : "11"} fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}>
+                <text key={`gap-text-${index}`} fill="rgba(255,255,255,0.9)" fontSize={index === 2 ? "6" : "7"} fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
                   <textPath href={`#gapTextPath-${index}`} startOffset="50%" textAnchor="middle">{text}</textPath>
                 </text>
               ))}
@@ -554,25 +530,25 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               if (isExpanded) {
                 setSelectedInner(null);
                 setSelectedOuter(null);
-                setHoveredSegment(null);
+                setIsExpanded(false);
                 setResources({
                   stone: 0,
                   metal: 0,
                   hqm: 0
                 });
+              } else {
+                setIsExpanded(true);
               }
-              setIsExpanded(!isExpanded);
             }}
           >
             <circle
               cx={centerX}
               cy={centerY}
-              r={innerRadius - 1}
-              fill={isExpanded ? "hsl(0, 75%, 50%)" : "hsl(0, 60%, 30%)"}
-              stroke={isExpanded ? "hsl(0, 80%, 35%)" : "hsl(0, 60%, 20%)"}
-              strokeWidth="1.5"
-              className="transition-all duration-300"
-              filter={isExpanded ? "url(#actionButtonGlow)" : "url(#actionButtonShadow)"}
+              r="25"
+              fill="hsl(0, 80%, 50%)"
+              stroke="white"
+              strokeWidth="3"
+              filter="url(#actionButtonShadow)"
             />
             <text
               x={centerX}
