@@ -1045,7 +1045,9 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
 
           }}
         />
+        )
       )}
+        )
       
       {showDecayingMenu && !location.type.startsWith('report') && (
         <DecayingMenu 
