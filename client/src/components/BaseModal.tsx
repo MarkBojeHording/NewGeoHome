@@ -497,6 +497,8 @@ const BaseModal = ({
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
+  const [isEditingCoordinate, setIsEditingCoordinate] = useState(false)
+  const [editableCoordinate, setEditableCoordinate] = useState('')
   
   const ownerInputRef = useRef(null)
   
@@ -540,6 +542,12 @@ const BaseModal = ({
       }))
     }
   }, [editingLocation, modalType])
+  
+  // Initialize editable coordinate
+  useEffect(() => {
+    const currentCoord = editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, null)
+    setEditableCoordinate(currentCoord)
+  }, [editingLocation, modal.x, modal.y, locations])
   
   const getMainBases = useCallback(() => {
     const bases = locations.filter(loc => 
@@ -609,7 +617,8 @@ const BaseModal = ({
       roofCamper: modalType === 'enemy' ? formData.roofCamper : undefined,
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
 
-      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined
+      primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined,
+      name: editableCoordinate // Use the edited coordinate as the name
     }
     
     onSave(baseData)
@@ -872,9 +881,32 @@ const BaseModal = ({
           
           {modalType !== 'enemy' && (
             <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
-              <span className="text-white font-mono font-bold text-3xl">
-                {editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y)}
-              </span>
+              {isEditingCoordinate ? (
+                <input
+                  type="text"
+                  value={editableCoordinate}
+                  onChange={(e) => setEditableCoordinate(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setIsEditingCoordinate(false)
+                    }
+                    if (e.key === 'Escape') {
+                      setEditableCoordinate(editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, null))
+                      setIsEditingCoordinate(false)
+                    }
+                  }}
+                  onBlur={() => setIsEditingCoordinate(false)}
+                  autoFocus
+                  className="text-white font-mono font-bold text-3xl bg-transparent border-2 border-orange-500 rounded px-2 py-1 text-center focus:outline-none focus:border-orange-300"
+                />
+              ) : (
+                <span 
+                  className="text-white font-mono font-bold text-3xl cursor-pointer hover:text-orange-200 transition-colors"
+                  onClick={() => setIsEditingCoordinate(true)}
+                >
+                  {editableCoordinate}
+                </span>
+              )}
             </div>
           )}
 
