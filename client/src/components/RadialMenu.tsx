@@ -18,12 +18,12 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
     hqm: 0
   });
   
-  // Configuration - smaller scale for map integration
-  const centerX = 50;
-  const centerY = 50;
-  const innerRadius = 12;
-  const middleRadius = 32;
-  const outerRadius = 42;
+  // Configuration - match ACT button size (52px x 52px)
+  const centerX = 26;
+  const centerY = 26;
+  const innerRadius = 8;
+  const middleRadius = 20;
+  const outerRadius = 26;
   const startAngle = 180;
   const segments = 5;
   const totalAngle = 180;
@@ -352,7 +352,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
           }
         `}</style>
         
-        <svg width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+        <svg width="52" height="52" viewBox="0 0 52 52" preserveAspectRatio="xMidYMid meet">
           <defs>
             {/* Filters */}
             <filter id="actionButtonShadow" x="-50%" y="-50%" width="200%" height="200%">
