@@ -106,7 +106,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
   };
   
   // Create curved path for text
-  const createTextPath = (radius: number, segmentIndex: number, startOffset = 1, endOffset = 1) => {
+  const createTextPath = (radius: number, segmentIndex: number, startOffset = 3, endOffset = 3) => {
     const startSegmentAngle = startAngle + (segmentIndex * segmentAngle) + startOffset;
     const endSegmentAngle = startAngle + ((segmentIndex + 1) * segmentAngle) - endOffset;
     
@@ -187,21 +187,21 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
         const startAngleRad = (startSegAngle * Math.PI) / 180;
         const endAngleRad = (endSegAngle * Math.PI) / 180;
         
-        const x1 = centerX + (middleRadius + 2) * Math.cos(startAngleRad);
-        const y1 = centerY + (middleRadius + 2) * Math.sin(startAngleRad);
-        const x2 = centerX + (outerRadius + 2) * Math.cos(startAngleRad);
-        const y2 = centerY + (outerRadius + 2) * Math.sin(startAngleRad);
-        const x3 = centerX + (outerRadius + 2) * Math.cos(endAngleRad);
-        const y3 = centerY + (outerRadius + 2) * Math.sin(endAngleRad);
-        const x4 = centerX + (middleRadius + 2) * Math.cos(endAngleRad);
-        const y4 = centerY + (middleRadius + 2) * Math.sin(endAngleRad);
+        const x1 = centerX + (middleRadius + 10) * Math.cos(startAngleRad);
+        const y1 = centerY + (middleRadius + 10) * Math.sin(startAngleRad);
+        const x2 = centerX + (outerRadius + 10) * Math.cos(startAngleRad);
+        const y2 = centerY + (outerRadius + 10) * Math.sin(startAngleRad);
+        const x3 = centerX + (outerRadius + 10) * Math.cos(endAngleRad);
+        const y3 = centerY + (outerRadius + 10) * Math.sin(endAngleRad);
+        const x4 = centerX + (middleRadius + 10) * Math.cos(endAngleRad);
+        const y4 = centerY + (middleRadius + 10) * Math.sin(endAngleRad);
         
         return `
           M ${x1} ${y1}
           L ${x2} ${y2}
-          A ${outerRadius + 2} ${outerRadius + 2} 0 0 1 ${x3} ${y3}
+          A ${outerRadius + 10} ${outerRadius + 10} 0 0 1 ${x3} ${y3}
           L ${x4} ${y4}
-          A ${middleRadius + 2} ${middleRadius + 2} 0 0 0 ${x1} ${y1}
+          A ${middleRadius + 10} ${middleRadius + 10} 0 0 0 ${x1} ${y1}
         `;
       };
       
@@ -282,11 +282,11 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
         animation: 'pulse 2s ease-in-out infinite'
       }}>
         <path
-          d={createPath(middleRadius + 5, outerRadius + 15, segmentIndex)}
+          d={createPath(middleRadius + 10, outerRadius + 10, segmentIndex)}
           fill="hsl(0, 70%, 50%)"
           fillOpacity="1"
           stroke="hsl(0, 80%, 40%)"
-          strokeWidth="1"
+          strokeWidth="3"
           className="cursor-pointer hover:brightness-110"
           filter="url(#redGlow)"
           onClick={(e) => {
@@ -398,7 +398,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               <path
                 key={`gapPath-${i}`}
                 id={`gapTextPath-${i}`}
-                d={createTextPath(middleRadius + 2, i, i === 2 ? 0.5 : 1, i === 2 ? 0.5 : 1)}
+                d={createTextPath(middleRadius + 8, i, i === 2 ? 1 : 3, i === 2 ? 1 : 3)}
               />
             ))}
             
@@ -407,7 +407,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               <path
                 key={`outerPath-${i}`}
                 id={`outerTextPath-${i}`}
-                d={createTextPath((middleRadius + 5 + outerRadius) / 2 - 1, i)}
+                d={createTextPath((middleRadius + 20 + outerRadius) / 2 - 4, i)}
               />
             ))}
           </defs>
@@ -466,14 +466,14 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               
               {/* Gap text */}
               {GAP_TEXTS.map((text, index) => (
-                <text key={`gap-text-${index}`} fill="rgba(255,255,255,0.9)" fontSize={index === 2 ? "3" : "3.5"} fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '0.5px 0.5px 1px rgba(0,0,0,0.8)' }}>
+                <text key={`gap-text-${index}`} fill="rgba(255,255,255,0.9)" fontSize={index === 2 ? "6" : "7"} fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
                   <textPath href={`#gapTextPath-${index}`} startOffset="50%" textAnchor="middle">{text}</textPath>
                 </text>
               ))}
               
               {/* Outer segment text */}
               {Array.from({ length: segments }).map((_, index) => (
-                <text key={`outer-text-${index}`} fill="white" fontSize="4" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '0.5px 0.5px 1px rgba(0,0,0,0.8)' }}>
+                <text key={`outer-text-${index}`} fill="white" fontSize="8" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
                   <textPath href={`#outerTextPath-${index}`} startOffset="50%" textAnchor="middle">{OUTER_TEXT}</textPath>
                 </text>
               ))}
