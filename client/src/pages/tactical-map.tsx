@@ -899,8 +899,28 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none z-50">
         <div className="w-52 h-28 bg-gray-800 border border-orange-600/50 shadow-lg relative">
           {location.type.startsWith('enemy') && (
-            <div className="absolute top-0 right-0" style={{width: '200px', height: '200px', transform: 'translate(50%, -50%)'}}>
-              <div style={{transform: 'scale(0.6)', transformOrigin: 'center', width: '600px', height: '600px', marginTop: '-180px', marginLeft: '-180px'}}>
+            <div 
+              className="absolute" 
+              style={{
+                top: '0px',
+                right: '0px',
+                width: '360px',
+                height: '360px',
+                transform: 'translate(50%, -50%)',
+                pointerEvents: 'auto'
+              }}
+            >
+              <div style={{
+                transform: 'scale(0.6)', 
+                transformOrigin: 'center', 
+                width: '600px', 
+                height: '600px',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                marginTop: '-300px',
+                marginLeft: '-300px'
+              }}>
                 <RadialMenu />
               </div>
             </div>
