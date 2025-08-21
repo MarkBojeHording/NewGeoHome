@@ -350,133 +350,126 @@ const RadialMenu = () => {
     const transformX = centerX + segmentCenterRadius * Math.cos(angleRad);
     const transformY = centerY + segmentCenterRadius * Math.sin(angleRad);
     
-    if (isSplit) {
-      const halfSegmentAngle = segmentAngle / 2;
-      const startSegmentAngle = startAngle + (index * segmentAngle);
-      
-      const createHalfPath = (isLeftHalf) => {
-        const startAngleOffset = isLeftHalf ? 0 : halfSegmentAngle;
-        const endAngleOffset = isLeftHalf ? halfSegmentAngle : segmentAngle;
-        
-        const startSegAngle = startSegmentAngle + startAngleOffset;
-        const endSegAngle = startSegmentAngle + endAngleOffset;
-        
-        const startAngleRad = (startSegAngle * Math.PI) / 180;
-        const endAngleRad = (endSegAngle * Math.PI) / 180;
-        
-        const x1 = centerX + (middleRadius + 10) * Math.cos(startAngleRad);
-        const y1 = centerY + (middleRadius + 10) * Math.sin(startAngleRad);
-        const x2 = centerX + (outerRadius + 10) * Math.cos(startAngleRad);
-        const y2 = centerY + (outerRadius + 10) * Math.sin(startAngleRad);
-        const x3 = centerX + (outerRadius + 10) * Math.cos(endAngleRad);
-        const y3 = centerY + (outerRadius + 10) * Math.sin(endAngleRad);
-        const x4 = centerX + (middleRadius + 10) * Math.cos(endAngleRad);
-        const y4 = centerY + (middleRadius + 10) * Math.sin(endAngleRad);
-        
-        return `
-          M ${x1} ${y1}
-          L ${x2} ${y2}
-          A ${outerRadius + 10} ${outerRadius + 10} 0 0 1 ${x3} ${y3}
-          L ${x4} ${y4}
-          A ${middleRadius + 10} ${middleRadius + 10} 0 0 0 ${x1} ${y1}
-        `;
-      };
-      
-      const textRadius = (middleRadius + 20 + outerRadius) / 2;
-      
-      return (
-        <g style={{
-          transformOrigin: `${transformX}px ${transformY}px`,
-          animation: 'pulse 2s ease-in-out infinite'
-        }}>
-          {/* Left half */}
-          <path
-            d={createHalfPath(true)}
-            fill="hsl(120, 70%, 45%)"
-            fillOpacity="1"
-            stroke="hsl(120, 80%, 35%)"
-            strokeWidth="3"
-            className="cursor-pointer hover:brightness-110"
-            filter="url(#greenGlow)"
-            onClick={(e) => {
-              e.stopPropagation();
-              onLeftClick?.();
-            }}
-          />
-          <text
-            x={centerX + textRadius * Math.cos((startSegmentAngle + halfSegmentAngle/2) * Math.PI / 180)}
-            y={centerY + textRadius * Math.sin((startSegmentAngle + halfSegmentAngle/2) * Math.PI / 180)}
-            fill="white"
-            fontSize="14"
-            fontWeight="bold"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            className="pointer-events-none select-none"
-            style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-          >
-            {leftText}
-          </text>
-          
-          {/* Right half */}
-          <path
-            d={createHalfPath(false)}
-            fill="hsl(0, 70%, 50%)"
-            fillOpacity="1"
-            stroke="hsl(0, 80%, 40%)"
-            strokeWidth="3"
-            className="cursor-pointer hover:brightness-110"
-            filter="url(#redGlow)"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRightClick?.();
-            }}
-          />
-          <text
-            x={centerX + textRadius * Math.cos((startSegmentAngle + segmentAngle - halfSegmentAngle/2) * Math.PI / 180)}
-            y={centerY + textRadius * Math.sin((startSegmentAngle + segmentAngle - halfSegmentAngle/2) * Math.PI / 180)}
-            fill="white"
-            fontSize="14"
-            fontWeight="bold"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            className="pointer-events-none select-none"
-            style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-          >
-            {rightText}
-          </text>
-        </g>
-      );
-    }
-    
     return (
       <g style={{
         transformOrigin: `${transformX}px ${transformY}px`,
         animation: 'pulse 2s ease-in-out infinite'
       }}>
-        <path
-          d={createPath(middleRadius + 10, outerRadius + 10, index)}
-          fill="hsl(0, 70%, 50%)"
-          fillOpacity="1"
-          stroke="hsl(0, 80%, 40%)"
-          strokeWidth="3"
-          className="cursor-pointer hover:brightness-110"
-          filter="url(#redGlow)"
-          onClick={(e) => {
-            e.stopPropagation();
-            onLeftClick?.();
-          }}
-        />
-        <text 
-          fill="white" 
-          fontSize="15" 
-          fontWeight="bold" 
-          className="pointer-events-none select-none" 
-          style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-        >
-          <textPath href={`#outerTextPath-${index}`} startOffset="50%" textAnchor="middle">
-            {leftText}
-          </textPath>
-        </text>
+        {isSplit ? (
+          <>
+            {/* Left half */}
+            <path
+              d={createPath(middleRadius + 10, outerRadius + 10, null, null, { 
+                start: startAngle + (index * segmentAngle), 
+                end: startAngle + (index * segmentAngle) + (segmentAngle / 2) 
+              })}
+              fill="hsl(120, 70%, 50%)"
+              fillOpacity="1"
+              stroke="hsl(120, 80%, 40%)"
+              strokeWidth="3"
+              className="cursor-pointer hover:brightness-110"
+              filter="url(#greenGlow)"
+              onClick={onLeftClick}
+            />
+            {/* Right half */}
+            <path
+              d={createPath(middleRadius + 10, outerRadius + 10, null, null, { 
+                start: startAngle + (index * segmentAngle) + (segmentAngle / 2), 
+                end: startAngle + (index * segmentAngle) + segmentAngle 
+              })}
+              fill="hsl(120, 70%, 50%)"
+              fillOpacity="1"
+              stroke="hsl(120, 80%, 40%)"
+              strokeWidth="3"
+              className="cursor-pointer hover:brightness-110"
+              filter="url(#greenGlow)"
+              onClick={onRightClick}
+            />
+            {/* Dividing line */}
+            <line
+              x1={centerX + (middleRadius + 10) * Math.cos((startAngle + index * segmentAngle + segmentAngle / 2) * Math.PI / 180)}
+              y1={centerY + (middleRadius + 10) * Math.sin((startAngle + index * segmentAngle + segmentAngle / 2) * Math.PI / 180)}
+              x2={centerX + (outerRadius + 10) * Math.cos((startAngle + index * segmentAngle + segmentAngle / 2) * Math.PI / 180)}
+              y2={centerY + (outerRadius + 10) * Math.sin((startAngle + index * segmentAngle + segmentAngle / 2) * Math.PI / 180)}
+              stroke="hsl(120, 80%, 35%)"
+              strokeWidth="2"
+              className="pointer-events-none"
+            />
+          </>
+        ) : (
+          /* Full segment overlay */
+          <path
+            d={createPath(middleRadius + 10, outerRadius + 10, index)}
+            fill="hsl(120, 70%, 50%)"
+            fillOpacity="1"
+            stroke="hsl(120, 80%, 40%)"
+            strokeWidth="3"
+            className="cursor-pointer hover:brightness-110"
+            filter="url(#greenGlow)"
+            onClick={onLeftClick}
+          />
+        )}
+        {/* Text labels */}
+        {isSplit ? (
+          [
+            { text: leftText, angle: segmentAngle / 4, timer: showTimers ? '2:30' : null },
+            { text: rightText, angle: 3 * segmentAngle / 4, timer: showTimers ? '0:13' : null }
+          ].map((item, idx) => {
+            const textRadius = (middleRadius + 20 + outerRadius) / 2 - 4;
+            const textAngle = startAngle + (index * segmentAngle) + item.angle;
+            const textAngleRad = (textAngle * Math.PI) / 180;
+            const textX = centerX + textRadius * Math.cos(textAngleRad);
+            const textY = centerY + textRadius * Math.sin(textAngleRad);
+            
+            return (
+              <g key={idx}>
+                <text 
+                  x={textX}
+                  y={textY}
+                  transform={`rotate(${textAngle + 90}, ${textX}, ${textY})`}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="white" 
+                  fontSize="14" 
+                  fontWeight="bold" 
+                  className="pointer-events-none select-none" 
+                  style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
+                >
+                  {item.text}
+                </text>
+                {item.timer && (
+                  <text 
+                    x={centerX + (outerRadius + 25) * Math.cos(textAngleRad)}
+                    y={centerY + (outerRadius + 25) * Math.sin(textAngleRad)}
+                    transform={`rotate(${textAngle + 90}, ${centerX + (outerRadius + 25) * Math.cos(textAngleRad)}, ${centerY + (outerRadius + 25) * Math.sin(textAngleRad)})`}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="white" 
+                    fontSize="14" 
+                    fontWeight="bold" 
+                    className="pointer-events-none select-none" 
+                    style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
+                  >
+                    {item.timer}
+                  </text>
+                )}
+              </g>
+            );
+          })
+        ) : (
+          /* Single centered text */
+          <text 
+            fill="white" 
+            fontSize="14" 
+            fontWeight="bold" 
+            className="pointer-events-none select-none" 
+            style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
+          >
+            <textPath href={`#advancedTextPath-${index}`} startOffset="50%" textAnchor="middle">
+              {leftText}
+            </textPath>
+          </text>
+        )}
       </g>
     );
   };
@@ -488,606 +481,660 @@ const RadialMenu = () => {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.05); }
         }
-        @keyframes deployFromCenter {
-          0% { opacity: 0; transform: scale(0); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-        .deploy-animation {
-          animation: deployFromCenter 0.3s ease-out;
-          transform-origin: ${centerX}px ${centerY}px;
+        @keyframes subtlePulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.03); }
         }
         .pulse-animation {
           animation: pulse 2s ease-in-out infinite;
           transform-origin: ${centerX}px ${centerY}px;
         }
-        @keyframes actionPulse {
-          0%, 100% { 
-            transform: scale(1);
-            filter: brightness(1);
+        .subtle-pulse {
+          animation: subtlePulse 4s ease-in-out infinite;
+          transform-origin: ${centerX}px ${centerY}px;
+        }
+        @keyframes deployFromCenter {
+          0% {
+            opacity: 0;
+            transform: scale(0);
           }
-          50% { 
-            transform: scale(1.03);
-            filter: brightness(1.2);
+          100% {
+            opacity: 1;
+            transform: scale(1);
           }
         }
-        .action-pulse {
-          animation: actionPulse 3s ease-in-out infinite;
+        .deploy-animation {
+          animation: deployFromCenter 0.3s ease-out;
           transform-origin: ${centerX}px ${centerY}px;
         }
       `}</style>
       
-      <svg width="440" height="500" viewBox="0 0 440 500" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          {/* Filters */}
-          <filter id="actionButtonShadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
-            <feOffset dx="0" dy="3" result="offsetblur"/>
-            <feFlood floodColor="#000000" floodOpacity="0.5"/>
-            <feComposite in2="offsetblur" operator="in"/>
-            <feMerge>
-              <feMergeNode/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="greenGlow">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feFlood floodColor="#22c55e" floodOpacity="0.6"/>
-            <feComposite in2="coloredBlur" operator="in"/>
-            <feMerge>
-              <feMergeNode/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="redGlow">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feFlood floodColor="#dc2626" floodOpacity="0.6"/>
-            <feComposite in2="coloredBlur" operator="in"/>
-            <feMerge>
-              <feMergeNode/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          
-          {/* Gap text paths */}
-          {Array.from({ length: segments }).map((_, i) => (
-            <path
-              key={`gapPath-${i}`}
-              id={`gapTextPath-${i}`}
-              d={createTextPath(middleRadius + 8, i, 3, 3)}
-            />
-          ))}
-          
-          {/* Outer text paths */}
-          {Array.from({ length: segments }).map((_, i) => (
-            <path
-              key={`outerPath-${i}`}
-              id={`outerTextPath-${i}`}
-              d={createTextPath((middleRadius + 20 + outerRadius) / 2 - 4, i)}
-            />
-          ))}
-        </defs>
-        
-        {/* Resource circles background */}
-        {resourceConfig.map((resource, index) => (
-          <circle
-            key={resource.key}
-            cx={centerX}
-            cy={centerY}
-            r={resource.radius}
-            fill="none"
-            stroke={resource.color}
-            strokeWidth="2"
-            strokeOpacity="0.3"
-            className="pointer-events-none"
-          />
-        ))}
-        
-        {/* Render segments when expanded */}
-        {isExpanded && (
-          <g className="deploy-animation">
-            {/* Render all segments */}
+      <svg width="600" height="500" viewBox="0 0 600 500">
+          <defs>
+            {/* Filters */}
+            <filter id="actionButtonShadow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
+              <feOffset dx="0" dy="3" result="offsetblur"/>
+              <feFlood floodColor="#000000" floodOpacity="0.5"/>
+              <feComposite in2="offsetblur" operator="in"/>
+              <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <filter id="actionButtonGlow">
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+              <feFlood floodColor="#10B981" floodOpacity="0.4"/>
+              <feComposite in2="coloredBlur" operator="in"/>
+              <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <filter id="greenGlow">
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            
+            {/* Text paths */}
+            {/* Gap text paths */}
             {Array.from({ length: segments }).map((_, index) => (
-              <g key={index}>
-                {/* Inner segment for index 0 (split) */}
-                {index === 0 && (
-                  <>
-                    <path
-                      d={createPath(innerRadius, middleRadius, index, 0)}
-                      fill={getColor(index, false, 0)}
-                      stroke="rgba(255, 255, 255, 0.2)"
-                      strokeWidth="2"
-                      className="cursor-pointer transition-all duration-300 hover:brightness-110"
-                      onMouseEnter={() => setHoveredSegment(`inner-${index}-0`)}
-                      onMouseLeave={() => setHoveredSegment(null)}
-                      onClick={() => handleClick('inner', index, 0)}
-                      style={{
-                        filter: selectedInner === `${index}-0` ? 'brightness(1.3)' : 'none'
-                      }}
-                    />
-                    <path
-                      d={createPath(innerRadius, middleRadius, index, 1)}
-                      fill={getColor(index, false, 1)}
-                      stroke="rgba(255, 255, 255, 0.2)"
-                      strokeWidth="2"
-                      className="cursor-pointer transition-all duration-300 hover:brightness-110"
-                      onMouseEnter={() => setHoveredSegment(`inner-${index}-1`)}
-                      onMouseLeave={() => setHoveredSegment(null)}
-                      onClick={() => handleClick('inner', index, 1)}
-                      style={{
-                        filter: selectedInner === `${index}-1` ? 'brightness(1.3)' : 'none'
-                      }}
-                    />
-                    {/* Labels for segment 0 */}
-                    <text
-                      {...getLabelPosition(innerRadius + (middleRadius - innerRadius) * 0.5, index, 0)}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize="16"
-                      className="pointer-events-none select-none"
-                      fill="white"
-                      style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      🍋
-                    </text>
-                    <text
-                      {...getLabelPosition(innerRadius + (middleRadius - innerRadius) * 0.5, index, 1)}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize="16"
-                      className="pointer-events-none select-none"
-                      fill="white"
-                      style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      🎃
-                    </text>
-                  </>
-                )}
+              <path
+                key={`gapPath-${index}`}
+                id={`gapTextPath-${index}`}
+                d={createTextPath(middleRadius + 8, index)}
+              />
+            ))}
+            
+            {/* Advanced text paths */}
+            {Array.from({ length: segments }).map((_, index) => (
+              <path
+                key={`advancedPath-${index}`}
+                id={`advancedTextPath-${index}`}
+                d={createTextPath((middleRadius + 20 + outerRadius) / 2 - 4, index)}
+              />
+            ))}
+            
+            {/* Resource text paths */}
+            {resourceConfig.map((resource, idx) => (
+              <path
+                key={`resourcePath-${resource.key}`}
+                id={`${resource.key}TextPath`}
+                d={createTextPath(middleRadius - resource.radius, 3)}
+              />
+            ))}
+            
+            {/* Plant section text paths */}
+            <path id="segment1A2Path" d={createTextPath(innerRadius + ((middleRadius - innerRadius) * 0.25) + ((middleRadius - (innerRadius + ((middleRadius - innerRadius) * 0.25))) * 0.25) - 3, 0, startAngle + segmentAngle/2, startAngle + segmentAngle)} />
+            <path id="segment1A1Path" d={createTextPath(innerRadius + ((middleRadius - innerRadius) * 0.25) + ((middleRadius - (innerRadius + ((middleRadius - innerRadius) * 0.25))) * 0.25) - 3, 0, startAngle, startAngle + segmentAngle/2)} />
+            <path id="segmentCorePath" d={createTextPath(innerRadius + ((innerRadius + ((middleRadius - innerRadius) * 0.25) - innerRadius) * 0.25) - 3, 0, startAngle, startAngle + segmentAngle)} />
+            <path id="hazzyTextPath" d={createTextPath(middleRadius - 8, 0, startAngle + 2, startAngle + segmentAngle/2 - 2)} />
+            <path id="fullKitTextPath" d={createTextPath(middleRadius - 8, 0, startAngle + segmentAngle/2 + 2, startAngle + segmentAngle - 2)} />
+            <path id="medsTextPath" d={createTextPath(innerRadius + ((innerRadius + ((middleRadius - innerRadius) * 0.25) - innerRadius) * 0.65) + 2, 0, startAngle + 5, startAngle + segmentAngle - 5)} />
+          </defs>
+          
+          {/* Render segments when expanded */}
+          {isExpanded && (
+            <g className="deploy-animation">
+              {/* Green inner segment for HARVEST TIMER */}
+              {(() => {
+                const innerRadiusRange = middleRadius - innerRadius;
+                const cutoffRadius = innerRadius + (innerRadiusRange * 0.25);
                 
-                {/* Inner segment for index 1 (split) */}
-                {index === 1 && (
-                  <>
+                return (
+                  <g>
                     <path
-                      d={createPath(innerRadius, middleRadius, index, 0)}
-                      fill={getColor(index, false, 0)}
+                      d={createPath(innerRadius, cutoffRadius, null, null, { start: startAngle, end: startAngle + segmentAngle })}
+                      fill="hsl(120, 70%, 65%)"
                       stroke="rgba(255, 255, 255, 0.2)"
                       strokeWidth="2"
-                      className="cursor-pointer transition-all duration-300 hover:brightness-110"
-                      onMouseEnter={() => setHoveredSegment(`inner-${index}-0`)}
+                      className="cursor-pointer transition duration-300 hover:brightness-110"
+                      onMouseEnter={() => setHoveredSegment('inner-merged')}
                       onMouseLeave={() => setHoveredSegment(null)}
-                      onClick={() => handleClick('inner', index, 0)}
+                      onClick={() => handleClick('inner', 0, 'green')}
                       style={{
-                        filter: selectedInner === `${index}-0` ? 'brightness(1.3)' : 'none'
+                        filter: selectedInner === '0-green' ? 'brightness(1.3)' : hoveredSegment === 'inner-merged' ? 'brightness(1.1)' : 'none'
                       }}
                     />
-                    <path
-                      d={createPath(innerRadius, middleRadius, index, 1)}
-                      fill={getColor(index, false, 1)}
-                      stroke="rgba(255, 255, 255, 0.2)"
-                      strokeWidth="2"
-                      className="cursor-pointer transition-all duration-300 hover:brightness-110"
-                      onMouseEnter={() => setHoveredSegment(`inner-${index}-1`)}
-                      onMouseLeave={() => setHoveredSegment(null)}
-                      onClick={() => handleClick('inner', index, 1)}
-                      style={{
-                        filter: selectedInner === `${index}-1` ? 'brightness(1.3)' : 'none'
-                      }}
-                    />
-                    {/* Labels for segment 1 */}
-                    <text
-                      {...getLabelPosition(innerRadius + (middleRadius - innerRadius) * 0.5, index, 0)}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize="20"
-                      className="pointer-events-none select-none"
-                      fill="white"
-                      style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      🪨
-                    </text>
-                    <text
-                      {...getLabelPosition(innerRadius + (middleRadius - innerRadius) * 0.5, index, 1)}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize="16"
-                      className="pointer-events-none select-none"
-                      fill="white"
-                      style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      📦💎
-                    </text>
-                  </>
-                )}
+                    {/* Hemp emoji */}
+                    {(() => {
+                      const hempRadius = (innerRadius + cutoffRadius) / 2;
+                      const hempAngle = startAngle + (segmentAngle / 2);
+                      const hempAngleRad = (hempAngle * Math.PI) / 180;
+                      const hempX = centerX + hempRadius * Math.cos(hempAngleRad);
+                      const hempY = centerY + hempRadius * Math.sin(hempAngleRad);
+                      
+                      return (
+                        <text
+                          x={hempX}
+                          y={hempY}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fontSize="16"
+                          className="pointer-events-none select-none"
+                          style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                        >
+                          🌿
+                        </text>
+                      );
+                    })()}
+                  </g>
+                );
+              })()}
+              
+              {/* All segments */}
+              {Array.from({ length: segments }).map((_, index) => {
+                const innerRadiusRange = middleRadius - innerRadius;
+                const cutoffRadius = index === 0 ? innerRadius + (innerRadiusRange * 0.25) : innerRadius + (innerRadiusRange * 0.4);
                 
-                {/* Inner segment for index 2 (split) */}
-                {index === 2 && (
-                  <>
+                return (
+                  <g key={index}>
+                    {/* Inner segment handling */}
+                    {index === 0 ? (
+                      // HARVEST TIMER section - 4 sub-segments
+                      <>
+                        {[0, 1].map((mainSubIdx) => {
+                          const segmentStart = cutoffRadius;
+                          const segmentEnd = middleRadius;
+                          const segmentHeight = segmentEnd - segmentStart;
+                          const bottomEnd = segmentStart + (segmentHeight * 0.6);
+                          
+                          return (
+                            <g key={`inner-${index}-${mainSubIdx}`}>
+                              {/* Bottom sub-segment (60% of height) */}
+                              <path
+                                d={createPath(segmentStart, bottomEnd, index, mainSubIdx)}
+                                fill={mainSubIdx === 1 ? "hsl(0, 60%, 50%)" : "hsl(45, 80%, 50%)"}
+                                stroke="rgba(255, 255, 255, 0.2)"
+                                strokeWidth="2"
+                                className="cursor-pointer transition duration-300 hover:brightness-110"
+                                onMouseEnter={() => setHoveredSegment(`inner-${index}-${mainSubIdx}-bottom`)}
+                                onMouseLeave={() => setHoveredSegment(null)}
+                                onClick={() => handleClick('inner', index, `${mainSubIdx}-bottom`)}
+                                style={{
+                                  filter: selectedInner === `${index}-${mainSubIdx}-bottom` ? 'brightness(1.3)' : hoveredSegment === `inner-${index}-${mainSubIdx}-bottom` ? 'brightness(1.1)' : 'none'
+                                }}
+                              />
+                              {/* Top sub-segment (40% of height) */}
+                              <path
+                                d={createPath(bottomEnd, segmentEnd, index, mainSubIdx)}
+                                fill={mainSubIdx === 1 ? "hsl(220, 70%, 50%)" : "hsl(25, 85%, 55%)"}
+                                stroke={mainSubIdx === 1 ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.3)"}
+                                strokeWidth="2"
+                                className="cursor-pointer transition duration-300 hover:brightness-110"
+                                onMouseEnter={() => setHoveredSegment(`inner-${index}-${mainSubIdx}-top`)}
+                                onMouseLeave={() => setHoveredSegment(null)}
+                                onClick={() => handleClick('inner', index, `${mainSubIdx}-top`)}
+                                style={{
+                                  filter: selectedInner === `${index}-${mainSubIdx}-top` ? 'brightness(1.3)' : hoveredSegment === `inner-${index}-${mainSubIdx}-top` ? 'brightness(1.1)' : 'none'
+                                }}
+                              />
+                              {/* Dividing line */}
+                              <path
+                                d={(() => {
+                                  const startSegmentAngle = startAngle + (index * segmentAngle) + (mainSubIdx === 0 ? 0 : segmentAngle / 2);
+                                  const endSegmentAngle = startSegmentAngle + (segmentAngle / 2);
+                                  const startAngleRad = (startSegmentAngle * Math.PI) / 180;
+                                  const endAngleRad = (endSegmentAngle * Math.PI) / 180;
+                                  
+                                  const x1 = centerX + bottomEnd * Math.cos(startAngleRad);
+                                  const y1 = centerY + bottomEnd * Math.sin(startAngleRad);
+                                  const x2 = centerX + bottomEnd * Math.cos(endAngleRad);
+                                  const y2 = centerY + bottomEnd * Math.sin(endAngleRad);
+                                  
+                                  return `M ${x1} ${y1} A ${bottomEnd} ${bottomEnd} 0 0 1 ${x2} ${y2}`;
+                                })()}
+                                fill="none"
+                                stroke="rgba(0, 0, 0, 0.3)"
+                                strokeWidth="1"
+                                className="pointer-events-none"
+                              />
+                              {/* Add emojis */}
+                              {(() => {
+                                const bottomRadius = segmentStart + ((bottomEnd - segmentStart) / 2);
+                                const topRadius = bottomEnd + ((segmentEnd - bottomEnd) / 2);
+                                const segmentMidAngle = startAngle + (segmentAngle / 4) + (mainSubIdx * segmentAngle / 2);
+                                
+                                const bottomAngleRad = (segmentMidAngle * Math.PI) / 180;
+                                const topAngleRad = (segmentMidAngle * Math.PI) / 180;
+                                
+                                const bottomX = centerX + bottomRadius * Math.cos(bottomAngleRad);
+                                const bottomY = centerY + bottomRadius * Math.sin(bottomAngleRad);
+                                const topX = centerX + topRadius * Math.cos(topAngleRad);
+                                const topY = centerY + topRadius * Math.sin(topAngleRad);
+                                
+                                const bottomEmoji = mainSubIdx === 0 ? '🍋' : '🍓';
+                                const topEmoji = mainSubIdx === 0 ? '🎃' : '🫐';
+                                
+                                return (
+                                  <>
+                                    <text
+                                      x={bottomX}
+                                      y={bottomY}
+                                      textAnchor="middle"
+                                      dominantBaseline="middle"
+                                      fontSize="16"
+                                      className="pointer-events-none select-none"
+                                      style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                                    >
+                                      {bottomEmoji}
+                                    </text>
+                                    <text
+                                      x={topX}
+                                      y={topY}
+                                      textAnchor="middle"
+                                      dominantBaseline="middle"
+                                      fontSize="16"
+                                      className="pointer-events-none select-none"
+                                      style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                                    >
+                                      {topEmoji}
+                                    </text>
+                                  </>
+                                );
+                              })()}
+                            </g>
+                          );
+                        })}
+                      </>
+                    ) : index === 1 ? (
+                      // NEEDS PICKUP section
+                      <>
+                        {[0, 1].map((subIdx) => (
+                          <g key={`inner-${index}-${subIdx}`}>
+                            <path
+                              d={createPath(innerRadius, middleRadius, index, subIdx)}
+                              fill={getColor(index, false, subIdx)}
+                              stroke="rgba(255, 255, 255, 0.2)"
+                              strokeWidth="2"
+                              className="cursor-pointer transition duration-300 hover:brightness-110"
+                              onMouseEnter={() => setHoveredSegment(`inner-${index}-${subIdx}`)}
+                              onMouseLeave={() => setHoveredSegment(null)}
+                              onClick={() => handleClick('inner', index, subIdx)}
+                              style={{
+                                filter: selectedInner === `${index}-${subIdx}` ? 'brightness(1.3)' : 'none'
+                              }}
+                            />
+                            <text
+                              {...getLabelPosition(innerRadius + (middleRadius - innerRadius) / 2, index, subIdx)}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              fill="white"
+                              fontSize={subIdx === 1 ? "30" : "25"}
+                              fontWeight="bold"
+                              className="pointer-events-none select-none"
+                              style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                            >
+                              {subIdx === 1 ? '📦' : '🪨'}
+                            </text>
+                            {subIdx === 1 && (
+                              <text
+                                {...getLabelPosition(innerRadius + (middleRadius - innerRadius) / 2, index, subIdx)}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                fill="white"
+                                fontSize="20"
+                                className="pointer-events-none select-none"
+                                style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                                dy="-7"
+                              >
+                                💎
+                              </text>
+                            )}
+                          </g>
+                        ))}
+                      </>
+                    ) : index === 2 ? (
+                      // REPAIR/UPGRADE section
+                      <>
+                        {[0, 1].map((subIdx) => (
+                          <g key={`inner-${index}-${subIdx}`}>
+                            <path
+                              d={createPath(innerRadius, middleRadius, index, subIdx)}
+                              fill={getColor(index, false, subIdx)}
+                              stroke="rgba(255, 255, 255, 0.2)"
+                              strokeWidth="2"
+                              className="cursor-pointer transition duration-300 hover:brightness-110"
+                              onMouseEnter={() => setHoveredSegment(`inner-${index}-${subIdx}`)}
+                              onMouseLeave={() => setHoveredSegment(null)}
+                              onClick={() => handleClick('inner', index, subIdx)}
+                              style={{
+                                filter: selectedInner === `${index}-${subIdx}` ? 'brightness(1.3)' : 'none'
+                              }}
+                            />
+                            {subIdx === 0 ? (
+                              <text
+                                {...getLabelPosition(innerRadius + (middleRadius - innerRadius) / 2, index, subIdx)}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                fill="white"
+                                fontSize="25"
+                                fontWeight="bold"
+                                className="pointer-events-none select-none"
+                                style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                              >
+                                🔧
+                              </text>
+                            ) : (
+                              <g transform={`translate(${getLabelPosition(innerRadius + (middleRadius - innerRadius) / 2, index, subIdx).x}, ${getLabelPosition(innerRadius + (middleRadius - innerRadius) / 2, index, subIdx).y}) rotate(${startAngle + (index * segmentAngle) + (3 * segmentAngle / 4) + 90})`}>
+                                <text x="0" y="-18" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="20" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)', filter: 'grayscale(100%)' }}>
+                                  🪟
+                                </text>
+                                <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fill="hsl(120, 70%, 45%)" fontSize="25" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
+                                  ↑
+                                </text>
+                                <text x="0" y="18" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="20" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
+                                  🧱
+                                </text>
+                              </g>
+                            )}
+                          </g>
+                        ))}
+                      </>
+                    ) : (
+                      // Regular single segments
+                      <>
+                        <path
+                          d={createPath(innerRadius, middleRadius, index)}
+                          fill={getColor(index, false)}
+                          stroke="rgba(255, 255, 255, 0.2)"
+                          strokeWidth="2"
+                          className="cursor-pointer transition-all duration-300 hover:brightness-110"
+                          onMouseEnter={() => setHoveredSegment(`inner-${index}`)}
+                          onMouseLeave={() => setHoveredSegment(null)}
+                          onClick={() => handleClick('inner', index)}
+                          style={{
+                            filter: selectedInner === index ? 'brightness(1.3)' : 'none'
+                          }}
+                        />
+                        <text
+                          {...getLabelPosition(innerRadius + (middleRadius - innerRadius) / 2, index)}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fill="white"
+                          fontSize={index === 5 ? "25" : index === 4 ? "10" : "14"}
+                          fontWeight="bold"
+                          className="pointer-events-none select-none"
+                          style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                        >
+                          {index === 5 ? '📁' : index === 4 ? 'DECAY TIMER' : index === 3 ? '' : `${index + 1}A`}
+                        </text>
+                        {/* Resources text */}
+                        {index === 3 && resourceConfig.map((resource) => (
+                          <text
+                            key={resource.key}
+                            fill={resource.color}
+                            fontSize="14"
+                            fontWeight="bold"
+                            className="pointer-events-none select-none"
+                            style={resource.style || { textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                          >
+                            <textPath href={`#${resource.key}TextPath`} startOffset="0%" textAnchor="start">
+                              {resource.name}: {formatResourceValue(resources[resource.key])}
+                            </textPath>
+                          </text>
+                        ))}
+                      </>
+                    )}
+                    
+                    {/* Outer segment */}
                     <path
-                      d={createPath(innerRadius, middleRadius, index, 0)}
-                      fill={getColor(index, false, 0)}
+                      d={createPath(middleRadius + 20, outerRadius, index)}
+                      fill={getColor(index, true)}
                       stroke="rgba(255, 255, 255, 0.2)"
                       strokeWidth="2"
                       className="cursor-pointer transition-all duration-300 hover:brightness-110"
-                      onMouseEnter={() => setHoveredSegment(`inner-${index}-0`)}
+                      onMouseEnter={() => setHoveredSegment(`outer-${index}`)}
                       onMouseLeave={() => setHoveredSegment(null)}
-                      onClick={() => handleClick('inner', index, 0)}
+                      onClick={() => handleClick('outer', index)}
                       style={{
-                        filter: selectedInner === `${index}-0` ? 'brightness(1.3)' : 'none'
+                        filter: selectedOuter === index ? 'brightness(1.3)' : 'none'
                       }}
                     />
-                    <path
-                      d={createPath(innerRadius, middleRadius, index, 1)}
-                      fill={getColor(index, false, 1)}
-                      stroke="rgba(255, 255, 255, 0.2)"
-                      strokeWidth="2"
-                      className="cursor-pointer transition-all duration-300 hover:brightness-110"
-                      onMouseEnter={() => setHoveredSegment(`inner-${index}-1`)}
-                      onMouseLeave={() => setHoveredSegment(null)}
-                      onClick={() => handleClick('inner', index, 1)}
-                      style={{
-                        filter: selectedInner === `${index}-1` ? 'brightness(1.3)' : 'none'
-                      }}
-                    />
-                    {/* Labels for segment 2 */}
-                    <text
-                      {...getLabelPosition(innerRadius + (middleRadius - innerRadius) * 0.5, index, 0)}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize="20"
-                      className="pointer-events-none select-none"
-                      fill="white"
-                      style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      🔧
-                    </text>
-                    <text
-                      {...getLabelPosition(innerRadius + (middleRadius - innerRadius) * 0.5, index, 1)}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize="16"
-                      className="pointer-events-none select-none"
-                      fill="white"
-                      style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      🪟🧱
-                    </text>
-                  </>
-                )}
-                
-                {/* Regular inner segment for indices 3, 4, 5 */}
-                {index >= 3 && (
-                  <>
-                    <path
-                      d={createPath(innerRadius, middleRadius, index)}
-                      fill={getColor(index, false)}
-                      stroke="rgba(255, 255, 255, 0.2)"
-                      strokeWidth="2"
-                      className="cursor-pointer transition-all duration-300 hover:brightness-110"
-                      onMouseEnter={() => setHoveredSegment(`inner-${index}`)}
-                      onMouseLeave={() => setHoveredSegment(null)}
-                      onClick={() => handleClick('inner', index)}
-                      style={{
-                        filter: selectedInner === index ? 'brightness(1.3)' : 'none'
-                      }}
-                    />
-                    {/* Labels for segments 3, 4, 5 */}
-                    <text
-                      {...getLabelPosition(innerRadius + (middleRadius - innerRadius) * 0.5, index)}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize={index === 5 ? "16" : "20"}
-                      className="pointer-events-none select-none"
-                      fill="white"
-                      style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      {index === 3 ? '💰' : index === 4 ? '☠️' : '📁'}
-                    </text>
-                  </>
-                )}
-                
-                {/* Outer segment */}
-                <path
-                  d={createPath(middleRadius + 20, outerRadius, index)}
-                  fill={getColor(index, true)}
-                  stroke="rgba(255, 255, 255, 0.2)"
-                  strokeWidth="2"
-                  className="cursor-pointer transition-all duration-300 hover:brightness-110"
-                  onMouseEnter={() => setHoveredSegment(`outer-${index}`)}
-                  onMouseLeave={() => setHoveredSegment(null)}
-                  onClick={() => handleClick('outer', index)}
-                  style={{
-                    filter: selectedOuter === index ? 'brightness(1.3)' : 'none'
-                  }}
-                />
-                
-                {/* Gap text between inner and outer segments */}
-                <text fill="white" fontSize="12" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}>
+                  </g>
+                );
+              })}
+              
+              {/* Gap text */}
+              {gapTexts.map((text, index) => (
+                <text key={`gap-text-${index}`} fill="rgba(255,255,255,0.7)" fontSize={text.length > 12 ? "10" : "11"} fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
                   <textPath href={`#gapTextPath-${index}`} startOffset="50%" textAnchor="middle">
-                    {gapTexts[index]}
+                    {text}
                   </textPath>
                 </text>
-                
-                {/* Outer segment text */}
-                <text fill="white" fontSize="11" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}>
-                  <textPath href={`#outerTextPath-${index}`} startOffset="50%" textAnchor="middle">
+              ))}
+              
+              {/* ADVANCED text */}
+              {Array.from({ length: segments }).map((_, index) => (
+                <text key={`advanced-text-${index}`} fill="white" fontSize="14" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
+                  <textPath href={`#advancedTextPath-${index}`} startOffset="50%" textAnchor="middle">
                     ADVANCED
                   </textPath>
                 </text>
-              </g>
-            ))}
-            
-            {/* Render conditional overlays based on selected inner segments */}
-            {selectedInner === '0-0' && renderPulsatingOverlay(0, '🍓', '🫐', 
-              () => setSelectedInner(null), 
-              () => setSelectedInner(null), 
-              false, true)}
-            
-            {selectedInner === '0-1' && renderPulsatingOverlay(0, 'HARVEST', 'TIMER', 
-              () => setSelectedInner(null), 
-              () => setSelectedInner(null), 
-              true, true)}
-            
-            {selectedInner === '1-0' && renderPulsatingOverlay(1, 'GET', 'ROCK', 
-              () => setSelectedInner(null), 
-              () => setSelectedInner(null), 
-              false, true)}
-            
-            {selectedInner === '1-1' && renderPulsatingOverlay(1, 'GET', 'BOX', 
-              () => setSelectedInner(null), 
-              () => setSelectedInner(null), 
-              false, true)}
-            
-            {selectedInner === '2-0' && renderPulsatingOverlay(2, 'REPAIR', 'TOOL', 
-              () => setSelectedInner(null), 
-              () => setSelectedInner(null), 
-              false, true)}
-            
-            {selectedInner === '2-1' && renderPulsatingOverlay(2, 'UPGRADE', 'WALL', 
-              () => setSelectedInner(null), 
-              () => setSelectedInner(null), 
-              false, true)}
-            
-            {selectedInner === 3 && renderPulsatingOverlay(3, 'RESOURCES', '', 
-              () => setSelectedInner(null))}
-            
-            {selectedInner === 4 && renderPulsatingOverlay(4, 'DECAY', '', 
-              () => setSelectedInner(null))}
-            
-            {selectedInner === 5 && renderPulsatingOverlay(5, 'REPORT', '', 
-              () => setSelectedInner(null))}
-          </g>
-        )}
-        
-        {/* Resource values display on circles */}
-        {resourceConfig.map((resource, index) => (
-          <text
-            key={`${resource.key}-text`}
-            x={centerX}
-            y={centerY}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="11"
-            fontWeight="bold"
-            fill={resource.color}
-            className="pointer-events-none select-none"
-            style={resource.style || { textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-            transform={`translate(0, ${(index - 1.5) * 16})`}
+              ))}
+              
+              {/* Pulsating overlays */}
+              {/* HARVEST TIMER overlay */}
+              {(() => {
+                const hasPlantSelection = ['0-green', '0-0-bottom', '0-0-top', '0-1-bottom', '0-1-top'].includes(selectedInner);
+                if (!hasPlantSelection) return null;
+                
+                const plant = plantEmojis[selectedInner];
+                const plantName = plant ? plant.name : 'Unknown';
+                
+                return renderPulsatingOverlay(
+                  0, 
+                  'HARVEST', 
+                  'CLONE',
+                  (e) => {
+                    e.stopPropagation();
+                    console.log(`Harvest ${plantName} selected`);
+                    setSelectedInner(null);
+                  },
+                  (e) => {
+                    e.stopPropagation();
+                    console.log(`Clone ${plantName} selected`);
+                    setSelectedInner(null);
+                  },
+                  true,  // showTimers
+                  true   // isSplit
+                );
+              })()}
+              
+              {/* NEEDS PICKUP overlay */}
+              {(selectedInner === '1-0' || selectedInner === '1-1') && renderPulsatingOverlay(
+                1,
+                'NEEDS PICKUP',
+                '',
+                (e) => { e.stopPropagation(); setSelectedInner(null); },
+                (e) => { e.stopPropagation(); setSelectedInner(null); },
+                false,  // showTimers
+                false   // isSplit
+              )}
+              
+              {/* REPAIR/UPGRADE overlay */}
+              {(selectedInner === '2-0' || selectedInner === '2-1') && renderPulsatingOverlay(
+                2,
+                selectedInner === '2-0' ? 'REQUEST REPAIR' : 'REQUEST UPGRADE',
+                '',
+                (e) => { e.stopPropagation(); setSelectedInner(null); },
+                (e) => { e.stopPropagation(); setSelectedInner(null); },
+                false,  // showTimers
+                false   // isSplit
+              )}
+              
+              {/* RESOURCES overlay */}
+              {selectedInner === 3 && renderPulsatingOverlay(
+                3,
+                'REQUEST RESOURCES',
+                '',
+                (e) => { e.stopPropagation(); setSelectedInner(null); },
+                (e) => { e.stopPropagation(); setSelectedInner(null); },
+                false,  // showTimers
+                false   // isSplit
+              )}
+              
+              {/* DECAY overlay with schedule rectangles */}
+              {selectedInner === 4 && (() => {
+                const decayIndex = 4;
+                const segmentCenterAngle = startAngle + (decayIndex * segmentAngle) + (segmentAngle / 2);
+                const angleRad = (segmentCenterAngle * Math.PI) / 180;
+                const rectX = centerX + outerRadius + 15;
+                const rectY = centerY - 10;
+                
+                return (
+                  <>
+                    {renderPulsatingOverlay(
+                      4,
+                      'SCHEDULE',
+                      '',
+                      (e) => { e.stopPropagation(); setSelectedInner(null); },
+                      (e) => { e.stopPropagation(); setSelectedInner(null); },
+                      false,  // showTimers
+                      false   // isSplit
+                    )}
+                    <g className="deploy-animation">
+                      <line
+                        x1={centerX + (outerRadius + 5) * Math.cos(angleRad)}
+                        y1={centerY + (outerRadius + 5) * Math.sin(angleRad)}
+                        x2={rectX - 5}
+                        y2={rectY + 52}
+                        stroke="rgba(255, 255, 255, 0.3)"
+                        strokeWidth="2"
+                        strokeDasharray="5,5"
+                      />
+                      {[
+                        { 
+                          type: 'stone', 
+                          label: 'Stone', 
+                          bgColor: 'hsl(0, 0%, 60%)', 
+                          borderColor: 'hsl(0, 0%, 75%)' 
+                        },
+                        { 
+                          type: 'metal', 
+                          label: 'Metal', 
+                          bgColor: 'hsl(0, 0%, 35%)', 
+                          borderColor: 'hsl(0, 0%, 50%)' 
+                        },
+                        { 
+                          type: 'hqm', 
+                          label: 'HQM', 
+                          bgColor: 'hsl(200, 50%, 35%)', 
+                          borderColor: 'hsl(200, 60%, 50%)' 
+                        }
+                      ].map((resource, index) => (
+                        <g key={`rect-${index}`} style={{ 
+                          animation: `deployFromCenter 0.3s ease-out ${0.1 + index * 0.05}s both`,
+                          transformOrigin: `${rectX + 70}px ${rectY + (index * 35) + 15}px`
+                        }}>
+                          <rect
+                            x={rectX}
+                            y={rectY + (index * 35)}
+                            width="140"
+                            height="30"
+                            rx="4"
+                            fill={resource.bgColor}
+                            stroke={resource.borderColor}
+                            strokeWidth="2"
+                            className="transition-all duration-200 hover:brightness-110"
+                            opacity="0.9"
+                          />
+                          {/* Resource label */}
+                          <text
+                            x={rectX + 8}
+                            y={rectY + (index * 35) + 19}
+                            textAnchor="start"
+                            fill="white"
+                            fontSize="13"
+                            fontWeight="bold"
+                            className="pointer-events-none"
+                            style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.9)' }}
+                          >
+                            {resource.label}:
+                          </text>
+                          {/* Input field background */}
+                          <rect
+                            x={rectX + 50}
+                            y={rectY + (index * 35) + 5}
+                            width="50"
+                            height="20"
+                            rx="3"
+                            fill="rgba(0,0,0,0.4)"
+                            stroke="rgba(255,255,255,0.3)"
+                            strokeWidth="1"
+                            className="cursor-text"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // In a real implementation, this would focus an input field
+                            }}
+                          />
+                          {/* Current value (input field text) */}
+                          <text
+                            x={rectX + 75}
+                            y={rectY + (index * 35) + 18}
+                            textAnchor="middle"
+                            fill="white"
+                            fontSize="12"
+                            fontWeight="bold"
+                            className="pointer-events-none"
+                          >
+                            {decayResources[resource.type].current}
+                          </text>
+                          {/* Slash and Max value combined */}
+                          <text
+                            x={rectX + 100}
+                            y={rectY + (index * 35) + 19}
+                            textAnchor="start"
+                            fill="white"
+                            fontSize="13"
+                            fontWeight="bold"
+                            className="pointer-events-none"
+                            style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.9)' }}
+                          >
+                            /{decayResources[resource.type].max}
+                          </text>
+                        </g>
+                      ))}
+                    </g>
+                  </>
+                );
+              })()}
+            </g>
+          )}
+          
+          {/* Center Action button */}
+          <g 
+            className={`transition-transform duration-200 cursor-pointer ${!isExpanded ? 'hover:scale-110 subtle-pulse' : ''}`}
+            style={{ transformOrigin: `${centerX}px ${centerY}px` }}
+            onClick={handleActionClick}
           >
-            {formatResourceValue(resources[resource.key])}
-          </text>
-        ))}
-        
-        {/* Core timer display */}
-        {(selectedInner === '1-0' || selectedInner === '1-1') && (
-          <g>
-            {(() => {
-              const { upX, upY, downX, downY, rotation } = getArrowData(67, 0, null, true);
-              return (
-                <>
-                  {/* Up arrow */}
-                  <g 
-                    transform={`translate(${upX}, ${upY}) rotate(${rotation})`}
-                    className="cursor-pointer hover:brightness-125"
-                    onClick={() => handleNumberChange('core', true)}
-                  >
-                    <polygon points="0,-6 8,6 -8,6" fill="white" stroke="black" strokeWidth="1"/>
-                  </g>
-                  
-                  {/* Core value */}
-                  <text
-                    x={centerX}
-                    y={centerY}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize="18"
-                    fontWeight="bold"
-                    fill="yellow"
-                    className="pointer-events-none select-none"
-                    style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    transform="translate(0, 78)"
-                  >
-                    {segmentCoreValue}
-                  </text>
-                  
-                  {/* Down arrow */}
-                  <g 
-                    transform={`translate(${downX}, ${downY}) rotate(${rotation + 180})`}
-                    className="cursor-pointer hover:brightness-125"
-                    onClick={() => handleNumberChange('core', false)}
-                  >
-                    <polygon points="0,-6 8,6 -8,6" fill="white" stroke="black" strokeWidth="1"/>
-                  </g>
-                </>
-              );
-            })()}
+            <circle
+              cx={centerX}
+              cy={centerY}
+              r={innerRadius - 3}
+              fill={isExpanded ? "hsl(120, 70%, 45%)" : "hsl(0, 70%, 45%)"}
+              stroke={isExpanded ? "hsl(120, 70%, 35%)" : "hsl(0, 70%, 35%)"}
+              strokeWidth="3"
+              className="transition-all duration-300"
+              filter={isExpanded ? "url(#actionButtonGlow)" : "url(#actionButtonShadow)"}
+            />
+            <text
+              x={centerX}
+              y={centerY}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="16"
+              fontWeight="bold"
+              fill="white"
+              className="select-none"
+              style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+            >
+              Action
+            </text>
           </g>
-        )}
-        
-        {/* Number displays for segments 1 */}
-        {(selectedInner === '1-0' || selectedInner === '1-1') && (
-          <>
-            {/* Segment 1A1 */}
-            <g>
-              {(() => {
-                const { upX, upY, downX, downY, rotation } = getArrowData(95, 1, 0);
-                return (
-                  <>
-                    <g 
-                      transform={`translate(${upX}, ${upY}) rotate(${rotation})`}
-                      className="cursor-pointer hover:brightness-125"
-                      onClick={() => handleNumberChange('1a1', true)}
-                    >
-                      <polygon points="0,-6 8,6 -8,6" fill="white" stroke="black" strokeWidth="1"/>
-                    </g>
-                    
-                    <text
-                      {...getLabelPosition(95, 1, 0)}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize="14"
-                      fontWeight="bold"
-                      fill="yellow"
-                      className="pointer-events-none select-none"
-                      style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      {segment1A1Value}
-                    </text>
-                    
-                    <g 
-                      transform={`translate(${downX}, ${downY}) rotate(${rotation + 180})`}
-                      className="cursor-pointer hover:brightness-125"
-                      onClick={() => handleNumberChange('1a1', false)}
-                    >
-                      <polygon points="0,-6 8,6 -8,6" fill="white" stroke="black" strokeWidth="1"/>
-                    </g>
-                  </>
-                );
-              })()}
-            </g>
-            
-            {/* Segment 1A2 */}
-            <g>
-              {(() => {
-                const { upX, upY, downX, downY, rotation } = getArrowData(95, 1, 1);
-                return (
-                  <>
-                    <g 
-                      transform={`translate(${upX}, ${upY}) rotate(${rotation})`}
-                      className="cursor-pointer hover:brightness-125"
-                      onClick={() => handleNumberChange('1a2', true)}
-                    >
-                      <polygon points="0,-6 8,6 -8,6" fill="white" stroke="black" strokeWidth="1"/>
-                    </g>
-                    
-                    <text
-                      {...getLabelPosition(95, 1, 1)}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize="14"
-                      fontWeight="bold"
-                      fill="yellow"
-                      className="pointer-events-none select-none"
-                      style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                    >
-                      {segment1A2Value}
-                    </text>
-                    
-                    <g 
-                      transform={`translate(${downX}, ${downY}) rotate(${rotation + 180})`}
-                      className="cursor-pointer hover:brightness-125"
-                      onClick={() => handleNumberChange('1a2', false)}
-                    >
-                      <polygon points="0,-6 8,6 -8,6" fill="white" stroke="black" strokeWidth="1"/>
-                    </g>
-                  </>
-                );
-              })()}
-            </g>
-          </>
-        )}
-        
-        {/* Decay display overlay */}
-        {selectedInner === 4 && (
-          <g className="pulse-animation">
-            {['stone', 'metal', 'hqm'].map((resourceType, index) => (
-              <g key={resourceType}>
-                {(() => {
-                  const baseAngle = startAngle + (4 * segmentAngle) + (segmentAngle / 2);
-                  const offsetAngle = (index - 1) * 15; // Spread resources around the segment
-                  const angle = baseAngle + offsetAngle;
-                  const angleRad = (angle * Math.PI) / 180;
-                  const radius = 220;
-                  const x = centerX + radius * Math.cos(angleRad);
-                  const y = centerY + radius * Math.sin(angleRad);
-                  
-                  return (
-                    <>
-                      {/* Up arrow */}
-                      <g 
-                        transform={`translate(${x}, ${y - 20}) rotate(${angle + 90})`}
-                        className="cursor-pointer hover:brightness-125"
-                        onClick={() => handleDecayResourceChange(resourceType, true)}
-                      >
-                        <polygon points="0,-6 8,6 -8,6" fill="white" stroke="black" strokeWidth="1"/>
-                      </g>
-                      
-                      {/* Resource display */}
-                      <text
-                        x={x}
-                        y={y}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        fontSize="12"
-                        fontWeight="bold"
-                        fill="white"
-                        className="pointer-events-none select-none"
-                        style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                      >
-                        {decayResources[resourceType].current}/{decayResources[resourceType].max}
-                      </text>
-                      
-                      {/* Down arrow */}
-                      <g 
-                        transform={`translate(${x}, ${y + 20}) rotate(${angle + 270})`}
-                        className="cursor-pointer hover:brightness-125"
-                        onClick={() => handleDecayResourceChange(resourceType, false)}
-                      >
-                        <polygon points="0,-6 8,6 -8,6" fill="white" stroke="black" strokeWidth="1"/>
-                      </g>
-                    </>
-                  );
-                })()}
-              </g>
-            ))}
-          </g>
-        )}
-        
-        {/* Center action button */}
-        <circle
-          cx={centerX}
-          cy={centerY}
-          r={innerRadius}
-          fill={isExpanded ? "hsl(120, 70%, 40%)" : "hsl(120, 70%, 50%)"}
-          stroke="rgba(255, 255, 255, 0.3)"
-          strokeWidth="3"
-          className={`cursor-pointer transition-all duration-300 hover:brightness-110 ${isExpanded ? '' : 'action-pulse'}`}
-          filter="url(#actionButtonShadow)"
-          onClick={handleActionClick}
-        />
-        
-        {/* Center button icon/text */}
-        <text
-          x={centerX}
-          y={centerY}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fontSize="20"
-          fontWeight="bold"
-          fill="white"
-          className="pointer-events-none select-none"
-          style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-        >
-          {isExpanded ? '✕' : '🚜'}
-        </text>
       </svg>
     </>
   );
