@@ -893,33 +893,31 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
       className="absolute bottom-0 left-0 bg-gray-900 bg-opacity-95 backdrop-blur-sm rounded-tr-lg shadow-2xl p-6 flex gap-5 border-t border-r border-orange-600/50 z-20 transition-all duration-300 ease-out"
       style={{ width: '30%', minWidth: '350px', maxWidth: '450px', minHeight: '160px' }}
     >
+      {location.type.startsWith('enemy') && (
+        <div 
+          className="absolute top-0 right-0" 
+          style={{
+            transform: 'translate(50%, -50%)',
+            pointerEvents: 'auto'
+          }}
+        >
+          <div style={{
+            transform: 'scale(0.6)', 
+            transformOrigin: 'center',
+            width: '600px', 
+            height: '600px',
+            marginTop: '-180px',
+            marginLeft: '-180px'
+          }}>
+            <RadialMenu />
+          </div>
+        </div>
+      )}
       {!location.type.startsWith('report') && (
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 -translate-x-10 flex gap-3">
       {/* Rectangle - smaller size for enemy base preview */}
       <div className="absolute top-12 left-1/2 transform -translate-x-1/2 -translate-x-24 pointer-events-none z-50">
         <div className="w-52 h-28 bg-gray-800 border border-orange-600/50 shadow-lg relative">
-          {location.type.startsWith('enemy') && (
-            <div 
-              className="absolute" 
-              style={{
-                top: '-108px',
-                right: '-108px',
-                width: '216px',
-                height: '216px',
-                pointerEvents: 'auto'
-              }}
-            >
-              <div style={{
-                transform: 'scale(0.6)', 
-                width: '600px', 
-                height: '600px',
-                marginTop: '-192px',
-                marginLeft: '-192px'
-              }}>
-                <RadialMenu />
-              </div>
-            </div>
-          )}
           {/* Player snapshot grid - 2 columns x 5 rows */}
           <div className="grid grid-cols-2 grid-rows-5 h-full w-full">
             {(() => {
