@@ -8,8 +8,6 @@ import ActionReportModal from '../components/ActionReportModal'
 import { TeamsModal } from '../components/TeamsModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
 import WipeCountdownTimer from '../components/WipeCountdownTimer'
-import RadialMenu from '../components/RadialMenu'
-
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
 // ============= CONSTANTS =============
@@ -988,26 +986,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         >
           <span className="text-white text-[11px] font-bold">DETAILS</span>
         </button>
-      ) : location.type.startsWith('enemy') ? (
-        <RadialMenu 
-          location={location}
-          style={{
-            position: 'absolute',
-            top: '-80px',
-            right: '-80px',
-            zIndex: 30
-          }}
-          onClose={() => {}}
-          onAction={(action) => {
-            console.log(action)
-            if (action === 'Decaying') {
-              setShowDecayingMenu(true)
-            }
-            else if (action === 'Write Report') {
-              onOpenBaseReport(location)
-            }
-          }}
-        />
       ) : (
         <button 
           className="absolute -top-4 -right-4 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors border-2 border-gray-800 shadow-lg" 
@@ -1022,13 +1000,12 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         </button>
       )}
       
-
-      {showActionMenu && !location.type.startsWith("report") && !location.type.startsWith("enemy") && (
+      {showActionMenu && !location.type.startsWith('report') && (
         <ActionMenu 
           location={location}
           style={{
-            top: "20px",
-            left: "calc(100% + 3px)",
+            top: '20px',
+            left: 'calc(100% + 3px)',
             zIndex: 30
           }}
           onClose={() => setShowActionMenu(false)}
@@ -1036,11 +1013,20 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           onAction={(action) => {
             console.log(action)
             setShowActionMenu(false)
-            if (action === "Intentional Decay" || action === "Decaying") {
+            if (action === 'Intentional Decay' || action === 'Decaying') {
               setShowDecayingMenu(true)
             }
-             else if (action === "Write report") {
+             else if (action === 'Write report') {
               onOpenBaseReport(location)
+            }
+            else if (action === 'Add Base Report') {
+              setBaseReportData({
+                baseId: location.id,
+                baseName: location.name,
+                baseCoords: location.coordinates || getGridCoordinate(location.x, location.y, locations, null),
+                baseType: location.type
+              })
+              setShowBaseReportModal(true)
             }
           }}
         />
