@@ -233,7 +233,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
             x={centerX + textRadius * Math.cos((startSegmentAngle + halfSegmentAngle/2) * Math.PI / 180)}
             y={centerY + textRadius * Math.sin((startSegmentAngle + halfSegmentAngle/2) * Math.PI / 180)}
             fill="white"
-            fontSize="4"
+            fontSize="8"
             fontWeight="bold"
             textAnchor="middle"
             dominantBaseline="middle"
@@ -263,7 +263,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
             x={centerX + textRadius * Math.cos((startSegmentAngle + segmentAngle - halfSegmentAngle/2) * Math.PI / 180)}
             y={centerY + textRadius * Math.sin((startSegmentAngle + segmentAngle - halfSegmentAngle/2) * Math.PI / 180)}
             fill="white"
-            fontSize="4"
+            fontSize="8"
             fontWeight="bold"
             textAnchor="middle"
             dominantBaseline="middle"
@@ -282,7 +282,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
         animation: 'pulse 2s ease-in-out infinite'
       }}>
         <path
-          d={createPath(middleRadius + 2, outerRadius + 2, segmentIndex)}
+          d={createPath(middleRadius + 5, outerRadius + 15, segmentIndex)}
           fill="hsl(0, 70%, 50%)"
           fillOpacity="1"
           stroke="hsl(0, 80%, 40%)"
@@ -301,7 +301,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
         />
         <text 
           fill="white" 
-          fontSize="4" 
+          fontSize="8" 
           fontWeight="bold" 
           className="pointer-events-none select-none" 
           style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.9)' }}
