@@ -414,10 +414,11 @@ const RadialMenu = () => {
                     {...getLabelPosition(innerRadius + (middleRadius - innerRadius) * 0.5, index)}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize="32"
-                    className="pointer-events-none select-none"
                     fill="white"
-                    style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
+                    fontSize={index === 2 ? "48" : "34"}
+                    opacity="0.9"
+                    className="pointer-events-none select-none"
+                    style={{ textShadow: '2px 2px 3px rgba(0,0,0,0.8)' }}
                   >
                     {INNER_LABELS[index]}
                   </text>
@@ -436,92 +437,161 @@ const RadialMenu = () => {
                       filter: selectedOuter === index ? 'brightness(1.3)' : 'none'
                     }}
                   />
-                  
-                  {/* Gap text between inner and outer segments */}
-                  <text fill="white" fontSize="12" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}>
-                    <textPath href={`#gapTextPath-${index}`} startOffset="50%" textAnchor="middle">
-                      {GAP_TEXTS[index]}
-                    </textPath>
-                  </text>
-                  
-                  {/* Outer segment text */}
-                  <text fill="white" fontSize="11" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}>
-                    <textPath href={`#outerTextPath-${index}`} startOffset="50%" textAnchor="middle">
-                      {OUTER_TEXT}
-                    </textPath>
-                  </text>
                 </g>
               ))}
               
-              {/* Render conditional overlays */}
+              {/* Gap text */}
+              {GAP_TEXTS.map((text, index) => (
+                <text key={`gap-text-${index}`} fill="rgba(255,255,255,0.9)" fontSize={index === 2 ? "10" : "11"} fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
+                  <textPath href={`#gapTextPath-${index}`} startOffset="50%" textAnchor="middle">{text}</textPath>
+                </text>
+              ))}
+              
+              {/* Outer segment text */}
+              {Array.from({ length: segments }).map((_, index) => (
+                <text key={`outer-text-${index}`} fill="white" fontSize="15" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
+                  <textPath href={`#outerTextPath-${index}`} startOffset="50%" textAnchor="middle">{OUTER_TEXT}</textPath>
+                </text>
+              ))}
+              
+              {/* Pulsating overlays */}
               {renderPulsatingOverlay(0, selectedInner === 0, 'SCHEDULE')}
-              {renderPulsatingOverlay(1, selectedInner === 1, 'NAMES')}
-              {renderPulsatingOverlay(2, selectedInner === 2, '')}
-              {renderPulsatingOverlay(3, selectedInner === 3, 'DECAYING')}
+              {renderPulsatingOverlay(1, selectedInner === 1, 'MAKE ICON')}
+              {renderPulsatingOverlay(2, selectedInner === 2, 'LOOT FLOW')}
+              {renderPulsatingOverlay(3, selectedInner === 3, 'START TIMER')}
               {renderPulsatingOverlay(4, selectedInner === 4, 'REPORT')}
               
-              {/* Calculate button for when appropriate inner segment is selected */}
-              {(selectedInner === 0 || selectedInner === 1 || selectedInner === 3 || selectedInner === 4) && (
-                <g className="pulse-animation">
-                  <circle
-                    cx={centerX}
-                    cy={centerY - 2}
-                    r={innerRadius - 5}
-                    fill="hsl(120, 70%, 45%)"
-                    stroke="hsl(120, 80%, 35%)"
-                    strokeWidth="3"
-                    className="cursor-pointer hover:brightness-110"
-                    filter="url(#greenGlow)"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedInner(null);
-                    }}
-                  />
-                  <text
-                    x={centerX}
-                    y={centerY - 2}
-                    fill="white"
-                    fontSize="14"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="pointer-events-none select-none"
-                    style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                  >
-                    CALCULATE
-                  </text>
+              {/* Static resource containers for decaying - shown outside the circle */}
+              {selectedInner === 3 && (
+                <g>
+                  {[
+                    { name: 'Stone', key: 'stone', current: resources.stone, max: 500, color: 'hsl(0, 0%, 60%)', borderColor: 'hsl(0, 0%, 75%)' },
+                    { name: 'Metal', key: 'metal', current: resources.metal, max: 1000, color: 'hsl(0, 0%, 35%)', borderColor: 'hsl(0, 0%, 50%)' },
+                    { name: 'HQM', key: 'hqm', current: resources.hqm, max: 2000, color: 'hsl(200, 50%, 35%)', borderColor: 'hsl(200, 60%, 50%)' }
+                  ].map((resource, idx) => {
+                    const containerWidth = 140;
+                    const containerHeight = 30;
+                    const containerGap = 5;
+                    const startY = 20; // Move up from 40 to 20 (20 pixels up)
+                    const xOffset = 160; // Move right by 160 pixels
+                    const yPos = startY + (idx * (containerHeight + containerGap));
+                    const xPos = centerX - containerWidth/2 + xOffset;
+                    
+                    return (
+                      <g key={idx}>
+                        <rect
+                          x={xPos}
+                          y={yPos}
+                          width={containerWidth}
+                          height={containerHeight}
+                          fill={resource.color}
+                          stroke={resource.borderColor}
+                          strokeWidth="2"
+                          rx="4"
+                          ry="4"
+                          className="cursor-pointer hover:brightness-110"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        />
+                        <foreignObject
+                          x={xPos}
+                          y={yPos}
+                          width={containerWidth}
+                          height={containerHeight}
+                          className="pointer-events-none"
+                        >
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%',
+                            padding: '0 10px',
+                            color: 'white',
+                            fontSize: '13px',
+                            fontWeight: 'bold',
+                            textShadow: '1px 1px 2px rgba(0,0,0,0.9)'
+                          }}>
+                            <span style={{ marginRight: '8px' }}>{resource.name}</span>
+                            <input
+                              type="text"
+                              value={resource.current}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/[^0-9]/g, '');
+                                if (value === '' || !isNaN(parseInt(value))) {
+                                  setResources(prev => ({
+                                    ...prev,
+                                    [resource.key]: Math.min(parseInt(value) || 0, resource.max)
+                                  }));
+                                }
+                              }}
+                              onFocus={(e) => e.target.select()}
+                              onClick={(e) => e.stopPropagation()}
+                              className="pointer-events-auto"
+                              style={{
+                                width: '60px',
+                                background: 'rgba(0,0,0,0.4)',
+                                border: '1px solid rgba(255,255,255,0.3)',
+                                borderRadius: '3px',
+                                color: 'white',
+                                padding: '2px 4px',
+                                fontSize: '12px',
+                                textAlign: 'center'
+                              }}
+                            />
+                            <span style={{ marginLeft: '3px' }}>/{resource.max}</span>
+                          </div>
+                        </foreignObject>
+                      </g>
+                    );
+                  })}
                 </g>
               )}
             </g>
           )}
           
-          {/* Center action button */}
-          <circle
-            cx={centerX}
-            cy={centerY}
-            r={innerRadius}
-            fill={isExpanded ? "hsl(0, 70%, 40%)" : "hsl(0, 70%, 50%)"}
-            stroke="rgba(255, 255, 255, 0.3)"
-            strokeWidth="3"
-            className={`cursor-pointer transition-all duration-300 hover:brightness-110 ${isExpanded ? '' : 'action-pulse'}`}
-            filter="url(#actionButtonShadow)"
-            onClick={() => setIsExpanded(!isExpanded)}
-          />
-          
-          {/* Center button icon/text */}
-          <text
-            x={centerX}
-            y={centerY}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="18"
-            fontWeight="bold"
-            fill="white"
-            className="pointer-events-none select-none"
-            style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
+          {/* Center Action button */}
+          <g 
+            className={`transition-transform duration-200 cursor-pointer ${!isExpanded ? 'hover:scale-110 action-pulse' : ''}`}
+            style={{ transformOrigin: `${centerX}px ${centerY}px` }}
+            onClick={() => {
+              if (isExpanded) {
+                setSelectedInner(null);
+                setSelectedOuter(null);
+                setHoveredSegment(null);
+                setResources({
+                  stone: 0,
+                  metal: 0,
+                  hqm: 0
+                });
+              }
+              setIsExpanded(!isExpanded);
+            }}
           >
-            {isExpanded ? '✕' : '🎯'}
-          </text>
+            <circle
+              cx={centerX}
+              cy={centerY}
+              r={innerRadius - 3}
+              fill={isExpanded ? "hsl(0, 75%, 50%)" : "hsl(0, 60%, 30%)"}
+              stroke={isExpanded ? "hsl(0, 80%, 35%)" : "hsl(0, 60%, 20%)"}
+              strokeWidth="3"
+              className="transition-all duration-300"
+              filter={isExpanded ? "url(#actionButtonGlow)" : "url(#actionButtonShadow)"}
+            />
+            <text
+              x={centerX}
+              y={centerY}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="16"
+              fontWeight="bold"
+              fill="white"
+              className="select-none"
+              style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+            >
+              Action
+            </text>
+          </g>
         </svg>
     </>
   );
