@@ -987,6 +987,12 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         >
           <span className="text-white text-[11px] font-bold">DETAILS</span>
         </button>
+      ) : location.type.startsWith('enemy') ? (
+        <div className="absolute -top-4 -right-4" style={{width: '60px', height: '60px'}}>
+          <div style={{transform: 'scale(0.1)', transformOrigin: 'center', width: '600px', height: '600px', marginTop: '-270px', marginLeft: '-270px'}}>
+            <RadialMenu />
+          </div>
+        </div>
       ) : (
         <button 
           className="absolute -top-4 -right-4 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors border-2 border-gray-800 shadow-lg" 
@@ -997,13 +1003,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             setShowActionMenu(!showActionMenu)
           }}
         >
-          {location.type.startsWith('enemy') ? (
-            <div style={{transform: 'scale(0.09)', transformOrigin: 'center', width: '600px', height: '600px', position: 'absolute', top: '-274px', left: '-274px'}}>
-              <RadialMenu />
-            </div>
-          ) : (
-            <span className="text-white text-xs font-bold">ACT</span>
-          )}
+          <span className="text-white text-xs font-bold">ACT</span>
         </button>
       )}
       
