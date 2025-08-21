@@ -988,6 +988,26 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         >
           <span className="text-white text-[11px] font-bold">DETAILS</span>
         </button>
+      ) : location.type.startsWith('enemy') ? (
+        <RadialMenu 
+          location={location}
+          style={{
+            position: 'absolute',
+            top: '-26px',
+            right: '-26px',
+            zIndex: 30
+          }}
+          onClose={() => {}}
+          onAction={(action) => {
+            console.log(action)
+            if (action === 'Decaying') {
+              setShowDecayingMenu(true)
+            }
+            else if (action === 'Write Report') {
+              onOpenBaseReport(location)
+            }
+          }}
+        />
       ) : (
         <button 
           className="absolute -top-4 -right-4 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors border-2 border-gray-800 shadow-lg" 
@@ -1002,33 +1022,13 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         </button>
       )}
       
-      {showActionMenu && !location.type.startsWith('report') && (
-        location.type.startsWith('enemy') ? (
-          <RadialMenu 
-            location={location}
-            style={{
-              top: '20px',
-              left: 'calc(100% + 3px)',
-              zIndex: 30
-            }}
-            onClose={() => setShowActionMenu(false)}
-            onAction={(action) => {
-              console.log(action)
-              setShowActionMenu(false)
-              if (action === 'Decaying') {
-                setShowDecayingMenu(true)
-              }
-              else if (action === 'Write Report') {
-                onOpenBaseReport(location)
-              }
-            }}
-          />
-        ) : (
-          <ActionMenu 
+
+      {showActionMenu && !location.type.startsWith("report") && !location.type.startsWith("enemy") && (
+        <ActionMenu 
           location={location}
           style={{
-            top: '20px',
-            left: 'calc(100% + 3px)',
+            top: "20px",
+            left: "calc(100% + 3px)",
             zIndex: 30
           }}
           onClose={() => setShowActionMenu(false)}
@@ -1036,18 +1036,15 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           onAction={(action) => {
             console.log(action)
             setShowActionMenu(false)
-            if (action === 'Intentional Decay' || action === 'Decaying') {
+            if (action === "Intentional Decay" || action === "Decaying") {
               setShowDecayingMenu(true)
             }
-             else if (action === 'Write report') {
+             else if (action === "Write report") {
               onOpenBaseReport(location)
             }
-
           }}
         />
-        )
       )}
-        )
       
       {showDecayingMenu && !location.type.startsWith('report') && (
         <DecayingMenu 
