@@ -437,27 +437,15 @@ const RadialMenu = () => {
                     }}
                   />
                   
-                  {/* Gap text (action labels) */}
-                  <text 
-                    fill="white" 
-                    fontSize="13" 
-                    fontWeight="bold" 
-                    className="pointer-events-none select-none" 
-                    style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                  >
+                  {/* Gap text between inner and outer segments */}
+                  <text fill="white" fontSize="12" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}>
                     <textPath href={`#gapTextPath-${index}`} startOffset="50%" textAnchor="middle">
                       {GAP_TEXTS[index]}
                     </textPath>
                   </text>
                   
                   {/* Outer segment text */}
-                  <text 
-                    fill="white" 
-                    fontSize="11" 
-                    fontWeight="bold" 
-                    className="pointer-events-none select-none" 
-                    style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                  >
+                  <text fill="white" fontSize="11" fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}>
                     <textPath href={`#outerTextPath-${index}`} startOffset="50%" textAnchor="middle">
                       {OUTER_TEXT}
                     </textPath>
@@ -465,100 +453,32 @@ const RadialMenu = () => {
                 </g>
               ))}
               
-              {/* Pulsating overlays for when items are selected */}
-              {renderPulsatingOverlay(0, selectedInner === 0, 'READY')}
-              {renderPulsatingOverlay(1, selectedInner === 1, 'MISSING')}
-              {renderPulsatingOverlay(2, selectedInner === 2, 'MOVED')}
-              {renderPulsatingOverlay(3, selectedInner === 3, 'INACTIVE')}
-              {renderPulsatingOverlay(4, selectedInner === 4, 'FINISHED')}
+              {/* Render conditional overlays */}
+              {renderPulsatingOverlay(0, selectedInner === 0, 'SCHEDULE')}
+              {renderPulsatingOverlay(1, selectedInner === 1, 'NAMES')}
+              {renderPulsatingOverlay(2, selectedInner === 2, '')}
+              {renderPulsatingOverlay(3, selectedInner === 3, 'DECAYING')}
+              {renderPulsatingOverlay(4, selectedInner === 4, 'REPORT')}
               
-              {/* Resource calculator for segment 0 (SCHEDULE RAID) */}
-              {selectedInner === 0 && (
-                <g>
-                  <rect
-                    x={centerX + outerRadius + 20}
-                    y={centerY - 180}
-                    width="200"
-                    height="220"
-                    fill="rgba(0, 0, 0, 0.9)"
-                    stroke="hsl(0, 70%, 50%)"
-                    strokeWidth="2"
-                    rx="8"
-                    className="deploy-animation"
-                  />
-                  
-                  {/* Title */}
-                  <text
-                    x={centerX + outerRadius + 120}
-                    y={centerY - 155}
-                    fill="white"
-                    fontSize="16"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                    className="pointer-events-none select-none"
-                    style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                  >
-                    RAID CALC
-                  </text>
-                  
-                  {/* Resource inputs */}
-                  {['stone', 'metal', 'hqm'].map((resource, idx) => (
-                    <g key={resource}>
-                      <text
-                        x={centerX + outerRadius + 40}
-                        y={centerY - 125 + idx * 40}
-                        fill="white"
-                        fontSize="14"
-                        fontWeight="bold"
-                        className="pointer-events-none select-none"
-                        style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}
-                      >
-                        {resource.toUpperCase()}:
-                      </text>
-                      
-                      <foreignObject
-                        x={centerX + outerRadius + 100}
-                        y={centerY - 135 + idx * 40}
-                        width="80"
-                        height="20"
-                      >
-                        <input
-                          type="number"
-                          min="0"
-                          value={resources[resource]}
-                          onChange={(e) => setResources(prev => ({
-                            ...prev,
-                            [resource]: parseInt(e.target.value) || 0
-                          }))}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            backgroundColor: '#374151',
-                            color: 'white',
-                            border: '1px solid #6B7280',
-                            borderRadius: '4px',
-                            padding: '2px 4px',
-                            fontSize: '12px'
-                          }}
-                        />
-                      </foreignObject>
-                    </g>
-                  ))}
-                  
-                  {/* Calculate button */}
-                  <rect
-                    x={centerX + outerRadius + 40}
-                    y={centerY - 20}
-                    width="160"
-                    height="30"
-                    fill="hsl(0, 70%, 50%)"
-                    stroke="hsl(0, 80%, 40%)"
-                    strokeWidth="2"
-                    rx="4"
+              {/* Calculate button for when appropriate inner segment is selected */}
+              {(selectedInner === 0 || selectedInner === 1 || selectedInner === 3 || selectedInner === 4) && (
+                <g className="pulse-animation">
+                  <circle
+                    cx={centerX}
+                    cy={centerY - 2}
+                    r={innerRadius - 5}
+                    fill="hsl(120, 70%, 45%)"
+                    stroke="hsl(120, 80%, 35%)"
+                    strokeWidth="3"
                     className="cursor-pointer hover:brightness-110"
+                    filter="url(#greenGlow)"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedInner(null);
+                    }}
                   />
                   <text
-                    x={centerX + outerRadius + 120}
+                    x={centerX}
                     y={centerY - 2}
                     fill="white"
                     fontSize="14"
