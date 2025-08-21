@@ -879,36 +879,34 @@ const BaseModal = ({
             </>
           )}
           
-          {modalType !== 'enemy' && (
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-red-600 rounded-lg px-3 py-1.5 border-2 border-red-500 shadow-lg" style={{zIndex: 60}}>
-              {isEditingCoordinate ? (
-                <input
-                  type="text"
-                  value={editableCoordinate}
-                  onChange={(e) => setEditableCoordinate(e.target.value.toUpperCase())}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      setIsEditingCoordinate(false)
-                    }
-                    if (e.key === 'Escape') {
-                      setEditableCoordinate(editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, null))
-                      setIsEditingCoordinate(false)
-                    }
-                  }}
-                  onBlur={() => setIsEditingCoordinate(false)}
-                  autoFocus
-                  className="text-white font-mono font-bold text-3xl bg-transparent border-2 border-orange-500 rounded px-2 py-1 text-center focus:outline-none focus:border-orange-300"
-                />
-              ) : (
-                <span 
-                  className="text-white font-mono font-bold text-3xl cursor-pointer hover:text-orange-200 transition-colors"
-                  onClick={() => setIsEditingCoordinate(true)}
-                >
-                  {editableCoordinate}
-                </span>
-              )}
-            </div>
-          )}
+          <div className={`absolute -top-5 left-1/2 transform -translate-x-1/2 ${modalType === 'enemy' ? 'bg-red-600 border-red-500' : 'bg-red-600 border-red-500'} rounded-lg px-3 py-1.5 border-2 shadow-lg`} style={{zIndex: 60}}>
+            {isEditingCoordinate ? (
+              <input
+                type="text"
+                value={editableCoordinate}
+                onChange={(e) => setEditableCoordinate(e.target.value.toUpperCase())}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setIsEditingCoordinate(false)
+                  }
+                  if (e.key === 'Escape') {
+                    setEditableCoordinate(editingLocation ? editingLocation.name : getGridCoordinate(modal.x, modal.y, locations, null))
+                    setIsEditingCoordinate(false)
+                  }
+                }}
+                onBlur={() => setIsEditingCoordinate(false)}
+                autoFocus
+                className="text-white font-mono font-bold text-3xl bg-transparent border-2 border-orange-500 rounded px-2 py-1 text-center focus:outline-none focus:border-orange-300"
+              />
+            ) : (
+              <span 
+                className="text-white font-mono font-bold text-3xl cursor-pointer hover:text-orange-200 transition-colors"
+                onClick={() => setIsEditingCoordinate(true)}
+              >
+                {editableCoordinate}
+              </span>
+            )}
+          </div>
 
           <div className="bg-gray-900 rounded-lg shadow-xl w-full max-w-4xl mx-4 border-2 border-orange-600/50 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
             {/* Report ID Display - Top Left of Modal */}
