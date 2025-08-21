@@ -1040,18 +1040,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         >
           <span className="text-white text-[11px] font-bold">DETAILS</span>
         </button>
-      ) : !location.type.startsWith('enemy') ? (
-        <button 
-          className="absolute -top-4 -right-4 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors border-2 border-gray-800 shadow-lg" 
-          style={{width: '52px', height: '52px'}} 
-          title="Actions"
-          onClick={(e) => {
-            e.stopPropagation()
-            setShowActionMenu(!showActionMenu)
-          }}
-        >
-          <span className="text-white text-xs font-bold">ACT</span>
-        </button>
       ) : null}
       
       {showActionMenu && !location.type.startsWith('report') && !location.type.startsWith('enemy') && (
