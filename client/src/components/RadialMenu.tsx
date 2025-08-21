@@ -18,12 +18,12 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
     hqm: 0
   });
   
-  // Configuration - scaled down from original (600x600 to 200x200)
-  const centerX = 100;
-  const centerY = 100;
-  const innerRadius = 13;
-  const middleRadius = 50;
-  const outerRadius = 63;
+  // Configuration - original dimensions scaled to map size
+  const centerX = 300;
+  const centerY = 300;
+  const innerRadius = 40;
+  const middleRadius = 150;
+  const outerRadius = 190;
   const startAngle = 180;
   const segments = 5;
   const totalAngle = 180;
@@ -352,12 +352,12 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
           }
         `}</style>
         
-        <svg width="200" height="200" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+        <svg width="320" height="320" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet">
           <defs>
             {/* Filters */}
             <filter id="actionButtonShadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
-              <feOffset dx="0" dy="1" result="offsetblur"/>
+              <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
+              <feOffset dx="0" dy="3" result="offsetblur"/>
               <feFlood floodColor="#000000" floodOpacity="0.5"/>
               <feComposite in2="offsetblur" operator="in"/>
               <feMerge>
@@ -366,7 +366,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               </feMerge>
             </filter>
             <filter id="actionButtonGlow">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
               <feFlood floodColor="#dc2626" floodOpacity="0.4"/>
               <feComposite in2="coloredBlur" operator="in"/>
               <feMerge>
@@ -375,7 +375,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               </feMerge>
             </filter>
             <filter id="greenGlow">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
               <feFlood floodColor="#22c55e" floodOpacity="0.6"/>
               <feComposite in2="coloredBlur" operator="in"/>
               <feMerge>
@@ -384,7 +384,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               </feMerge>
             </filter>
             <filter id="redGlow">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
               <feFlood floodColor="#dc2626" floodOpacity="0.6"/>
               <feComposite in2="coloredBlur" operator="in"/>
               <feMerge>
@@ -466,7 +466,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               
               {/* Gap text */}
               {GAP_TEXTS.map((text, index) => (
-                <text key={`gap-text-${index}`} fill="rgba(255,255,255,0.9)" fontSize={index === 2 ? "6" : "7"} fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
+                <text key={`gap-text-${index}`} fill="rgba(255,255,255,0.9)" fontSize={index === 2 ? "10" : "11"} fontWeight="bold" className="pointer-events-none select-none" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.9)' }}>
                   <textPath href={`#gapTextPath-${index}`} startOffset="50%" textAnchor="middle">{text}</textPath>
                 </text>
               ))}
@@ -579,7 +579,7 @@ const RadialMenu: React.FC<RadialMenuProps> = ({ location, onAction, onClose, st
               y={centerY}
               textAnchor="middle"
               dominantBaseline="middle"
-              fontSize="12"
+              fontSize="14"
               fontWeight="bold"
               fill="white"
               className="select-none"
