@@ -1,0 +1,45 @@
+Uncaught ReferenceError: getBestGenes is not defined
+    at ProgressionModal (ProgressionModal.tsx…1756123774996:60:46)
+
+ProgressionModal.tsx?t=1756123774996:60 Uncaught ReferenceError: getBestGenes is not defined
+    at ProgressionModal (ProgressionModal.tsx…1756123774996:60:46)
+Console.js:61 The above error occurred in the <ProgressionModal> component:
+
+    at ProgressionModal (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/src/components/ProgressionModal.tsx?t=1756123774996:53:36)
+    at div
+    at div
+    at InteractiveTacticalMap (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/src/pages/tactical-map.tsx?t=1756123485867:2240:23)
+    at Route (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d252e111:323:16)
+    at Switch (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d252e111:379:17)
+    at Router
+    at Provider (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…unner/workspace/node_modules/.vite/deps/chunk-HY3DORJS.js?v=d252e111:44:15)
+    at TooltipProvider (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…rkspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=d252e111:61:5)
+    at QueryClientProvider (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=d252e111:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+ProgressionModal.tsx?t=1756123774996:60 Uncaught (in promise) ReferenceError: getBestGenes is not defined
+    at ProgressionModal (ProgressionModal.tsx…1756123774996:60:46)
+ProgressionModal.tsx?t=1756123789548:271 Uncaught ReferenceError: geneProgress is not defined
+    at ProgressionModal (ProgressionModal.tsx…56123789548:271:196)
+ProgressionModal.tsx?t=1756123789548:271 Uncaught ReferenceError: geneProgress is not defined
+    at ProgressionModal (ProgressionModal.tsx…56123789548:271:196)
+Console.js:61 The above error occurred in the <ProgressionModal> component:
+
+    at ProgressionModal (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/src/components/ProgressionModal.tsx?t=1756123789548:53:36)
+    at div
+    at div
+    at InteractiveTacticalMap (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/src/pages/tactical-map.tsx?t=1756123485867:2240:23)
+    at Route (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d252e111:323:16)
+    at Switch (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=d252e111:379:17)
+    at Router
+    at Provider (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…unner/workspace/node_modules/.vite/deps/chunk-HY3DORJS.js?v=d252e111:44:15)
+    at TooltipProvider (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…rkspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=d252e111:61:5)
+    at QueryClientProvider (https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=d252e111:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+ProgressionModal.tsx?t=1756123789548:271 Uncaught (in promise) ReferenceError: geneProgress is not defined
+    at ProgressionModal (ProgressionModal.tsx…56123789548:271:196)

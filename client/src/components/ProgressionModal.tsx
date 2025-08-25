@@ -10,44 +10,6 @@ interface ProgressionModalProps {
   onClose: () => void
 }
 
-interface GeneData {
-  hemp: number
-  blueberry: number
-  yellowberry: number
-  redberry: number
-  pumpkin: number
-}
-
-interface PlantGenesData {
-  [plantType: string]: string[]
-}
-
-interface BestGeneData {
-  hemp: string | null
-  blueberry: string | null
-  yellowberry: string | null
-  redberry: string | null
-  pumpkin: string | null
-}
-
-// Gene storage utilities
-const getGeneProgress = (): GeneData => {
-  const stored = localStorage.getItem('rustGeneProgress')
-  if (stored) {
-    try {
-      return JSON.parse(stored)
-    } catch (e) {
-      console.error('Failed to parse gene progress:', e)
-    }
-  }
-  return {
-    hemp: 0,
-    blueberry: 0,
-    yellowberry: 0,
-    redberry: 0,
-    pumpkin: 0
-  }
-}
 
 // Read the same localStorage data the gene calculator uses
 const getPlantGenesData = () => {
