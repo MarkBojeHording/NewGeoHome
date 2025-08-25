@@ -13,9 +13,7 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   const [inGroupWeapon, setInGroupWeapon] = useState('')
   const [aloneWeapon, setAloneWeapon] = useState('')
   const [counteringWeapon, setCounteringWeapon] = useState('')
-  const [inGroupDisplay, setInGroupDisplay] = useState(false)
-  const [aloneDisplay, setAloneDisplay] = useState(false)
-  const [counteringDisplay, setCounteringDisplay] = useState(false)
+  const [displayOnMap, setDisplayOnMap] = useState(false)
 
   const weaponOptions = ['Spear', 'Bow', 'DB', 'P2', 'SAR', 'Tommy', 'MP-5', 'AK-47', 'M249']
 
@@ -34,87 +32,67 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
         <div className="flex flex-col h-full p-6 gap-6">
           {/* Recommended Kit Level Container */}
           <div className="border-2 border-orange-500/50 p-6 bg-gray-800/50">
-            <h3 className="text-orange-400 font-mono text-xl mb-6 text-center tracking-wider">
-              RECOMMENDED KIT LEVEL
-            </h3>
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <h3 className="text-orange-400 font-mono text-xl tracking-wider">
+                RECOMMENDED KIT LEVEL
+              </h3>
+              <div className="flex items-center gap-2">
+                <Checkbox 
+                  checked={displayOnMap} 
+                  onCheckedChange={(checked) => setDisplayOnMap(checked === true)}
+                  className="border-orange-500/50 data-[state=checked]:bg-orange-500"
+                />
+                <span className="text-orange-200 text-sm">Display on map</span>
+              </div>
+            </div>
             
             <div className="flex justify-center gap-8">
               <div className="flex flex-col items-center">
                 <label className="text-orange-400 mb-2 font-mono">In a group</label>
-                <div className="flex items-center gap-3">
-                  <Select value={inGroupWeapon} onValueChange={setInGroupWeapon}>
-                    <SelectTrigger className="w-40 bg-gray-800 border-orange-500/50 text-orange-100">
-                      <SelectValue placeholder="Select weapon" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-orange-500/50">
-                      {weaponOptions.map((weapon) => (
-                        <SelectItem key={weapon} value={weapon} className="text-orange-100 hover:bg-orange-500/20">
-                          {weapon}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div className="flex items-center gap-2">
-                    <Checkbox 
-                      checked={inGroupDisplay} 
-                      onCheckedChange={(checked) => setInGroupDisplay(checked === true)}
-                      className="border-orange-500/50 data-[state=checked]:bg-orange-500"
-                    />
-                    <span className="text-orange-200 text-sm">Display on map</span>
-                  </div>
-                </div>
+                <Select value={inGroupWeapon} onValueChange={setInGroupWeapon}>
+                  <SelectTrigger className="w-40 bg-gray-800 border-orange-500/50 text-orange-100">
+                    <SelectValue placeholder="Select weapon" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-orange-500/50">
+                    {weaponOptions.map((weapon) => (
+                      <SelectItem key={weapon} value={weapon} className="text-orange-100 hover:bg-orange-500/20">
+                        {weapon}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex flex-col items-center">
                 <label className="text-orange-400 mb-2 font-mono">Alone</label>
-                <div className="flex items-center gap-3">
-                  <Select value={aloneWeapon} onValueChange={setAloneWeapon}>
-                    <SelectTrigger className="w-40 bg-gray-800 border-orange-500/50 text-orange-100">
-                      <SelectValue placeholder="Select weapon" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-orange-500/50">
-                      {weaponOptions.map((weapon) => (
-                        <SelectItem key={weapon} value={weapon} className="text-orange-100 hover:bg-orange-500/20">
-                          {weapon}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div className="flex items-center gap-2">
-                    <Checkbox 
-                      checked={aloneDisplay} 
-                      onCheckedChange={(checked) => setAloneDisplay(checked === true)}
-                      className="border-orange-500/50 data-[state=checked]:bg-orange-500"
-                    />
-                    <span className="text-orange-200 text-sm">Display on map</span>
-                  </div>
-                </div>
+                <Select value={aloneWeapon} onValueChange={setAloneWeapon}>
+                  <SelectTrigger className="w-40 bg-gray-800 border-orange-500/50 text-orange-100">
+                    <SelectValue placeholder="Select weapon" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-orange-500/50">
+                    {weaponOptions.map((weapon) => (
+                      <SelectItem key={weapon} value={weapon} className="text-orange-100 hover:bg-orange-500/20">
+                        {weapon}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex flex-col items-center">
                 <label className="text-orange-400 mb-2 font-mono">Countering</label>
-                <div className="flex items-center gap-3">
-                  <Select value={counteringWeapon} onValueChange={setCounteringWeapon}>
-                    <SelectTrigger className="w-40 bg-gray-800 border-orange-500/50 text-orange-100">
-                      <SelectValue placeholder="Select weapon" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-orange-500/50">
-                      {weaponOptions.map((weapon) => (
-                        <SelectItem key={weapon} value={weapon} className="text-orange-100 hover:bg-orange-500/20">
-                          {weapon}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div className="flex items-center gap-2">
-                    <Checkbox 
-                      checked={counteringDisplay} 
-                      onCheckedChange={(checked) => setCounteringDisplay(checked === true)}
-                      className="border-orange-500/50 data-[state=checked]:bg-orange-500"
-                    />
-                    <span className="text-orange-200 text-sm">Display on map</span>
-                  </div>
-                </div>
+                <Select value={counteringWeapon} onValueChange={setCounteringWeapon}>
+                  <SelectTrigger className="w-40 bg-gray-800 border-orange-500/50 text-orange-100">
+                    <SelectValue placeholder="Select weapon" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-orange-500/50">
+                    {weaponOptions.map((weapon) => (
+                      <SelectItem key={weapon} value={weapon} className="text-orange-100 hover:bg-orange-500/20">
+                        {weapon}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
