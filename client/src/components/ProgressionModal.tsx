@@ -172,11 +172,11 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col h-full p-6 gap-6">
+        <div className="flex flex-col h-full p-4 gap-4">
           {/* Recommended Kit Level Container */}
-          <div className="border-2 border-orange-500/50 p-6 bg-gray-800/50">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <h3 className="text-orange-400 font-mono text-xl tracking-wider">
+          <div className="border-2 border-orange-500/50 p-4 bg-gray-800/50">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <h3 className="text-orange-400 font-mono text-lg tracking-wider">
                 RECOMMENDED KIT LEVEL
               </h3>
               <div className="flex items-center gap-2">
@@ -241,55 +241,68 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
           </div>
 
           {/* Bottom Section with Left Container and Message Container */}
-          <div className="flex gap-6 flex-1">
+          <div className="flex gap-4 flex-1">
             {/* Gene Progress Container */}
-            <div className="border-2 border-orange-500/50 p-6 bg-gray-800/50 w-64 flex-shrink-0">
-              <h3 className="text-orange-400 font-mono text-lg tracking-wider mb-4 text-center">
+            <div className="border-2 border-orange-500/50 p-3 bg-gray-800/50 w-56 flex-shrink-0">
+              <h3 className="text-orange-400 font-mono text-base tracking-wider mb-3 text-center">
                 GENE PROGRESS
               </h3>
-              <div className="space-y-4">
-                {(Object.keys(geneProgress) as Array<keyof GeneData>).map((plant) => (
-                  <div key={plant} className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{plantIcons[plant]}</span>
-                      <span className="text-orange-200 text-sm font-mono">{plantNames[plant]}</span>
+              <div className="space-y-3">
+                {(Object.keys(geneProgress) as Array<keyof GeneData>).map((plant) => {
+                  // Debug logging
+                  console.log(`${plant} progress:`, geneProgress[plant], 'best gene:', bestGenes[plant]);
+                  
+                  return (
+                    <div key={plant} className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">{plantIcons[plant]}</span>
+                        <span className="text-orange-200 text-xs font-mono">{plantNames[plant]}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Progress 
+                          value={geneProgress[plant]} 
+                          max={100}
+                          className="flex-1 h-2"
+                        />
+                        <span className="text-orange-400 text-xs font-mono w-8 text-right">
+                          {Math.round(geneProgress[plant])}%
+                        </span>
+                      </div>
+                      <div className="text-center min-h-[16px]">
+                        {bestGenes[plant] ? (
+                          <div className="inline-flex gap-0.5 bg-gray-900/50 px-1 py-0.5 rounded border border-orange-500/30">
+                            {bestGenes[plant]!.split('').map((gene, index) => (
+                              <span 
+                                key={index}
+                                className={`
+                                  w-3 h-3 text-xs font-bold font-mono flex items-center justify-center rounded
+                                  ${['G', 'Y', 'H'].includes(gene) ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}
+                                `}
+                              >
+                                {gene}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-gray-500 text-xs font-mono">No genes</span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Progress 
-                        value={geneProgress[plant]} 
-                        max={100}
-                        className="flex-1 h-3"
-                      />
-                      <span className="text-orange-400 text-xs font-mono w-8 text-right">
-                        {Math.round(geneProgress[plant])}%
-                      </span>
-                    </div>
-                    <div className="text-center min-h-[20px]">
-                      {bestGenes[plant] ? (
-                        <div className="inline-flex gap-0.5 bg-gray-900/50 px-2 py-1 rounded border border-orange-500/30">
-                          {bestGenes[plant]!.split('').map((gene, index) => (
-                            <span 
-                              key={index}
-                              className={`
-                                w-4 h-4 text-xs font-bold font-mono flex items-center justify-center rounded
-                                ${['G', 'Y', 'H'].includes(gene) ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}
-                              `}
-                            >
-                              {gene}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-gray-500 text-xs font-mono">No genes</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
+              </div>
+              
+              {/* Debug info */}
+              <div className="mt-3 pt-2 border-t border-orange-500/20">
+                <div className="text-xs text-gray-400">
+                  <div>Progress data: {JSON.stringify(geneProgress).length > 50 ? 'Found' : 'Empty'}</div>
+                  <div>Calculator data: {getGeneCalculatorData() ? 'Found' : 'Missing'}</div>
+                </div>
               </div>
             </div>
 
             {/* Message Container */}
-            <div className="border-2 border-orange-500/50 p-8 bg-gray-800/50 flex-1 flex items-center justify-center">
+            <div className="border-2 border-orange-500/50 p-6 bg-gray-800/50 flex-1 flex items-center justify-center">
               <div className="text-center max-w-3xl">
                 <p className="text-4xl font-mono text-orange-400 leading-relaxed tracking-wide">
                   The progression system is a check the box progression tracker to help teams keep their wipe day from getting chaotic. This feature is still under construction.
