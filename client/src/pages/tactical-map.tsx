@@ -308,7 +308,7 @@ const useBaseReportEvents = (setBaseReportData, setShowBaseReportModal) => {
 
 const openGeneCalculator = () => {
   // Read the complete HTML content from the uploaded file
-  fetch('/attached_assets/Pasted--DOCTYPE-html-html-lang-en-head-meta-charset-UTF-8-meta-name-viewport-con-1756115935799_1756115935799.txt')
+  fetch('/gene-calculator.html')
     .then(response => response.text())
     .then(geneCalculatorHTML => {
       // Open popup window with features to stay on top
