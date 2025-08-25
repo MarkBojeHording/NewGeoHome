@@ -311,10 +311,56 @@ const openGeneCalculator = () => {
   fetch('/gene-calculator.html')
     .then(response => response.text())
     .then(geneCalculatorHTML => {
-      // Inject data synchronization script that doesn't interfere with existing functionality
+      // Inject data synchronization and persistence script
       const dataSyncScript = `
         <script>
-          // Add sync function without overriding existing functions
+          // Save gene data to localStorage
+          function saveGeneData() {
+            try {
+              const geneData = {
+                plantGenes: plantGenes,
+                currentPlant: currentPlant,
+                genes: genes
+              };
+              localStorage.setItem('rustGeneCalculatorData', JSON.stringify(geneData));
+            } catch (e) {
+              console.error('Failed to save gene data:', e);
+            }
+          }
+          
+          // Load gene data from localStorage
+          function loadGeneData() {
+            try {
+              const saved = localStorage.getItem('rustGeneCalculatorData');
+              if (saved) {
+                const geneData = JSON.parse(saved);
+                
+                // Restore plant genes
+                if (geneData.plantGenes) {
+                  Object.assign(plantGenes, geneData.plantGenes);
+                }
+                
+                // Restore current plant genes
+                if (geneData.genes && Array.isArray(geneData.genes)) {
+                  genes.splice(0, genes.length, ...geneData.genes);
+                }
+                
+                // Restore current plant
+                if (geneData.currentPlant) {
+                  currentPlant = geneData.currentPlant;
+                  document.getElementById('currentPlantDisplay').textContent = plantDisplayNames[currentPlant] || currentPlant;
+                }
+                
+                console.log('Loaded gene data:', geneData);
+                return true;
+              }
+            } catch (e) {
+              console.error('Failed to load gene data:', e);
+            }
+            return false;
+          }
+          
+          // Sync progress to main app
           function syncProgressToMainApp() {
             try {
               const progressData = {
@@ -325,7 +371,6 @@ const openGeneCalculator = () => {
                 pumpkin: 0
               };
               
-              // Calculate progress for each plant using the same logic as the gene calculator
               if (typeof plantGenes !== 'undefined' && typeof calculatePlantProgress !== 'undefined') {
                 Object.keys(plantGenes).forEach(plantType => {
                   const progress = calculatePlantProgress(plantType);
@@ -342,25 +387,72 @@ const openGeneCalculator = () => {
             }
           }
           
-          // Hook into existing functions by monitoring DOM changes instead of overriding
-          let lastProgressState = '';
-          function monitorProgress() {
-            const progressBars = document.querySelectorAll('.plant-progress');
-            const currentState = Array.from(progressBars).map(bar => bar.style.width).join(',');
+          // Override addGene to save data
+          let originalAddGene;
+          function saveAfterAddGene() {
+            if (originalAddGene) {
+              originalAddGene();
+            }
+            saveGeneData();
+            syncProgressToMainApp();
+          }
+          
+          // Override switchPlant to save data
+          let originalSwitchPlant;
+          function saveAfterSwitchPlant(plantType) {
+            if (originalSwitchPlant) {
+              originalSwitchPlant(plantType);
+            }
+            saveGeneData();
+            syncProgressToMainApp();
+          }
+          
+          // Monitor for gene changes by watching the grid
+          let lastGridState = '';
+          function monitorForChanges() {
+            const gridBoxes = document.querySelectorAll('.grid-box.filled');
+            const currentGridState = Array.from(gridBoxes).map(box => box.innerHTML).join('|');
             
-            if (currentState !== lastProgressState) {
-              lastProgressState = currentState;
+            if (currentGridState !== lastGridState) {
+              lastGridState = currentGridState;
+              saveGeneData();
               syncProgressToMainApp();
             }
           }
           
-          // Start monitoring after page loads
+          // Initialize persistence when page loads
           document.addEventListener('DOMContentLoaded', function() {
-            // Initial sync
-            setTimeout(syncProgressToMainApp, 200);
-            
-            // Monitor for changes
-            setInterval(monitorProgress, 1000);
+            // Wait for everything to initialize
+            setTimeout(() => {
+              // Load saved data
+              const hasData = loadGeneData();
+              
+              if (hasData) {
+                // Refresh the display with loaded data
+                if (typeof updateGrid === 'function') updateGrid();
+                if (typeof updateBestGeneDisplay === 'function') updateBestGeneDisplay();
+                if (typeof updateAllPlantProgress === 'function') updateAllPlantProgress();
+                if (typeof updatePlantCompletionStatus === 'function') updatePlantCompletionStatus();
+                if (typeof calculate === 'function' && genes.length >= 2) calculate();
+              }
+              
+              // Set up function overrides for saving
+              if (typeof window.addGene === 'function') {
+                originalAddGene = window.addGene;
+                window.addGene = saveAfterAddGene;
+              }
+              
+              if (typeof window.switchPlant === 'function') {
+                originalSwitchPlant = window.switchPlant;
+                window.switchPlant = saveAfterSwitchPlant;
+              }
+              
+              // Start monitoring for changes
+              setInterval(monitorForChanges, 1000);
+              
+              // Initial sync
+              syncProgressToMainApp();
+            }, 300);
           });
         </script>
       `;
