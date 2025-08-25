@@ -6,6 +6,7 @@ import { PlayerModal } from '../components/PlayerModal'
 import { LogsModal } from '../components/LogsModal'
 import ActionReportModal from '../components/ActionReportModal'
 import { TeamsModal } from '../components/TeamsModal'
+import { ProgressionModal } from '../components/ProgressionModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
 import WipeCountdownTimer from '../components/WipeCountdownTimer'
 import RadialMenu from '../components/RadialMenu'
@@ -1313,6 +1314,7 @@ export default function InteractiveTacticalMap() {
   const [showTeamsModal, setShowTeamsModal] = useState(false)
   const [showBaseReportModal, setShowBaseReportModal] = useState(false)
   const [showLogsModal, setShowLogsModal] = useState(false)
+  const [showProgressionModal, setShowProgressionModal] = useState(false)
   const [baseReportData, setBaseReportData] = useState({
     baseId: null,
     baseName: null,
@@ -1747,6 +1749,7 @@ export default function InteractiveTacticalMap() {
                         onClick={() => {
                           if (btn === 'Players') setShowPlayerModal(true)
                           else if (btn === 'Logs') setShowLogsModal(true)
+                          else if (btn === 'Progression') setShowProgressionModal(true)
                           else if (btn === 'Teams') setShowTeamsModal(true)
                         }} 
                         data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
@@ -1997,6 +2000,11 @@ export default function InteractiveTacticalMap() {
             setNewBaseModal({ x: 0, y: 0, visible: true })
             setShowTeamsModal(false)
           }}
+        />
+
+        <ProgressionModal
+          isOpen={showProgressionModal}
+          onClose={() => setShowProgressionModal(false)}
         />
       </div>
     </div>
