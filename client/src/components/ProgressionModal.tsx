@@ -11,68 +11,42 @@ interface ProgressionModalProps {
 }
 
 
-// Read actual data from the gene calculator iframe
+// Read from the existing localStorage where gene calculator stores progress data
 const getGeneCalculatorData = () => {
   try {
-    console.log('Attempting to read gene calculator data...')
-    
-    // Find the gene calculator iframe
-    const iframe = document.querySelector('iframe[src*="gene-calculator"]')
-    console.log('Found iframe:', !!iframe)
-    
-    if (iframe && iframe.contentWindow) {
-      const calculatorWindow = iframe.contentWindow
-      console.log('Got calculator window:', !!calculatorWindow)
+    // Read from the localStorage key that the gene calculator already uses
+    const stored = localStorage.getItem('rustGeneProgress')
+    if (stored) {
+      const progressData = JSON.parse(stored)
+      console.log('Found gene progress data:', progressData)
       
-      // Access the plantGenes variable from the gene calculator
-      const plantGenes = calculatorWindow.plantGenes
-      const currentPlant = calculatorWindow.currentPlant
-      const genes = calculatorWindow.genes
-      
-      console.log('PlantGenes:', plantGenes)
-      console.log('Current plant:', currentPlant)
-      console.log('Genes:', genes)
-      
-      if (plantGenes) {
-        const result = {}
-        
-        // Process each plant's genes
-        Object.keys(plantGenes).forEach(plantType => {
-          const genesArray = (plantType === currentPlant) ? genes : plantGenes[plantType]
-          
-          if (genesArray && genesArray.length > 0) {
-            // Find best gene (most G+Y genes)
-            const bestGene = genesArray.reduce((best, current) => {
-              const bestGYCount = (best.match(/[GY]/g) || []).length
-              const currentGYCount = (current.match(/[GY]/g) || []).length
-              return currentGYCount > bestGYCount ? current : best
-            })
-            
-            // Calculate progress (G+Y genes out of 6)
-            const progress = ((bestGene.match(/[GY]/g) || []).length / 6) * 100
-            
-            result[plantType] = { bestGene, progress }
-          } else {
-            result[plantType] = { bestGene: null, progress: 0 }
+      // Convert the progress data to the format we need
+      const result = {}
+      Object.keys(progressData).forEach(plantType => {
+        const plantProgress = progressData[plantType]
+        if (plantProgress && plantProgress.bestGene) {
+          result[plantType] = {
+            bestGene: plantProgress.bestGene,
+            progress: plantProgress.progress
           }
-        })
-        
-        console.log('Processed gene data:', result)
-        return result
-      }
+        } else {
+          result[plantType] = { bestGene: null, progress: 0 }
+        }
+      })
+      
+      return result
     }
   } catch (e) {
-    console.log('Gene calculator not accessible:', e.message)
+    console.error('Failed to read gene progress:', e)
   }
   
-  // Fallback to show sample data if gene calculator isn't accessible
-  console.log('Using fallback data')
+  // Return empty data if nothing is stored
   return {
-    hemp: { bestGene: 'GGYYYY', progress: 100 },
-    blueberry: { bestGene: 'GGYYXW', progress: 67 },
-    yellowberry: { bestGene: 'GGXXXX', progress: 33 },
+    hemp: { bestGene: null, progress: 0 },
+    blueberry: { bestGene: null, progress: 0 },
+    yellowberry: { bestGene: null, progress: 0 },
     redberry: { bestGene: null, progress: 0 },
-    pumpkin: { bestGene: 'YYYYYG', progress: 100 }
+    pumpkin: { bestGene: null, progress: 0 }
   }
 }
 
