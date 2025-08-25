@@ -154,56 +154,70 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                 {Object.keys(plantNames).map((plant) => {
                   const plantKey = plant as keyof typeof plantNames
                   const genes = plantGenes[plantKey] || []
-                  const geneCount = genes.length
+                  
+                  // Calculate progress like gene calculator does
+                  const maxGenes = 15 // Gene calculator uses 15 as max
+                  const progressPercent = Math.min((genes.length / maxGenes) * 100, 100)
+                  
+                  // Find best gene (gene calculator prioritizes G and Y genes)
+                  const bestGene = genes.length > 0 ? genes.reduce((best, current) => {
+                    const bestGYCount = (best.match(/[GY]/g) || []).length
+                    const currentGYCount = (current.match(/[GY]/g) || []).length
+                    return currentGYCount > bestGYCount ? current : best
+                  }) : null
                   
                   return (
-                    <div key={plant} className="space-y-1">
+                    <div key={plant} className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-base">{plantIcons[plantKey]}</span>
+                        <span className="text-sm">{plantIcons[plantKey]}</span>
                         <span className="text-orange-200 text-xs font-mono">{plantNames[plantKey]}</span>
-                        <span className="text-orange-400 text-xs font-mono">({geneCount} genes)</span>
                       </div>
                       
-                      {geneCount > 0 ? (
-                        <div className="space-y-1">
-                          {genes.slice(0, 3).map((gene: string, index: number) => (
-                            <div key={index} className="flex items-center gap-2">
-                              <div className="inline-flex gap-0.5 bg-gray-900/50 px-1 py-0.5 rounded border border-orange-500/30">
-                                {gene.split('').map((letter, i) => (
-                                  <span 
-                                    key={i}
-                                    className={`
-                                      w-3 h-3 text-xs font-bold font-mono flex items-center justify-center rounded
-                                      ${['G', 'Y', 'H'].includes(letter) ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}
-                                    `}
-                                  >
-                                    {letter}
-                                  </span>
-                                ))}
-                              </div>
-                              {index === 0 && geneCount > 1 && (
-                                <span className="text-green-400 text-xs">✓ Best</span>
-                              )}
-                            </div>
-                          ))}
-                          {geneCount > 3 && (
-                            <span className="text-gray-400 text-xs">+{geneCount - 3} more...</span>
-                          )}
+                      {/* Green progress bar like gene calculator */}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-gray-700 rounded-full h-2 overflow-hidden">
+                            <div 
+                              className="h-full bg-green-500 transition-all duration-300"
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                          <span className="text-green-400 text-xs font-mono w-8 text-right">
+                            {Math.round(progressPercent)}%
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {genes.length}/{maxGenes} genes
+                        </div>
+                      </div>
+                      
+                      {/* Best gene display */}
+                      {bestGene ? (
+                        <div className="text-center">
+                          <div className="text-xs text-green-400 mb-1">Best Gene:</div>
+                          <div className="inline-flex gap-0.5 bg-gray-900/70 px-2 py-1 rounded border border-green-500/30">
+                            {bestGene.split('').map((letter, i) => (
+                              <span 
+                                key={i}
+                                className={`
+                                  w-4 h-4 text-xs font-bold font-mono flex items-center justify-center rounded
+                                  ${['G', 'Y'].includes(letter) ? 'bg-green-600 text-white' : 
+                                    letter === 'H' ? 'bg-blue-600 text-white' : 'bg-red-600 text-white'}
+                                `}
+                              >
+                                {letter}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       ) : (
-                        <span className="text-gray-500 text-xs font-mono">No genes added</span>
+                        <div className="text-center">
+                          <span className="text-gray-500 text-xs">No genes collected</span>
+                        </div>
                       )}
                     </div>
                   );
                 })}
-              </div>
-              
-              {/* Debug info */}
-              <div className="mt-3 pt-2 border-t border-orange-500/20">
-                <div className="text-xs text-gray-400">
-                  <div>Genes found: {Object.keys(plantGenes).length > 0 ? 'Yes' : 'No'}</div>
-                  <div>Total genes: {Object.values(plantGenes).flat().length}</div>
-                </div>
               </div>
             </div>
 
