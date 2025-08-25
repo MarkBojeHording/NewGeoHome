@@ -11,38 +11,87 @@ interface ProgressionModalProps {
 }
 
 
-// Read from the existing localStorage where gene calculator stores progress data
+// Calculate gene quality score like the gene calculator does
+const calculateGeneQuality = (gene) => {
+  const scoring = { 'G': 5, 'Y': 3, 'H': 1, 'W': -2, 'X': -2 }
+  return gene.split('').reduce((score, letter) => score + (scoring[letter] || 0), 0)
+}
+
+// Find best gene for a plant type using same logic as gene calculator
+const findBestGeneForPlant = (genesArray) => {
+  if (!genesArray || genesArray.length === 0) return null
+  
+  let bestGene = genesArray[0]
+  let bestScore = calculateGeneQuality(bestGene)
+  let bestGYCount = bestGene.split('').filter(g => ['G', 'Y'].includes(g)).length
+  
+  genesArray.forEach(gene => {
+    const score = calculateGeneQuality(gene)
+    const gyCount = gene.split('').filter(g => ['G', 'Y'].includes(g)).length
+    
+    // Update best if this gene has a higher score, or same score but more G/Y genes
+    if (score > bestScore || (score === bestScore && gyCount > bestGYCount)) {
+      bestScore = score
+      bestGene = gene
+      bestGYCount = gyCount
+    }
+  })
+  
+  return bestGene
+}
+
+// Read from the actual gene data storage to get best genes and progress
 const getGeneCalculatorData = () => {
   try {
-    // Read from the localStorage key that the gene calculator already uses
-    const stored = localStorage.getItem('rustGeneProgress')
-    if (stored) {
-      const progressData = JSON.parse(stored)
-      
-      // The format is simple: { hemp: 67, blueberry: 33, etc. }
-      // Convert to the format we need for display
-      const result = {}
+    // Read the actual gene data
+    const geneDataStored = localStorage.getItem('rustGeneCalculatorData')
+    const progressStored = localStorage.getItem('rustGeneProgress')
+    
+    const result = {
+      hemp: { bestGene: null, progress: 0 },
+      blueberry: { bestGene: null, progress: 0 },
+      yellowberry: { bestGene: null, progress: 0 },
+      redberry: { bestGene: null, progress: 0 },
+      pumpkin: { bestGene: null, progress: 0 }
+    }
+    
+    // Get progress percentages
+    if (progressStored) {
+      const progressData = JSON.parse(progressStored)
       Object.keys(progressData).forEach(plantType => {
-        const progress = progressData[plantType] || 0
-        result[plantType] = {
-          bestGene: null, // Gene calculator doesn't save the actual gene string
-          progress: progress
+        if (result[plantType]) {
+          result[plantType].progress = progressData[plantType] || 0
         }
       })
-      
-      return result
     }
+    
+    // Get actual best gene strings
+    if (geneDataStored) {
+      const geneData = JSON.parse(geneDataStored)
+      const { plantGenes, currentPlant, genes } = geneData
+      
+      if (plantGenes) {
+        Object.keys(plantGenes).forEach(plantType => {
+          if (result[plantType]) {
+            // Use genes array for current plant, plantGenes array for others
+            const genesArray = (plantType === currentPlant) ? genes : plantGenes[plantType]
+            const bestGene = findBestGeneForPlant(genesArray)
+            result[plantType].bestGene = bestGene
+          }
+        })
+      }
+    }
+    
+    return result
   } catch (e) {
-    console.error('Failed to read gene progress:', e)
-  }
-  
-  // Return empty data if nothing is stored
-  return {
-    hemp: { bestGene: null, progress: 0 },
-    blueberry: { bestGene: null, progress: 0 },
-    yellowberry: { bestGene: null, progress: 0 },
-    redberry: { bestGene: null, progress: 0 },
-    pumpkin: { bestGene: null, progress: 0 }
+    console.error('Failed to read gene data:', e)
+    return {
+      hemp: { bestGene: null, progress: 0 },
+      blueberry: { bestGene: null, progress: 0 },
+      yellowberry: { bestGene: null, progress: 0 },
+      redberry: { bestGene: null, progress: 0 },
+      pumpkin: { bestGene: null, progress: 0 }
+    }
   }
 }
 
