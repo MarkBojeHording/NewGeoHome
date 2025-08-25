@@ -314,42 +314,52 @@ const openGeneCalculator = () => {
       // Inject data synchronization script into the gene calculator
       const dataSyncScript = `
         <script>
-          // Gene progress sync functions
-          function updateMainAppProgress(plantType, percentage) {
+          // Override the existing updateAllPlantProgress function to sync with main app
+          const originalUpdateAllPlantProgress = updateAllPlantProgress;
+          
+          function updateAllPlantProgress() {
+            // Call the original function first
+            originalUpdateAllPlantProgress();
+            
+            // Then sync progress to main app
+            syncProgressToMainApp();
+          }
+          
+          function syncProgressToMainApp() {
             try {
-              const currentData = JSON.parse(localStorage.getItem('rustGeneProgress') || '{}');
-              const defaultData = {
+              const progressData = {
                 hemp: 0,
                 blueberry: 0,
                 yellowberry: 0,
                 redberry: 0,
                 pumpkin: 0
               };
-              const updatedData = { ...defaultData, ...currentData };
-              updatedData[plantType] = Math.max(0, Math.min(100, percentage));
-              localStorage.setItem('rustGeneProgress', JSON.stringify(updatedData));
-              console.log('Updated gene progress for', plantType, ':', percentage + '%');
+              
+              // Calculate progress for each plant using the same logic as the gene calculator
+              Object.keys(plantGenes).forEach(plantType => {
+                const progress = calculatePlantProgress(plantType);
+                if (progressData.hasOwnProperty(plantType)) {
+                  progressData[plantType] = Math.round(progress);
+                }
+              });
+              
+              localStorage.setItem('rustGeneProgress', JSON.stringify(progressData));
+              console.log('Synced gene progress to main app:', progressData);
             } catch (e) {
-              console.error('Failed to update gene progress:', e);
+              console.error('Failed to sync gene progress:', e);
             }
           }
           
-          // Auto-sync when calculator values change (if calculator has specific elements)
+          // Initial sync when calculator loads
           document.addEventListener('DOMContentLoaded', function() {
-            // Try to find common calculator elements and add listeners
-            const inputs = document.querySelectorAll('input[type="number"], input[type="range"], select');
-            inputs.forEach(input => {
-              input.addEventListener('change', function() {
-                // This would need to be customized based on your calculator's structure
-                console.log('Calculator input changed:', input.value);
-              });
-            });
+            // Wait for everything to initialize, then sync
+            setTimeout(syncProgressToMainApp, 100);
           });
         </script>
       `;
       
-      // Insert the script before closing head tag
-      const modifiedHTML = geneCalculatorHTML.replace('</head>', dataSyncScript + '</head>');
+      // Insert the script before closing body tag to ensure all functions are loaded
+      const modifiedHTML = geneCalculatorHTML.replace('</body>', dataSyncScript + '</body>');
       
       // Open as a standalone popup window
       const popup = window.open('', 'geneCalculator', 
