@@ -311,13 +311,53 @@ const openGeneCalculator = () => {
   fetch('/gene-calculator.html')
     .then(response => response.text())
     .then(geneCalculatorHTML => {
+      // Inject data synchronization script into the gene calculator
+      const dataSyncScript = `
+        <script>
+          // Gene progress sync functions
+          function updateMainAppProgress(plantType, percentage) {
+            try {
+              const currentData = JSON.parse(localStorage.getItem('rustGeneProgress') || '{}');
+              const defaultData = {
+                hemp: 0,
+                blueberry: 0,
+                yellowberry: 0,
+                redberry: 0,
+                pumpkin: 0
+              };
+              const updatedData = { ...defaultData, ...currentData };
+              updatedData[plantType] = Math.max(0, Math.min(100, percentage));
+              localStorage.setItem('rustGeneProgress', JSON.stringify(updatedData));
+              console.log('Updated gene progress for', plantType, ':', percentage + '%');
+            } catch (e) {
+              console.error('Failed to update gene progress:', e);
+            }
+          }
+          
+          // Auto-sync when calculator values change (if calculator has specific elements)
+          document.addEventListener('DOMContentLoaded', function() {
+            // Try to find common calculator elements and add listeners
+            const inputs = document.querySelectorAll('input[type="number"], input[type="range"], select');
+            inputs.forEach(input => {
+              input.addEventListener('change', function() {
+                // This would need to be customized based on your calculator's structure
+                console.log('Calculator input changed:', input.value);
+              });
+            });
+          });
+        </script>
+      `;
+      
+      // Insert the script before closing head tag
+      const modifiedHTML = geneCalculatorHTML.replace('</head>', dataSyncScript + '</head>');
+      
       // Open as a standalone popup window
       const popup = window.open('', 'geneCalculator', 
         'width=1600,height=900,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no,top=50,left=50'
       )
       
       if (popup) {
-        popup.document.write(geneCalculatorHTML)
+        popup.document.write(modifiedHTML)
         popup.document.close()
         popup.focus()
       } else {
