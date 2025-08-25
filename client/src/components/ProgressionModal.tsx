@@ -104,24 +104,36 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   
   const weaponOptions = ['Spear', 'Bow', 'DB', 'P2', 'SAR', 'Tommy', 'MP-5', 'AK-47', 'M249']
   
-  // Load gene data when modal opens and listen for localStorage changes
+  // Load gene data when modal opens and update it
   useEffect(() => {
     if (!isOpen) return
     
     // Load initial data
     const initialData = getGeneCalculatorData()
     setGeneData(initialData)
+    console.log('Initial gene data:', initialData)
     
-    // Listen for localStorage changes from the gene calculator
+    // Listen for localStorage changes from the gene calculator popup
     const handleStorageChange = (e) => {
-      if (e.key === 'rustGeneProgress') {
+      if (e.key === 'rustGeneProgress' || e.key === 'rustGeneCalculatorData') {
         const newData = getGeneCalculatorData()
         setGeneData(newData)
+        console.log('Updated gene data from storage event:', newData)
       }
     }
     
+    // Also poll for changes as backup (gene calculator updates frequently)
+    const interval = setInterval(() => {
+      const newData = getGeneCalculatorData()
+      setGeneData(newData)
+    }, 2000) // Check every 2 seconds
+    
     window.addEventListener('storage', handleStorageChange)
-    return () => window.removeEventListener('storage', handleStorageChange)
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      clearInterval(interval)
+    }
   }, [isOpen])
 
   const plantIcons = {
