@@ -18,19 +18,15 @@ const getGeneCalculatorData = () => {
     const stored = localStorage.getItem('rustGeneProgress')
     if (stored) {
       const progressData = JSON.parse(stored)
-      console.log('Found gene progress data:', progressData)
       
-      // Convert the progress data to the format we need
+      // The format is simple: { hemp: 67, blueberry: 33, etc. }
+      // Convert to the format we need for display
       const result = {}
       Object.keys(progressData).forEach(plantType => {
-        const plantProgress = progressData[plantType]
-        if (plantProgress && plantProgress.bestGene) {
-          result[plantType] = {
-            bestGene: plantProgress.bestGene,
-            progress: plantProgress.progress
-          }
-        } else {
-          result[plantType] = { bestGene: null, progress: 0 }
+        const progress = progressData[plantType] || 0
+        result[plantType] = {
+          bestGene: null, // Gene calculator doesn't save the actual gene string
+          progress: progress
         }
       })
       
@@ -59,18 +55,25 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   
   const weaponOptions = ['Spear', 'Bow', 'DB', 'P2', 'SAR', 'Tommy', 'MP-5', 'AK-47', 'M249']
   
-  // Update gene data from the gene calculator iframe
+  // Load gene data when modal opens and listen for localStorage changes
   useEffect(() => {
-    const updateGeneData = () => {
-      const data = getGeneCalculatorData()
-      setGeneData(data)
+    if (!isOpen) return
+    
+    // Load initial data
+    const initialData = getGeneCalculatorData()
+    setGeneData(initialData)
+    
+    // Listen for localStorage changes from the gene calculator
+    const handleStorageChange = (e) => {
+      if (e.key === 'rustGeneProgress') {
+        const newData = getGeneCalculatorData()
+        setGeneData(newData)
+      }
     }
     
-    updateGeneData() // Initial load
-    const interval = setInterval(updateGeneData, 1000) // Update every second
-    
-    return () => clearInterval(interval)
-  }, [])
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [isOpen])
 
   const plantIcons = {
     hemp: '🌿',
