@@ -306,6 +306,2060 @@ const useBaseReportEvents = (setBaseReportData, setShowBaseReportModal) => {
   }, [setBaseReportData, setShowBaseReportModal])
 }
 
+const openGeneCalculator = () => {
+  const geneCalculatorHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phragmites Gene Calculator - Smart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 5px;
+            color: #4ecdc4;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section h2 {
+            color: #4ecdc4;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        /* Timer container styles */
+        .timer-container {
+            position: fixed;
+            top: 75px;
+            left: calc(50% - 349px);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1001;
+            max-height: 400px;
+            pointer-events: none;
+        }
+
+        .timer-item {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(78, 205, 196, 0.4);
+            border-radius: 6px;
+            padding: 4px 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 115px;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            pointer-events: auto;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.3s, border-color 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .timer-item:hover {
+            transform: translateX(-2px);
+            border-color: rgba(78, 205, 196, 0.6);
+        }
+
+        .timer-item.removing {
+            animation: slideOut 0.3s ease-out forwards;
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(110%);
+                opacity: 0;
+            }
+        }
+
+        .timer-item.complete {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                border-color: #4CAF50;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            }
+            50% {
+                border-color: #66BB6A;
+                box-shadow: 0 2px 14px rgba(76, 175, 80, 0.4);
+            }
+        }
+
+        .timer-icon {
+            font-size: 1.05em;
+            flex-shrink: 0;
+        }
+
+        .timer-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .timer-label {
+            font-size: 0.7em;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1px;
+            line-height: 1;
+        }
+
+        .timer-time {
+            font-size: 0.98em;
+            font-weight: bold;
+            color: #4ecdc4;
+            font-family: monospace;
+            letter-spacing: 0.1px;
+            line-height: 1.1;
+        }
+
+        .timer-item.complete .timer-time {
+            color: #4CAF50;
+        }
+
+        .timer-close {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            flex-shrink: 0;
+            font-size: 9px;
+            color: #f44336;
+            line-height: 1;
+        }
+
+        .timer-close:hover {
+            background: rgba(244, 67, 54, 0.5);
+            transform: scale(1.1);
+        }
+
+        /* Mobile adjustments for timers */
+        @media (max-width: 768px) {
+            .timer-container {
+                position: fixed;
+                top: 75px;
+                left: 10px;
+                max-width: 115px;
+            }
+            
+            .timer-item {
+                min-width: unset;
+                width: 100%;
+            }
+        }
+
+        /* Condition slider styles */
+        .condition-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .condition-label {
+            font-size: 12px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .condition-slider {
+            width: 80px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            position: relative;
+            cursor: not-allowed;
+        }
+
+        .condition-slider-fill {
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4 0%, #44b5ad 100%);
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .condition-slider-thumb {
+            position: absolute;
+            right: -6px;
+            top: -5px;
+            width: 16px;
+            height: 16px;
+            background: #4ecdc4;
+            border: 2px solid #1a1a2e;
+            border-radius: 50%;
+            cursor: not-allowed;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .condition-value {
+            font-size: 11px;
+            color: #4ecdc4;
+            font-weight: bold;
+            min-width: 30px;
+        }
+
+        /* SCAN button styles */
+        .scan-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 6px 16px;
+            background: repeating-linear-gradient(
+                45deg,
+                #FFD700,
+                #FFD700 10px,
+                #000000 10px,
+                #000000 20px
+            );
+            border: 2px solid #FFD700;
+            border-radius: 6px;
+            cursor: not-allowed;
+            z-index: 10;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Tooltip styles */
+        .coming-soon-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1000;
+            top: 100%;
+            margin-top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .coming-soon-tooltip.show {
+            opacity: 1;
+        }
+
+        .coming-soon-tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-bottom-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .condition-container .coming-soon-tooltip {
+            left: 0;
+            transform: none;
+        }
+        
+        .condition-container .coming-soon-tooltip::before {
+            left: 30px;
+        }
+        
+        .scan-button .coming-soon-tooltip {
+            left: auto;
+            right: 0;
+            transform: none;
+        }
+        
+        .scan-button .coming-soon-tooltip::before {
+            left: auto;
+            right: 20px;
+            transform: none;
+        }
+
+        .gene-input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .gene-input {
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: monospace;
+            text-transform: uppercase;
+            transition: border-color 0.3s;
+        }
+
+        select.gene-input {
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+        }
+        
+        select.gene-input option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .gene-input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+        }
+
+        .gene-display {
+            display: inline-flex;
+            gap: 1px;
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: bold;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        .gene {
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .grid-box.selected {
+            border-color: #f44336;
+        }
+
+        .result-item .gene,
+        .gene-display .gene {
+            width: 16px;
+            height: 16px;
+            font-size: 9px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .results-title-target .gene {
+            width: 14px;
+            height: 14px;
+            font-size: 8px;
+            flex-shrink: 0;
+        }
+
+        .gene.G, .gene.Y, .gene.H {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .gene.W, .gene.X {
+            background: #f44336;
+            color: white;
+        }
+
+        .results-section {
+            margin: 0;
+            margin-left: auto;
+            margin-top: -4px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            padding: 15px 25px;
+            display: block;
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 75%;
+            min-width: 320px;
+            position: relative;
+            top: -460px;
+            height: 460px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(78, 205, 196, 0.3) rgba(255, 255, 255, 0.05);
+        }
+
+        .results-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .results-section::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .results-section::-webkit-scrollbar-thumb {
+            background: rgba(78, 205, 196, 0.3);
+            border-radius: 3px;
+        }
+
+        .results-section::-webkit-scrollbar-thumb:hover {
+            background: rgba(78, 205, 196, 0.5);
+        }
+
+        .results-section h2 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1em;
+            min-height: 26px;
+        }
+
+        .results-title-target {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9em;
+        }
+
+        .results-title-text {
+            font-weight: normal;
+            color: #999;
+            font-size: 0.85em;
+        }
+
+        .result-item {
+            padding: 12px 25px;
+            margin-bottom: 12px;
+            margin-left: -25px;
+            margin-right: -25px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0;
+            border: none;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .result-item:hover {
+            background: rgba(0, 0, 0, 0.5);
+            border-top-color: rgba(255, 255, 255, 0.2);
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .result-item.selected-result {
+            background: rgba(78, 205, 196, 0.15);
+            border-top-color: #4ecdc4;
+            border-bottom-color: #4ecdc4;
+            position: relative;
+        }
+
+        .result-item.selected-result::before {
+            content: '►';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4ecdc4;
+            font-size: 18px;
+        }
+
+        .result-item.perfect-match.selected-result {
+            background: rgba(76, 175, 80, 0.25);
+            border-top-color: #4CAF50;
+            border-bottom-color: #4CAF50;
+        }
+
+        .result-item.perfect-match.selected-result::before {
+            color: #4CAF50;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            min-height: 24px;
+        }
+
+        .probability {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4ecdc4;
+            white-space: nowrap;
+        }
+
+        .perfect-match {
+            background: rgba(76, 175, 80, 0.2);
+            border-top-color: #4CAF50;
+            border-bottom-color: #4CAF50;
+        }
+
+        .target-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .grid-wrapper {
+            width: fit-content;
+            margin: 0 auto 20px auto;
+        }
+
+        .info-box {
+            background: rgba(78, 205, 196, 0.1);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            border-radius: 10px 10px 0 0;
+            border-bottom: none;
+            padding: 40px 12px 12px 12px;
+            margin-bottom: 0;
+            overflow: visible;
+            position: relative;
+        }
+
+        .controls-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top: 2px solid rgba(78, 205, 196, 0.3);
+            border-radius: 0 0 10px 10px;
+            padding: 10px 25px 25px 25px;
+            display: flex;
+            justify-content: space-between;
+            width: 75%;
+            margin-left: auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 1px;
+            width: 35vw;
+            max-width: 450px;
+            min-width: 350px;
+            margin-top: 5px;
+        }
+
+        .grid-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            aspect-ratio: 3 / 1;
+            transition: background-color 0.3s, border-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            padding: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grid-box.selected {
+            border: 2px solid #f44336 !important;
+        }
+
+        .grid-box.filled {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: #4ecdc4;
+        }
+
+        .grid-box:hover:not(.filled) {
+            border-color: #4ecdc4;
+        }
+
+        .grid-box.filled:hover:not(.selected) {
+            border-color: #f44336;
+        }
+
+        .grid-box .gene {
+            width: 14%;
+            height: 70%;
+            font-size: 9px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .results-section {
+                width: 90%;
+                min-width: unset;
+                height: 460px;
+                top: 0;
+                position: static;
+                margin-top: 15px;
+                display: block;
+            }
+
+            .content-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .plant-selector {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-bottom: 15px;
+                max-height: none;
+                overflow-y: visible;
+                max-width: 100%;
+                gap: 4px;
+            }
+            
+            .plant-item {
+                min-width: 70px;
+                padding: 12px 8px 5px 8px;
+                flex: 0 1 calc(24% - 3px);
+                height: 44px;
+            }
+            
+            .plant-icon {
+                font-size: 1.2em;
+                right: 4px;
+            }
+            
+            .plant-name {
+                font-size: 0.7em;
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6);
+            }
+            
+            .grid-container {
+                width: 85vw;
+                min-width: unset;
+                max-width: 400px;
+                margin-top: 5px;
+            }
+            
+            .controls-section {
+                margin-top: 0;
+                justify-content: center !important;
+                border-radius: 10px;
+                flex-wrap: wrap;
+                width: 90% !important;
+                padding: 10px 15px 25px 15px !important;
+                gap: 12px;
+            }
+            
+            .info-box {
+                border-radius: 10px;
+                border-bottom: 2px solid rgba(78, 205, 196, 0.3);
+                margin-bottom: 10px;
+                padding: 35px 12px 12px 12px;
+            }
+            
+            .condition-container {
+                top: 5px;
+                left: 5px;
+            }
+            
+            .condition-slider {
+                width: 60px;
+            }
+            
+            .condition-label {
+                font-size: 11px;
+            }
+            
+            .scan-button {
+                top: 5px;
+                right: 5px;
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+            
+            #currentPlantDisplay {
+                font-size: 1.1em !important;
+            }
+            
+            .controls-wrapper {
+                margin: 10px auto 15px auto;
+            }
+            
+            .controls-wrapper .section {
+                width: calc(85vw + 24px);
+                min-width: unset;
+                max-width: 424px;
+                justify-content: center;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+                margin-top: 0;
+            }
+            
+            .controls-wrapper .section > div {
+                justify-content: center !important;
+            }
+            
+            .plant-divider {
+                display: none !important;
+            }
+            
+            .grid-container {
+                width: 80vw;
+                min-width: unset;
+            }
+            
+            .gene-input-group .help-text {
+                bottom: -16px;
+                top: auto !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+            }
+        }
+
+        .plant-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 5px;
+            max-width: 140px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(78, 205, 196, 0.3) rgba(255, 255, 255, 0.05);
+        }
+
+        .plant-selector::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .plant-selector::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .plant-selector::-webkit-scrollbar-thumb {
+            background: rgba(78, 205, 196, 0.3);
+            border-radius: 3px;
+        }
+
+        .plant-selector::-webkit-scrollbar-thumb:hover {
+            background: rgba(78, 205, 196, 0.5);
+        }
+
+        .plant-item {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px 8px 8px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 90px;
+            height: 65px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .plant-item:hover {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.05);
+        }
+
+        .plant-item.active {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .plant-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 1.8em;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .plant-name {
+            font-size: 0.85em;
+            font-weight: bold;
+            color: #e0e0e0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .plant-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #4ecdc4;
+            transition: width 0.5s ease;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .plant-button {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(78, 205, 196, 0.3);
+            border: 1px solid #4ecdc4;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 8px;
+            color: #4ecdc4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plant-button:hover {
+            background: rgba(78, 205, 196, 0.5);
+            transform: scale(1.1);
+        }
+
+        .plant-button.active {
+            background: #4ecdc4;
+            color: #1a1a2e;
+            box-shadow: 0 0 8px rgba(78, 205, 196, 0.6);
+        }
+
+        /* Plant menu styles */
+        .plant-menu {
+            position: absolute;
+            display: none;
+            flex-direction: column;
+            background: rgba(26, 26, 46, 0.95);
+            border: 2px solid rgba(78, 205, 196, 0.4);
+            border-radius: 8px;
+            padding: 8px;
+            gap: 4px;
+            z-index: 1000;
+            min-width: 120px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .plant-menu-option {
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #e0e0e0;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .plant-menu-option:hover {
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+        }
+
+        .plant-menu-option span {
+            font-weight: bold;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Timer container for harvest/clone timers -->
+    <div id="timerContainer" class="timer-container"></div>
+
+    <div class="container">
+        <h1>Phragmites Gene Calculator</h1>
+        
+        <!-- Plant action menu -->
+        <div id="plantMenu" class="plant-menu">
+            <div class="plant-menu-option" onclick="handleHarvest()">
+                Harvest in <span>2h 30m</span>
+            </div>
+            <div class="plant-menu-option" onclick="handleClone()">
+                Clone in <span>13m</span>
+            </div>
+        </div>
+        
+        <div class="content-wrapper" style="display: flex; gap: 20px; align-items: flex-start; justify-content: center;">
+            <div class="grid-wrapper">
+                <div class="info-box">
+                    <!-- Condition slider -->
+                    <div class="condition-container" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)">
+                        <span class="condition-label">Condition</span>
+                        <div class="condition-slider">
+                            <div class="condition-slider-fill">
+                                <div class="condition-slider-thumb"></div>
+                            </div>
+                        </div>
+                        <span class="condition-value">70%</span>
+                        <div class="coming-soon-tooltip">Coming soon</div>
+                    </div>
+                    
+                    <h3 id="currentPlantDisplay" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); margin: 0; color: #4ecdc4; z-index: 10; text-align: center; white-space: nowrap; font-size: 1.1em;">Hemp</h3>
+                    
+                    <!-- SCAN button -->
+                    <div class="scan-button" onmouseenter="showTooltip(this)" onmouseleave="hideTooltip(this)">
+                        SCAN
+                        <div class="coming-soon-tooltip">Coming soon</div>
+                    </div>
+                    
+                    <div class="grid-container" id="gridContainer"></div>
+                </div>
+                
+                <div style="display: flex; gap: 0; align-items: flex-start;">
+                    <div class="plant-selector">
+                        <div class="plant-item" data-plant="hemp" onclick="switchPlant('hemp')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'hemp')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Hemp</div>
+                            <div class="plant-icon">🌿</div>
+                        </div>
+                        <div class="plant-item" data-plant="blueberry" onclick="switchPlant('blueberry')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'blueberry')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Blueberry</div>
+                            <div class="plant-icon">🫐</div>
+                        </div>
+                        <div class="plant-item" data-plant="yellowberry" onclick="switchPlant('yellowberry')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'yellowberry')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Yellow Berry</div>
+                            <div class="plant-icon">🟡</div>
+                        </div>
+                        <div class="plant-item" data-plant="redberry" onclick="switchPlant('redberry')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'redberry')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Red Berry</div>
+                            <div class="plant-icon">🔴</div>
+                        </div>
+                        <div class="plant-item" data-plant="pumpkin" onclick="switchPlant('pumpkin')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'pumpkin')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Pumpkin</div>
+                            <div class="plant-icon">🎃</div>
+                        </div>
+                        <div class="plant-divider" style="width: 100%; height: 1px; background: rgba(255, 255, 255, 0.1); margin: 3px 0;" title="Additional plant types"></div>
+                        <div class="plant-item" data-plant="wheat" onclick="switchPlant('wheat')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'wheat')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Wheat</div>
+                            <div class="plant-icon">🌾</div>
+                        </div>
+                        <div class="plant-item" data-plant="orchids" onclick="switchPlant('orchids')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'orchids')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Orchids</div>
+                            <div class="plant-icon">🌺</div>
+                        </div>
+                        <div class="plant-item" data-plant="sunflowers" onclick="switchPlant('sunflowers')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'sunflowers')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Sunflowers</div>
+                            <div class="plant-icon">🌻</div>
+                        </div>
+                        <div class="plant-item" data-plant="roses" onclick="switchPlant('roses')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'roses')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Roses</div>
+                            <div class="plant-icon">🌹</div>
+                        </div>
+                        <div class="plant-item" data-plant="corn" onclick="switchPlant('corn')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'corn')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Corn</div>
+                            <div class="plant-icon">🌽</div>
+                        </div>
+                        <div class="plant-item" data-plant="potatoes" onclick="switchPlant('potatoes')">
+                            <button class="plant-button" onclick="event.stopPropagation(); openPlantMenu(event, 'potatoes')"></button>
+                            <div class="plant-progress" style="width: 0%;"></div>
+                            <div class="plant-name">Potatoes</div>
+                            <div class="plant-icon">🥔</div>
+                        </div>
+                    </div>
+                    
+                    <div class="controls-section" style="position: relative; display: flex; align-items: flex-end; justify-content: space-between; align-self: flex-start;">
+                        <div style="position: relative;">
+                            <label class="target-label" title="Click to highlight best gene">Best 🧬</label>
+                            <div id="bestGeneDisplay" style="background: rgba(76, 175, 80, 0.1); border: 2px solid rgba(76, 175, 80, 0.3); border-radius: 8px; padding: 4px 12px; height: 31px; display: flex; align-items: center; justify-content: center; min-width: 95px; cursor: pointer; transition: background-color 0.3s, border-color 0.3s;" onclick="highlightBestGene()">
+                                <span style="color: #888; font-size: 12px;">None</span>
+                            </div>
+                        </div>
+                        <div style="position: relative;">
+                            <label class="target-label">Add 🧬</label>
+                            <div class="gene-input-group" style="position: relative;">
+                                <input type="text" class="gene-input" id="geneInput" placeholder="GGYYYX" maxlength="6" style="width: 95px;" title="Enter 6 genes using Y, G, H, X, or W">
+                                <div class="help-text" style="position: absolute; top: 33px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #888; white-space: nowrap;">Y,G,H,X,W • Enter</div>
+                            </div>
+                        </div>
+                        <div style="position: relative;">
+                            <label class="target-label">Target 🧬</label>
+                            <select class="gene-input" id="targetSelect" style="width: 95px; height: 31px; cursor: pointer;" onchange="if(genes.length >= 2) calculate(); updatePlantCompletionStatus();">
+                                <option value="GGYYYY" selected>GGYYYY</option>
+                                <option value="GGGYYY">GGGYYY</option>
+                                <option value="GGGGGY">GGGGGY</option>
+                                <option value="GGGGGG">GGGGGG</option>
+                                <option value="GGGYYH">GGGYYH</option>
+                                <option value="GGGYGH">GGGYGH</option>
+                                <option value="GGGGGH">GGGGGH</option>
+                                <option value="GGYYHH">GGYYHH</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="results-section" id="results">
+                    <h2 id="resultsTitle">Results</h2>
+                    <div id="resultsContent">
+                        <p style="color: #888; text-align: center; margin-top: 20px;">Add at least 2 genes to see breeding combinations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tooltip functions
+        let tooltipTimeout;
+        
+        function showTooltip(element) {
+            tooltipTimeout = setTimeout(() => {
+                const tooltip = element.querySelector('.coming-soon-tooltip');
+                if (tooltip) {
+                    tooltip.classList.add('show');
+                }
+            }, 500); // 0.5 seconds
+        }
+        
+        function hideTooltip(element) {
+            clearTimeout(tooltipTimeout);
+            const tooltip = element.querySelector('.coming-soon-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('show');
+            }
+        }
+
+        // Global variables
+        let genes = [];
+        let gridBoxes = [];
+        let selectedResultIndex = -1;
+        let currentResults = [];
+        let currentPlant = 'hemp';
+        let activeMenuPlant = null;
+        let activeTimers = [];
+        
+        // Plant-specific gene storage
+        let plantGenes = {
+            hemp: [],
+            blueberry: [],
+            yellowberry: [],
+            redberry: [],
+            pumpkin: [],
+            roses: [],
+            orchids: [],
+            sunflowers: [],
+            wheat: [],
+            corn: [],
+            potatoes: []
+        };
+
+        // Plant icons mapping
+        const plantIcons = {
+            hemp: '🌿',
+            blueberry: '🫐',
+            yellowberry: '🟡',
+            redberry: '🔴',
+            pumpkin: '🎃',
+            roses: '🌹',
+            orchids: '🌺',
+            sunflowers: '🌻',
+            wheat: '🌾',
+            corn: '🌽',
+            potatoes: '🥔'
+        };
+
+        // Plant display names
+        const plantDisplayNames = {
+            hemp: 'Hemp',
+            blueberry: 'Blueberry',
+            yellowberry: 'Yellow Berry',
+            redberry: 'Red Berry',
+            pumpkin: 'Pumpkin',
+            roses: 'Roses',
+            orchids: 'Orchids',
+            sunflowers: 'Sunflowers',
+            wheat: 'Wheat',
+            corn: 'Corn',
+            potatoes: 'Potatoes'
+        };
+
+        // Gene points for breeding calculation
+        const genePoints = {
+            'G': 50,
+            'Y': 60,
+            'H': 60,
+            'W': 60,
+            'X': 60
+        };
+
+        // Gene quality scoring for finding best gene
+        // G and Y are most valuable (3 points each for growth/yield)
+        // H is good but less important (1 point for hardiness)
+        // W and X are negative (-2 points each)
+        const geneQualityScores = {
+            'G': 3,  // Growth - highest priority
+            'Y': 3,  // Yield - highest priority
+            'H': 1,  // Hardiness - good but less valuable
+            'W': -2, // Water consumption (bad)
+            'X': -2  // Null/empty (bad)
+        };
+
+        // Calculate clone time reduction based on G genes
+        function calculateCloneTimeReduction(plantType) {
+            const genesArray = (plantType === currentPlant) ? genes : plantGenes[plantType];
+            if (!genesArray || genesArray.length === 0) return 0;
+            
+            // Find best gene for this plant
+            let bestGene = genesArray[0];
+            let bestScore = calculateGeneQuality(bestGene);
+            let bestGYCount = bestGene.split('').filter(g => ['G', 'Y'].includes(g)).length;
+            
+            genesArray.forEach(gene => {
+                const score = calculateGeneQuality(gene);
+                const gyCount = gene.split('').filter(g => ['G', 'Y'].includes(g)).length;
+                
+                if (score > bestScore || (score === bestScore && gyCount > bestGYCount)) {
+                    bestScore = score;
+                    bestGene = gene;
+                    bestGYCount = gyCount;
+                }
+            });
+            
+            // Count G genes in best gene
+            const gCount = bestGene.split('').filter(g => g === 'G').length;
+            
+            // Calculate reduction: 2 minutes for first G, 1 minute for each additional G
+            if (gCount === 0) return 0;
+            return 2 + (gCount - 1); // 2 for first G, plus 1 for each additional
+        }
+
+        // Calculate harvest time reduction based on G genes
+        function calculateHarvestTimeReduction(plantType) {
+            const genesArray = (plantType === currentPlant) ? genes : plantGenes[plantType];
+            if (!genesArray || genesArray.length === 0) return 0;
+            
+            // Find best gene for this plant
+            let bestGene = genesArray[0];
+            let bestScore = calculateGeneQuality(bestGene);
+            let bestGYCount = bestGene.split('').filter(g => ['G', 'Y'].includes(g)).length;
+            
+            genesArray.forEach(gene => {
+                const score = calculateGeneQuality(gene);
+                const gyCount = gene.split('').filter(g => ['G', 'Y'].includes(g)).length;
+                
+                if (score > bestScore || (score === bestScore && gyCount > bestGYCount)) {
+                    bestScore = score;
+                    bestGene = gene;
+                    bestGYCount = gyCount;
+                }
+            });
+            
+            // Count G genes in best gene
+            const gCount = bestGene.split('').filter(g => g === 'G').length;
+            
+            // Calculate reduction in minutes based on G count
+            const reductions = {
+                0: 0,
+                1: 20,
+                2: 39,
+                3: 50,
+                4: 56,
+                5: 60,
+                6: 62
+            };
+            
+            return reductions[gCount] || 0;
+        }
+
+        // Timer functions
+        function createTimer(action, plantType, duration) {
+            // Check if we already have 6 timers
+            if (activeTimers.length >= 6) {
+                alert('Maximum of 6 timers reached! Please wait for one to complete.');
+                return;
+            }
+
+            const timerId = Date.now();
+            const timer = {
+                id: timerId,
+                action: action,
+                plantType: plantType,
+                duration: duration,
+                remaining: duration,
+                interval: null,
+                element: null
+            };
+
+            // Create timer element
+            const timerElement = document.createElement('div');
+            timerElement.className = 'timer-item';
+            timerElement.dataset.timerId = timerId;
+            
+            // Check if this is a reduced harvest timer
+            const isHarvest = action === 'Harvest';
+            const isClone = action === 'Clone';
+            const reduction = isHarvest ? calculateHarvestTimeReduction(plantType) : 
+                            isClone ? calculateCloneTimeReduction(plantType) : 0;
+            const reductionText = reduction > 0 ? \` (-\${reduction}m)\` : '';
+            
+            timerElement.title = \`Click to remove this \${action.toLowerCase()} timer\${reductionText}\`;
+            
+            timerElement.innerHTML = \`
+                <div class="timer-icon">\${plantIcons[plantType]}</div>
+                <div class="timer-info">
+                    <div class="timer-label">\${action}\${reduction > 0 ? '*' : ''}</div>
+                    <div class="timer-time">\${formatTime(duration)}</div>
+                </div>
+                <div class="timer-close" onclick="removeTimer(\${timerId})" title="Cancel timer">×</div>
+            \`;
+
+            // Add to container
+            const container = document.getElementById('timerContainer');
+            container.appendChild(timerElement);
+            timer.element = timerElement;
+
+            // Start countdown - update every second for smooth countdown
+            timer.interval = setInterval(() => {
+                timer.remaining--;
+                const timeDisplay = timerElement.querySelector('.timer-time');
+                
+                if (timer.remaining <= 0) {
+                    // Timer complete
+                    clearInterval(timer.interval);
+                    timeDisplay.textContent = 'READY!';
+                    timerElement.classList.add('complete');
+                    timerElement.title = \`\${action} complete for \${plantDisplayNames[plantType]}! Click to dismiss.\`;
+                    
+                    // Change click behavior when complete
+                    timerElement.onclick = () => removeTimer(timerId);
+                } else {
+                    timeDisplay.textContent = formatTime(timer.remaining);
+                }
+            }, 1000);
+
+            activeTimers.push(timer);
+        }
+
+        function removeTimer(timerId) {
+            const timerIndex = activeTimers.findIndex(t => t.id === timerId);
+            if (timerIndex === -1) return;
+
+            const timer = activeTimers[timerIndex];
+            
+            // Clear interval
+            if (timer.interval) {
+                clearInterval(timer.interval);
+            }
+
+            // Animate removal
+            timer.element.classList.add('removing');
+            
+            setTimeout(() => {
+                timer.element.remove();
+                activeTimers.splice(timerIndex, 1);
+            }, 300);
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return \`\${hours}:\${minutes.toString().padStart(2, '0')}\`;
+        }
+
+        function handleHarvest() {
+            if (activeMenuPlant) {
+                // Base time is 2:30 (150 minutes = 9000 seconds)
+                const baseMinutes = 150;
+                const reduction = calculateHarvestTimeReduction(activeMenuPlant);
+                const finalMinutes = baseMinutes - reduction;
+                const finalSeconds = finalMinutes * 60;
+                
+                createTimer('Harvest', activeMenuPlant, finalSeconds);
+            }
+            
+            // Close menu
+            document.getElementById('plantMenu').style.display = 'none';
+            document.removeEventListener('click', closeMenuOnOutsideClick);
+            document.querySelectorAll('.plant-button.active').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            activeMenuPlant = null;
+        }
+
+        function handleClone() {
+            if (activeMenuPlant) {
+                // Base time is 0:13 (13 minutes = 780 seconds)
+                const baseMinutes = 13;
+                const reduction = calculateCloneTimeReduction(activeMenuPlant);
+                const finalMinutes = baseMinutes - reduction;
+                const finalSeconds = finalMinutes * 60;
+                
+                createTimer('Clone', activeMenuPlant, finalSeconds);
+            }
+            
+            // Close menu
+            document.getElementById('plantMenu').style.display = 'none';
+            document.removeEventListener('click', closeMenuOnOutsideClick);
+            document.querySelectorAll('.plant-button.active').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            activeMenuPlant = null;
+        }
+
+        // Utility functions
+        function calculateGeneQuality(geneString) {
+            return geneString.split('').reduce((score, gene) => score + geneQualityScores[gene], 0);
+        }
+
+        function validateGenes(geneString) {
+            if (geneString.length !== 6) return false;
+            const validGenes = ['G', 'Y', 'H', 'W', 'X'];
+            return geneString.split('').every(g => validGenes.includes(g));
+        }
+
+        function createGeneDisplay(geneString) {
+            const display = document.createElement('div');
+            display.className = 'gene-display';
+            
+            geneString.split('').forEach(g => {
+                const gene = document.createElement('div');
+                gene.className = \`gene \${g}\`;
+                gene.textContent = g;
+                display.appendChild(gene);
+            });
+            
+            return display;
+        }
+
+        // Progress bar functions
+        function calculatePlantProgress(plantType) {
+            const genesArray = (plantType === currentPlant) ? genes : plantGenes[plantType];
+            if (!genesArray || genesArray.length === 0) return 0;
+            
+            // Find best gene for this plant
+            let bestGene = genesArray[0];
+            let bestScore = calculateGeneQuality(bestGene);
+            let bestGYCount = bestGene.split('').filter(g => ['G', 'Y'].includes(g)).length;
+            
+            genesArray.forEach(gene => {
+                const score = calculateGeneQuality(gene);
+                const gyCount = gene.split('').filter(g => ['G', 'Y'].includes(g)).length;
+                
+                if (score > bestScore || (score === bestScore && gyCount > bestGYCount)) {
+                    bestScore = score;
+                    bestGene = gene;
+                    bestGYCount = gyCount;
+                }
+            });
+            
+            // Count G and Y genes in best gene
+            const gCount = bestGene.split('').filter(g => g === 'G').length;
+            const yCount = bestGene.split('').filter(g => g === 'Y').length;
+            const totalGY = gCount + yCount;
+            
+            // Return percentage of G and Y genes (out of 6 possible)
+            return (totalGY / 6) * 100;
+        }
+
+        function updatePlantProgress(plantType) {
+            const progress = calculatePlantProgress(plantType);
+            const plantItem = document.querySelector(\`[data-plant="\${plantType}"]\`);
+            if (plantItem) {
+                const progressBar = plantItem.querySelector('.plant-progress');
+                progressBar.style.width = \`\${progress}%\`;
+            }
+        }
+
+        function updateAllPlantProgress() {
+            Object.keys(plantGenes).forEach(plantType => {
+                updatePlantProgress(plantType);
+            });
+        }
+
+        function updatePlantCompletionStatus() {
+            const target = document.getElementById('targetSelect').value;
+            
+            Object.keys(plantGenes).forEach(plantType => {
+                const genesArray = (plantType === currentPlant) ? genes : plantGenes[plantType];
+                const hasTargetGene = genesArray.some(gene => gene === target);
+                
+                const plantItem = document.querySelector(\`[data-plant="\${plantType}"]\`);
+                if (plantItem) {
+                    if (hasTargetGene) {
+                        // Add green checkmark
+                        plantItem.style.boxShadow = '0 0 10px rgba(76, 175, 80, 0.6)';
+                        plantItem.style.borderColor = '#4CAF50';
+                    } else {
+                        // Remove completion indicator
+                        plantItem.style.boxShadow = '';
+                        plantItem.style.borderColor = '';
+                    }
+                }
+            });
+        }
+
+        // Grid functions
+        function initializeGrid() {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = '';
+            gridBoxes = [];
+            
+            for (let i = 0; i < 48; i++) {
+                const box = document.createElement('div');
+                box.className = 'grid-box';
+                box.dataset.index = i;
+                box.onclick = () => handleGridClick(i);
+                container.appendChild(box);
+                gridBoxes.push(box);
+            }
+        }
+
+        function handleGridClick(index) {
+            const box = gridBoxes[index];
+            
+            if (box.classList.contains('filled')) {
+                // Remove gene
+                const geneIndex = parseInt(box.dataset.geneIndex);
+                removeGene(geneIndex);
+            } else {
+                // Prompt for new gene
+                const gene = prompt('Enter 6-character gene sequence (G, Y, H, W, X):');
+                if (gene && validateGenes(gene.toUpperCase())) {
+                    addGeneToGrid(gene.toUpperCase(), index);
+                } else if (gene) {
+                    alert('Invalid gene sequence. Please use exactly 6 characters: G, Y, H, W, X');
+                }
+            }
+        }
+
+        function addGeneToGrid(geneString, gridIndex) {
+            // Add to current plant's genes
+            genes.push(geneString);
+            
+            // Save to plant-specific storage
+            plantGenes[currentPlant] = [...genes];
+            
+            // Update grid
+            const box = gridBoxes[gridIndex];
+            box.classList.add('filled');
+            box.dataset.geneIndex = genes.length - 1;
+            box.innerHTML = '';
+            
+            geneString.split('').forEach(g => {
+                const gene = document.createElement('div');
+                gene.className = \`gene \${g}\`;
+                gene.textContent = g;
+                box.appendChild(gene);
+            });
+            
+            // Calculate if we have 2+ genes
+            if (genes.length >= 2) {
+                calculate();
+            }
+            
+            updateBestGeneDisplay();
+            updatePlantProgress(currentPlant);
+            updatePlantCompletionStatus();
+        }
+
+        function removeGene(geneIndex) {
+            // Remove from arrays
+            genes.splice(geneIndex, 1);
+            plantGenes[currentPlant] = [...genes];
+            
+            // Update grid - need to redraw all filled boxes with correct indices
+            redrawGrid();
+            
+            // Recalculate if we still have 2+ genes
+            if (genes.length >= 2) {
+                calculate();
+            } else {
+                // Clear results
+                document.getElementById('resultsContent').innerHTML = '<p style="color: #888; text-align: center; margin-top: 20px;">Add at least 2 genes to see breeding combinations</p>';
+            }
+            
+            updateBestGeneDisplay();
+            updatePlantProgress(currentPlant);
+            updatePlantCompletionStatus();
+        }
+
+        function redrawGrid() {
+            // Clear all boxes
+            gridBoxes.forEach(box => {
+                box.classList.remove('filled');
+                box.innerHTML = '';
+                delete box.dataset.geneIndex;
+            });
+            
+            // Redraw filled boxes
+            genes.forEach((gene, index) => {
+                // Find first empty box
+                const emptyBox = gridBoxes.find(box => !box.classList.contains('filled'));
+                if (emptyBox) {
+                    emptyBox.classList.add('filled');
+                    emptyBox.dataset.geneIndex = index;
+                    
+                    gene.split('').forEach(g => {
+                        const geneDiv = document.createElement('div');
+                        geneDiv.className = \`gene \${g}\`;
+                        geneDiv.textContent = g;
+                        emptyBox.appendChild(geneDiv);
+                    });
+                }
+            });
+        }
+
+        function addGene() {
+            const input = document.getElementById('geneInput');
+            const gene = input.value.trim().toUpperCase();
+            
+            if (!gene) return;
+            
+            if (!validateGenes(gene)) {
+                alert('Invalid gene sequence. Please use exactly 6 characters: G, Y, H, W, X');
+                return;
+            }
+            
+            // Find first empty grid box
+            const emptyBox = gridBoxes.find(box => !box.classList.contains('filled'));
+            if (!emptyBox) {
+                alert('Grid is full! Remove a gene first.');
+                return;
+            }
+            
+            const gridIndex = parseInt(emptyBox.dataset.index);
+            addGeneToGrid(gene, gridIndex);
+            
+            input.value = '';
+        }
+
+        function switchPlant(plantType) {
+            // Save current genes to current plant
+            plantGenes[currentPlant] = [...genes];
+            
+            // Switch to new plant
+            currentPlant = plantType;
+            genes = [...(plantGenes[plantType] || [])];
+            
+            // Update visual indicators
+            document.querySelectorAll('.plant-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(\`[data-plant="\${plantType}"]\`).classList.add('active');
+            
+            // Update display
+            document.getElementById('currentPlantDisplay').textContent = plantDisplayNames[plantType];
+            
+            // Redraw grid
+            redrawGrid();
+            
+            // Recalculate if we have 2+ genes
+            if (genes.length >= 2) {
+                calculate();
+            } else {
+                document.getElementById('resultsContent').innerHTML = '<p style="color: #888; text-align: center; margin-top: 20px;">Add at least 2 genes to see breeding combinations</p>';
+            }
+            
+            updateBestGeneDisplay();
+            updatePlantCompletionStatus();
+        }
+
+        function highlightBestGene() {
+            if (genes.length === 0) return;
+            
+            // Find best gene
+            let bestGeneIndex = 0;
+            let bestScore = calculateGeneQuality(genes[0]);
+            let bestGYCount = genes[0].split('').filter(g => ['G', 'Y'].includes(g)).length;
+            
+            genes.forEach((gene, index) => {
+                const score = calculateGeneQuality(gene);
+                const gyCount = gene.split('').filter(g => ['G', 'Y'].includes(g)).length;
+                
+                if (score > bestScore || (score === bestScore && gyCount > bestGYCount)) {
+                    bestScore = score;
+                    bestGeneIndex = index;
+                    bestGYCount = gyCount;
+                }
+            });
+            
+            // Clear previous highlights
+            clearHighlights();
+            
+            // Highlight best gene
+            const bestBox = gridBoxes.find(box => 
+                box.classList.contains('filled') && 
+                parseInt(box.dataset.geneIndex) === bestGeneIndex
+            );
+            
+            if (bestBox) {
+                bestBox.classList.add('selected');
+            }
+        }
+
+        function clearHighlights() {
+            gridBoxes.forEach(box => {
+                box.classList.remove('selected');
+            });
+        }
+
+        function highlightGridBoxes(targetGenes) {
+            clearHighlights();
+            
+            targetGenes.forEach(targetGene => {
+                genes.forEach((gene, index) => {
+                    if (gene === targetGene) {
+                        const box = gridBoxes.find(box => 
+                            box.classList.contains('filled') && 
+                            parseInt(box.dataset.geneIndex) === index
+                        );
+                        if (box) {
+                            box.classList.add('selected');
+                        }
+                    }
+                });
+            });
+        }
+
+        function selectResult(index) {
+            selectedResultIndex = index;
+            
+            // Update visual selection
+            document.querySelectorAll('.result-item').forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('selected-result');
+                } else {
+                    item.classList.remove('selected-result');
+                }
+            });
+            
+            // Highlight the corresponding grid boxes
+            if (currentResults[index]) {
+                highlightGridBoxes(currentResults[index].plants);
+            }
+        }
+
+        function updateBestGeneDisplay() {
+            const display = document.getElementById('bestGeneDisplay');
+            
+            if (genes.length === 0) {
+                display.innerHTML = '<span style="color: #888; font-size: 12px;">None</span>';
+                return;
+            }
+            
+            // Find best gene
+            let bestGene = genes[0];
+            let bestScore = calculateGeneQuality(bestGene);
+            let bestGYCount = bestGene.split('').filter(g => ['G', 'Y'].includes(g)).length;
+            
+            genes.forEach(gene => {
+                const score = calculateGeneQuality(gene);
+                const gyCount = gene.split('').filter(g => ['G', 'Y'].includes(g)).length;
+                
+                if (score > bestScore || (score === bestScore && gyCount > bestGYCount)) {
+                    bestScore = score;
+                    bestGene = gene;
+                    bestGYCount = gyCount;
+                }
+            });
+            
+            display.innerHTML = '';
+            display.appendChild(createGeneDisplay(bestGene));
+        }
+
+        // Breeding calculation functions
+        function calculateBreedingPairs(geneArray, target) {
+            const results = [];
+            
+            for (let i = 0; i < geneArray.length; i++) {
+                for (let j = i + 1; j < geneArray.length; j++) {
+                    const parent1 = geneArray[i];
+                    const parent2 = geneArray[j];
+                    
+                    const outcomes = calculateBreedingOutcomes(parent1, parent2);
+                    const matchingOutcomes = outcomes.filter(outcome => outcome.result === target);
+                    
+                    if (matchingOutcomes.length > 0) {
+                        const totalProbability = matchingOutcomes.reduce((sum, outcome) => sum + outcome.probability, 0);
+                        results.push({
+                            plants: [parent1, parent2],
+                            result: target,
+                            probability: Math.round(totalProbability),
+                            perfectMatch: true,
+                            matchScore: 0,
+                            resultCount: outcomes.length
+                        });
+                    } else {
+                        // Find best partial match
+                        let bestMatch = null;
+                        let bestMatchScore = 7; // Start with worse than possible
+                        
+                        outcomes.forEach(outcome => {
+                            const matchScore = calculateMatchScore(outcome.result, target);
+                            if (matchScore < bestMatchScore) {
+                                bestMatchScore = matchScore;
+                                bestMatch = {
+                                    plants: [parent1, parent2],
+                                    result: outcome.result,
+                                    probability: outcome.probability,
+                                    perfectMatch: false,
+                                    matchScore: matchScore,
+                                    resultCount: outcomes.length
+                                };
+                            }
+                        });
+                        
+                        if (bestMatch && bestMatchScore <= 3) { // Only show if 3 or fewer mismatches
+                            results.push(bestMatch);
+                        }
+                    }
+                }
+            }
+            
+            // Sort by perfect matches first, then by probability
+            results.sort((a, b) => {
+                if (a.perfectMatch && !b.perfectMatch) return -1;
+                if (!a.perfectMatch && b.perfectMatch) return 1;
+                if (a.perfectMatch && b.perfectMatch) return b.probability - a.probability;
+                if (a.matchScore !== b.matchScore) return a.matchScore - b.matchScore;
+                return b.probability - a.probability;
+            });
+            
+            return results;
+        }
+
+        function calculateMatchScore(result, target) {
+            let mismatches = 0;
+            for (let i = 0; i < 6; i++) {
+                if (result[i] !== target[i]) {
+                    mismatches++;
+                }
+            }
+            return mismatches;
+        }
+
+        function calculateBreedingOutcomes(parent1, parent2) {
+            const outcomes = new Map();
+            
+            // Generate all possible combinations
+            for (let i = 0; i < 64; i++) { // 2^6 = 64 combinations
+                let result = '';
+                let probability = 1;
+                
+                for (let pos = 0; pos < 6; pos++) {
+                    const useParent1 = (i >> pos) & 1;
+                    if (useParent1) {
+                        result += parent1[pos];
+                        probability *= calculateGeneInheritance(parent1[pos], parent2[pos], parent1[pos]);
+                    } else {
+                        result += parent2[pos];
+                        probability *= calculateGeneInheritance(parent1[pos], parent2[pos], parent2[pos]);
+                    }
+                }
+                
+                if (outcomes.has(result)) {
+                    outcomes.set(result, outcomes.get(result) + probability);
+                } else {
+                    outcomes.set(result, probability);
+                }
+            }
+            
+            // Convert to array and normalize probabilities
+            const total = Array.from(outcomes.values()).reduce((sum, prob) => sum + prob, 0);
+            return Array.from(outcomes.entries()).map(([result, probability]) => ({
+                result,
+                probability: (probability / total) * 100
+            }));
+        }
+
+        function calculateGeneInheritance(gene1, gene2, targetGene) {
+            // Simplified inheritance model
+            if (gene1 === gene2) {
+                return gene1 === targetGene ? 1 : 0;
+            }
+            
+            // Different genes - 50% chance each
+            return 0.5;
+        }
+
+        function calculate() {
+            const target = document.getElementById('targetSelect').value;
+            const results = calculateBreedingPairs(genes, target);
+            displayResults(results, target);
+        }
+
+        function displayResults(results, target) {
+            const content = document.getElementById('resultsContent');
+            const titleElement = document.getElementById('resultsTitle');
+            
+            clearHighlights();
+            selectedResultIndex = -1;
+            currentResults = results;
+            
+            titleElement.innerHTML = \`
+                <span>Results for \${plantDisplayNames[currentPlant]}</span>
+                <span class="results-title-target">
+                    <span class="results-title-text">Target:</span>
+                    \${createGeneDisplay(target).outerHTML}
+                </span>
+            \`;
+            
+            let html = '';
+            
+            if (genes.length < 2) {
+                html = '<p style="color: #888; text-align: center; margin-top: 20px;">Add at least 2 genes to see breeding combinations</p>';
+            } else if (results.length === 0) {
+                html = '<p>No combinations found. Try adding more clones.</p>';
+            } else {
+                results.forEach((result, index) => {
+                    html += \`
+                        <div class="result-item \${result.perfectMatch ? 'perfect-match' : ''} \${index === 0 ? 'selected-result' : ''}" 
+                             data-index="\${index}"
+                             onclick="selectResult(\${index})">
+                            <div class="result-header">
+                                <div>
+                                    <strong>Result:</strong> \${createGeneDisplay(result.result).outerHTML}
+                                    \${result.perfectMatch ? '<span style="color: #4CAF50; margin-left: 10px;">- PERFECT MATCH!</span>' : ''}
+                                </div>
+                                <div class="probability">\${result.probability}% chance</div>
+                            </div>
+                            <div style="margin: 10px 0 8px 0; text-align: center;">
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                                    \${result.plants.map(p => createGeneDisplay(p).outerHTML).join('')}
+                                </div>
+                            </div>
+                            \${!result.perfectMatch ? \`<div style="color: #FFA726; margin-top: 5px;">Match score: \${6 - result.matchScore}/6 genes correct</div>\` : ''}
+                            \${result.resultCount > 1 ? \`<div style="color: #888; margin-top: 5px;">\${result.resultCount} possible outcomes</div>\` : ''}
+                        </div>
+                    \`;
+                });
+            }
+            
+            content.innerHTML = html;
+            content.style.marginLeft = '-25px';
+            content.style.marginRight = '-25px';
+            content.style.paddingLeft = '25px';
+            content.style.paddingRight = '25px';
+            content.style.paddingTop = '5px';
+            content.style.paddingBottom = '10px';
+            content.style.marginTop = '5px';
+            
+            if (results.length > 0) {
+                selectedResultIndex = 0;
+                highlightGridBoxes(results[0].plants);
+            }
+        }
+
+        // Menu functions
+        function openPlantMenu(event, plantType) {
+            const menu = document.getElementById('plantMenu');
+            const button = event.target;
+            const plantItem = button.closest('.plant-item');
+            const rect = plantItem.getBoundingClientRect();
+            
+            // Remove active class from any other buttons
+            document.querySelectorAll('.plant-button.active').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to current button
+            button.classList.add('active');
+            
+            // Update harvest time based on G genes
+            const baseMinutes = 150; // 2:30
+            const reduction = calculateHarvestTimeReduction(plantType);
+            const finalMinutes = baseMinutes - reduction;
+            const hours = Math.floor(finalMinutes / 60);
+            const minutes = finalMinutes % 60;
+            
+            // Update menu text
+            const harvestOption = menu.querySelector('.plant-menu-option:first-child span');
+            if (minutes === 0) {
+                harvestOption.textContent = \`\${hours}h\`;
+            } else {
+                harvestOption.textContent = \`\${hours}h \${minutes}m\`;
+            }
+            
+            // Update clone time based on G genes
+            const baseCloneMinutes = 13;
+            const cloneReduction = calculateCloneTimeReduction(plantType);
+            const finalCloneMinutes = baseCloneMinutes - cloneReduction;
+            
+            const cloneOption = menu.querySelector('.plant-menu-option:last-child span');
+            cloneOption.textContent = \`\${finalCloneMinutes}m\`;
+            
+            // Check if mobile view
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Center menu on mobile
+                menu.style.display = 'flex';
+                menu.style.left = '50%';
+                menu.style.transform = 'translateX(-50%)';
+                menu.style.top = '50%';
+                menu.style.marginTop = '-60px';
+            } else {
+                // Position to the left on desktop
+                const menuWidth = 120;
+                let leftPos = rect.left - menuWidth - 10;
+                
+                if (leftPos < 10) {
+                    leftPos = 10;
+                }
+                
+                menu.style.display = 'flex';
+                menu.style.left = leftPos + 'px';
+                menu.style.top = rect.top + 'px';
+                menu.style.transform = 'none';
+                menu.style.marginTop = '0';
+            }
+            
+            activeMenuPlant = plantType;
+            
+            // Close menu when clicking outside
+            setTimeout(() => {
+                document.addEventListener('click', closeMenuOnOutsideClick);
+            }, 0);
+        }
+
+        function closeMenuOnOutsideClick(event) {
+            const menu = document.getElementById('plantMenu');
+            if (!menu.contains(event.target) && !event.target.classList.contains('plant-button')) {
+                menu.style.display = 'none';
+                document.removeEventListener('click', closeMenuOnOutsideClick);
+                document.querySelectorAll('.plant-button.active').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                activeMenuPlant = null;
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeGrid();
+            updateBestGeneDisplay();
+            updateAllPlantProgress();
+            updatePlantCompletionStatus();
+            
+            // Set initial results title
+            document.getElementById('resultsTitle').innerHTML = '<span>Results for Hemp</span>';
+            
+            const geneInput = document.getElementById('geneInput');
+            
+            // Add input event to filter characters
+            geneInput.addEventListener('input', (e) => {
+                // Only allow Y, G, H, X, W (case insensitive)
+                e.target.value = e.target.value.toUpperCase().replace(/[^YGHXW]/g, '');
+            });
+            
+            // Prevent invalid characters from being typed
+            geneInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addGene();
+                } else if (!/[yghxwYGHXW]/.test(e.key) && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                }
+            });
+            
+            // Handle paste events
+            geneInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                const filteredText = pastedText.toUpperCase().replace(/[^YGHXW]/g, '');
+                const currentValue = e.target.value;
+                const selectionStart = e.target.selectionStart;
+                const selectionEnd = e.target.selectionEnd;
+                const newValue = currentValue.slice(0, selectionStart) + filteredText + currentValue.slice(selectionEnd);
+                e.target.value = newValue.slice(0, 6); // Respect maxlength
+            });
+        });
+    </script>
+</body>
+</html>`
+
+  // Open popup window with features to stay on top
+  const popup = window.open('', 'geneCalculator', 
+    'width=1600,height=900,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no,top=50,left=50'
+  )
+  
+  if (popup) {
+    popup.document.write(geneCalculatorHTML)
+    popup.document.close()
+    popup.focus()
+  } else {
+    alert('Popup blocked! Please allow popups for this site to use the Gene Calculator.')
+  }
+}
+
 const useMapInteraction = () => {
   const [zoom, setZoom] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
@@ -1743,13 +3797,14 @@ export default function InteractiveTacticalMap() {
               <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
-                    {['Logs', 'Progression', 'Players'].map((btn) => (
+                    {['Logs', 'Progression', 'Gene Calculator', 'Players'].map((btn) => (
                       <button 
                         key={btn} 
                         onClick={() => {
                           if (btn === 'Players') setShowPlayerModal(true)
                           else if (btn === 'Logs') setShowLogsModal(true)
                           else if (btn === 'Progression') setShowProgressionModal(true)
+                          else if (btn === 'Gene Calculator') openGeneCalculator()
                           else if (btn === 'Teams') setShowTeamsModal(true)
                         }} 
                         data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
