@@ -14,10 +14,17 @@ interface ProgressionModalProps {
 // Read the same localStorage data the gene calculator uses
 const getPlantGenesData = () => {
   try {
-    // This reads the same localStorage key the gene calculator uses
+    // Debug: Check all localStorage keys
+    console.log('All localStorage keys:', Object.keys(localStorage))
+    
+    // Check the specific key
     const stored = localStorage.getItem('rustGeneCalculatorData')
+    console.log('Gene calculator data:', stored)
+    
     if (stored) {
       const data = JSON.parse(stored)
+      console.log('Parsed data:', data)
+      console.log('PlantGenes:', data.plantGenes)
       return data.plantGenes || {}
     }
   } catch (e) {
