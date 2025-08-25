@@ -306,66 +306,23 @@ const useBaseReportEvents = (setBaseReportData, setShowBaseReportModal) => {
   }, [setBaseReportData, setShowBaseReportModal])
 }
 
-// Global function to close gene calculator
-;(window as any).closeGeneCalculator = () => {
-  const overlay = document.getElementById('geneCalculatorOverlay')
-  if (overlay) {
-    overlay.remove()
-  }
-}
-
 const openGeneCalculator = () => {
-  // Check if overlay already exists
-  if (document.getElementById('geneCalculatorOverlay')) return;
-  
   // Read the complete HTML content from the uploaded file
   fetch('/gene-calculator.html')
     .then(response => response.text())
     .then(geneCalculatorHTML => {
-      // Create full-screen transparent overlay
-      const overlay = document.createElement('div')
-      overlay.id = 'geneCalculatorOverlay'
-      overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: transparent;
-        z-index: 9999;
-        overflow: hidden;
-        pointer-events: none;
-      `
+      // Open as a standalone popup window
+      const popup = window.open('', 'geneCalculator', 
+        'width=1600,height=900,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no,top=50,left=50'
+      )
       
-      // Create iframe for the gene calculator content
-      const iframe = document.createElement('iframe')
-      iframe.style.cssText = `
-        width: 1200px;
-        height: 700px;
-        border: none;
-        background: transparent;
-        pointer-events: auto;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        border-radius: 10px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      `
-      iframe.srcdoc = geneCalculatorHTML
-      
-      // Add iframe to overlay
-      overlay.appendChild(iframe)
-      document.body.appendChild(overlay)
-      
-      // Close on Escape key
-      const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          overlay.remove()
-          document.removeEventListener('keydown', handleEscape)
-        }
+      if (popup) {
+        popup.document.write(geneCalculatorHTML)
+        popup.document.close()
+        popup.focus()
+      } else {
+        alert('Popup blocked! Please allow popups for this site to use the Gene Calculator.')
       }
-      document.addEventListener('keydown', handleEscape)
     })
     .catch(error => {
       console.error('Error loading Gene Calculator:', error)
