@@ -131,11 +131,11 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
           {/* Bottom Section with Left Container and Message Container */}
           <div className="flex gap-4 flex-1">
             {/* Gene Progress Container */}
-            <div className="border-2 border-orange-500/50 p-3 bg-gray-800/50 w-56 flex-shrink-0">
-              <h3 className="text-orange-400 font-mono text-base tracking-wider mb-3 text-center">
+            <div className="border-2 border-orange-500/50 p-2 bg-gray-800/50 w-48 flex-shrink-0">
+              <h3 className="text-orange-400 font-mono text-sm tracking-wider mb-2 text-center">
                 GENE PROGRESS
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-1">
                 {Object.keys(plantNames).map((plant) => {
                   const plantKey = plant as keyof typeof plantNames
                   const plantData = geneData[plantKey]
@@ -143,40 +143,34 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                   const progressPercent = plantData?.progress || 0
                   
                   return (
-                    <div key={plant} className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm">{plantIcons[plantKey]}</span>
+                    <div key={plant} className="space-y-0.5">
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs">{plantIcons[plantKey]}</span>
                         <span className="text-orange-200 text-xs font-mono">{plantNames[plantKey]}</span>
                       </div>
                       
-                      {/* Green progress bar exactly like gene calculator */}
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-gray-700 rounded-full h-2 overflow-hidden">
-                            <div 
-                              className="h-full bg-green-500 transition-all duration-300"
-                              style={{ width: `${progressPercent}%` }}
-                            />
-                          </div>
-                          <span className="text-green-400 text-xs font-mono w-8 text-right">
-                            {Math.round(progressPercent)}%
-                          </span>
+                      {/* Compact progress bar */}
+                      <div className="flex items-center gap-1">
+                        <div className="flex-1 bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                          <div 
+                            className="h-full bg-green-500 transition-all duration-300"
+                            style={{ width: `${progressPercent}%` }}
+                          />
                         </div>
-                        <div className="text-xs text-gray-400">
-                          {bestGene ? `${(bestGene.match(/[GY]/g) || []).length}/6 G+Y genes` : 'No genes'}
-                        </div>
+                        <span className="text-green-400 text-xs font-mono w-7 text-right">
+                          {Math.round(progressPercent)}%
+                        </span>
                       </div>
                       
-                      {/* Best gene display */}
+                      {/* Compact best gene display */}
                       {bestGene ? (
-                        <div className="text-center">
-                          <div className="text-xs text-green-400 mb-1">Best Gene:</div>
-                          <div className="inline-flex gap-0.5 bg-gray-900/70 px-2 py-1 rounded border border-green-500/30">
+                        <div className="flex items-center justify-center gap-1">
+                          <div className="inline-flex gap-0.5 bg-gray-900/70 px-1 py-0.5 rounded">
                             {bestGene.split('').map((letter: string, i: number) => (
                               <span 
                                 key={i}
                                 className={`
-                                  w-4 h-4 text-xs font-bold font-mono flex items-center justify-center rounded
+                                  w-3 h-3 text-xs font-bold font-mono flex items-center justify-center rounded
                                   ${['G', 'Y'].includes(letter) ? 'bg-green-600 text-white' : 
                                     letter === 'H' ? 'bg-blue-600 text-white' : 'bg-red-600 text-white'}
                                 `}
@@ -185,10 +179,11 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                               </span>
                             ))}
                           </div>
+                          <span className="text-gray-400 text-xs">{(bestGene.match(/[GY]/g) || []).length}/6</span>
                         </div>
                       ) : (
                         <div className="text-center">
-                          <span className="text-gray-500 text-xs">No genes collected</span>
+                          <span className="text-gray-500 text-xs">No genes</span>
                         </div>
                       )}
                     </div>
