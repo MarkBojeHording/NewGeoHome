@@ -307,22 +307,100 @@ const useBaseReportEvents = (setBaseReportData, setShowBaseReportModal) => {
 }
 
 const openGeneCalculator = () => {
+  // Check if modal already exists
+  if (document.getElementById('geneCalculatorModal')) return;
+  
   // Read the complete HTML content from the uploaded file
   fetch('/gene-calculator.html')
     .then(response => response.text())
     .then(geneCalculatorHTML => {
-      // Open popup window with features to stay on top
-      const popup = window.open('', 'geneCalculator', 
-        'width=1600,height=900,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no,top=50,left=50'
-      )
+      // Create modal overlay
+      const modal = document.createElement('div')
+      modal.id = 'geneCalculatorModal'
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      `
       
-      if (popup) {
-        popup.document.write(geneCalculatorHTML)
-        popup.document.close()
-        popup.focus()
-      } else {
-        alert('Popup blocked! Please allow popups for this site to use the Gene Calculator.')
+      // Create content container
+      const content = document.createElement('div')
+      content.style.cssText = `
+        width: 90vw;
+        height: 85vh;
+        max-width: 1400px;
+        max-height: 900px;
+        background: #1a1a2e;
+        border: 2px solid #4ecdc4;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      `
+      
+      // Create close button
+      const closeBtn = document.createElement('button')
+      closeBtn.innerHTML = '×'
+      closeBtn.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: #4ecdc4;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10001;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s;
+      `
+      closeBtn.onmouseover = () => closeBtn.style.background = 'rgba(244, 67, 54, 0.2)'
+      closeBtn.onmouseout = () => closeBtn.style.background = 'none'
+      closeBtn.onclick = () => modal.remove()
+      
+      // Create iframe for the gene calculator
+      const iframe = document.createElement('iframe')
+      iframe.style.cssText = `
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: #1a1a2e;
+      `
+      iframe.srcdoc = geneCalculatorHTML
+      
+      // Assemble modal
+      content.appendChild(closeBtn)
+      content.appendChild(iframe)
+      modal.appendChild(content)
+      document.body.appendChild(modal)
+      
+      // Close on overlay click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove()
+      })
+      
+      // Close on Escape key
+      const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+          modal.remove()
+          document.removeEventListener('keydown', handleEscape)
+        }
       }
+      document.addEventListener('keydown', handleEscape)
     })
     .catch(error => {
       console.error('Error loading Gene Calculator:', error)
