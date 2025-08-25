@@ -387,45 +387,27 @@ const openGeneCalculator = () => {
             }
           }
           
-          // Override addGene to save data
-          let originalAddGene;
-          function saveAfterAddGene() {
-            if (originalAddGene) {
-              originalAddGene();
-            }
-            saveGeneData();
-            syncProgressToMainApp();
-          }
-          
-          // Override switchPlant to save data
-          let originalSwitchPlant;
-          function saveAfterSwitchPlant(plantType) {
-            if (originalSwitchPlant) {
-              originalSwitchPlant(plantType);
-            }
-            saveGeneData();
-            syncProgressToMainApp();
-          }
-          
-          // Monitor for gene changes by watching the grid
-          let lastGridState = '';
-          function monitorForChanges() {
-            const gridBoxes = document.querySelectorAll('.grid-box.filled');
-            const currentGridState = Array.from(gridBoxes).map(box => box.innerHTML).join('|');
-            
-            if (currentGridState !== lastGridState) {
-              lastGridState = currentGridState;
+          // Monitor for any changes and save data
+          function monitorAndSave() {
+            try {
               saveGeneData();
               syncProgressToMainApp();
+            } catch (e) {
+              console.error('Error in monitor and save:', e);
             }
           }
           
           // Initialize persistence when page loads
           document.addEventListener('DOMContentLoaded', function() {
+            console.log('Gene calculator DOM loaded, setting up persistence...');
+            
             // Wait for everything to initialize
             setTimeout(() => {
+              console.log('Initializing gene calculator persistence...');
+              
               // Load saved data
               const hasData = loadGeneData();
+              console.log('Has saved data:', hasData);
               
               if (hasData) {
                 // Refresh the display with loaded data
@@ -436,23 +418,49 @@ const openGeneCalculator = () => {
                 if (typeof calculate === 'function' && genes.length >= 2) calculate();
               }
               
-              // Set up function overrides for saving
+              // Override the original addGene function to add saving
               if (typeof window.addGene === 'function') {
-                originalAddGene = window.addGene;
-                window.addGene = saveAfterAddGene;
+                const originalAddGene = window.addGene;
+                window.addGene = function() {
+                  console.log('addGene called, saving data...');
+                  originalAddGene();
+                  monitorAndSave();
+                };
               }
               
+              // Override switchPlant function
               if (typeof window.switchPlant === 'function') {
-                originalSwitchPlant = window.switchPlant;
-                window.switchPlant = saveAfterSwitchPlant;
+                const originalSwitchPlant = window.switchPlant;
+                window.switchPlant = function(plantType) {
+                  console.log('switchPlant called for:', plantType);
+                  originalSwitchPlant(plantType);
+                  monitorAndSave();
+                };
               }
               
-              // Start monitoring for changes
-              setInterval(monitorForChanges, 1000);
+              // Monitor input changes
+              const geneInput = document.getElementById('geneInput');
+              if (geneInput) {
+                geneInput.addEventListener('keypress', function(e) {
+                  if (e.key === 'Enter') {
+                    setTimeout(monitorAndSave, 100);
+                  }
+                });
+              }
               
-              // Initial sync
-              syncProgressToMainApp();
-            }, 300);
+              // Monitor grid clicks
+              document.addEventListener('click', function(e) {
+                if (e.target.closest('.grid-box')) {
+                  setTimeout(monitorAndSave, 100);
+                }
+              });
+              
+              // Continuous monitoring as backup
+              setInterval(monitorAndSave, 2000);
+              
+              // Initial save
+              monitorAndSave();
+            }, 500);
           });
         </script>
       `;
