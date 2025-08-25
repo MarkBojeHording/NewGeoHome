@@ -11,15 +11,51 @@ interface ProgressionModalProps {
 }
 
 
-// Copy the gene calculator's visual style and show sample data
-const getSampleGeneData = () => {
-  return {
-    hemp: { bestGene: 'GGYYYY', progress: 100 },
-    blueberry: { bestGene: 'GGYYXW', progress: 67 },
-    yellowberry: { bestGene: 'GGXXXX', progress: 33 },
-    redberry: { bestGene: null, progress: 0 },
-    pumpkin: { bestGene: 'YYYYYG', progress: 100 }
+// Read actual data from the gene calculator iframe
+const getGeneCalculatorData = () => {
+  try {
+    // Find the gene calculator iframe
+    const iframe = document.querySelector('iframe[src*="gene-calculator"]')
+    if (iframe && iframe.contentWindow) {
+      const calculatorWindow = iframe.contentWindow
+      
+      // Access the plantGenes variable from the gene calculator
+      const plantGenes = calculatorWindow.plantGenes
+      const currentPlant = calculatorWindow.currentPlant
+      const genes = calculatorWindow.genes
+      
+      if (plantGenes) {
+        const result = {}
+        
+        // Process each plant's genes
+        Object.keys(plantGenes).forEach(plantType => {
+          const genesArray = (plantType === currentPlant) ? genes : plantGenes[plantType]
+          
+          if (genesArray && genesArray.length > 0) {
+            // Find best gene (most G+Y genes)
+            const bestGene = genesArray.reduce((best, current) => {
+              const bestGYCount = (best.match(/[GY]/g) || []).length
+              const currentGYCount = (current.match(/[GY]/g) || []).length
+              return currentGYCount > bestGYCount ? current : best
+            })
+            
+            // Calculate progress (G+Y genes out of 6)
+            const progress = ((bestGene.match(/[GY]/g) || []).length / 6) * 100
+            
+            result[plantType] = { bestGene, progress }
+          } else {
+            result[plantType] = { bestGene: null, progress: 0 }
+          }
+        })
+        
+        return result
+      }
+    }
+  } catch (e) {
+    console.log('Gene calculator not accessible:', e.message)
   }
+  
+  return {}
 }
 
 export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
@@ -27,10 +63,22 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   const [aloneWeapon, setAloneWeapon] = useState('')
   const [counteringWeapon, setCounteringWeapon] = useState('')
   const [displayOnMap, setDisplayOnMap] = useState(false)
+  const [geneData, setGeneData] = useState<any>({})
+  
   const weaponOptions = ['Spear', 'Bow', 'DB', 'P2', 'SAR', 'Tommy', 'MP-5', 'AK-47', 'M249']
   
-  // Get sample gene data to show the visual style
-  const geneData = getSampleGeneData()
+  // Update gene data from the gene calculator iframe
+  useEffect(() => {
+    const updateGeneData = () => {
+      const data = getGeneCalculatorData()
+      setGeneData(data)
+    }
+    
+    updateGeneData() // Initial load
+    const interval = setInterval(updateGeneData, 1000) // Update every second
+    
+    return () => clearInterval(interval)
+  }, [])
 
   const plantIcons = {
     hemp: '🌿',
