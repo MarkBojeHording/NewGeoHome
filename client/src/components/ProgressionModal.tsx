@@ -155,16 +155,16 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                   const plantKey = plant as keyof typeof plantNames
                   const genes = plantGenes[plantKey] || []
                   
-                  // Calculate progress like gene calculator does
-                  const maxGenes = 15 // Gene calculator uses 15 as max
-                  const progressPercent = Math.min((genes.length / maxGenes) * 100, 100)
-                  
                   // Find best gene (gene calculator prioritizes G and Y genes)
                   const bestGene = genes.length > 0 ? genes.reduce((best, current) => {
                     const bestGYCount = (best.match(/[GY]/g) || []).length
                     const currentGYCount = (current.match(/[GY]/g) || []).length
                     return currentGYCount > bestGYCount ? current : best
                   }) : null
+                  
+                  // Calculate progress: how many of the 6 genes are G's or Y's
+                  const progressPercent = bestGene ? 
+                    ((bestGene.match(/[GY]/g) || []).length / 6) * 100 : 0
                   
                   return (
                     <div key={plant} className="space-y-2">
@@ -187,7 +187,7 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                           </span>
                         </div>
                         <div className="text-xs text-gray-400">
-                          {genes.length}/{maxGenes} genes
+                          {bestGene ? `${(bestGene.match(/[GY]/g) || []).length}/6 G+Y genes` : 'No genes'}
                         </div>
                       </div>
                       
