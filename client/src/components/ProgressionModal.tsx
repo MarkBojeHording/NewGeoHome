@@ -11,26 +11,15 @@ interface ProgressionModalProps {
 }
 
 
-// Read the same localStorage data the gene calculator uses
-const getPlantGenesData = () => {
-  try {
-    // Debug: Check all localStorage keys
-    console.log('All localStorage keys:', Object.keys(localStorage))
-    
-    // Check the specific key
-    const stored = localStorage.getItem('rustGeneCalculatorData')
-    console.log('Gene calculator data:', stored)
-    
-    if (stored) {
-      const data = JSON.parse(stored)
-      console.log('Parsed data:', data)
-      console.log('PlantGenes:', data.plantGenes)
-      return data.plantGenes || {}
-    }
-  } catch (e) {
-    console.error('Failed to read plant genes:', e)
+// Copy the gene calculator's visual style and show sample data
+const getSampleGeneData = () => {
+  return {
+    hemp: { bestGene: 'GGYYYY', progress: 100 },
+    blueberry: { bestGene: 'GGYYXW', progress: 67 },
+    yellowberry: { bestGene: 'GGXXXX', progress: 33 },
+    redberry: { bestGene: null, progress: 0 },
+    pumpkin: { bestGene: 'YYYYYG', progress: 100 }
   }
-  return {}
 }
 
 export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
@@ -38,21 +27,10 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   const [aloneWeapon, setAloneWeapon] = useState('')
   const [counteringWeapon, setCounteringWeapon] = useState('')
   const [displayOnMap, setDisplayOnMap] = useState(false)
-  const [plantGenes, setPlantGenes] = useState<any>({})
-
   const weaponOptions = ['Spear', 'Bow', 'DB', 'P2', 'SAR', 'Tommy', 'MP-5', 'AK-47', 'M249']
-
-  // Update plant genes data from gene calculator
-  useEffect(() => {
-    const updateData = () => {
-      setPlantGenes(getPlantGenesData())
-    }
-    
-    updateData() // Initial load
-    const interval = setInterval(updateData, 1000)
-    
-    return () => clearInterval(interval)
-  }, [])
+  
+  // Get sample gene data to show the visual style
+  const geneData = getSampleGeneData()
 
   const plantIcons = {
     hemp: '🌿',
@@ -160,18 +138,9 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
               <div className="space-y-3">
                 {Object.keys(plantNames).map((plant) => {
                   const plantKey = plant as keyof typeof plantNames
-                  const genes = plantGenes[plantKey] || []
-                  
-                  // Find best gene (gene calculator prioritizes G and Y genes)
-                  const bestGene = genes.length > 0 ? genes.reduce((best, current) => {
-                    const bestGYCount = (best.match(/[GY]/g) || []).length
-                    const currentGYCount = (current.match(/[GY]/g) || []).length
-                    return currentGYCount > bestGYCount ? current : best
-                  }) : null
-                  
-                  // Calculate progress: how many of the 6 genes are G's or Y's
-                  const progressPercent = bestGene ? 
-                    ((bestGene.match(/[GY]/g) || []).length / 6) * 100 : 0
+                  const plantData = geneData[plantKey]
+                  const bestGene = plantData?.bestGene
+                  const progressPercent = plantData?.progress || 0
                   
                   return (
                     <div key={plant} className="space-y-2">
@@ -180,7 +149,7 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                         <span className="text-orange-200 text-xs font-mono">{plantNames[plantKey]}</span>
                       </div>
                       
-                      {/* Green progress bar like gene calculator */}
+                      {/* Green progress bar exactly like gene calculator */}
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <div className="flex-1 bg-gray-700 rounded-full h-2 overflow-hidden">
@@ -203,7 +172,7 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                         <div className="text-center">
                           <div className="text-xs text-green-400 mb-1">Best Gene:</div>
                           <div className="inline-flex gap-0.5 bg-gray-900/70 px-2 py-1 rounded border border-green-500/30">
-                            {bestGene.split('').map((letter, i) => (
+                            {bestGene.split('').map((letter: string, i: number) => (
                               <span 
                                 key={i}
                                 className={`
