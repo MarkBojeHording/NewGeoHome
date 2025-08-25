@@ -311,20 +311,10 @@ const openGeneCalculator = () => {
   fetch('/gene-calculator.html')
     .then(response => response.text())
     .then(geneCalculatorHTML => {
-      // Inject data synchronization script into the gene calculator
+      // Inject data synchronization script that doesn't interfere with existing functionality
       const dataSyncScript = `
         <script>
-          // Override the existing updateAllPlantProgress function to sync with main app
-          const originalUpdateAllPlantProgress = updateAllPlantProgress;
-          
-          function updateAllPlantProgress() {
-            // Call the original function first
-            originalUpdateAllPlantProgress();
-            
-            // Then sync progress to main app
-            syncProgressToMainApp();
-          }
-          
+          // Add sync function without overriding existing functions
           function syncProgressToMainApp() {
             try {
               const progressData = {
@@ -336,12 +326,14 @@ const openGeneCalculator = () => {
               };
               
               // Calculate progress for each plant using the same logic as the gene calculator
-              Object.keys(plantGenes).forEach(plantType => {
-                const progress = calculatePlantProgress(plantType);
-                if (progressData.hasOwnProperty(plantType)) {
-                  progressData[plantType] = Math.round(progress);
-                }
-              });
+              if (typeof plantGenes !== 'undefined' && typeof calculatePlantProgress !== 'undefined') {
+                Object.keys(plantGenes).forEach(plantType => {
+                  const progress = calculatePlantProgress(plantType);
+                  if (progressData.hasOwnProperty(plantType)) {
+                    progressData[plantType] = Math.round(progress);
+                  }
+                });
+              }
               
               localStorage.setItem('rustGeneProgress', JSON.stringify(progressData));
               console.log('Synced gene progress to main app:', progressData);
@@ -350,15 +342,30 @@ const openGeneCalculator = () => {
             }
           }
           
-          // Initial sync when calculator loads
+          // Hook into existing functions by monitoring DOM changes instead of overriding
+          let lastProgressState = '';
+          function monitorProgress() {
+            const progressBars = document.querySelectorAll('.plant-progress');
+            const currentState = Array.from(progressBars).map(bar => bar.style.width).join(',');
+            
+            if (currentState !== lastProgressState) {
+              lastProgressState = currentState;
+              syncProgressToMainApp();
+            }
+          }
+          
+          // Start monitoring after page loads
           document.addEventListener('DOMContentLoaded', function() {
-            // Wait for everything to initialize, then sync
-            setTimeout(syncProgressToMainApp, 100);
+            // Initial sync
+            setTimeout(syncProgressToMainApp, 200);
+            
+            // Monitor for changes
+            setInterval(monitorProgress, 1000);
           });
         </script>
       `;
       
-      // Insert the script before closing body tag to ensure all functions are loaded
+      // Insert the script before closing body tag
       const modifiedHTML = geneCalculatorHTML.replace('</body>', dataSyncScript + '</body>');
       
       // Open as a standalone popup window
