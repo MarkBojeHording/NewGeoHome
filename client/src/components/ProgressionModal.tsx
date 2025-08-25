@@ -49,72 +49,19 @@ const getGeneProgress = (): GeneData => {
   }
 }
 
-// Get gene calculator data to find best genes
-const getGeneCalculatorData = () => {
-  const stored = localStorage.getItem('rustGeneCalculatorData')
-  if (stored) {
-    try {
-      return JSON.parse(stored)
-    } catch (e) {
-      console.error('Failed to parse gene calculator data:', e)
+// Read the same localStorage data the gene calculator uses
+const getPlantGenesData = () => {
+  try {
+    // This reads the same localStorage key the gene calculator uses
+    const stored = localStorage.getItem('rustGeneCalculatorData')
+    if (stored) {
+      const data = JSON.parse(stored)
+      return data.plantGenes || {}
     }
+  } catch (e) {
+    console.error('Failed to read plant genes:', e)
   }
-  return null
-}
-
-// Calculate gene quality score
-const calculateGeneQuality = (geneString: string): number => {
-  const geneQualityScores = {
-    'G': 3,  // Growth - highest priority
-    'Y': 3,  // Yield - highest priority
-    'H': 1,  // Hardiness - good but less valuable
-    'W': -2, // Water consumption (bad)
-    'X': -2  // Null/empty (bad)
-  }
-  return geneString.split('').reduce((score, gene) => score + (geneQualityScores[gene as keyof typeof geneQualityScores] || 0), 0)
-}
-
-// Find best gene for a plant
-const findBestGeneForPlant = (genes: string[]): string | null => {
-  if (!genes || genes.length === 0) return null
-  
-  let bestGene = genes[0]
-  let bestScore = calculateGeneQuality(bestGene)
-  let bestGYCount = bestGene.split('').filter(g => ['G', 'Y'].includes(g)).length
-  
-  genes.forEach(gene => {
-    const score = calculateGeneQuality(gene)
-    const gyCount = gene.split('').filter(g => ['G', 'Y'].includes(g)).length
-    
-    if (score > bestScore || (score === bestScore && gyCount > bestGYCount)) {
-      bestScore = score
-      bestGene = gene
-      bestGYCount = gyCount
-    }
-  })
-  
-  return bestGene
-}
-
-// Get best genes for all plants
-const getBestGenes = (): BestGeneData => {
-  const calculatorData = getGeneCalculatorData()
-  const result: BestGeneData = {
-    hemp: null,
-    blueberry: null,
-    yellowberry: null,
-    redberry: null,
-    pumpkin: null
-  }
-  
-  if (calculatorData && calculatorData.plantGenes) {
-    Object.keys(result).forEach(plantType => {
-      const genes = calculatorData.plantGenes[plantType]
-      result[plantType as keyof BestGeneData] = findBestGeneForPlant(genes)
-    })
-  }
-  
-  return result
+  return {}
 }
 
 export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
@@ -122,26 +69,20 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   const [aloneWeapon, setAloneWeapon] = useState('')
   const [counteringWeapon, setCounteringWeapon] = useState('')
   const [displayOnMap, setDisplayOnMap] = useState(false)
-  const [geneProgress, setGeneProgress] = useState<GeneData>(getGeneProgress)
-  const [bestGenes, setBestGenes] = useState<BestGeneData>(getBestGenes)
+  const [plantGenes, setPlantGenes] = useState<any>({})
 
   const weaponOptions = ['Spear', 'Bow', 'DB', 'P2', 'SAR', 'Tommy', 'MP-5', 'AK-47', 'M249']
 
-  // Listen for gene progress and best gene updates
+  // Update plant genes data from gene calculator
   useEffect(() => {
-    const handleStorageChange = () => {
-      setGeneProgress(getGeneProgress())
-      setBestGenes(getBestGenes())
+    const updateData = () => {
+      setPlantGenes(getPlantGenesData())
     }
     
-    window.addEventListener('storage', handleStorageChange)
-    // Also check periodically in case updates come from same tab
-    const interval = setInterval(handleStorageChange, 1000)
+    updateData() // Initial load
+    const interval = setInterval(updateData, 1000)
     
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      clearInterval(interval)
-    }
+    return () => clearInterval(interval)
   }, [])
 
   const plantIcons = {
@@ -248,45 +189,48 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                 GENE PROGRESS
               </h3>
               <div className="space-y-3">
-                {(Object.keys(geneProgress) as Array<keyof GeneData>).map((plant) => {
-                  // Debug logging
-                  console.log(`${plant} progress:`, geneProgress[plant], 'best gene:', bestGenes[plant]);
+                {Object.keys(plantNames).map((plant) => {
+                  const plantKey = plant as keyof typeof plantNames
+                  const genes = plantGenes[plantKey] || []
+                  const geneCount = genes.length
                   
                   return (
                     <div key={plant} className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-base">{plantIcons[plant]}</span>
-                        <span className="text-orange-200 text-xs font-mono">{plantNames[plant]}</span>
+                        <span className="text-base">{plantIcons[plantKey]}</span>
+                        <span className="text-orange-200 text-xs font-mono">{plantNames[plantKey]}</span>
+                        <span className="text-orange-400 text-xs font-mono">({geneCount} genes)</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Progress 
-                          value={geneProgress[plant]} 
-                          max={100}
-                          className="flex-1 h-2"
-                        />
-                        <span className="text-orange-400 text-xs font-mono w-8 text-right">
-                          {Math.round(geneProgress[plant])}%
-                        </span>
-                      </div>
-                      <div className="text-center min-h-[16px]">
-                        {bestGenes[plant] ? (
-                          <div className="inline-flex gap-0.5 bg-gray-900/50 px-1 py-0.5 rounded border border-orange-500/30">
-                            {bestGenes[plant]!.split('').map((gene, index) => (
-                              <span 
-                                key={index}
-                                className={`
-                                  w-3 h-3 text-xs font-bold font-mono flex items-center justify-center rounded
-                                  ${['G', 'Y', 'H'].includes(gene) ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}
-                                `}
-                              >
-                                {gene}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-gray-500 text-xs font-mono">No genes</span>
-                        )}
-                      </div>
+                      
+                      {geneCount > 0 ? (
+                        <div className="space-y-1">
+                          {genes.slice(0, 3).map((gene: string, index: number) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <div className="inline-flex gap-0.5 bg-gray-900/50 px-1 py-0.5 rounded border border-orange-500/30">
+                                {gene.split('').map((letter, i) => (
+                                  <span 
+                                    key={i}
+                                    className={`
+                                      w-3 h-3 text-xs font-bold font-mono flex items-center justify-center rounded
+                                      ${['G', 'Y', 'H'].includes(letter) ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}
+                                    `}
+                                  >
+                                    {letter}
+                                  </span>
+                                ))}
+                              </div>
+                              {index === 0 && geneCount > 1 && (
+                                <span className="text-green-400 text-xs">✓ Best</span>
+                              )}
+                            </div>
+                          ))}
+                          {geneCount > 3 && (
+                            <span className="text-gray-400 text-xs">+{geneCount - 3} more...</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-500 text-xs font-mono">No genes added</span>
+                      )}
                     </div>
                   );
                 })}
@@ -295,8 +239,8 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
               {/* Debug info */}
               <div className="mt-3 pt-2 border-t border-orange-500/20">
                 <div className="text-xs text-gray-400">
-                  <div>Progress data: {JSON.stringify(geneProgress).length > 50 ? 'Found' : 'Empty'}</div>
-                  <div>Calculator data: {getGeneCalculatorData() ? 'Found' : 'Missing'}</div>
+                  <div>Genes found: {Object.keys(plantGenes).length > 0 ? 'Yes' : 'No'}</div>
+                  <div>Total genes: {Object.values(plantGenes).flat().length}</div>
                 </div>
               </div>
             </div>
