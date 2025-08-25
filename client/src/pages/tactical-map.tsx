@@ -340,14 +340,17 @@ const openGeneCalculator = () => {
       // Create iframe for the gene calculator content
       const iframe = document.createElement('iframe')
       iframe.style.cssText = `
-        width: 100vw;
-        height: 100vh;
+        width: 1200px;
+        height: 700px;
         border: none;
         background: transparent;
         pointer-events: auto;
         position: absolute;
-        top: 0;
-        left: 0;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 10px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       `
       iframe.srcdoc = geneCalculatorHTML
       
