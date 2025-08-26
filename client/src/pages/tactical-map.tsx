@@ -1540,6 +1540,7 @@ export default function InteractiveTacticalMap() {
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [showProgressionModal, setShowProgressionModal] = useState(false)
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
+  console.log('Current showMenuDropdown state:', showMenuDropdown)
   const [showServerBeaconModal, setShowServerBeaconModal] = useState(false)
   
   // Progression Display State
@@ -2309,7 +2310,7 @@ export default function InteractiveTacticalMap() {
         />
 
         <ServerBeaconModal
-          isOpen={true}
+          isOpen={showServerBeaconModal}
           onClose={() => setShowServerBeaconModal(false)}
         />
       </div>
