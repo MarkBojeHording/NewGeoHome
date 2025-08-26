@@ -16,7 +16,7 @@ import { Plus, ExternalLink, Wifi, WifiOff, Clock, AlertTriangle, Map, Eye, EyeO
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
-interface ServerPreview extends Server {
+interface ServerPreview extends ServerBeaconServer {
   mapFetched: boolean;
   lastChecked: string;
 }

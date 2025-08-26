@@ -1540,7 +1540,6 @@ export default function InteractiveTacticalMap() {
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [showProgressionModal, setShowProgressionModal] = useState(false)
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
-  console.log('Current showMenuDropdown state:', showMenuDropdown)
   const [showServerBeaconModal, setShowServerBeaconModal] = useState(false)
   
   // Progression Display State
@@ -2050,7 +2049,6 @@ export default function InteractiveTacticalMap() {
                       <button 
                         onClick={(e) => {
                           e.stopPropagation()
-                          console.log('MENU button clicked, current dropdown state:', showMenuDropdown)
                           setShowMenuDropdown(!showMenuDropdown)
                         }}
                         className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
@@ -2066,13 +2064,9 @@ export default function InteractiveTacticalMap() {
                               key={option}
                               onClick={(e) => {
                                 e.stopPropagation()
-                                console.log(`Menu option clicked: ${option}`)
                                 setShowMenuDropdown(false)
                                 if (option === 'Admin control') {
-                                  console.log('Setting ServerBeacon modal to true')
                                   setShowServerBeaconModal(true)
-                                } else {
-                                  console.log(`Selected: ${option}`)
                                 }
                               }}
                               className="block w-full text-left px-3 py-2 text-orange-100 hover:bg-orange-800/50 transition-colors duration-150 first:rounded-t last:rounded-b"
