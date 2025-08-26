@@ -2022,13 +2022,11 @@ export default function InteractiveTacticalMap() {
         
         {/* Progression Display Container */}
         {progressionDisplay.enabled && (
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-gray-900/95 border border-orange-600/50 rounded px-2 py-1 text-orange-100 font-mono text-xs leading-tight">
-              <div className="text-orange-400">Recommended kit level:</div>
-              <div>In a group: <span className="text-orange-200">{progressionDisplay.inGroupWeapon}</span></div>
-              <div>Alone: <span className="text-orange-200">{progressionDisplay.aloneWeapon}</span></div>
-              <div>Countering: <span className="text-orange-200">{progressionDisplay.counteringWeapon}</span></div>
-            </div>
+          <div className="bg-gray-900/95 border border-orange-600/50 rounded px-2 py-1 text-orange-100 font-mono text-xs leading-none inline-block ml-2">
+            <div className="text-orange-400">Recommended kit level:</div>
+            <div>In a group: <span className="text-orange-200">{progressionDisplay.inGroupWeapon}</span></div>
+            <div>Alone: <span className="text-orange-200">{progressionDisplay.aloneWeapon}</span></div>
+            <div>Countering: <span className="text-orange-200">{progressionDisplay.counteringWeapon}</span></div>
           </div>
         )}
       </div>
