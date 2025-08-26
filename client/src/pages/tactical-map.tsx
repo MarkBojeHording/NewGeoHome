@@ -7,6 +7,7 @@ import { LogsModal } from '../components/LogsModal'
 import ActionReportModal from '../components/ActionReportModal'
 import { TeamsModal } from '../components/TeamsModal'
 import { ProgressionModal } from '../components/ProgressionModal'
+import ServerBeaconModal from '../components/ServerBeaconModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
 import WipeCountdownTimer from '../components/WipeCountdownTimer'
 import RadialMenu from '../components/RadialMenu'
@@ -1539,6 +1540,7 @@ export default function InteractiveTacticalMap() {
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [showProgressionModal, setShowProgressionModal] = useState(false)
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
+  const [showServerBeaconModal, setShowServerBeaconModal] = useState(false)
   
   // Progression Display State
   const [progressionDisplay, setProgressionDisplay] = useState({
@@ -2057,8 +2059,11 @@ export default function InteractiveTacticalMap() {
                               key={option}
                               onClick={() => {
                                 setShowMenuDropdown(false)
-                                // Add functionality for each option here
-                                console.log(`Selected: ${option}`)
+                                if (option === 'Admin control') {
+                                  setShowServerBeaconModal(true)
+                                } else {
+                                  console.log(`Selected: ${option}`)
+                                }
                               }}
                               className="block w-full text-left px-3 py-2 text-orange-100 hover:bg-orange-800/50 transition-colors duration-150 first:rounded-t last:rounded-b"
                               data-testid={`menu-option-${option.toLowerCase().replace(' ', '-')}`}
@@ -2296,6 +2301,11 @@ export default function InteractiveTacticalMap() {
           isOpen={showProgressionModal}
           onClose={() => setShowProgressionModal(false)}
           onProgressionDisplayChange={setProgressionDisplay}
+        />
+
+        <ServerBeaconModal
+          isOpen={showServerBeaconModal}
+          onClose={() => setShowServerBeaconModal(false)}
         />
       </div>
     </div>
