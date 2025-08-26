@@ -113,12 +113,11 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   const [aloneWeapon, setAloneWeapon] = useState('')
   const [counteringWeapon, setCounteringWeapon] = useState('')
   const [displayOnMap, setDisplayOnMap] = useState(false)
-  const [geneData, setGeneData] = useState<GeneDataResult>({
-    hemp: { bestGene: null, progress: 0 },
-    blueberry: { bestGene: null, progress: 0 },
-    yellowberry: { bestGene: null, progress: 0 },
-    redberry: { bestGene: null, progress: 0 },
-    pumpkin: { bestGene: null, progress: 0 }
+  
+  // Initialize geneData with data from localStorage if available
+  const [geneData, setGeneData] = useState<GeneDataResult>(() => {
+    // Try to load existing data on component initialization
+    return getGeneCalculatorData()
   })
   
   const weaponOptions = ['Spear', 'Bow', 'DB', 'P2', 'SAR', 'Tommy', 'MP-5', 'AK-47', 'M249']
@@ -239,6 +238,16 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   // Load gene data when modal opens and update it
   useEffect(() => {
     if (!isOpen) return
+    
+    // Always try to load existing data when modal opens
+    const loadExistingData = () => {
+      const newData = getGeneCalculatorData()
+      setGeneData(newData)
+      console.log('Loaded existing gene data:', newData)
+    }
+    
+    // Load immediately
+    loadExistingData()
     
     // Debug: Check what's actually in localStorage
     console.log('Checking localStorage for gene data...')
