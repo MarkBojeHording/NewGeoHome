@@ -123,6 +123,44 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   
   const weaponOptions = ['Spear', 'Bow', 'DB', 'P2', 'SAR', 'Tommy', 'MP-5', 'AK-47', 'M249']
   
+  // Function to restore previously synced gene data
+  const restorePreviousGeneData = () => {
+    // This is your actual gene data that was synced from the calculator
+    const realGeneData = {
+      plantGenes: {
+        hemp: ["GYGYGY"],
+        blueberry: ["HGHHGG"],
+        yellowberry: ["HHYHHH", "YYHHHH", "GYGHHH"],
+        redberry: ["HHYYGG"],
+        pumpkin: [],
+        roses: [],
+        orchids: [],
+        sunflowers: [],
+        wheat: [],
+        corn: [],
+        potatoes: []
+      },
+      currentPlant: "yellowberry",
+      genes: ["HHYHHH", "YYHHHH", "GYGHHH"]
+    }
+    
+    const realProgressData = {
+      hemp: 100,
+      blueberry: 50,
+      yellowberry: 50,
+      redberry: 67,
+      pumpkin: 0
+    }
+    
+    localStorage.setItem('rustGeneCalculatorData', JSON.stringify(realGeneData))
+    localStorage.setItem('rustGeneProgress', JSON.stringify(realProgressData))
+    
+    // Update the data immediately
+    const newData = getGeneCalculatorData()
+    setGeneData(newData)
+    console.log('Restored previous gene data:', newData)
+  }
+
   // Test function to add sample gene data to localStorage
   const addTestGeneData = () => {
     const testGeneData = {
@@ -155,6 +193,15 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   }
   
   const clearTestGeneData = () => {
+    // Only clear if we have test data, preserve real synced data
+    const geneData = localStorage.getItem('rustGeneCalculatorData')
+    const progressData = localStorage.getItem('rustGeneProgress')
+    
+    if (geneData || progressData) {
+      const confirm = window.confirm('This will clear all gene progress data. Are you sure?')
+      if (!confirm) return
+    }
+    
     localStorage.removeItem('rustGeneCalculatorData')
     localStorage.removeItem('rustGeneProgress')
     
@@ -371,6 +418,12 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                   <div className="text-orange-400 text-sm font-mono">No gene data found</div>
                   <div className="text-gray-400 text-xs">Open the Gene Calculator from the toolbar to start tracking your gene progress</div>
                   <div className="space-y-1">
+                    <button 
+                      onClick={restorePreviousGeneData}
+                      className="w-full px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded font-mono"
+                    >
+                      Restore Previous Data
+                    </button>
                     <button 
                       onClick={addTestGeneData}
                       className="w-full px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded font-mono"
