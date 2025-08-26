@@ -170,6 +170,16 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
     
     // Debug: Check what's actually in localStorage
     console.log('Checking localStorage for gene data...')
+    console.log('All localStorage keys:', Object.keys(localStorage))
+    
+    // Check all localStorage items for anything gene-related
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && (key.toLowerCase().includes('gene') || key.toLowerCase().includes('rust'))) {
+        console.log(`Found gene-related key: ${key}:`, localStorage.getItem(key))
+      }
+    }
+    
     console.log('rustGeneCalculatorData:', localStorage.getItem('rustGeneCalculatorData'))
     console.log('rustGeneProgress:', localStorage.getItem('rustGeneProgress'))
     
