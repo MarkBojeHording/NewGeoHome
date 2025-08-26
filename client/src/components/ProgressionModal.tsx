@@ -167,10 +167,10 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   // Function to manually request data from open gene calculator popup
   const requestDataFromPopup = () => {
     try {
-      // Try to find and communicate with the popup
-      const popup = window.open('', 'geneCalculator', '')
+      // Check if there's a reference to the popup stored globally
+      const popup = (window as any).geneCalculatorPopup
       if (popup && !popup.closed) {
-        console.log('Found open gene calculator popup, requesting data...')
+        console.log('Found open gene calculator popup via stored reference, requesting data...')
         
         // Send a message to the popup requesting its current data
         popup.postMessage({
@@ -180,11 +180,12 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
         
         console.log('Sent data request to popup')
       } else {
-        console.log('No open gene calculator popup found')
-        alert('Please open the Gene Calculator first, then try again.')
+        console.log('No open gene calculator popup found via stored reference')
+        alert('Please open the Gene Calculator from the toolbar first, then try this button again.')
       }
     } catch (e) {
       console.error('Error requesting data from popup:', e)
+      alert('Error communicating with Gene Calculator. Please close and reopen it.')
     }
   }
   

@@ -505,9 +505,20 @@ const openGeneCalculator = () => {
       )
       
       if (popup) {
+        // Store reference to popup for later communication
+        ;(window as any).geneCalculatorPopup = popup
+        
         popup.document.write(modifiedHTML)
         popup.document.close()
         popup.focus()
+        
+        // Clean up reference when popup is closed
+        const checkClosed = setInterval(() => {
+          if (popup.closed) {
+            ;(window as any).geneCalculatorPopup = null
+            clearInterval(checkClosed)
+          }
+        }, 1000)
       } else {
         alert('Popup blocked! Please allow popups for this site to use the Gene Calculator.')
       }
