@@ -1538,6 +1538,14 @@ export default function InteractiveTacticalMap() {
   const [showBaseReportModal, setShowBaseReportModal] = useState(false)
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [showProgressionModal, setShowProgressionModal] = useState(false)
+  
+  // Progression Display State
+  const [progressionDisplay, setProgressionDisplay] = useState({
+    enabled: false,
+    inGroupWeapon: 'Spear',
+    aloneWeapon: 'Spear',
+    counteringWeapon: 'Spear'
+  })
   const [baseReportData, setBaseReportData] = useState({
     baseId: null,
     baseName: null,
@@ -2011,6 +2019,18 @@ export default function InteractiveTacticalMap() {
             <div className="h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-70"></div>
           </div>
         </div>
+        
+        {/* Progression Display Container */}
+        {progressionDisplay.enabled && (
+          <div className="max-w-7xl mx-auto mt-1">
+            <div className="bg-gray-900/95 border border-orange-600/50 rounded p-2 text-orange-100 font-mono text-xs">
+              <div className="text-orange-400 mb-1">Recommended kit level:</div>
+              <div>In a group: <span className="text-orange-200">{progressionDisplay.inGroupWeapon}</span></div>
+              <div>Alone: <span className="text-orange-200">{progressionDisplay.aloneWeapon}</span></div>
+              <div>Countering: <span className="text-orange-200">{progressionDisplay.counteringWeapon}</span></div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="max-w-6xl mx-auto mt-20 px-4">
@@ -2229,6 +2249,7 @@ export default function InteractiveTacticalMap() {
         <ProgressionModal
           isOpen={showProgressionModal}
           onClose={() => setShowProgressionModal(false)}
+          onProgressionDisplayChange={setProgressionDisplay}
         />
       </div>
     </div>

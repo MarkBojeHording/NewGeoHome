@@ -8,6 +8,12 @@ import { Progress } from '@/components/ui/progress'
 interface ProgressionModalProps {
   isOpen: boolean
   onClose: () => void
+  onProgressionDisplayChange?: (settings: {
+    enabled: boolean
+    inGroupWeapon: string
+    aloneWeapon: string
+    counteringWeapon: string
+  }) => void
 }
 
 // Check if any gene data is available from any source
@@ -155,7 +161,7 @@ const getGeneCalculatorData = (): GeneDataResult => {
   }
 }
 
-export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
+export function ProgressionModal({ isOpen, onClose, onProgressionDisplayChange }: ProgressionModalProps) {
   const [inGroupWeapon, setInGroupWeapon] = useState('Spear')
   const [aloneWeapon, setAloneWeapon] = useState('Spear')
   const [counteringWeapon, setCounteringWeapon] = useState('Spear')
@@ -364,6 +370,18 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
       clearInterval(interval)
     }
   }, [isOpen])
+
+  // Update parent component when display settings change
+  useEffect(() => {
+    if (onProgressionDisplayChange) {
+      onProgressionDisplayChange({
+        enabled: displayOnMap,
+        inGroupWeapon,
+        aloneWeapon,
+        counteringWeapon
+      })
+    }
+  }, [displayOnMap, inGroupWeapon, aloneWeapon, counteringWeapon, onProgressionDisplayChange])
 
   const plantIcons = {
     hemp: '🌿',
