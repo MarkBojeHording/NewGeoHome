@@ -1975,20 +1975,40 @@ export default function InteractiveTacticalMap() {
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     {['Logs', 'Progression', 'Gene Calculator', 'Players'].map((btn) => (
-                      <button 
-                        key={btn} 
-                        onClick={() => {
-                          if (btn === 'Players') setShowPlayerModal(true)
-                          else if (btn === 'Logs') setShowLogsModal(true)
-                          else if (btn === 'Progression') setShowProgressionModal(true)
-                          else if (btn === 'Gene Calculator') openGeneCalculator()
-                          else if (btn === 'Teams') setShowTeamsModal(true)
-                        }} 
-                        data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
-                        className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
-                      >
-                        [{btn.toUpperCase()}]
-                      </button>
+                      btn === 'Progression' ? (
+                        <div key={btn} className="relative">
+                          <button 
+                            onClick={() => setShowProgressionModal(true)}
+                            data-testid="button-open-progression-modal"
+                            className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
+                          >
+                            [PROGRESSION]
+                          </button>
+                          {/* Progression Display Container */}
+                          {progressionDisplay.enabled && (
+                            <div className="absolute top-full left-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded px-2 py-1 text-orange-100 font-mono text-xs leading-none whitespace-nowrap z-40">
+                              <div className="text-orange-400">Recommended kit level:</div>
+                              <div>In a group: <span className="text-orange-200">{progressionDisplay.inGroupWeapon}</span></div>
+                              <div>When alone: <span className="text-orange-200">{progressionDisplay.aloneWeapon}</span></div>
+                              <div>Countering: <span className="text-orange-200">{progressionDisplay.counteringWeapon}</span></div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <button 
+                          key={btn} 
+                          onClick={() => {
+                            if (btn === 'Players') setShowPlayerModal(true)
+                            else if (btn === 'Logs') setShowLogsModal(true)
+                            else if (btn === 'Gene Calculator') openGeneCalculator()
+                            else if (btn === 'Teams') setShowTeamsModal(true)
+                          }} 
+                          data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
+                          className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
+                        >
+                          [{btn.toUpperCase()}]
+                        </button>
+                      )
                     ))}
                   </div>
                   <div className="flex items-center">
@@ -2019,16 +2039,7 @@ export default function InteractiveTacticalMap() {
             <div className="h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-70"></div>
           </div>
         </div>
-        
-        {/* Progression Display Container */}
-        {progressionDisplay.enabled && (
-          <div className="bg-gray-900/95 border border-orange-600/50 rounded px-2 py-1 text-orange-100 font-mono text-xs leading-none inline-block ml-2">
-            <div className="text-orange-400">Recommended kit level:</div>
-            <div>In a group: <span className="text-orange-200">{progressionDisplay.inGroupWeapon}</span></div>
-            <div>When alone: <span className="text-orange-200">{progressionDisplay.aloneWeapon}</span></div>
-            <div>Countering: <span className="text-orange-200">{progressionDisplay.counteringWeapon}</span></div>
-          </div>
-        )}
+
       </div>
 
       <div className="max-w-6xl mx-auto mt-20 px-4">
