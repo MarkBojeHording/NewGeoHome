@@ -1969,7 +1969,7 @@ export default function InteractiveTacticalMap() {
       {/* Fixed Main Toolbar - Buttons for Logs, Players, etc. */}
       <div className="fixed top-0 left-0 right-0 z-50 p-0 m-0" style={{top: 0, left: 0, right: 0, position: 'fixed'}}>
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50 overflow-hidden">
+          <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50">
             <div className="bg-gradient-to-r from-orange-900/30 via-gray-800 to-orange-900/30 p-1">
               <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-3">
                 <div className="flex items-center justify-between">
@@ -1986,7 +1986,7 @@ export default function InteractiveTacticalMap() {
                           </button>
                           {/* Progression Display Container */}
                           {progressionDisplay.enabled && (
-                            <div className="absolute top-full left-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded px-2 py-1 text-orange-100 font-mono text-xs leading-none whitespace-nowrap z-40">
+                            <div className="absolute top-full left-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded px-2 py-1 text-orange-100 font-mono text-xs leading-none whitespace-nowrap z-[60]">
                               <div className="text-orange-400">Recommended kit level:</div>
                               <div>In a group: <span className="text-orange-200">{progressionDisplay.inGroupWeapon}</span></div>
                               <div>When alone: <span className="text-orange-200">{progressionDisplay.aloneWeapon}</span></div>
