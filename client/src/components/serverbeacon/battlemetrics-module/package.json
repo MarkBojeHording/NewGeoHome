@@ -1,0 +1,36 @@
+{
+  "name": "battlemetrics-monitor-module",
+  "version": "1.0.0",
+  "description": "BattleMetrics server monitoring module for integration into other applications",
+  "main": "index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./components": "./components/index.ts",
+    "./services": "./services/index.ts",
+    "./schema": "./schema/schema.ts"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0",
+    "drizzle-orm": "^0.30.0",
+    "express": "^4.18.0",
+    "ws": "^8.17.0",
+    "axios": "^1.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@tanstack/react-query": "^5.0.0",
+    "wouter": "^3.0.0",
+    "zod": "^3.22.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "express": ">=4.18.0"
+  },
+  "keywords": [
+    "battlemetrics",
+    "server-monitoring",
+    "gaming",
+    "websocket",
+    "react"
+  ]
+}

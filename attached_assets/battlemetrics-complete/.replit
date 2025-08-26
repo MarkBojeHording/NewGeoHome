@@ -1,0 +1,14 @@
+run = "npm run dev"
+entrypoint = "server/index.ts"
+modules = ["nodejs-20", "web"]
+
+[deployment]
+run = ["sh", "-c", "npm run dev"]
+
+[env]
+PATH = "/home/runner/$REPL_SLUG/.config/npm/node_global/bin:/home/runner/$REPL_SLUG/node_modules/.bin:$PATH"
+npm_config_prefix = "/home/runner/$REPL_SLUG/.config/npm/node_global"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
