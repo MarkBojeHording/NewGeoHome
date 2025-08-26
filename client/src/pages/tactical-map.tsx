@@ -1650,7 +1650,9 @@ export default function InteractiveTacticalMap() {
   // Close menu dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showMenuDropdown && !event.target.closest('[data-testid="button-menu-dropdown"]')) {
+      if (showMenuDropdown && 
+          !event.target.closest('[data-testid="button-menu-dropdown"]') && 
+          !event.target.closest('.menu-dropdown')) {
         setShowMenuDropdown(false)
       }
     }
@@ -2058,7 +2060,7 @@ export default function InteractiveTacticalMap() {
                       </button>
                       {/* Menu Dropdown */}
                       {showMenuDropdown && (
-                        <div className="absolute top-full right-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded shadow-xl z-[60] min-w-40">
+                        <div className="menu-dropdown absolute top-full right-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded shadow-xl z-[60] min-w-40">
                           {['Settings', 'Team management', 'Bot control', 'Admin control'].map((option) => (
                             <button
                               key={option}
