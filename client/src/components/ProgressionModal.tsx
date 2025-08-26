@@ -10,6 +10,23 @@ interface ProgressionModalProps {
   onClose: () => void
 }
 
+// Check if any gene data is available from any source
+const hasAnyGeneData = (): boolean => {
+  // Check if popup has data
+  const popup = (window as any).geneCalculatorPopup
+  if (popup && !popup.closed && popup.plantGenes) {
+    // Check if any plant has genes
+    const hasPopupData = Object.values(popup.plantGenes).some((genes: any) => genes && genes.length > 0)
+    if (hasPopupData) return true
+  }
+  
+  // Check localStorage
+  const geneDataStored = localStorage.getItem('rustGeneCalculatorData')
+  const progressStored = localStorage.getItem('rustGeneProgress')
+  
+  return !!(geneDataStored || progressStored)
+}
+
 
 // Calculate gene quality score like the gene calculator does
 const calculateGeneQuality = (gene: string): number => {
@@ -53,10 +70,40 @@ interface GeneDataResult {
   pumpkin: PlantGeneData
 }
 
-// Read from the actual gene data storage to get best genes and progress
+// Read gene data directly from popup window or fallback to localStorage
 const getGeneCalculatorData = (): GeneDataResult => {
   try {
-    // Read data from main window localStorage (synced from popup via postMessage)
+    // First, try to get data directly from open popup window
+    const popup = (window as any).geneCalculatorPopup
+    if (popup && !popup.closed && popup.plantGenes && popup.genes && popup.currentPlant) {
+      console.log('Reading gene data directly from popup window')
+      
+      const result: GeneDataResult = {
+        hemp: { bestGene: null, progress: 0 },
+        blueberry: { bestGene: null, progress: 0 },
+        yellowberry: { bestGene: null, progress: 0 },
+        redberry: { bestGene: null, progress: 0 },
+        pumpkin: { bestGene: null, progress: 0 }
+      }
+      
+      // Calculate progress for each plant using the popup's functions
+      Object.keys(popup.plantGenes).forEach((plantType: string) => {
+        if (result[plantType as keyof GeneDataResult]) {
+          const genesArray = (plantType === popup.currentPlant) ? popup.genes : popup.plantGenes[plantType]
+          const bestGene = findBestGeneForPlant(genesArray)
+          result[plantType as keyof GeneDataResult].bestGene = bestGene
+          
+          // Calculate progress using the same logic as the gene calculator
+          if (popup.calculatePlantProgress) {
+            result[plantType as keyof GeneDataResult].progress = popup.calculatePlantProgress(plantType)
+          }
+        }
+      })
+      
+      return result
+    }
+    
+    // Fallback to localStorage (synced from popup via postMessage)
     const geneDataStored = localStorage.getItem('rustGeneCalculatorData')
     const progressStored = localStorage.getItem('rustGeneProgress')
     
@@ -422,7 +469,7 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                 GENE PROGRESS
               </h3>
               {/* Check if any gene data exists */}
-              {!localStorage.getItem('rustGeneCalculatorData') && !localStorage.getItem('rustGeneProgress') ? (
+              {!hasAnyGeneData() ? (
                 <div className="text-center p-4 space-y-3">
                   <div className="text-orange-400 text-sm font-mono">No gene data found</div>
                   <div className="text-gray-400 text-xs">Open the Gene Calculator from the toolbar to start tracking your gene progress</div>
