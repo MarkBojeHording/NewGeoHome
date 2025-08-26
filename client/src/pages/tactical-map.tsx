@@ -2046,7 +2046,8 @@ export default function InteractiveTacticalMap() {
                     ))}
                     <div className="relative">
                       <button 
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation()
                           console.log('MENU button clicked, current dropdown state:', showMenuDropdown)
                           setShowMenuDropdown(!showMenuDropdown)
                         }}
@@ -2061,7 +2062,8 @@ export default function InteractiveTacticalMap() {
                           {['Settings', 'Team management', 'Bot control', 'Admin control'].map((option) => (
                             <button
                               key={option}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation()
                                 console.log(`Menu option clicked: ${option}`)
                                 setShowMenuDropdown(false)
                                 if (option === 'Admin control') {
