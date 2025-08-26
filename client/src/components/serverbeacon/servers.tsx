@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -123,10 +123,12 @@ export default function ServersPage() {
   });
 
   // Handle users error
-  if (usersError && !usersLoading) {
-    const errorMsg = usersError instanceof Error ? usersError.message : 'Failed to fetch users';
-    addErrorMessage(errorMsg, 'Users Query');
-  }
+  useEffect(() => {
+    if (usersError && !usersLoading) {
+      const errorMsg = usersError instanceof Error ? usersError.message : 'Failed to fetch users';
+      addErrorMessage(errorMsg, 'Users Query');
+    }
+  }, [usersError, usersLoading]);
 
   // Fetch teams
   const { data: teams = [], isLoading: teamsLoading, error: teamsError } = useQuery({
@@ -139,10 +141,12 @@ export default function ServersPage() {
   });
 
   // Handle teams error
-  if (teamsError && !teamsLoading) {
-    const errorMsg = teamsError instanceof Error ? teamsError.message : 'Failed to fetch teams';
-    addErrorMessage(errorMsg, 'Teams Query');
-  }
+  useEffect(() => {
+    if (teamsError && !teamsLoading) {
+      const errorMsg = teamsError instanceof Error ? teamsError.message : 'Failed to fetch teams';
+      addErrorMessage(errorMsg, 'Teams Query');
+    }
+  }, [teamsError, teamsLoading]);
 
   // User form
   const userForm = useForm<z.infer<typeof createUserSchema>>({
@@ -311,10 +315,12 @@ export default function ServersPage() {
   }) as { data: ServerPreview[], isLoading: boolean, error: Error | null };
 
   // Handle servers error
-  if (serversError && !isLoading) {
-    const errorMsg = serversError instanceof Error ? serversError.message : 'Failed to fetch servers';
-    addErrorMessage(errorMsg, 'Server Query');
-  }
+  useEffect(() => {
+    if (serversError && !isLoading) {
+      const errorMsg = serversError instanceof Error ? serversError.message : 'Failed to fetch servers';
+      addErrorMessage(errorMsg, 'Server Query');
+    }
+  }, [serversError, isLoading]);
 
   // Fetch database metrics
   const { data: dbMetrics, isLoading: dbMetricsLoading, error: dbMetricsError } = useQuery({
@@ -341,10 +347,12 @@ export default function ServersPage() {
   });
 
   // Handle database metrics error
-  if (dbMetricsError && !dbMetricsLoading) {
-    const errorMsg = dbMetricsError instanceof Error ? dbMetricsError.message : 'Failed to fetch database metrics';
-    addErrorMessage(errorMsg, 'Database Metrics');
-  }
+  useEffect(() => {
+    if (dbMetricsError && !dbMetricsLoading) {
+      const errorMsg = dbMetricsError instanceof Error ? dbMetricsError.message : 'Failed to fetch database metrics';
+      addErrorMessage(errorMsg, 'Database Metrics');
+    }
+  }, [dbMetricsError, dbMetricsLoading]);
 
   // Add server mutation
   const addServerMutation = useMutation({
