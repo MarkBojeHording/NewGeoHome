@@ -468,7 +468,6 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
               <h3 className="text-orange-400 font-mono text-sm tracking-wider mb-2 text-center">
                 GENE PROGRESS
               </h3>
-              {/* Simple gene entry interface */}
               <div className="space-y-1">
                 {Object.keys(plantNames).map((plant) => {
                   const plantKey = plant as keyof typeof plantNames
@@ -483,116 +482,47 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                         <span className="text-orange-200 text-xs font-mono">{plantNames[plantKey]}</span>
                       </div>
                       
-                      {/* Gene input field */}
-                      <input
-                        type="text"
-                        value={bestGene || ''}
-                        onChange={(e) => {
-                          const newGene = e.target.value.toUpperCase()
-                          if (newGene.length <= 6 && /^[GYHWX]*$/.test(newGene)) {
-                            updatePlantGene(plantKey, newGene || null)
-                          }
-                        }}
-                        placeholder="GGYYHH"
-                        className="w-full px-1 py-0.5 bg-gray-700 border border-gray-600 text-orange-100 text-xs font-mono rounded"
-                        maxLength={6}
-                      />
-                      
-                      {/* Progress bar */}
-                      {bestGene && (
-                        <div className="flex items-center gap-1">
-                          <div className="flex-1 bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                            <div 
-                              className="h-full bg-green-500 transition-all duration-300"
-                              style={{ width: `${progressPercent}%` }}
-                            />
-                          </div>
-                          <span className="text-green-400 text-xs font-mono w-7 text-right">
-                            {Math.round(progressPercent)}%
-                          </span>
+                      {/* Compact progress bar */}
+                      <div className="flex items-center gap-1">
+                        <div className="flex-1 bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                          <div 
+                            className="h-full bg-green-500 transition-all duration-300"
+                            style={{ width: `${progressPercent}%` }}
+                          />
                         </div>
-                      )}
+                        <span className="text-green-400 text-xs font-mono w-7 text-right">
+                          {Math.round(progressPercent)}%
+                        </span>
+                      </div>
                       
-                      {/* Gene quality display */}
-                      {bestGene && (
-                        <div className="flex gap-0.5">
-                          {bestGene.split('').map((gene: string, i: number) => (
-                            <span 
-                              key={i}
-                              className={`text-xs font-mono w-3 h-3 flex items-center justify-center rounded-sm ${
-                                gene === 'G' ? 'bg-green-600 text-white' :
-                                gene === 'Y' ? 'bg-yellow-600 text-black' :
-                                gene === 'H' ? 'bg-blue-600 text-white' :
-                                gene === 'W' ? 'bg-red-600 text-white' :
-                                gene === 'X' ? 'bg-gray-600 text-white' : 'bg-gray-500'
-                              }`}
-                            >
-                              {gene}
-                            </span>
-                          ))}
+                      {/* Compact best gene display */}
+                      {bestGene ? (
+                        <div className="flex items-center justify-center gap-1">
+                          <div className="inline-flex gap-0.5 bg-gray-900/70 px-1 py-0.5 rounded">
+                            {bestGene.split('').map((letter: string, i: number) => (
+                              <span 
+                                key={i}
+                                className={`
+                                  w-3 h-3 text-xs font-bold font-mono flex items-center justify-center rounded
+                                  ${['G', 'Y'].includes(letter) ? 'bg-green-600 text-white' : 
+                                    letter === 'H' ? 'bg-blue-600 text-white' : 'bg-red-600 text-white'}
+                                `}
+                              >
+                                {letter}
+                              </span>
+                            ))}
+                          </div>
+                          <span className="text-gray-400 text-xs">{(bestGene.match(/[GY]/g) || []).length}/6</span>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <span className="text-gray-500 text-xs">No genes</span>
                         </div>
                       )}
                     </div>
-                  )
+                  );
                 })}
               </div>
-              ) : (
-                <div className="space-y-1">
-                  {Object.keys(plantNames).map((plant) => {
-                    const plantKey = plant as keyof typeof plantNames
-                    const plantData = geneData[plantKey]
-                    const bestGene = plantData?.bestGene
-                    const progressPercent = plantData?.progress || 0
-                    
-                    return (
-                      <div key={plant} className="space-y-0.5">
-                        <div className="flex items-center gap-1">
-                          <span className="text-xs">{plantIcons[plantKey]}</span>
-                          <span className="text-orange-200 text-xs font-mono">{plantNames[plantKey]}</span>
-                        </div>
-                        
-                        {/* Compact progress bar */}
-                        <div className="flex items-center gap-1">
-                          <div className="flex-1 bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                            <div 
-                              className="h-full bg-green-500 transition-all duration-300"
-                              style={{ width: `${progressPercent}%` }}
-                            />
-                          </div>
-                          <span className="text-green-400 text-xs font-mono w-7 text-right">
-                            {Math.round(progressPercent)}%
-                          </span>
-                        </div>
-                        
-                        {/* Compact best gene display */}
-                        {bestGene ? (
-                          <div className="flex items-center justify-center gap-1">
-                            <div className="inline-flex gap-0.5 bg-gray-900/70 px-1 py-0.5 rounded">
-                              {bestGene.split('').map((letter: string, i: number) => (
-                                <span 
-                                  key={i}
-                                  className={`
-                                    w-3 h-3 text-xs font-bold font-mono flex items-center justify-center rounded
-                                    ${['G', 'Y'].includes(letter) ? 'bg-green-600 text-white' : 
-                                      letter === 'H' ? 'bg-blue-600 text-white' : 'bg-red-600 text-white'}
-                                  `}
-                                >
-                                  {letter}
-                                </span>
-                              ))}
-                            </div>
-                            <span className="text-gray-400 text-xs">{(bestGene.match(/[GY]/g) || []).length}/6</span>
-                          </div>
-                        ) : (
-                          <div className="text-center">
-                            <span className="text-gray-500 text-xs">No genes</span>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
               
               {/* Clear data button when data exists */}
               {(localStorage.getItem('rustGeneCalculatorData') || localStorage.getItem('rustGeneProgress')) && (
