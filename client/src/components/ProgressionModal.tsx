@@ -12,22 +12,22 @@ interface ProgressionModalProps {
 
 
 // Calculate gene quality score like the gene calculator does
-const calculateGeneQuality = (gene) => {
-  const scoring = { 'G': 5, 'Y': 3, 'H': 1, 'W': -2, 'X': -2 }
-  return gene.split('').reduce((score, letter) => score + (scoring[letter] || 0), 0)
+const calculateGeneQuality = (gene: string): number => {
+  const scoring: Record<string, number> = { 'G': 5, 'Y': 3, 'H': 1, 'W': -2, 'X': -2 }
+  return gene.split('').reduce((score: number, letter: string) => score + (scoring[letter] || 0), 0)
 }
 
 // Find best gene for a plant type using same logic as gene calculator
-const findBestGeneForPlant = (genesArray) => {
+const findBestGeneForPlant = (genesArray: string[]): string | null => {
   if (!genesArray || genesArray.length === 0) return null
   
   let bestGene = genesArray[0]
   let bestScore = calculateGeneQuality(bestGene)
-  let bestGYCount = bestGene.split('').filter(g => ['G', 'Y'].includes(g)).length
+  let bestGYCount = bestGene.split('').filter((g: string) => ['G', 'Y'].includes(g)).length
   
-  genesArray.forEach(gene => {
+  genesArray.forEach((gene: string) => {
     const score = calculateGeneQuality(gene)
-    const gyCount = gene.split('').filter(g => ['G', 'Y'].includes(g)).length
+    const gyCount = gene.split('').filter((g: string) => ['G', 'Y'].includes(g)).length
     
     // Update best if this gene has a higher score, or same score but more G/Y genes
     if (score > bestScore || (score === bestScore && gyCount > bestGYCount)) {
@@ -40,14 +40,27 @@ const findBestGeneForPlant = (genesArray) => {
   return bestGene
 }
 
+interface PlantGeneData {
+  bestGene: string | null
+  progress: number
+}
+
+interface GeneDataResult {
+  hemp: PlantGeneData
+  blueberry: PlantGeneData
+  yellowberry: PlantGeneData
+  redberry: PlantGeneData
+  pumpkin: PlantGeneData
+}
+
 // Read from the actual gene data storage to get best genes and progress
-const getGeneCalculatorData = () => {
+const getGeneCalculatorData = (): GeneDataResult => {
   try {
     // Read the actual gene data
     const geneDataStored = localStorage.getItem('rustGeneCalculatorData')
     const progressStored = localStorage.getItem('rustGeneProgress')
     
-    const result = {
+    const result: GeneDataResult = {
       hemp: { bestGene: null, progress: 0 },
       blueberry: { bestGene: null, progress: 0 },
       yellowberry: { bestGene: null, progress: 0 },
@@ -58,9 +71,9 @@ const getGeneCalculatorData = () => {
     // Get progress percentages
     if (progressStored) {
       const progressData = JSON.parse(progressStored)
-      Object.keys(progressData).forEach(plantType => {
-        if (result[plantType]) {
-          result[plantType].progress = progressData[plantType] || 0
+      Object.keys(progressData).forEach((plantType: string) => {
+        if (result[plantType as keyof GeneDataResult]) {
+          result[plantType as keyof GeneDataResult].progress = progressData[plantType] || 0
         }
       })
     }
@@ -71,12 +84,12 @@ const getGeneCalculatorData = () => {
       const { plantGenes, currentPlant, genes } = geneData
       
       if (plantGenes) {
-        Object.keys(plantGenes).forEach(plantType => {
-          if (result[plantType]) {
+        Object.keys(plantGenes).forEach((plantType: string) => {
+          if (result[plantType as keyof GeneDataResult]) {
             // Use genes array for current plant, plantGenes array for others
             const genesArray = (plantType === currentPlant) ? genes : plantGenes[plantType]
             const bestGene = findBestGeneForPlant(genesArray)
-            result[plantType].bestGene = bestGene
+            result[plantType as keyof GeneDataResult].bestGene = bestGene
           }
         })
       }
@@ -100,13 +113,65 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
   const [aloneWeapon, setAloneWeapon] = useState('')
   const [counteringWeapon, setCounteringWeapon] = useState('')
   const [displayOnMap, setDisplayOnMap] = useState(false)
-  const [geneData, setGeneData] = useState<any>({})
+  const [geneData, setGeneData] = useState<GeneDataResult>({
+    hemp: { bestGene: null, progress: 0 },
+    blueberry: { bestGene: null, progress: 0 },
+    yellowberry: { bestGene: null, progress: 0 },
+    redberry: { bestGene: null, progress: 0 },
+    pumpkin: { bestGene: null, progress: 0 }
+  })
   
   const weaponOptions = ['Spear', 'Bow', 'DB', 'P2', 'SAR', 'Tommy', 'MP-5', 'AK-47', 'M249']
+  
+  // Test function to add sample gene data to localStorage
+  const addTestGeneData = () => {
+    const testGeneData = {
+      plantGenes: {
+        hemp: ["GGYYYY", "GGGYYX", "GGGGYH"],
+        blueberry: ["YYWWHX", "GGYWHY", "YGYWGH"],
+        yellowberry: ["XWHGHY", "YYGYGG", "GGGGGY"],
+        redberry: ["WWWXXY", "YHGHGY", "GYYYYY"],
+        pumpkin: ["HHHHWW", "GGGGGG", "YGYGYW"]
+      },
+      currentPlant: "hemp",
+      genes: ["GGYYYY", "GGGYYX", "GGGGYH"]
+    }
+    
+    const testProgressData = {
+      hemp: 85,
+      blueberry: 42,
+      yellowberry: 67,
+      redberry: 23,
+      pumpkin: 91
+    }
+    
+    localStorage.setItem('rustGeneCalculatorData', JSON.stringify(testGeneData))
+    localStorage.setItem('rustGeneProgress', JSON.stringify(testProgressData))
+    
+    // Update the data immediately
+    const newData = getGeneCalculatorData()
+    setGeneData(newData)
+    console.log('Added test gene data:', newData)
+  }
+  
+  const clearTestGeneData = () => {
+    localStorage.removeItem('rustGeneCalculatorData')
+    localStorage.removeItem('rustGeneProgress')
+    
+    // Reset the data
+    const newData = getGeneCalculatorData()
+    setGeneData(newData)
+    console.log('Cleared gene data')
+  }
   
   // Load gene data when modal opens and update it
   useEffect(() => {
     if (!isOpen) return
+    
+    // Debug: Check what's actually in localStorage
+    console.log('Checking localStorage for gene data...')
+    console.log('rustGeneCalculatorData:', localStorage.getItem('rustGeneCalculatorData'))
+    console.log('rustGeneProgress:', localStorage.getItem('rustGeneProgress'))
     
     // Load initial data
     const initialData = getGeneCalculatorData()
@@ -114,7 +179,7 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
     console.log('Initial gene data:', initialData)
     
     // Listen for localStorage changes from the gene calculator popup
-    const handleStorageChange = (e) => {
+    const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'rustGeneProgress' || e.key === 'rustGeneCalculatorData') {
         const newData = getGeneCalculatorData()
         setGeneData(newData)
@@ -239,61 +304,89 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
               <h3 className="text-orange-400 font-mono text-sm tracking-wider mb-2 text-center">
                 GENE PROGRESS
               </h3>
-              <div className="space-y-1">
-                {Object.keys(plantNames).map((plant) => {
-                  const plantKey = plant as keyof typeof plantNames
-                  const plantData = geneData[plantKey]
-                  const bestGene = plantData?.bestGene
-                  const progressPercent = plantData?.progress || 0
-                  
-                  return (
-                    <div key={plant} className="space-y-0.5">
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs">{plantIcons[plantKey]}</span>
-                        <span className="text-orange-200 text-xs font-mono">{plantNames[plantKey]}</span>
-                      </div>
-                      
-                      {/* Compact progress bar */}
-                      <div className="flex items-center gap-1">
-                        <div className="flex-1 bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                          <div 
-                            className="h-full bg-green-500 transition-all duration-300"
-                            style={{ width: `${progressPercent}%` }}
-                          />
+              {/* Check if any gene data exists */}
+              {!localStorage.getItem('rustGeneCalculatorData') && !localStorage.getItem('rustGeneProgress') ? (
+                <div className="text-center p-4 space-y-3">
+                  <div className="text-orange-400 text-sm font-mono">No gene data found</div>
+                  <div className="text-gray-400 text-xs">Open the Gene Calculator from the toolbar to start tracking your gene progress</div>
+                  <div className="space-y-1">
+                    <button 
+                      onClick={addTestGeneData}
+                      className="w-full px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded font-mono"
+                    >
+                      Test with Sample Data
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {Object.keys(plantNames).map((plant) => {
+                    const plantKey = plant as keyof typeof plantNames
+                    const plantData = geneData[plantKey]
+                    const bestGene = plantData?.bestGene
+                    const progressPercent = plantData?.progress || 0
+                    
+                    return (
+                      <div key={plant} className="space-y-0.5">
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs">{plantIcons[plantKey]}</span>
+                          <span className="text-orange-200 text-xs font-mono">{plantNames[plantKey]}</span>
                         </div>
-                        <span className="text-green-400 text-xs font-mono w-7 text-right">
-                          {Math.round(progressPercent)}%
-                        </span>
-                      </div>
-                      
-                      {/* Compact best gene display */}
-                      {bestGene ? (
-                        <div className="flex items-center justify-center gap-1">
-                          <div className="inline-flex gap-0.5 bg-gray-900/70 px-1 py-0.5 rounded">
-                            {bestGene.split('').map((letter: string, i: number) => (
-                              <span 
-                                key={i}
-                                className={`
-                                  w-3 h-3 text-xs font-bold font-mono flex items-center justify-center rounded
-                                  ${['G', 'Y'].includes(letter) ? 'bg-green-600 text-white' : 
-                                    letter === 'H' ? 'bg-blue-600 text-white' : 'bg-red-600 text-white'}
-                                `}
-                              >
-                                {letter}
-                              </span>
-                            ))}
+                        
+                        {/* Compact progress bar */}
+                        <div className="flex items-center gap-1">
+                          <div className="flex-1 bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                            <div 
+                              className="h-full bg-green-500 transition-all duration-300"
+                              style={{ width: `${progressPercent}%` }}
+                            />
                           </div>
-                          <span className="text-gray-400 text-xs">{(bestGene.match(/[GY]/g) || []).length}/6</span>
+                          <span className="text-green-400 text-xs font-mono w-7 text-right">
+                            {Math.round(progressPercent)}%
+                          </span>
                         </div>
-                      ) : (
-                        <div className="text-center">
-                          <span className="text-gray-500 text-xs">No genes</span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                        
+                        {/* Compact best gene display */}
+                        {bestGene ? (
+                          <div className="flex items-center justify-center gap-1">
+                            <div className="inline-flex gap-0.5 bg-gray-900/70 px-1 py-0.5 rounded">
+                              {bestGene.split('').map((letter: string, i: number) => (
+                                <span 
+                                  key={i}
+                                  className={`
+                                    w-3 h-3 text-xs font-bold font-mono flex items-center justify-center rounded
+                                    ${['G', 'Y'].includes(letter) ? 'bg-green-600 text-white' : 
+                                      letter === 'H' ? 'bg-blue-600 text-white' : 'bg-red-600 text-white'}
+                                  `}
+                                >
+                                  {letter}
+                                </span>
+                              ))}
+                            </div>
+                            <span className="text-gray-400 text-xs">{(bestGene.match(/[GY]/g) || []).length}/6</span>
+                          </div>
+                        ) : (
+                          <div className="text-center">
+                            <span className="text-gray-500 text-xs">No genes</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              
+              {/* Clear data button when data exists */}
+              {(localStorage.getItem('rustGeneCalculatorData') || localStorage.getItem('rustGeneProgress')) && (
+                <div className="mt-2 text-center">
+                  <button 
+                    onClick={clearTestGeneData}
+                    className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded font-mono"
+                  >
+                    Clear Data
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Message Container */}
