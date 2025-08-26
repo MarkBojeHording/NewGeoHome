@@ -56,7 +56,7 @@ interface GeneDataResult {
 // Read from the actual gene data storage to get best genes and progress
 const getGeneCalculatorData = (): GeneDataResult => {
   try {
-    // Read the actual gene data
+    // Read data from main window localStorage (synced from popup via postMessage)
     const geneDataStored = localStorage.getItem('rustGeneCalculatorData')
     const progressStored = localStorage.getItem('rustGeneProgress')
     
@@ -188,7 +188,27 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
     setGeneData(initialData)
     console.log('Initial gene data:', initialData)
     
-    // Listen for localStorage changes from the gene calculator popup
+    // Listen for postMessage updates from the gene calculator popup
+    const handleMessageFromPopup = (event: MessageEvent) => {
+      if (event.data.type === 'GENE_DATA_UPDATE' || event.data.type === 'GENE_PROGRESS_UPDATE') {
+        console.log('Received gene data update from popup:', event.data)
+        
+        // Store the data in main window localStorage
+        if (event.data.type === 'GENE_DATA_UPDATE' && event.data.data.geneData) {
+          localStorage.setItem('rustGeneCalculatorData', JSON.stringify(event.data.data.geneData))
+        }
+        if (event.data.type === 'GENE_PROGRESS_UPDATE' && event.data.data.progressData) {
+          localStorage.setItem('rustGeneProgress', JSON.stringify(event.data.data.progressData))
+        }
+        
+        // Update the displayed data
+        const newData = getGeneCalculatorData()
+        setGeneData(newData)
+        console.log('Updated gene data from popup message:', newData)
+      }
+    }
+    
+    // Listen for localStorage changes (fallback)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'rustGeneProgress' || e.key === 'rustGeneCalculatorData') {
         const newData = getGeneCalculatorData()
@@ -197,15 +217,17 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
       }
     }
     
-    // Also poll for changes as backup (gene calculator updates frequently)
+    // Also poll for changes as backup
     const interval = setInterval(() => {
       const newData = getGeneCalculatorData()
       setGeneData(newData)
-    }, 2000) // Check every 2 seconds
+    }, 3000) // Check every 3 seconds
     
+    window.addEventListener('message', handleMessageFromPopup)
     window.addEventListener('storage', handleStorageChange)
     
     return () => {
+      window.removeEventListener('message', handleMessageFromPopup)
       window.removeEventListener('storage', handleStorageChange)
       clearInterval(interval)
     }

@@ -314,7 +314,7 @@ const openGeneCalculator = () => {
       // Inject data synchronization and persistence script
       const dataSyncScript = `
         <script>
-          // Save gene data to localStorage
+          // Save gene data to localStorage and sync to main window
           function saveGeneData() {
             try {
               const geneData = {
@@ -323,6 +323,17 @@ const openGeneCalculator = () => {
                 genes: genes
               };
               localStorage.setItem('rustGeneCalculatorData', JSON.stringify(geneData));
+              
+              // Send data to main window via postMessage
+              if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                  type: 'GENE_DATA_UPDATE',
+                  data: {
+                    geneData: geneData,
+                    timestamp: Date.now()
+                  }
+                }, '*');
+              }
             } catch (e) {
               console.error('Failed to save gene data:', e);
             }
@@ -381,6 +392,18 @@ const openGeneCalculator = () => {
               }
               
               localStorage.setItem('rustGeneProgress', JSON.stringify(progressData));
+              
+              // Send progress data to main window via postMessage
+              if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                  type: 'GENE_PROGRESS_UPDATE',
+                  data: {
+                    progressData: progressData,
+                    timestamp: Date.now()
+                  }
+                }, '*');
+              }
+              
               console.log('Synced gene progress to main app:', progressData);
             } catch (e) {
               console.error('Failed to sync gene progress:', e);
