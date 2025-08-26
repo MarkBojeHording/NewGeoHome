@@ -7,7 +7,6 @@ import { LogsModal } from '../components/LogsModal'
 import ActionReportModal from '../components/ActionReportModal'
 import { TeamsModal } from '../components/TeamsModal'
 import { ProgressionModal } from '../components/ProgressionModal'
-import ServerBeaconModal from '../components/ServerBeaconModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
 import WipeCountdownTimer from '../components/WipeCountdownTimer'
 import RadialMenu from '../components/RadialMenu'
@@ -1540,7 +1539,6 @@ export default function InteractiveTacticalMap() {
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [showProgressionModal, setShowProgressionModal] = useState(false)
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
-  const [showServerBeaconModal, setShowServerBeaconModal] = useState(false)
   
   // Progression Display State
   const [progressionDisplay, setProgressionDisplay] = useState({
@@ -1649,9 +1647,7 @@ export default function InteractiveTacticalMap() {
   // Close menu dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showMenuDropdown && 
-          !event.target.closest('[data-testid="button-menu-dropdown"]') && 
-          !event.target.closest('.menu-dropdown')) {
+      if (showMenuDropdown && !event.target.closest('[data-testid="button-menu-dropdown"]')) {
         setShowMenuDropdown(false)
       }
     }
@@ -2047,10 +2043,7 @@ export default function InteractiveTacticalMap() {
                     ))}
                     <div className="relative">
                       <button 
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setShowMenuDropdown(!showMenuDropdown)
-                        }}
+                        onClick={() => setShowMenuDropdown(!showMenuDropdown)}
                         className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
                         data-testid="button-menu-dropdown"
                       >
@@ -2058,16 +2051,14 @@ export default function InteractiveTacticalMap() {
                       </button>
                       {/* Menu Dropdown */}
                       {showMenuDropdown && (
-                        <div className="menu-dropdown absolute top-full right-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded shadow-xl z-[60] min-w-40">
+                        <div className="absolute top-full right-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded shadow-xl z-[60] min-w-40">
                           {['Settings', 'Team management', 'Bot control', 'Admin control'].map((option) => (
                             <button
                               key={option}
-                              onClick={(e) => {
-                                e.stopPropagation()
+                              onClick={() => {
                                 setShowMenuDropdown(false)
-                                if (option === 'Admin control') {
-                                  setShowServerBeaconModal(true)
-                                }
+                                // Add functionality for each option here
+                                console.log(`Selected: ${option}`)
                               }}
                               className="block w-full text-left px-3 py-2 text-orange-100 hover:bg-orange-800/50 transition-colors duration-150 first:rounded-t last:rounded-b"
                               data-testid={`menu-option-${option.toLowerCase().replace(' ', '-')}`}
@@ -2305,11 +2296,6 @@ export default function InteractiveTacticalMap() {
           isOpen={showProgressionModal}
           onClose={() => setShowProgressionModal(false)}
           onProgressionDisplayChange={setProgressionDisplay}
-        />
-
-        <ServerBeaconModal
-          isOpen={showServerBeaconModal}
-          onClose={() => setShowServerBeaconModal(false)}
         />
       </div>
     </div>

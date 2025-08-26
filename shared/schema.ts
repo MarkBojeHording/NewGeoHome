@@ -1,287 +1,114 @@
-import { pgTable, text, integer, timestamp, boolean, real, uuid, primaryKey } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { sql } from "drizzle-orm";
+import { pgTable, text, varchar, integer, timestamp, jsonb, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Users table - for authentication
 export const users = pgTable("users", {
-  id: text("id").primaryKey(),
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Bases table - for tactical map bases
-export const bases = pgTable("bases", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  position: text("position").notNull(), // JSON string for coordinates
-  type: text("type").notNull(), // "friendly", "enemy", "neutral"
-  description: text("description"),
-  rocketCount: integer("rocket_count").default(0),
-  ammoCount: integer("ammo_count").default(0),
-  upkeepDays: integer("upkeep_days").default(0),
-  heat: real("heat").default(0),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  owners: text("owners").array().default([]), // Array of owner names
+export const insertUserSchema = createInsertSchema(users).pick({
+  username: true,
+  password: true,
 });
 
-// Reports table - for tactical reports
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type User = typeof users.$inferSelect;
+
+// Centralized reports table for all report types
 export const reports = pgTable("reports", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  title: text("title").notNull(),
-  content: text("content").notNull(),
-  reportType: text("report_type").notNull(), // "general", "base", "action"
-  reportDate: timestamp("report_date").notNull(),
-  reportTime: text("report_time").notNull(), // "24hr_format"
-  taggedPlayers: text("tagged_players").array().default([]), // Array of player names
-  taggedBases: text("tagged_bases").array().default([]), // Array of base IDs
-  outcome: text("outcome"), // For action reports only
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  type: text("type").notNull(), // "general" | "base" | "action"
+  notes: text("notes").notNull(),
+  outcome: text("outcome").notNull(), // "good" | "neutral" | "bad"
+  playerTags: text("player_tags").array().default([]), // Array of player IDs
+  baseTags: text("base_tags").array().default([]), // Array of base IDs (only for base reports)
+  screenshots: text("screenshots").array().default([]), // Array of image URLs
+  location: jsonb("location").notNull(), // {gridX: number, gridY: number}
+  createdBy: text("created_by"), // User ID who created the report
+  createdAt: timestamp("created_at").defaultNow(),
+  completedBy: text("completed_by"), // User ID who completed (only for action reports)
+  completedAt: timestamp("completed_at"), // Completion timestamp (only for action reports)
 });
 
-// Report templates table
+// Standard report templates
 export const reportTemplates = pgTable("report_templates", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  reportType: text("report_type").notNull().unique(),
-  template: text("template").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  name: text("name").notNull(),
+  reportType: text("report_type").notNull(),
+  template: jsonb("template").notNull(), // JSON structure defining fields
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Premium players table
+export const insertReportSchema = createInsertSchema(reports).omit({ id: true, createdAt: true, completedAt: true });
+export type InsertReport = z.infer<typeof insertReportSchema>;
+export type Report = typeof reports.$inferSelect;
+
+export const insertReportTemplateSchema = createInsertSchema(reportTemplates).omit({ id: true, createdAt: true });
+export type InsertReportTemplate = z.infer<typeof insertReportTemplateSchema>;
+export type ReportTemplate = typeof reportTemplates.$inferSelect;
+
+// Premium players table for tracking Battlemetrics premium users
 export const premiumPlayers = pgTable("premium_players", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   playerName: text("player_name").notNull().unique(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  lastSeen: timestamp("last_seen"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Player base tags table - for tracking which players are associated with which bases
+export const insertPremiumPlayerSchema = createInsertSchema(premiumPlayers).omit({ id: true, createdAt: true });
+export type InsertPremiumPlayer = z.infer<typeof insertPremiumPlayerSchema>;
+export type PremiumPlayer = typeof premiumPlayers.$inferSelect;
+
+// Player base associations table for tracking which players are tagged with which bases
 export const playerBaseTags = pgTable("player_base_tags", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   playerName: text("player_name").notNull(),
-  baseId: text("base_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  baseId: text("base_id").notNull(), // Links to the base unique ID
+  baseName: text("base_name").notNull(), // Base name for display (e.g., "A1", "B3(2)")
+  baseType: text("base_type").notNull(), // enemy-small, friendly-main, etc.
+  taggedAt: timestamp("tagged_at").defaultNow(),
 });
 
-// Player profiles table - for tracking player statistics
-export const playerProfiles = pgTable("player_profiles", {
-  id: text("id").primaryKey(),
-  playerName: text("player_name").notNull().unique(),
-  serverId: text("server_id").notNull(),
-  playerId: text("player_id"),
-  isOnline: boolean("is_online").default(false),
-  currentSessionStart: timestamp("current_session_start"),
-  lastJoinTime: timestamp("last_join_time"),
-  lastLeaveTime: timestamp("last_leave_time"),
-  lastSeenTime: timestamp("last_seen_time").notNull(),
-  totalSessions: integer("total_sessions").default(0),
-  totalPlayTimeMinutes: integer("total_play_time_minutes").default(0),
-  lastKnownRank: integer("last_known_rank"),
-  lastKnownScore: integer("last_known_score"),
-  firstSeenAt: timestamp("first_seen_at").defaultNow().notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-// ServerBeacon servers table - for monitored servers
-export const serverBeaconServers = pgTable("serverbeacon_servers", {
-  id: text("id").primaryKey(), // BattleMetrics server ID
-  name: text("name").notNull(),
-  game: text("game").notNull(),
-  region: text("region"),
-  addedAt: timestamp("added_at").defaultNow().notNull(),
-  lastChecked: timestamp("last_checked"),
-  isActive: boolean("is_active").default(true).notNull(),
-});
-
-// Relations
-export const usersRelations = relations(users, ({ many }) => ({
-  bases: many(bases),
-  reports: many(reports),
-}));
-
-export const basesRelations = relations(bases, ({ one, many }) => ({
-  reports: many(reports),
-  playerBaseTags: many(playerBaseTags),
-}));
-
-export const reportsRelations = relations(reports, ({ one }) => ({
-  author: one(users, {
-    fields: [reports.id],
-    references: [users.id],
-  }),
-}));
-
-export const playerBaseTagsRelations = relations(playerBaseTags, ({ one }) => ({
-  base: one(bases, {
-    fields: [playerBaseTags.baseId],
-    references: [bases.id],
-  }),
-}));
-
-// Create insert schemas
-export const insertUserSchema = createInsertSchema(users);
-export const insertBaseSchema = createInsertSchema(bases);
-export const insertReportSchema = createInsertSchema(reports);
-export const insertReportTemplateSchema = createInsertSchema(reportTemplates);
-export const insertPremiumPlayerSchema = createInsertSchema(premiumPlayers);
-export const insertPlayerBaseTagSchema = createInsertSchema(playerBaseTags);
-export const insertPlayerProfileSchema = createInsertSchema(playerProfiles);
-
-// Infer types
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
-export type UpsertUser = typeof users.$inferInsert;
-export type Base = typeof bases.$inferSelect;
-export type InsertBase = typeof bases.$inferInsert;
-export type Report = typeof reports.$inferSelect;
-export type InsertReport = typeof reports.$inferInsert;
-export type ReportTemplate = typeof reportTemplates.$inferSelect;
-export type InsertReportTemplate = typeof reportTemplates.$inferInsert;
-export type PremiumPlayer = typeof premiumPlayers.$inferSelect;
-export type InsertPremiumPlayer = typeof premiumPlayers.$inferInsert;
+export const insertPlayerBaseTagSchema = createInsertSchema(playerBaseTags).omit({ id: true, taggedAt: true });
+export type InsertPlayerBaseTag = z.infer<typeof insertPlayerBaseTagSchema>;
 export type PlayerBaseTag = typeof playerBaseTags.$inferSelect;
-export type InsertPlayerBaseTag = typeof playerBaseTags.$inferInsert;
+
+// Player profiles table for storing aliases and notes
+export const playerProfiles = pgTable("player_profiles", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  playerName: text("player_name").notNull().unique(),
+  aliases: text("aliases").default(""), // Comma-separated aliases
+  notes: text("notes").default(""),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPlayerProfileSchema = createInsertSchema(playerProfiles).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertPlayerProfile = z.infer<typeof insertPlayerProfileSchema>;
 export type PlayerProfile = typeof playerProfiles.$inferSelect;
-export type InsertPlayerProfile = typeof playerProfiles.$inferInsert;
-export type InsertDBPlayerProfile = typeof playerProfiles.$inferInsert;
 
-// Additional schemas for API responses
-export const mapInfoSchema = z.object({
-  name: z.string(),
-  seed: z.number().optional(),
-  size: z.number().optional(),
-  entityCount: z.number().optional(),
-  monuments: z.number().optional(),
-  url: z.string().optional(),
-  imageUrl: z.string().optional(),
-  thumbnailUrl: z.string().optional(),
-});
-
-export const serverSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  game: z.string(),
-  region: z.string().optional(),
-  status: z.enum(["online", "offline"]),
-  players: z.number(),
-  maxPlayers: z.number(),
-  rank: z.number().optional(),
-  mapInfo: mapInfoSchema.optional(),
-  gameMode: z.string().optional(),
-  version: z.string().optional(),
-  lastWipe: z.string().optional(),
-  details: z.record(z.any()).optional(),
-  ping: z.number().optional(),
-  lastSeen: z.string().optional(),
-  queueCount: z.number().optional(),
-  errorMessage: z.string().optional(),
-});
-
-export const playerSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  sessionTime: z.string(),
-  joinTime: z.string(),
-  private: z.boolean().optional(),
-});
-
-export const activitySchema = z.object({
-  id: z.string(),
+// External player data structure to match your API
+export const externalPlayerSchema = z.object({
   playerName: z.string(),
-  action: z.enum(["joined", "left"]),
-  timestamp: z.string(),
-});
-
-export const serverStatsSchema = z.object({
-  joinedToday: z.number(),
-  avgSessionTime: z.string(),
-  peakToday: z.number(),
-});
-
-export const addServerSchema = z.object({
-  url: z.string().url("Must be a valid URL"),
-  serverId: z.string().min(1, "Server ID is required"),
-});
-
-export const serverListItemSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  game: z.string(),
-  region: z.string().optional(),
-  status: z.enum(["online", "offline"]),
-  players: z.number(),
-  maxPlayers: z.number(),
-  ping: z.number().optional(),
-  errorMessage: z.string().optional(),
-  mapFetched: z.boolean(),
-  lastChecked: z.string(),
-  addedAt: z.string(),
-});
-
-export const playerProfileSchema = z.object({
-  id: z.string(),
-  serverId: z.string(),
-  playerName: z.string(),
-  playerId: z.string().optional(),
   isOnline: z.boolean(),
-  currentSessionStart: z.string().optional(),
-  lastJoinTime: z.string().optional(),
-  lastLeaveTime: z.string().optional(),
-  lastSeenTime: z.string(),
   totalSessions: z.number(),
-  totalPlayTimeMinutes: z.number(),
-  lastKnownRank: z.number().optional(),
-  lastKnownScore: z.number().optional(),
-  firstSeenAt: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  // Add other fields as needed from your API
 });
 
-export const playerActivitySchema = z.object({
-  id: z.string(),
-  profileId: z.string().optional(),
-  sessionId: z.string().optional(),
-  serverId: z.string(),
-  playerName: z.string(),
-  playerId: z.string().optional(),
-  action: z.enum(["joined", "left"]),
-  timestamp: z.string(),
-  playerRank: z.number().optional(),
-  playerScore: z.number().optional(),
+export type ExternalPlayer = z.infer<typeof externalPlayerSchema>;
+
+// Teams table for organizing enemy bases
+export const teams = pgTable("teams", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  color: text("color").notNull(), // Hex color for team identification
+  mainBaseId: text("main_base_id"), // ID of the main base for this team
+  notes: text("notes").default(""),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const playerSessionSchema = z.object({
-  id: z.string(),
-  profileId: z.string(),
-  serverId: z.string(),
-  playerName: z.string(),
-  playerId: z.string().optional(),
-  joinTime: z.string(),
-  leaveTime: z.string().optional(),
-  durationMinutes: z.number().optional(),
-  isActive: z.boolean(),
-  playerRank: z.number().optional(),
-  playerScore: z.number().optional(),
-  sessionType: z.string().optional(),
-});
-
-export const createTeamSchema = z.object({
-  name: z.string().min(1, "Team name is required").max(100, "Team name too long"),
-  description: z.string().optional(),
-});
-
-export type MapInfo = z.infer<typeof mapInfoSchema>;
-export type Server = z.infer<typeof serverSchema>;
-export type Player = z.infer<typeof playerSchema>;
-export type Activity = z.infer<typeof activitySchema>;
-export type ServerStats = z.infer<typeof serverStatsSchema>;
-export type AddServerRequest = z.infer<typeof addServerSchema>;
-export type ServerListItem = z.infer<typeof serverListItemSchema>;
-export type PlayerActivityType = z.infer<typeof playerActivitySchema>;
-export type PlayerSession = z.infer<typeof playerSessionSchema>;
+export const insertTeamSchema = createInsertSchema(teams).omit({ id: true, createdAt: true });
+export type InsertTeam = z.infer<typeof insertTeamSchema>;
+export type Team = typeof teams.$inferSelect;
