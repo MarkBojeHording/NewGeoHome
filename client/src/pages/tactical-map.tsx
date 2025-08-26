@@ -2045,7 +2045,10 @@ export default function InteractiveTacticalMap() {
                     ))}
                     <div className="relative">
                       <button 
-                        onClick={() => setShowMenuDropdown(!showMenuDropdown)}
+                        onClick={() => {
+                          console.log('MENU button clicked, current dropdown state:', showMenuDropdown)
+                          setShowMenuDropdown(!showMenuDropdown)
+                        }}
                         className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
                         data-testid="button-menu-dropdown"
                       >
@@ -2058,8 +2061,10 @@ export default function InteractiveTacticalMap() {
                             <button
                               key={option}
                               onClick={() => {
+                                console.log(`Menu option clicked: ${option}`)
                                 setShowMenuDropdown(false)
                                 if (option === 'Admin control') {
+                                  console.log('Setting ServerBeacon modal to true')
                                   setShowServerBeaconModal(true)
                                 } else {
                                   console.log(`Selected: ${option}`)
@@ -2304,7 +2309,7 @@ export default function InteractiveTacticalMap() {
         />
 
         <ServerBeaconModal
-          isOpen={showServerBeaconModal}
+          isOpen={true}
           onClose={() => setShowServerBeaconModal(false)}
         />
       </div>

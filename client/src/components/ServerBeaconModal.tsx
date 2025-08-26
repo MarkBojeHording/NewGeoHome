@@ -7,6 +7,7 @@ interface ServerBeaconModalProps {
 }
 
 export default function ServerBeaconModal({ isOpen, onClose }: ServerBeaconModalProps) {
+  console.log('ServerBeaconModal render - isOpen:', isOpen)
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl h-[80vh] p-0">
