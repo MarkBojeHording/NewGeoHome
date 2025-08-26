@@ -12,6 +12,7 @@ This project is a Rust-themed tactical map and raid calculator application desig
 - **Removed Report Outcomes**: Cleaned up base report previews by removing outcome displays since base reports don't use outcomes
 - **Fixed Player Tagging**: Resolved modalType scoping issue in PlayerSearchSelector component for proper player status indicators
 - **Restored Base Owner Display**: Fixed base modal initialization to properly display existing base owners from database
+- **Implemented Gene Progress System**: Successfully integrated popup-to-main window communication system using postMessage API to sync gene data from calculator popup to progression modal. Features automatic real-time updates and manual sync capability. Displays identical gene information as calculator's "Best 🧬" field with proper gene quality colors and progress percentages.
 
 # User Preferences
 
