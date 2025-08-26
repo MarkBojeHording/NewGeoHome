@@ -485,6 +485,14 @@ const openGeneCalculator = () => {
               monitorAndSave();
             }, 500);
           });
+          
+          // Listen for requests from main window
+          window.addEventListener('message', function(event) {
+            if (event.data.type === 'REQUEST_GENE_DATA') {
+              console.log('Popup received request for gene data, sending current data...');
+              monitorAndSave(); // This will send the current data via postMessage
+            }
+          });
         </script>
       `;
       

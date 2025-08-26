@@ -164,6 +164,30 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
     console.log('Cleared gene data')
   }
   
+  // Function to manually request data from open gene calculator popup
+  const requestDataFromPopup = () => {
+    try {
+      // Try to find and communicate with the popup
+      const popup = window.open('', 'geneCalculator', '')
+      if (popup && !popup.closed) {
+        console.log('Found open gene calculator popup, requesting data...')
+        
+        // Send a message to the popup requesting its current data
+        popup.postMessage({
+          type: 'REQUEST_GENE_DATA',
+          timestamp: Date.now()
+        }, '*')
+        
+        console.log('Sent data request to popup')
+      } else {
+        console.log('No open gene calculator popup found')
+        alert('Please open the Gene Calculator first, then try again.')
+      }
+    } catch (e) {
+      console.error('Error requesting data from popup:', e)
+    }
+  }
+  
   // Load gene data when modal opens and update it
   useEffect(() => {
     if (!isOpen) return
@@ -190,15 +214,19 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
     
     // Listen for postMessage updates from the gene calculator popup
     const handleMessageFromPopup = (event: MessageEvent) => {
+      console.log('Received postMessage:', event.data)
+      
       if (event.data.type === 'GENE_DATA_UPDATE' || event.data.type === 'GENE_PROGRESS_UPDATE') {
-        console.log('Received gene data update from popup:', event.data)
+        console.log('Processing gene data update from popup:', event.data)
         
         // Store the data in main window localStorage
         if (event.data.type === 'GENE_DATA_UPDATE' && event.data.data.geneData) {
           localStorage.setItem('rustGeneCalculatorData', JSON.stringify(event.data.data.geneData))
+          console.log('Stored gene data to localStorage')
         }
         if (event.data.type === 'GENE_PROGRESS_UPDATE' && event.data.data.progressData) {
           localStorage.setItem('rustGeneProgress', JSON.stringify(event.data.data.progressData))
+          console.log('Stored progress data to localStorage')
         }
         
         // Update the displayed data
@@ -347,6 +375,12 @@ export function ProgressionModal({ isOpen, onClose }: ProgressionModalProps) {
                       className="w-full px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded font-mono"
                     >
                       Test with Sample Data
+                    </button>
+                    <button 
+                      onClick={requestDataFromPopup}
+                      className="w-full px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded font-mono"
+                    >
+                      Get Data from Popup
                     </button>
                   </div>
                 </div>
