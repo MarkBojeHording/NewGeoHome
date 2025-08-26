@@ -1538,6 +1538,7 @@ export default function InteractiveTacticalMap() {
   const [showBaseReportModal, setShowBaseReportModal] = useState(false)
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [showProgressionModal, setShowProgressionModal] = useState(false)
+  const [showMenuDropdown, setShowMenuDropdown] = useState(false)
   
   // Progression Display State
   const [progressionDisplay, setProgressionDisplay] = useState({
@@ -1642,6 +1643,20 @@ export default function InteractiveTacticalMap() {
       window.removeEventListener('openBaseModal', handleOpenBaseModal)
     }
   }, [])
+
+  // Close menu dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showMenuDropdown && !event.target.closest('[data-testid="button-menu-dropdown"]')) {
+        setShowMenuDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showMenuDropdown])
 
   const getOwnedBases = useCallback((ownerName) => {
     const ownerBase = ownerName.split('(')[0]
@@ -2015,23 +2030,45 @@ export default function InteractiveTacticalMap() {
                     <WipeCountdownTimer />
                   </div>
                   <div className="flex gap-2">
-                    {['Teams', 'Bot Control', 'Turret Control'].map((btn) => (
+                    {['Teams', 'Turret Control'].map((btn) => (
                       <button 
                         key={btn} 
                         onClick={() => {
-                          if (btn === 'Players') setShowPlayerModal(true)
-                          else if (btn === 'Logs') setShowLogsModal(true)
-                          else if (btn === 'Teams') setShowTeamsModal(true)
+                          if (btn === 'Teams') setShowTeamsModal(true)
                         }} 
-                        data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
                         className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
                       >
                         [{btn.toUpperCase()}]
                       </button>
                     ))}
-                    <button className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide">
-                      [MENU]
-                    </button>
+                    <div className="relative">
+                      <button 
+                        onClick={() => setShowMenuDropdown(!showMenuDropdown)}
+                        className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
+                        data-testid="button-menu-dropdown"
+                      >
+                        [MENU]
+                      </button>
+                      {/* Menu Dropdown */}
+                      {showMenuDropdown && (
+                        <div className="absolute top-full right-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded shadow-xl z-[60] min-w-40">
+                          {['Settings', 'Team management', 'Bot control', 'Admin control'].map((option) => (
+                            <button
+                              key={option}
+                              onClick={() => {
+                                setShowMenuDropdown(false)
+                                // Add functionality for each option here
+                                console.log(`Selected: ${option}`)
+                              }}
+                              className="block w-full text-left px-3 py-2 text-orange-100 hover:bg-orange-800/50 transition-colors duration-150 first:rounded-t last:rounded-b"
+                              data-testid={`menu-option-${option.toLowerCase().replace(' ', '-')}`}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
