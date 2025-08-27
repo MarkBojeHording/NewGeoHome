@@ -1587,9 +1587,10 @@ export default function InteractiveTacticalMap() {
             notes: report.notes,
             enemyPlayers: report.playerTags.join(', '),
             friendlyPlayers: '', // Reports don't distinguish between enemy/friendly in database
-            reportId: report.id // Use the actual database ID
+            reportId: location.displayReportId, // Use the stored alphanumeric ID for display
+            databaseId: report.id // Store the database ID for API calls
           })
-          console.log('Set editingLocation with reportId:', report.id)
+          console.log('Set editingLocation with reportId:', report.reportId, 'databaseId:', report.id)
           setModalType('report')
           setNewBaseModal({ x: location.x, y: location.y, visible: true })
           return
@@ -1754,9 +1755,9 @@ export default function InteractiveTacticalMap() {
       console.log('Saving report:', reportData)
       try {
         // Check if this is editing an existing report
-        if (editingLocation?.reportId) {
+        if (editingLocation?.databaseId) {
           // Update existing report
-          const response = await fetch(`/api/reports/${editingLocation.reportId}`, {
+          const response = await fetch(`/api/reports/${editingLocation.databaseId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(reportData)
@@ -1799,7 +1800,8 @@ export default function InteractiveTacticalMap() {
               outcome: baseData.outcome,
               time: new Date().toLocaleTimeString(),
               isReportMarker: true, // Flag to distinguish from regular bases
-              reportId: savedReport.id // Link to the actual database report
+              reportId: savedReport.id, // Database ID for API calls
+              displayReportId: baseData.reportId // Alphanumeric ID for display
             }
             setLocations(prev => [...prev, reportMarker])
           } else {
