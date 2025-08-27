@@ -511,9 +511,9 @@ export default function WipeCountdownTimer() {
           <div className="flex space-x-4">
             {/* Left side */}
             <div className="flex flex-col space-y-2" style={{ width: '490px' }}>
-              <div className="flex justify-end">
+              <div className="w-full">
                 {/* Upkeep Summary */}
-                <div className="bg-gray-800 border border-orange-600/50 rounded p-2 w-56 text-xs text-orange-300">
+                <div className="bg-gray-800 border border-orange-600/50 rounded p-2 w-full text-xs text-orange-300">
                   <div className="flex space-x-4">
                     {/* Daily Upkeep */}
                     <div className="flex-1">
