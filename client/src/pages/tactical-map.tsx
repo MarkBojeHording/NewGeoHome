@@ -8,10 +8,14 @@ import ActionReportModal from '../components/ActionReportModal'
 import { TeamsModal } from '../components/TeamsModal'
 import { ProgressionModal } from '../components/ProgressionModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
-import WipeCountdownTimer from '../components/WipeCountdownTimer'
 import RadialMenu from '../components/RadialMenu'
 import FarmRadialMenu from '../components/FarmRadialMenu'
 import BaseRadialMenu from '../components/BaseRadialMenu'
+import WipeCountdownTimer from '../components/WipeCountdownTimer'
+import TacticalMapToolbar from '../components/TacticalMapToolbar'
+import TacticalMapGrid from '../components/TacticalMapGrid'
+import TacticalMapBackground from '../components/TacticalMapBackground'
+import TacticalMapLocation from '../components/TacticalMapLocation'
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
 // ============= CONSTANTS =============
@@ -667,250 +671,7 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
   )
 }
 
-const LocationMarker = ({ location, locations = [], isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport }) => {
-  const ownedBases = getOwnedBases(location.name)
 
-  // Calculate online player count for this base (regular players only, premium players are always counted as online)
-  const onlinePlayerCount = useMemo(() => {
-    if (!location.players) return 0
-    
-    const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
-    return basePlayerNames.filter(playerName => 
-      players.some(player => player.playerName === playerName && player.isOnline)
-    ).length
-  }, [location.players, players])
-
-  // Calculate premium player count for this base
-  const premiumPlayerCount = useMemo(() => {
-    if (!location.players) return 0
-    
-    const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
-    return basePlayerNames.filter(playerName => 
-      players.some(player => player.playerName === playerName && player.createdAt !== undefined)
-    ).length
-  }, [location.players, players])
-
-  // Calculate offline player count for this base (regular players only, premium players are not counted as offline)
-  const offlinePlayerCount = useMemo(() => {
-    if (!location.players) return 0
-    
-    const basePlayerNames = location.players.split(",").map(p => p.trim()).filter(p => p)
-    return basePlayerNames.filter(playerName => 
-      players.some(player => player.playerName === playerName && !player.isOnline && player.createdAt === undefined)
-    ).length
-  }, [location.players, players])
-  
-  return (
-    <button
-      className="absolute transform -translate-x-1/2 -translate-y-1/2"
-      style={{ left: `${location.x}%`, top: `${location.y}%` }}
-      onMouseDown={(e) => e.stopPropagation()}
-      onClick={(e) => {
-        e.stopPropagation()
-        e.preventDefault()
-        onClick(location)
-      }}
-    >
-      <div className="relative">
-        {/* Group Color Ring - shows for bases that belong to a group */}
-        {(() => {
-          const groupColor = getGroupColor(location.id, locations)
-          if (!groupColor) return null
-          
-          return (
-            <div 
-              className="absolute rounded-full"
-              style={{
-                width: "18px", // Smaller group circle
-                height: "18px",
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
-                backgroundColor: groupColor,
-                zIndex: 0, // Behind the icon
-                opacity: 0.6 // Slightly more transparent since it's filled
-              }}
-            />
-          )
-        })()}
-        {!location.type.startsWith('report') && (
-          <TimerDisplay 
-            timers={timers} 
-            onRemoveTimer={onRemoveTimer}
-          />
-        )}
-
-        {/* Online player count display - only show for enemy bases with players */}
-        {location.type.startsWith("enemy") && onlinePlayerCount > 0 && (
-          <div 
-            className="absolute text-xs font-bold text-red-400 bg-black/80 rounded-full flex items-center justify-center border border-red-400/50"
-            style={{
-              width: "9px", // 75% of original 12px
-              height: "9px",
-              left: "-6px", // Adjusted proportionally
-              top: "-1.5px", // Adjusted proportionally
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              fontSize: "7px" // Proportionally smaller font
-            }}
-          >
-            {onlinePlayerCount}
-          </div>
-        )}
-
-        {/* Premium player count display - orange circle, 35% smaller, to the right of green */}
-        {location.type.startsWith("enemy") && premiumPlayerCount > 0 && (
-          <div 
-            className="absolute text-xs font-bold text-orange-400 bg-black/80 rounded-full flex items-center justify-center border border-orange-400/50"
-            style={{
-              width: "6px", // 75% of original 7.8px
-              height: "6px",
-              left: "3px", // Adjusted proportionally
-              top: "-3px", // Adjusted proportionally
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              fontSize: "5px" // Proportionally smaller font
-            }}
-          >
-            {premiumPlayerCount}
-          </div>
-        )}
-
-        {/* Offline player count display - grey circle, below green */}
-        {location.type.startsWith("enemy") && offlinePlayerCount > 0 && (
-          <div 
-            className="absolute text-xs font-bold text-gray-400 bg-black/80 rounded-full flex items-center justify-center border border-gray-400/50"
-            style={{
-              width: "6px", // 75% of original 7.8px
-              height: "6px",
-              left: "-6px", // Adjusted proportionally 
-              top: "6px", // Adjusted proportionally
-              transform: "translateY(-50%)",
-              zIndex: 1,
-              fontSize: "5px" // Proportionally smaller font
-            }}
-          >
-            {offlinePlayerCount}
-          </div>
-        )}
-        
-        <div className={`bg-gray-700 rounded-full shadow-md border border-gray-600 flex items-center justify-center ${location.abandoned ? 'opacity-40' : ''} ${
-          location.type.startsWith('report') ? 'p-0.5 scale-[0.375]' : 'p-0.5 scale-75'
-        }`}>
-          <div className={`${getColor(location.type, location)} flex items-center justify-center`}>
-            {getIcon(location.type)}
-          </div>
-        </div>
-        
-        {isSelected && (
-          <div className="absolute pointer-events-none" style={{
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: location.type.startsWith('report') ? '10px' : '20px',
-            height: location.type.startsWith('report') ? '10px' : '20px',
-            zIndex: 5
-          }}>
-            <div className="selection-ring" style={{ width: '100%', height: '100%' }}>
-              <svg width={location.type.startsWith('report') ? "10" : "20"} height={location.type.startsWith('report') ? "10" : "20"} viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id={`greyGradient-${location.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#D8D8D8"/>
-                    <stop offset="50%" stopColor="#C0C0C0"/>
-                    <stop offset="100%" stopColor="#B0B0B0"/>
-                  </linearGradient>
-                  <linearGradient id={`diamondGradient-${location.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#606060"/>
-                    <stop offset="50%" stopColor="#303030"/>
-                    <stop offset="100%" stopColor="#101010"/>
-                  </linearGradient>
-                </defs>
-                <path d="M 150,30 A 120,120 0 1,0 150,270 A 120,120 0 1,0 150,30 Z M 150,47 A 103,103 0 1,1 150,253 A 103,103 0 1,1 150,47 Z" fill={`url(#greyGradient-${location.id})`} fillRule="evenodd"/>
-                <circle cx="150" cy="150" r="120" fill="none" stroke="#000000" strokeWidth="5"/>
-                <circle cx="150" cy="150" r="103" fill="none" stroke="#000000" strokeWidth="5"/>
-                <g transform="translate(150, 30)">
-                  <path d="M 0,-18 L 21,0 L 0,36 L -21,0 Z" fill={`url(#diamondGradient-${location.id})`} stroke="#000000" strokeWidth="5"/>
-                  <path d="M 0,-14 L 12,-2 L 0,8 L -12,-2 Z" fill="#FFFFFF" opacity="0.15"/>
-                </g>
-                <g transform="translate(270, 150) rotate(90)">
-                  <path d="M 0,-18 L 21,0 L 0,36 L -21,0 Z" fill={`url(#diamondGradient-${location.id})`} stroke="#000000" strokeWidth="5"/>
-                  <path d="M 0,-14 L 12,-2 L 0,8 L -12,-2 Z" fill="#FFFFFF" opacity="0.15"/>
-                </g>
-                <g transform="translate(150, 270) rotate(180)">
-                  <path d="M 0,-18 L 21,0 L 0,36 L -21,0 Z" fill={`url(#diamondGradient-${location.id})`} stroke="#000000" strokeWidth="5"/>
-                  <path d="M 0,-14 L 12,-2 L 0,8 L -12,-2 Z" fill="#FFFFFF" opacity="0.15"/>
-                </g>
-                <g transform="translate(30, 150) rotate(270)">
-                  <path d="M 0,-18 L 21,0 L 0,36 L -21,0 Z" fill={`url(#diamondGradient-${location.id})`} stroke="#000000" strokeWidth="5"/>
-                  <path d="M 0,-14 L 12,-2 L 0,8 L -12,-2 Z" fill="#FFFFFF" opacity="0.15"/>
-                </g>
-              </svg>
-            </div>
-          </div>
-        )}
-        
-        {/* Badges */}
-        {location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' && (
-          <div className="absolute -top-1 -right-1" style={{ zIndex: 10 }}>
-            {location.outcome === 'won' ? (
-              <div className="w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
-                <svg className="w-2 h-2 text-white" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 111.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
-                </svg>
-              </div>
-            ) : (
-              <div className="w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
-                <svg className="w-2 h-2 text-white" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M4.28 3.22a.75.75 0 00-1.06 1.06L6.94 8l-3.72 3.72a.75.75 0 101.06 1.06L8 9.06l3.72 3.72a.75.75 0 101.06-1.06L9.06 8l3.72-3.72a.75.75 0 00-1.06-1.06L8 6.94 4.28 3.22z"/>
-                </svg>
-              </div>
-            )}
-          </div>
-        )}
-        
-        
-        {location.roofCamper && (
-          <div className="absolute -top-1 -left-1" style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center" title="Roof Camper">
-              <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                <circle cx="12" cy="12" r="8" />
-                <line x1="12" y1="8" x2="12" y2="16" />
-                <line x1="8" y1="12" x2="16" y2="12" />
-              </svg>
-            </div>
-          </div>
-        )}
-        
-        {location.hostileSamsite && (
-          <div className={`absolute ${location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' ? '-right-2.5' : '-right-1'} ${"-bottom-1"}`} style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center" title="Hostile Samsite">
-              <span className="text-[8px] font-bold text-black">!</span>
-            </div>
-          </div>
-        )}
-        
-        {location.oldestTC && location.oldestTC > 0 && (
-          <div className="absolute inset-0 pointer-events-none">
-            <svg width="28" height="28" viewBox="0 0 28 28" className="absolute" style={{top: '-2px', left: '-2px'}}>
-              <g transform="translate(14, 14)">
-                <g transform={`rotate(${location.oldestTC + 180})`}>
-                  <g transform="translate(0, -11)">
-                    <path
-                      d="M -3 -3 L 3 -3 L 0 3 Z"
-                      fill={location.type.startsWith('enemy') ? '#ef4444' : '#10b981'}
-                      stroke={location.type.startsWith('enemy') ? '#991b1b' : '#047857'}
-                      strokeWidth="0.5"
-                    />
-                  </g>
-                </g>
-              </g>
-            </svg>
-          </div>
-        )}
-      </div>
-    </button>
-  )
-}
 
 const ContextMenu = ({ x, y, onAddBase }) => (
   <div className="fixed bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-20 py-2" style={{ left: x, top: y }}>
@@ -1538,7 +1299,6 @@ export default function InteractiveTacticalMap() {
   const [showBaseReportModal, setShowBaseReportModal] = useState(false)
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [showProgressionModal, setShowProgressionModal] = useState(false)
-  const [showMenuDropdown, setShowMenuDropdown] = useState(false)
   
   // Progression Display State
   const [progressionDisplay, setProgressionDisplay] = useState({
@@ -1605,15 +1365,15 @@ export default function InteractiveTacticalMap() {
     throwOnError: false,
   })
 
-  // Combine external and premium players
-  const players = [
+  // Combine external and premium players - memoized for performance
+  const players = useMemo(() => [
     ...externalPlayers,
     ...premiumPlayers.map(p => ({
       ...p,
       isOnline: false, // Premium players are considered offline for display
       totalSessions: 0
     }))
-  ]
+  ], [externalPlayers, premiumPlayers])
 
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
@@ -1644,19 +1404,7 @@ export default function InteractiveTacticalMap() {
     }
   }, [])
 
-  // Close menu dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showMenuDropdown && !event.target.closest('[data-testid="button-menu-dropdown"]')) {
-        setShowMenuDropdown(false)
-      }
-    }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showMenuDropdown])
 
   const getOwnedBases = useCallback((ownerName) => {
     const ownerBase = ownerName.split('(')[0]
@@ -1981,103 +1729,17 @@ export default function InteractiveTacticalMap() {
         }
       `}</style>
       
-      {/* Fixed Main Toolbar - Buttons for Logs, Players, etc. */}
-      <div className="fixed top-0 left-0 right-0 z-50 p-0 m-0" style={{top: 0, left: 0, right: 0, position: 'fixed'}}>
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50">
-            <div className="bg-gradient-to-r from-orange-900/30 via-gray-800 to-orange-900/30 p-1">
-              <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-2">
-                    {['Logs', 'Progression', 'Gene Calculator', 'Players'].map((btn) => (
-                      btn === 'Progression' ? (
-                        <div key={btn} className="relative">
-                          <button 
-                            onClick={() => setShowProgressionModal(true)}
-                            data-testid="button-open-progression-modal"
-                            className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
-                          >
-                            [PROGRESSION]
-                          </button>
-                          {/* Progression Display Container */}
-                          {progressionDisplay.enabled && (
-                            <div className="absolute top-full left-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded px-2 py-1 text-orange-100 font-mono text-xs leading-none whitespace-nowrap z-[60]">
-                              <div className="text-orange-400">Recommended kit level:</div>
-                              <div>In a group: <span className="text-orange-200">{progressionDisplay.inGroupWeapon}</span></div>
-                              <div>When alone: <span className="text-orange-200">{progressionDisplay.aloneWeapon}</span></div>
-                              <div>Countering: <span className="text-orange-200">{progressionDisplay.counteringWeapon}</span></div>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <button 
-                          key={btn} 
-                          onClick={() => {
-                            if (btn === 'Players') setShowPlayerModal(true)
-                            else if (btn === 'Logs') setShowLogsModal(true)
-                            else if (btn === 'Gene Calculator') openGeneCalculator()
-                            else if (btn === 'Teams') setShowTeamsModal(true)
-                          }} 
-                          data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
-                          className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
-                        >
-                          [{btn.toUpperCase()}]
-                        </button>
-                      )
-                    ))}
-                  </div>
-                  <div className="flex items-center">
-                    <WipeCountdownTimer />
-                  </div>
-                  <div className="flex gap-2">
-                    {['Teams', 'Turret Control'].map((btn) => (
-                      <button 
-                        key={btn} 
-                        onClick={() => {
-                          if (btn === 'Teams') setShowTeamsModal(true)
-                        }} 
-                        className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
-                      >
-                        [{btn.toUpperCase()}]
-                      </button>
-                    ))}
-                    <div className="relative">
-                      <button 
-                        onClick={() => setShowMenuDropdown(!showMenuDropdown)}
-                        className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
-                        data-testid="button-menu-dropdown"
-                      >
-                        [MENU]
-                      </button>
-                      {/* Menu Dropdown */}
-                      {showMenuDropdown && (
-                        <div className="absolute top-full right-0 mt-1 bg-gray-900/95 border border-orange-600/50 rounded shadow-xl z-[60] min-w-40">
-                          {['Settings', 'Team management', 'Bot control', 'Admin control'].map((option) => (
-                            <button
-                              key={option}
-                              onClick={() => {
-                                setShowMenuDropdown(false)
-                                // Add functionality for each option here
-                                console.log(`Selected: ${option}`)
-                              }}
-                              className="block w-full text-left px-3 py-2 text-orange-100 hover:bg-orange-800/50 transition-colors duration-150 first:rounded-t last:rounded-b"
-                              data-testid={`menu-option-${option.toLowerCase().replace(' ', '-')}`}
-                            >
-                              {option}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-70"></div>
-          </div>
-        </div>
-
-      </div>
+      {/* Tactical Map Toolbar Component */}
+      <TacticalMapToolbar 
+        onButtonClick={(buttonType) => {
+          if (buttonType === 'Players') setShowPlayerModal(true)
+          else if (buttonType === 'Logs') setShowLogsModal(true)
+          else if (buttonType === 'Progression') setShowProgressionModal(true)
+          else if (buttonType === 'Gene Calculator') openGeneCalculator()
+          else if (buttonType === 'Teams') setShowTeamsModal(true)
+        }}
+        progressionDisplay={progressionDisplay}
+      />
 
       <div className="max-w-6xl mx-auto mt-20 px-4">
 
@@ -2101,16 +1763,8 @@ export default function InteractiveTacticalMap() {
                 transition: isDragging ? 'none' : 'transform 100ms ease-out'
               }}
             >
-              <div className="absolute inset-0">
-                <svg className="w-full h-full" viewBox="0 0 800 800">
-                  <defs>
-                    <pattern id="waves" x="0" y="0" width="40" height="20" patternUnits="userSpaceOnUse">
-                      <path d="M0,10 Q10,0 20,10 T40,10" stroke="#0f766e" strokeWidth="2" fill="none" opacity="0.4"/>
-                    </pattern>
-                  </defs>
-                  <image href={rustMapImage} width="100%" height="100%" preserveAspectRatio="xMinYMin slice" style={{filter: 'brightness(0.9) contrast(1.1)'}}/>
-                </svg>
-              </div>
+              {/* Map Background Component */}
+              <TacticalMapBackground mapDimensions={{ width: 800, height: 800 }} />
 
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 800" style={{display: 'none'}}>
                 <path d="M150,200 Q200,100 350,80 Q500,60 600,150 Q700,250 650,400 Q600,500 450,520 Q300,540 200,450 Q100,350 150,200 Z"
@@ -2119,26 +1773,8 @@ export default function InteractiveTacticalMap() {
                       fill="#22c55e" opacity="0.8"/>
               </svg>
 
-              <div className="absolute inset-0 pointer-events-none">
-                <svg className="w-full h-full" viewBox="0 0 800 800">
-                  {Array.from({ length: 27 }, (_, i) => (
-                    <line key={`v-${i}`} x1={i * 30.77} y1="0" x2={i * 30.77} y2="800" stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
-                  ))}
-                  {Array.from({ length: 27 }, (_, i) => (
-                    <line key={`h-${i}`} x1="0" y1={i * 30.77} x2="800" y2={i * 30.77} stroke="rgba(0, 0, 0, 0.4)" strokeWidth="0.75"/>
-                  ))}
-                  {Array.from({ length: 26 }, (_, col) => 
-                    Array.from({ length: 26 }, (_, row) => {
-                      const letter = col < 26 ? String.fromCharCode(65 + col) : `A${String.fromCharCode(65 + col - 26)}`
-                      return (
-                        <text key={`label-${col}-${row}`} x={col * 30.77 + 1} y={row * 30.77 + 7} fill="black" fontSize="7" fontWeight="600" textAnchor="start">
-                          {letter}{row}
-                        </text>
-                      )
-                    })
-                  )}
-                </svg>
-              </div>
+              {/* Map Grid Component */}
+              <TacticalMapGrid mapDimensions={{ width: 800, height: 800 }} />
 
 {/* Heat Map Overlay */}
               <HeatMapOverlay
@@ -2185,29 +1821,38 @@ export default function InteractiveTacticalMap() {
                 )
               })()}
 
-              {locations.map((location) => (
-                <LocationMarker
-                  key={location.id}
-                  location={location}
-                  locations={locations}
-                  isSelected={selectedLocation?.id === location.id}
-                  onClick={setSelectedLocation}
-                  timers={locationTimers[location.id]}
-                  onRemoveTimer={(timerId) => handleRemoveTimer(location.id, timerId)}
-                  getOwnedBases={getOwnedBases}
-                  players={players}
-                  onOpenReport={onOpenBaseReport}
-                  onOpenBaseReport={(location) => {
-                    setBaseReportData({
-                      baseId: location.id,
-                      baseName: location.name,
-                      baseCoords: location.coordinates,
-                      baseType: location.type
-                    })
-                    setShowBaseReportModal(true)
-                  }}
-                />
-              ))}
+              {locations.map((location) => {
+                // Calculate player counts for this location
+                const basePlayerNames = location.players ? location.players.split(",").map(p => p.trim()).filter(p => p) : []
+                
+                const onlinePlayerCount = basePlayerNames.filter(playerName => 
+                  players.some(player => player.playerName === playerName && player.isOnline)
+                ).length
+                
+                const premiumPlayerCount = basePlayerNames.filter(playerName => 
+                  players.some(player => player.playerName === playerName && player.createdAt !== undefined)
+                ).length
+                
+                const offlinePlayerCount = basePlayerNames.filter(playerName => 
+                  players.some(player => player.playerName === playerName && !player.isOnline && player.createdAt === undefined)
+                ).length
+                
+                const groupColor = getGroupColor(location.id, locations)
+                
+                return (
+                  <TacticalMapLocation
+                    key={location.id}
+                    location={location}
+                    isSelected={selectedLocation?.id === location.id}
+                    onlinePlayerCount={onlinePlayerCount}
+                    premiumPlayerCount={premiumPlayerCount}
+                    offlinePlayerCount={offlinePlayerCount}
+                    groupColor={groupColor}
+                    onClick={setSelectedLocation}
+                    onContextMenu={handleContextMenu}
+                  />
+                )
+              })}
             </div>
           </div>
 
