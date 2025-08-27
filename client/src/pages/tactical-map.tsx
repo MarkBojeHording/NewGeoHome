@@ -1755,9 +1755,9 @@ export default function InteractiveTacticalMap() {
       console.log('Saving report:', reportData)
       try {
         // Check if this is editing an existing report
-        if (editingLocation?.databaseId) {
+        if (editingLocation?.reportId) {
           // Update existing report
-          const response = await fetch(`/api/reports/${editingLocation.databaseId}`, {
+          const response = await fetch(`/api/reports/${editingLocation.reportId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(reportData)
