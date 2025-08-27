@@ -20,6 +20,7 @@ interface ActionReportModalProps {
   baseName?: string;
   baseCoords?: string;
   editingReport?: any;
+  modalType?: string;
 }
 
 export default function ActionReportModal({
@@ -29,6 +30,7 @@ export default function ActionReportModal({
   baseName,
   baseCoords,
   editingReport,
+  modalType,
 }: ActionReportModalProps) {
   const queryClient = useQueryClient()
   const [formData, setFormData] = useState({
@@ -102,8 +104,14 @@ export default function ActionReportModal({
       playerTags.push(...formData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p))
     }
     
+    // Determine report type based on modalType and whether baseId is provided
+    let reportType = "general" // Default to general
+    if (baseId || modalType === "enemy" || modalType === "friendly") {
+      reportType = "base"
+    }
+
     const reportData = {
-      type: "base", // Report type for database
+      type: reportType,
       notes: formData.notes || `${formData.type.replace('report-', '')} report at ${baseName || baseCoords}`,
       outcome: formData.reportOutcome,
       playerTags: playerTags,

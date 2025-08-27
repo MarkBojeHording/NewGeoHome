@@ -2146,6 +2146,7 @@ export default function InteractiveTacticalMap() {
           baseId={baseReportData.baseId || ''}
           baseName={baseReportData.baseName || ''}
           baseCoords={baseReportData.baseCoords || ''}
+          modalType={baseReportData.baseId ? baseReportData.baseType : 'report'}
         />
 
         <PlayerModal
