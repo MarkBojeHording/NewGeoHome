@@ -152,7 +152,7 @@ export default function GeneralReportModal({
         </button>
         
         <h3 className="text-lg font-bold text-white mb-2">
-          {editingReport ? "Edit General Report" : "Create General Report"}
+          {editingReport ? "Edit Report" : "Create Report"}
         </h3>
         
         {baseId && (
