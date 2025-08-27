@@ -21,10 +21,14 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingReport, setEditingReport] = useState<Report | null>(null)
 
+  console.log('LogsModal rendered, isOpen:', isOpen)
+
   const { data: reports = [], isLoading } = useQuery<Report[]>({
     queryKey: ['/api/reports'],
     enabled: isOpen
   })
+
+  console.log('LogsModal reports data:', reports?.length, 'reports loaded')
 
   // Filter and search reports
   const filteredReports = reports.filter(report => {
