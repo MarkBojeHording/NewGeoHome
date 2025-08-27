@@ -1795,7 +1795,9 @@ export default function InteractiveTacticalMap() {
               time: new Date().toLocaleTimeString(),
               isReportMarker: true, // Flag to distinguish from regular bases
               reportId: savedReport.id, // Database ID for API calls
-              displayReportId: baseData.reportId // Alphanumeric ID for display
+              displayReportId: baseData.reportId, // Alphanumeric ID for display
+              enemyPlayers: baseData.enemyPlayers || '',
+              friendlyPlayers: baseData.friendlyPlayers || ''
             }
             console.log('Created report marker:', reportMarker)
             setLocations(prev => [...prev, reportMarker])
