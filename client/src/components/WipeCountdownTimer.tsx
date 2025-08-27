@@ -543,7 +543,7 @@ export default function WipeCountdownTimer() {
               </div>
               
               {/* Upkeep List */}
-              <div className="border border-orange-600/50 rounded max-h-40 overflow-y-auto overflow-x-hidden bg-gray-800">
+              <div className="border border-orange-600/50 rounded max-h-24 overflow-y-auto overflow-x-hidden bg-gray-800">
                 <div className="flex justify-between items-center p-2 border-b border-orange-600/50 text-xs font-medium text-orange-300 font-mono">
                   <div className="flex">
                     <span className="w-20">[GOOD FOR WIPE]</span>
