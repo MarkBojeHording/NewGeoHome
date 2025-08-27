@@ -23,7 +23,9 @@ export const reports = pgTable("reports", {
   type: text("type").notNull(), // "general" | "base" | "action"
   notes: text("notes").notNull(),
   outcome: text("outcome").notNull(), // "good" | "neutral" | "bad"
-  playerTags: text("player_tags").array().default([]), // Array of player IDs
+  playerTags: text("player_tags").array().default([]), // Array of player IDs (deprecated - use enemyPlayers/friendlyPlayers)
+  enemyPlayers: text("enemy_players").array().default([]), // Array of enemy player names
+  friendlyPlayers: text("friendly_players").array().default([]), // Array of friendly player names
   baseTags: text("base_tags").array().default([]), // Array of base IDs (only for base reports)
   screenshots: text("screenshots").array().default([]), // Array of image URLs
   location: jsonb("location").notNull(), // {gridX: number, gridY: number}

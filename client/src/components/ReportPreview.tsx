@@ -50,11 +50,30 @@ export function ReportPreview({ report, onViewReport, variant }: ReportPreviewPr
           <p className="text-xs truncate font-mono text-orange-200" title={report.notes}>
             {report.notes || "[NO DATA]"}
           </p>
-          {/* Player Tags */}
-          {report.playerTags && report.playerTags.length > 0 && (
+          {/* Player Tags - Enemy and Friendly separated */}
+          {((report.enemyPlayers && report.enemyPlayers.length > 0) || 
+            (report.friendlyPlayers && report.friendlyPlayers.length > 0) ||
+            (report.playerTags && report.playerTags.length > 0)) && (
             <div className="flex flex-wrap gap-1 mt-1">
-              {report.playerTags.map((playerTag, index) => (
-                <span key={index} className="text-xs px-1 py-0.5 bg-blue-900/40 text-blue-200 rounded font-mono border border-blue-600/30">
+              {/* Enemy Players - Red */}
+              {report.enemyPlayers && report.enemyPlayers.map((playerTag, index) => (
+                <span key={`enemy-${index}`} className="text-xs px-1 py-0.5 bg-red-900/40 text-red-200 rounded font-mono border border-red-600/30">
+                  {playerTag}
+                </span>
+              ))}
+              
+              {/* Friendly Players - Green */}
+              {report.friendlyPlayers && report.friendlyPlayers.map((playerTag, index) => (
+                <span key={`friendly-${index}`} className="text-xs px-1 py-0.5 bg-green-900/40 text-green-200 rounded font-mono border border-green-600/30">
+                  {playerTag}
+                </span>
+              ))}
+              
+              {/* Legacy PlayerTags - Blue (for backward compatibility) */}
+              {(!report.enemyPlayers || report.enemyPlayers.length === 0) && 
+               (!report.friendlyPlayers || report.friendlyPlayers.length === 0) &&
+               report.playerTags && report.playerTags.map((playerTag, index) => (
+                <span key={`legacy-${index}`} className="text-xs px-1 py-0.5 bg-blue-900/40 text-blue-200 rounded font-mono border border-blue-600/30">
                   {playerTag}
                 </span>
               ))}

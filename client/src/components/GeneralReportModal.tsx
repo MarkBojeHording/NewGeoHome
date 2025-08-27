@@ -49,17 +49,23 @@ export default function GeneralReportModal({
     if (isVisible) {
       if (editingReport) {
         // Load existing report data for editing
-        // Convert playerTags array back to comma-separated strings for form inputs
-        const playerTagsStr = editingReport.playerTags ? editingReport.playerTags.join(', ') : ''
+        // Use separate enemy and friendly player arrays, fallback to legacy playerTags if needed
+        const enemyPlayersStr = editingReport.enemyPlayers ? editingReport.enemyPlayers.join(', ') : 
+                               (editingReport.playerTags ? editingReport.playerTags.join(', ') : '')
+        const friendlyPlayersStr = editingReport.friendlyPlayers ? editingReport.friendlyPlayers.join(', ') : ''
         
         setFormData({
           type: 'report-pvp', // Default to PvP for general reports
           reportTime: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
-          enemyPlayers: playerTagsStr, // Use playerTags from the report object
-          friendlyPlayers: '', // Keep friendly empty since we store all tags together
+          enemyPlayers: enemyPlayersStr,
+          friendlyPlayers: friendlyPlayersStr,
           notes: editingReport.notes || '',
           reportOutcome: editingReport.outcome || 'neutral'
         })
+        
+        // Show input fields if there's data to display
+        setShowEnemyInput(enemyPlayersStr.length > 0)
+        setShowFriendlyInput(friendlyPlayersStr.length > 0)
       } else {
         // Reset form for new report
         setFormData({
@@ -99,13 +105,13 @@ export default function GeneralReportModal({
     if (createReportMutation.isPending) return // Prevent multiple submissions
     
     // Convert player strings to arrays
-    const playerTags = []
-    if (formData.enemyPlayers) {
-      playerTags.push(...formData.enemyPlayers.split(',').map(p => p.trim()).filter(p => p))
-    }
-    if (formData.friendlyPlayers) {
-      playerTags.push(...formData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p))
-    }
+    const enemyPlayers = formData.enemyPlayers ? 
+      formData.enemyPlayers.split(',').map(p => p.trim()).filter(p => p) : []
+    const friendlyPlayers = formData.friendlyPlayers ? 
+      formData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p) : []
+    
+    // Keep legacy playerTags for backward compatibility
+    const playerTags = [...enemyPlayers, ...friendlyPlayers]
     
     // Determine report type based on modalType and whether baseId is provided
     let reportType = "general" // Default to general
@@ -117,7 +123,9 @@ export default function GeneralReportModal({
       type: reportType,
       notes: formData.notes || `${formData.type.replace('report-', '')} report at ${baseName || baseCoords}`,
       outcome: formData.reportOutcome,
-      playerTags: playerTags,
+      playerTags: playerTags, // Keep for backward compatibility
+      enemyPlayers: enemyPlayers,
+      friendlyPlayers: friendlyPlayers,
       baseTags: baseId ? [baseId] : [],
       screenshots: [],
       location: baseCoords ? parseCoordinates(baseCoords) : { gridX: 0, gridY: 0 }
