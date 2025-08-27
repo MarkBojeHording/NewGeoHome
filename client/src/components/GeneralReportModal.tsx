@@ -50,22 +50,22 @@ export default function GeneralReportModal({
       console.log('Modal opened with editingReport:', editingReport)
       if (editingReport) {
         // Load existing report data for editing
-        // Use separate enemy and friendly player arrays, fallback to legacy playerTags if needed
-        const enemyPlayersStr = editingReport.enemyPlayers ? editingReport.enemyPlayers.join(', ') : 
-                               (editingReport.playerTags ? editingReport.playerTags.join(', ') : '')
+        const enemyPlayersStr = editingReport.enemyPlayers ? editingReport.enemyPlayers.join(', ') : ''
         const friendlyPlayersStr = editingReport.friendlyPlayers ? editingReport.friendlyPlayers.join(', ') : ''
+        // For legacy playerTags, put them in enemy players field for editing
+        const legacyPlayersStr = editingReport.playerTags ? editingReport.playerTags.join(', ') : ''
         
         setFormData({
           type: 'report-pvp', // Default to PvP for general reports
           reportTime: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
-          enemyPlayers: enemyPlayersStr,
+          enemyPlayers: enemyPlayersStr || legacyPlayersStr, // Use legacy if no new enemy players
           friendlyPlayers: friendlyPlayersStr,
           notes: editingReport.notes || '',
           reportOutcome: editingReport.outcome || 'neutral'
         })
         
         // Show input fields if there's data to display
-        setShowEnemyInput(enemyPlayersStr.length > 0)
+        setShowEnemyInput((enemyPlayersStr || legacyPlayersStr).length > 0)
         setShowFriendlyInput(friendlyPlayersStr.length > 0)
       } else {
         // Reset form for new report
