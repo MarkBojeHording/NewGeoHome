@@ -76,10 +76,10 @@ export default function GeneralReportModal({
           notes: '',
           reportOutcome: 'neutral'
         })
+        // Reset input visibility states only for new reports
+        setShowFriendlyInput(false)
+        setShowEnemyInput(false)
       }
-      // Reset input visibility states
-      setShowFriendlyInput(false)
-      setShowEnemyInput(false)
     }
   }, [isVisible, editingReport])
 
