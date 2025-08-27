@@ -301,14 +301,14 @@ export default function GeneralReportModal({
             </button>
             <button
               onClick={handleSave}
-              disabled={createReportMutation.isPending}
+              disabled={saveReportMutation.isPending}
               className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                createReportMutation.isPending 
+                saveReportMutation.isPending 
                   ? 'bg-blue-400 text-gray-300 cursor-not-allowed' 
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >
-              {createReportMutation.isPending ? 'Saving...' : 'Save Report'}
+              {saveReportMutation.isPending ? 'Saving...' : (editingReport ? 'Update Report' : 'Save Report')}
             </button>
           </div>
         </div>

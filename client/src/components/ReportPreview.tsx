@@ -51,12 +51,9 @@ export function ReportPreview({ report, onViewReport, variant }: ReportPreviewPr
             {report.notes || "[NO DATA]"}
           </p>
           {/* Player Tags - Enemy and Friendly separated */}
-          {(() => {
-            console.log('Report', report.id, 'playerTags:', report.playerTags, 'type:', typeof report.playerTags)
-            return ((report.enemyPlayers && report.enemyPlayers.length > 0) || 
-                    (report.friendlyPlayers && report.friendlyPlayers.length > 0) ||
-                    (report.playerTags && report.playerTags.length > 0))
-          })() && (
+          {((report.enemyPlayers && report.enemyPlayers.length > 0) || 
+            (report.friendlyPlayers && report.friendlyPlayers.length > 0) ||
+            (report.playerTags && report.playerTags.length > 0)) && (
             <div className="flex flex-wrap gap-1 mt-1">
               {/* Enemy Players - Red */}
               {report.enemyPlayers && report.enemyPlayers.map((playerTag, index) => (

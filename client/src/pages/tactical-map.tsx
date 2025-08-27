@@ -1975,12 +1975,8 @@ export default function InteractiveTacticalMap() {
       {/* Tactical Map Toolbar Component */}
       <TacticalMapToolbar 
         onButtonClick={(buttonType) => {
-          console.log('Button clicked:', buttonType)
           if (buttonType === 'Players') setShowPlayerModal(true)
-          else if (buttonType === 'Logs') {
-            console.log('Opening LogsModal...')
-            setShowLogsModal(true)
-          }
+          else if (buttonType === 'Logs') setShowLogsModal(true)
           else if (buttonType === 'Progression') setShowProgressionModal(true)
           else if (buttonType === 'Gene Calculator') openGeneCalculator()
           else if (buttonType === 'Teams') setShowTeamsModal(true)
