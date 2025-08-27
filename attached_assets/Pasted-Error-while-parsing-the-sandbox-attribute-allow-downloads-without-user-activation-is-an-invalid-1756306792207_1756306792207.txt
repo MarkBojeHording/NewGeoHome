@@ -1,0 +1,653 @@
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+8Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+8Unrecognized feature: 'battery'.Understand this warning
+8Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+8Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+8Unrecognized feature: 'layout-animations'.Understand this warning
+8Unrecognized feature: 'legacy-image-formats'.Understand this warning
+8Unrecognized feature: 'navigation-override'.Understand this warning
+8Unrecognized feature: 'oversized-images'.Understand this warning
+8Unrecognized feature: 'publickey-credentials'.Understand this warning
+8Unrecognized feature: 'speaker-selection'.Understand this warning
+8Unrecognized feature: 'unoptimized-images'.Understand this warning
+8Unrecognized feature: 'unsized-media'.Understand this warning
+8Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+8Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+eruda.js:2 Context menu should be visible at: 584 242
+eruda.js:2 Modal type set to: report Modal should be visible: true
+eruda.js:2 Saving report: {type: 'general', notes: 'pvp report', outcome: 'good', playerTags: Array(1), baseTags: Array(0), …}
+eruda.js:2 Report saved successfully
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:2588
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:2588
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:2588
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:2588
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:2588
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+8The specified value "10:38:27 AM" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.Understand this warning
+eruda.js:2 [vite] server connection lost. Polling for restart...
+eruda.js:2 Context menu should be visible at: 602 236
+eruda.js:2 Modal type set to: report Modal should be visible: true
+eruda.js:2 Saving report: {type: 'general', notes: 'pvp report', outcome: 'neutral', playerTags: Array(0), baseTags: Array(0), …}
+eruda.js:2 Report saved successfully
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:1897
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ 57289c7e-55aa-4549-b….js?v=38939a7b:5760
+(anonymous) @ 57289c7e-55aa-4549-b…ctical-map.tsx:2591
+callCallback2 @ 57289c7e-55aa-4549-b….js?v=38939a7b:3674
+invokeGuardedCallbackDev @ 57289c7e-55aa-4549-b….js?v=38939a7b:3699
+invokeGuardedCallback @ 57289c7e-55aa-4549-b….js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ 57289c7e-55aa-4549-b….js?v=38939a7b:3736
+executeDispatch @ 57289c7e-55aa-4549-b….js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ 57289c7e-55aa-4549-b….js?v=38939a7b:7034
+processDispatchQueue @ 57289c7e-55aa-4549-b….js?v=38939a7b:7043
+dispatchEventsForPlugins @ 57289c7e-55aa-4549-b….js?v=38939a7b:7051
+(anonymous) @ 57289c7e-55aa-4549-b….js?v=38939a7b:7174
+batchedUpdates$1 @ 57289c7e-55aa-4549-b…js?v=38939a7b:18913
+batchedUpdates @ 57289c7e-55aa-4549-b….js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ 57289c7e-55aa-4549-b….js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ 57289c7e-55aa-4549-b….js?v=38939a7b:5478
+dispatchEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5472
+dispatchContinuousEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:1897
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ 57289c7e-55aa-4549-b….js?v=38939a7b:5760
+(anonymous) @ 57289c7e-55aa-4549-b…ctical-map.tsx:2591
+callCallback2 @ 57289c7e-55aa-4549-b….js?v=38939a7b:3674
+invokeGuardedCallbackDev @ 57289c7e-55aa-4549-b….js?v=38939a7b:3699
+invokeGuardedCallback @ 57289c7e-55aa-4549-b….js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ 57289c7e-55aa-4549-b….js?v=38939a7b:3736
+executeDispatch @ 57289c7e-55aa-4549-b….js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ 57289c7e-55aa-4549-b….js?v=38939a7b:7034
+processDispatchQueue @ 57289c7e-55aa-4549-b….js?v=38939a7b:7043
+dispatchEventsForPlugins @ 57289c7e-55aa-4549-b….js?v=38939a7b:7051
+(anonymous) @ 57289c7e-55aa-4549-b….js?v=38939a7b:7174
+batchedUpdates$1 @ 57289c7e-55aa-4549-b…js?v=38939a7b:18913
+batchedUpdates @ 57289c7e-55aa-4549-b….js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ 57289c7e-55aa-4549-b….js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ 57289c7e-55aa-4549-b….js?v=38939a7b:5478
+dispatchEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5472
+dispatchContinuousEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:1897
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ 57289c7e-55aa-4549-b….js?v=38939a7b:5760
+(anonymous) @ 57289c7e-55aa-4549-b…ctical-map.tsx:2591
+callCallback2 @ 57289c7e-55aa-4549-b….js?v=38939a7b:3674
+invokeGuardedCallbackDev @ 57289c7e-55aa-4549-b….js?v=38939a7b:3699
+invokeGuardedCallback @ 57289c7e-55aa-4549-b….js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ 57289c7e-55aa-4549-b….js?v=38939a7b:3736
+executeDispatch @ 57289c7e-55aa-4549-b….js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ 57289c7e-55aa-4549-b….js?v=38939a7b:7034
+processDispatchQueue @ 57289c7e-55aa-4549-b….js?v=38939a7b:7043
+dispatchEventsForPlugins @ 57289c7e-55aa-4549-b….js?v=38939a7b:7051
+(anonymous) @ 57289c7e-55aa-4549-b….js?v=38939a7b:7174
+batchedUpdates$1 @ 57289c7e-55aa-4549-b…js?v=38939a7b:18913
+batchedUpdates @ 57289c7e-55aa-4549-b….js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ 57289c7e-55aa-4549-b….js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ 57289c7e-55aa-4549-b….js?v=38939a7b:5478
+dispatchEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5472
+dispatchContinuousEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:1897
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ 57289c7e-55aa-4549-b….js?v=38939a7b:5760
+(anonymous) @ 57289c7e-55aa-4549-b…ctical-map.tsx:2591
+callCallback2 @ 57289c7e-55aa-4549-b….js?v=38939a7b:3674
+invokeGuardedCallbackDev @ 57289c7e-55aa-4549-b….js?v=38939a7b:3699
+invokeGuardedCallback @ 57289c7e-55aa-4549-b….js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ 57289c7e-55aa-4549-b….js?v=38939a7b:3736
+executeDispatch @ 57289c7e-55aa-4549-b….js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ 57289c7e-55aa-4549-b….js?v=38939a7b:7034
+processDispatchQueue @ 57289c7e-55aa-4549-b….js?v=38939a7b:7043
+dispatchEventsForPlugins @ 57289c7e-55aa-4549-b….js?v=38939a7b:7051
+(anonymous) @ 57289c7e-55aa-4549-b….js?v=38939a7b:7174
+batchedUpdates$1 @ 57289c7e-55aa-4549-b…js?v=38939a7b:18913
+batchedUpdates @ 57289c7e-55aa-4549-b….js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ 57289c7e-55aa-4549-b….js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ 57289c7e-55aa-4549-b….js?v=38939a7b:5478
+dispatchEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5472
+dispatchContinuousEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5461Understand this error
+12The specified value "10:44:39 AM" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.Understand this warning
+eruda.js:2 Context menu should be visible at: 605 237
+eruda.js:2 Modal type set to: report Modal should be visible: true
+eruda.js:2 Saving report: {type: 'general', notes: 'pvp report', outcome: 'neutral', playerTags: Array(0), baseTags: Array(0), …}
+eruda.js:2 Report saved successfully
+37The specified value "10:44:57 AM" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.Understand this warning
+eruda.js:2 Context menu should be visible at: 629 250
+eruda.js:2 Modal type set to: report Modal should be visible: true
+eruda.js:2 Saving report: {type: 'general', notes: 'pvp report', outcome: 'neutral', playerTags: Array(1), baseTags: Array(0), …}
+eruda.js:2 Report saved successfully
+83The specified value "10:46:53 AM" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.Understand this warning
+eruda.js:2 [vite] server connection lost. Polling for restart...
+eruda.js:2 Context menu should be visible at: 609 242
+eruda.js:2 Modal type set to: report Modal should be visible: true
+eruda.js:2 Saving report: {type: 'general', notes: 'pvp report', outcome: 'neutral', playerTags: Array(1), baseTags: Array(0), …}
+eruda.js:2 Report saved successfully
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:1899
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ 57289c7e-55aa-4549-b….js?v=38939a7b:5760
+(anonymous) @ 57289c7e-55aa-4549-b…ctical-map.tsx:2595
+callCallback2 @ 57289c7e-55aa-4549-b….js?v=38939a7b:3674
+invokeGuardedCallbackDev @ 57289c7e-55aa-4549-b….js?v=38939a7b:3699
+invokeGuardedCallback @ 57289c7e-55aa-4549-b….js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ 57289c7e-55aa-4549-b….js?v=38939a7b:3736
+executeDispatch @ 57289c7e-55aa-4549-b….js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ 57289c7e-55aa-4549-b….js?v=38939a7b:7034
+processDispatchQueue @ 57289c7e-55aa-4549-b….js?v=38939a7b:7043
+dispatchEventsForPlugins @ 57289c7e-55aa-4549-b….js?v=38939a7b:7051
+(anonymous) @ 57289c7e-55aa-4549-b….js?v=38939a7b:7174
+batchedUpdates$1 @ 57289c7e-55aa-4549-b…js?v=38939a7b:18913
+batchedUpdates @ 57289c7e-55aa-4549-b….js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ 57289c7e-55aa-4549-b….js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ 57289c7e-55aa-4549-b….js?v=38939a7b:5478
+dispatchEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5472
+dispatchContinuousEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:1899
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ 57289c7e-55aa-4549-b….js?v=38939a7b:5760
+(anonymous) @ 57289c7e-55aa-4549-b…ctical-map.tsx:2595
+callCallback2 @ 57289c7e-55aa-4549-b….js?v=38939a7b:3674
+invokeGuardedCallbackDev @ 57289c7e-55aa-4549-b….js?v=38939a7b:3699
+invokeGuardedCallback @ 57289c7e-55aa-4549-b….js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ 57289c7e-55aa-4549-b….js?v=38939a7b:3736
+executeDispatch @ 57289c7e-55aa-4549-b….js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ 57289c7e-55aa-4549-b….js?v=38939a7b:7034
+processDispatchQueue @ 57289c7e-55aa-4549-b….js?v=38939a7b:7043
+dispatchEventsForPlugins @ 57289c7e-55aa-4549-b….js?v=38939a7b:7051
+(anonymous) @ 57289c7e-55aa-4549-b….js?v=38939a7b:7174
+batchedUpdates$1 @ 57289c7e-55aa-4549-b…js?v=38939a7b:18913
+batchedUpdates @ 57289c7e-55aa-4549-b….js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ 57289c7e-55aa-4549-b….js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ 57289c7e-55aa-4549-b….js?v=38939a7b:5478
+dispatchEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5472
+dispatchContinuousEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:1899
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ 57289c7e-55aa-4549-b….js?v=38939a7b:5760
+(anonymous) @ 57289c7e-55aa-4549-b…ctical-map.tsx:2595
+callCallback2 @ 57289c7e-55aa-4549-b….js?v=38939a7b:3674
+invokeGuardedCallbackDev @ 57289c7e-55aa-4549-b….js?v=38939a7b:3699
+invokeGuardedCallback @ 57289c7e-55aa-4549-b….js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ 57289c7e-55aa-4549-b….js?v=38939a7b:3736
+executeDispatch @ 57289c7e-55aa-4549-b….js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ 57289c7e-55aa-4549-b….js?v=38939a7b:7034
+processDispatchQueue @ 57289c7e-55aa-4549-b….js?v=38939a7b:7043
+dispatchEventsForPlugins @ 57289c7e-55aa-4549-b….js?v=38939a7b:7051
+(anonymous) @ 57289c7e-55aa-4549-b….js?v=38939a7b:7174
+batchedUpdates$1 @ 57289c7e-55aa-4549-b…js?v=38939a7b:18913
+batchedUpdates @ 57289c7e-55aa-4549-b….js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ 57289c7e-55aa-4549-b….js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ 57289c7e-55aa-4549-b….js?v=38939a7b:5478
+dispatchEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5472
+dispatchContinuousEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:1899
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ 57289c7e-55aa-4549-b….js?v=38939a7b:5760
+(anonymous) @ 57289c7e-55aa-4549-b…ctical-map.tsx:2595
+callCallback2 @ 57289c7e-55aa-4549-b….js?v=38939a7b:3674
+invokeGuardedCallbackDev @ 57289c7e-55aa-4549-b….js?v=38939a7b:3699
+invokeGuardedCallback @ 57289c7e-55aa-4549-b….js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ 57289c7e-55aa-4549-b….js?v=38939a7b:3736
+executeDispatch @ 57289c7e-55aa-4549-b….js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ 57289c7e-55aa-4549-b….js?v=38939a7b:7034
+processDispatchQueue @ 57289c7e-55aa-4549-b….js?v=38939a7b:7043
+dispatchEventsForPlugins @ 57289c7e-55aa-4549-b….js?v=38939a7b:7051
+(anonymous) @ 57289c7e-55aa-4549-b….js?v=38939a7b:7174
+batchedUpdates$1 @ 57289c7e-55aa-4549-b…js?v=38939a7b:18913
+batchedUpdates @ 57289c7e-55aa-4549-b….js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ 57289c7e-55aa-4549-b….js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ 57289c7e-55aa-4549-b….js?v=38939a7b:5478
+dispatchEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5472
+dispatchContinuousEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5461Understand this error
+chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ chunk-RPCDYKBN.js?v=38939a7b:5760
+(anonymous) @ tactical-map.tsx:1899
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchContinuousEvent @ chunk-RPCDYKBN.js?v=38939a7b:5461Understand this error
+57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=38939a7b:5760 Unable to preventDefault inside passive event listener invocation.
+preventDefault @ 57289c7e-55aa-4549-b….js?v=38939a7b:5760
+(anonymous) @ 57289c7e-55aa-4549-b…ctical-map.tsx:2595
+callCallback2 @ 57289c7e-55aa-4549-b….js?v=38939a7b:3674
+invokeGuardedCallbackDev @ 57289c7e-55aa-4549-b….js?v=38939a7b:3699
+invokeGuardedCallback @ 57289c7e-55aa-4549-b….js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ 57289c7e-55aa-4549-b….js?v=38939a7b:3736
+executeDispatch @ 57289c7e-55aa-4549-b….js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ 57289c7e-55aa-4549-b….js?v=38939a7b:7034
+processDispatchQueue @ 57289c7e-55aa-4549-b….js?v=38939a7b:7043
+dispatchEventsForPlugins @ 57289c7e-55aa-4549-b….js?v=38939a7b:7051
+(anonymous) @ 57289c7e-55aa-4549-b….js?v=38939a7b:7174
+batchedUpdates$1 @ 57289c7e-55aa-4549-b…js?v=38939a7b:18913
+batchedUpdates @ 57289c7e-55aa-4549-b….js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ 57289c7e-55aa-4549-b….js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ 57289c7e-55aa-4549-b….js?v=38939a7b:5478
+dispatchEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5472
+dispatchContinuousEvent @ 57289c7e-55aa-4549-b….js?v=38939a7b:5461Understand this error
+10The specified value "10:55:19 AM" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.Understand this warning
+eruda.js:2 Context menu should be visible at: 614 250
+eruda.js:2 Modal type set to: report Modal should be visible: true
+eruda.js:2 Saving report: {type: 'general', notes: 'pvp report', outcome: 'neutral', playerTags: Array(0), baseTags: Array(0), …}
+eruda.js:2 Report saved successfully
+chunk-RPCDYKBN.js?v=38939a7b:1861 The specified value "10:55:31 AM" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.
+set @ chunk-RPCDYKBN.js?v=38939a7b:1861
+updateWrapper @ chunk-RPCDYKBN.js?v=38939a7b:1987
+updateProperties @ chunk-RPCDYKBN.js?v=38939a7b:7762
+commitUpdate @ chunk-RPCDYKBN.js?v=38939a7b:8419
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17763
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17896
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17896
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17896
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17794
+commitMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17663
+commitRootImpl @ chunk-RPCDYKBN.js?v=38939a7b:19347
+commitRoot @ chunk-RPCDYKBN.js?v=38939a7b:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=38939a7b:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=38939a7b:18718
+workLoop @ chunk-RPCDYKBN.js?v=38939a7b:197
+flushWork @ chunk-RPCDYKBN.js?v=38939a7b:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=38939a7b:384Understand this warning
+chunk-RPCDYKBN.js?v=38939a7b:2076 The specified value "10:55:31 AM" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.
+setDefaultValue @ chunk-RPCDYKBN.js?v=38939a7b:2076
+updateWrapper @ chunk-RPCDYKBN.js?v=38939a7b:1995
+updateProperties @ chunk-RPCDYKBN.js?v=38939a7b:7762
+commitUpdate @ chunk-RPCDYKBN.js?v=38939a7b:8419
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17763
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17896
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17896
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17896
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17794
+commitMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17663
+commitRootImpl @ chunk-RPCDYKBN.js?v=38939a7b:19347
+commitRoot @ chunk-RPCDYKBN.js?v=38939a7b:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=38939a7b:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=38939a7b:18718
+workLoop @ chunk-RPCDYKBN.js?v=38939a7b:197
+flushWork @ chunk-RPCDYKBN.js?v=38939a7b:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=38939a7b:384Understand this warning
+chunk-RPCDYKBN.js?v=38939a7b:1861 The specified value "10:55:31 AM" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.
+set @ chunk-RPCDYKBN.js?v=38939a7b:1861
+updateWrapper @ chunk-RPCDYKBN.js?v=38939a7b:1987
+updateProperties @ chunk-RPCDYKBN.js?v=38939a7b:7762
+commitUpdate @ chunk-RPCDYKBN.js?v=38939a7b:8419
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17763
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17737
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17896
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17896
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17896
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17699
+recursivelyTraverseMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17685
+commitMutationEffectsOnFiber @ chunk-RPCDYKBN.js?v=38939a7b:17794
+commitMutationEffects @ chunk-RPCDYKBN.js?v=38939a7b:17663
+commitRootImpl @ chunk-RPCDYKBN.js?v=38939a7b:19347
+commitRoot @ chunk-RPCDYKBN.js?v=38939a7b:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=38939a7b:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=38939a7b:18718
+workLoop @ chunk-RPCDYKBN.js?v=38939a7b:197
+flushWork @ chunk-RPCDYKBN.js?v=38939a7b:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=38939a7b:384Understand this warning
+eruda.js:2 [vite] server connection lost. Polling for restart...
+eruda.js:2 Context menu should be visible at: 610 250
+eruda.js:2 Modal type set to: report Modal should be visible: true
+eruda.js:2 Context menu should be visible at: 549 214
+eruda.js:2 Modal type set to: report Modal should be visible: true
+eruda.js:2 [vite] server connection lost. Polling for restart...
+Console.js:61 Context menu should be visible at: 657 233
+Console.js:61 Modal type set to: report Modal should be visible: true
+Console.js:61 Saving report: {type: 'general', notes: 'pvp report', outcome: 'neutral', playerTags: Array(1), baseTags: Array(0), …}
+Console.js:61 Report saved successfully with ID: 25 Display ID: ROJH1GT
+Console.js:61 Created report marker: {id: 'report-25', name: 'P4', x: 58.18809134042093, y: 18.518518244909068, type: 'report-pvp', …}
+Console.js:61 BaseModal editingLocation: {id: 'report-25', name: 'P4', x: 58.18809134042093, y: 18.518518244909068, type: 'report-pvp', …}
+19The specified value "10:59:28 AM" does not conform to the required format.  The format is "HH:mm", "HH:mm:ss" or "HH:mm:ss.SSS" where HH is 00-23, mm is 00-59, ss is 00-59, and SSS is 000-999.

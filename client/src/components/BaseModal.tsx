@@ -533,7 +533,7 @@ const BaseModal = ({
         primaryRockets: editingLocation.primaryRockets || 0,
         enemyPlayers: editingLocation.enemyPlayers || '',
         friendlyPlayers: editingLocation.friendlyPlayers || '',
-        reportId: editingLocation.reportId || generateReportId() // Use displayReportId if available, otherwise generate
+        reportId: editingLocation.displayReportId || editingLocation.reportId || generateReportId() // Use displayReportId first
       })
     } else if (modalType === 'report') {
       const now = new Date()
