@@ -569,7 +569,7 @@ export default function WipeCountdownTimer() {
                   <div className="px-2 py-1 text-xs text-orange-500 text-center font-mono">No upkeep entries added</div>
                 ) : (
                   upkeepEntries.map(entry => (
-                    <div key={entry.id} className="flex justify-between text-xs px-2 py-1 border-b border-orange-600/30 last:border-b-0 text-orange-300">
+                    <div key={entry.id} className={`flex justify-between text-xs px-2 py-1 border-b border-orange-600/30 last:border-b-0 text-orange-300 ${entry.goodForWipe ? 'border-2 border-green-500/50 bg-green-900/10' : ''}`}>
                       <div className="flex">
                         <div className="w-20 flex space-x-1">
                           <button
