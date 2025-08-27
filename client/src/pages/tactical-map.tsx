@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import { LogsModal } from '../components/LogsModal'
-import ActionReportModal from '../components/ActionReportModal'
+import GeneralReportModal from '../components/GeneralReportModal'
 import { TeamsModal } from '../components/TeamsModal'
 import { ProgressionModal } from '../components/ProgressionModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
@@ -2140,7 +2140,7 @@ export default function InteractiveTacticalMap() {
         )}
 
 
-        <ActionReportModal
+        <GeneralReportModal
           isVisible={showBaseReportModal}
           onClose={() => setShowBaseReportModal(false)}
           baseId={baseReportData.baseId || ''}

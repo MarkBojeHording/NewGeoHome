@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useQuery } from '@tanstack/react-query'
 import { ReportPreview } from './ReportPreview'
-import ActionReportModal from './ActionReportModal'
+import GeneralReportModal from './GeneralReportModal'
 import { Search, Filter, Calendar, User, MapPin } from 'lucide-react'
 import type { Report } from '@shared/schema'
 
@@ -176,7 +176,7 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
       </DialogContent>
 
       {/* Report Edit Modal */}
-      <ActionReportModal
+      <GeneralReportModal
         isVisible={showEditModal}
         onClose={() => {
           setShowEditModal(false)

@@ -13,7 +13,7 @@ const getIcon = (type: string) => {
   return <Shield className="h-3 w-3" />
 }
 
-interface ActionReportModalProps {
+interface GeneralReportModalProps {
   isVisible: boolean;
   onClose: () => void;
   baseId?: string;
@@ -23,7 +23,7 @@ interface ActionReportModalProps {
   modalType?: string;
 }
 
-export default function ActionReportModal({
+export default function GeneralReportModal({
   isVisible,
   onClose,
   baseId,
@@ -31,7 +31,7 @@ export default function ActionReportModal({
   baseCoords,
   editingReport,
   modalType,
-}: ActionReportModalProps) {
+}: GeneralReportModalProps) {
   const queryClient = useQueryClient()
   const [formData, setFormData] = useState({
     type: 'report-pvp',
@@ -152,7 +152,7 @@ export default function ActionReportModal({
         </button>
         
         <h3 className="text-lg font-bold text-white mb-2">
-          {editingReport ? "Edit Base Report" : "Create Base Report"}
+          {editingReport ? "Edit General Report" : "Create General Report"}
         </h3>
         
         {baseId && (
