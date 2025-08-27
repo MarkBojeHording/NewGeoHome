@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useQuery } from '@tanstack/react-query'
 import { ReportPreview } from './ReportPreview'
-import GeneralReportModal from './GeneralReportModal'
+import BaseModal from './BaseModal'
 import { Search, Filter, Calendar, User, MapPin } from 'lucide-react'
 import type { Report } from '@shared/schema'
 
@@ -45,7 +45,7 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
         report.type.toLowerCase().includes(searchLower) ||
         report.outcome.toLowerCase().includes(searchLower) ||
         gridRef.toLowerCase().includes(searchLower) ||
-        report.playerTags.some(tag => tag.toLowerCase().includes(searchLower))
+        (report.playerTags || []).some(tag => tag.toLowerCase().includes(searchLower))
       )
     }
     
@@ -54,7 +54,7 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
 
   // Sort by most recent first
   const sortedReports = filteredReports.sort((a, b) => 
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
   )
 
   const handleViewReport = (reportId: number) => {
@@ -66,12 +66,12 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
   }
 
   const getTypeOptions = () => {
-    const types = [...new Set(reports.map(r => r.type))]
+    const types = Array.from(new Set(reports.map(r => r.type)))
     return types.map(type => ({ value: type, label: type.charAt(0).toUpperCase() + type.slice(1) }))
   }
 
   const getOutcomeOptions = () => {
-    const outcomes = [...new Set(reports.map(r => r.outcome))]
+    const outcomes = Array.from(new Set(reports.map(r => r.outcome)))
     return outcomes.map(outcome => ({ value: outcome, label: outcome.charAt(0).toUpperCase() + outcome.slice(1) }))
   }
 
@@ -176,14 +176,28 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
       </Dialog>
 
       {/* Report Edit Modal - Outside the main dialog */}
-      <GeneralReportModal
-        isVisible={showEditModal}
-        onClose={() => {
-          setShowEditModal(false)
-          setEditingReport(null)
-        }}
-        editingReport={editingReport}
-      />
+      {showEditModal && editingReport && (
+        <BaseModal
+          modal={{ 
+            x: (editingReport.location as any)?.gridX || 0, 
+            y: (editingReport.location as any)?.gridY || 0, 
+            visible: true 
+          }}
+          modalType="report"
+          editingLocation={editingReport}
+          locations={[]}
+          onSave={() => {
+            setShowEditModal(false)
+            setEditingReport(null)
+          }}
+          onCancel={() => {
+            setShowEditModal(false)
+            setEditingReport(null)
+          }}
+          onDelete={() => {}}
+          onOpenBaseReport={() => {}}
+        />
+      )}
     </>
   )
 }
