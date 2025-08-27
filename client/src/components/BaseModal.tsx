@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
 import { ReportPreview } from './ReportPreview'
-import type { ExternalPlayer, Report } from '@shared/schema'
+import type { ExternalPlayer } from '@shared/schema'
 
 // ============= CONSTANTS =============
 const LABELS = {
@@ -96,13 +96,8 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
 }
 
 // ============= BASE REPORTS CONTENT COMPONENT =============
-const BaseReportsContent = ({ baseId, onOpenReport }: { baseId: string; onOpenReport: (reportId: number) => void }) => {
-  const { data: reports = [], isLoading } = useQuery<Report[]>({
-    queryKey: ['/api/reports/for-base', baseId],
-    enabled: !!baseId
-  })
-
-  const { data: baseReports = [] } = useQuery<Report[]>({
+const BaseReportsContent = ({ baseId, onOpenReport }) => {
+  const { data: reports = [], isLoading } = useQuery({
     queryKey: ['/api/reports/base', baseId],
     enabled: !!baseId
   })
@@ -120,22 +115,15 @@ const BaseReportsContent = ({ baseId, onOpenReport }: { baseId: string; onOpenRe
     )
   }
 
-  // Determine which reports are direct base reports vs general reports
-  const baseReportIds = new Set(baseReports.map(r => r.id))
-
   return (
     <div className="border">
-      {reports.map((report) => {
-        const isBaseReport = baseReportIds.has(report.id)
-        return (
-          <ReportPreview 
-            key={report.id} 
-            report={report} 
-            onViewReport={onOpenReport}
-            variant={isBaseReport ? 'base' : 'general'}
-          />
-        )
-      })}
+      {reports.map((report) => (
+        <ReportPreview 
+          key={report.id} 
+          report={report} 
+          onViewReport={onOpenReport}
+        />
+      ))}
     </div>
   )
 }
@@ -527,35 +515,23 @@ const BaseModal = ({
   // Initialize form data when editing
   useEffect(() => {
     if (editingLocation) {
-      console.log('BaseModal: Editing report:', editingLocation)
-      
-      // For reports, map playerTags to enemyPlayers if no enemyPlayers exist
-      const enemyPlayers = editingLocation.enemyPlayers && editingLocation.enemyPlayers.length > 0 
-        ? editingLocation.enemyPlayers.join(', ')
-        : editingLocation.playerTags && editingLocation.playerTags.length > 0
-        ? editingLocation.playerTags.join(', ')
-        : ''
-      
-      const friendlyPlayers = editingLocation.friendlyPlayers && editingLocation.friendlyPlayers.length > 0
-        ? editingLocation.friendlyPlayers.join(', ')
-        : ''
-      
       setFormData({
-        type: editingLocation.type || 'report-pvp',
+        type: editingLocation.type,
         notes: editingLocation.notes || '',
         oldestTC: editingLocation.oldestTC || 0,
         players: editingLocation.players || '',
         upkeep: editingLocation.upkeep || { wood: 0, stone: 0, metal: 0, hqm: 0 },
-        reportTime: editingLocation.reportTime || new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+        reportTime: editingLocation.time || '',
         reportOutcome: editingLocation.outcome || 'neutral',
         ownerCoordinates: editingLocation.ownerCoordinates || '',
         library: editingLocation.library || '',
         youtube: editingLocation.youtube || '',
         roofCamper: editingLocation.roofCamper || false,
         hostileSamsite: editingLocation.hostileSamsite || false,
+
         primaryRockets: editingLocation.primaryRockets || 0,
-        enemyPlayers: enemyPlayers,
-        friendlyPlayers: friendlyPlayers,
+        enemyPlayers: editingLocation.enemyPlayers || '',
+        friendlyPlayers: editingLocation.friendlyPlayers || '',
         reportId: editingLocation.reportId || generateReportId()
       })
     } else if (modalType === 'report') {

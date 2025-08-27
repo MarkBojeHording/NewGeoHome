@@ -13,25 +13,23 @@ const getIcon = (type: string) => {
   return <Shield className="h-3 w-3" />
 }
 
-interface GeneralReportModalProps {
+interface ActionReportModalProps {
   isVisible: boolean;
   onClose: () => void;
   baseId?: string;
   baseName?: string;
   baseCoords?: string;
   editingReport?: any;
-  modalType?: string;
 }
 
-export default function GeneralReportModal({
+export default function ActionReportModal({
   isVisible,
   onClose,
   baseId,
   baseName,
   baseCoords,
   editingReport,
-  modalType,
-}: GeneralReportModalProps) {
+}: ActionReportModalProps) {
   const queryClient = useQueryClient()
   const [formData, setFormData] = useState({
     type: 'report-pvp',
@@ -47,26 +45,16 @@ export default function GeneralReportModal({
 
   useEffect(() => {
     if (isVisible) {
-      console.log('Modal opened with editingReport:', editingReport)
       if (editingReport) {
         // Load existing report data for editing
-        const enemyPlayersStr = editingReport.enemyPlayers ? editingReport.enemyPlayers.join(', ') : ''
-        const friendlyPlayersStr = editingReport.friendlyPlayers ? editingReport.friendlyPlayers.join(', ') : ''
-        // For legacy playerTags, put them in enemy players field for editing
-        const legacyPlayersStr = editingReport.playerTags ? editingReport.playerTags.join(', ') : ''
-        
         setFormData({
-          type: 'report-pvp', // Default to PvP for general reports
-          reportTime: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
-          enemyPlayers: enemyPlayersStr || legacyPlayersStr, // Use legacy if no new enemy players
-          friendlyPlayers: friendlyPlayersStr,
-          notes: editingReport.notes || '',
-          reportOutcome: editingReport.outcome || 'neutral'
+          type: editingReport.content?.type || 'report-pvp',
+          reportTime: editingReport.content?.reportTime || new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+          enemyPlayers: editingReport.content?.enemyPlayers || '',
+          friendlyPlayers: editingReport.content?.friendlyPlayers || '',
+          notes: editingReport.content?.notes || '',
+          reportOutcome: editingReport.content?.reportOutcome || 'neutral'
         })
-        
-        // Show input fields if there's data to display
-        setShowEnemyInput((enemyPlayersStr || legacyPlayersStr).length > 0)
-        setShowFriendlyInput(friendlyPlayersStr.length > 0)
       } else {
         // Reset form for new report
         setFormData({
@@ -77,28 +65,19 @@ export default function GeneralReportModal({
           notes: '',
           reportOutcome: 'neutral'
         })
-        // Reset input visibility states only for new reports
-        setShowFriendlyInput(false)
-        setShowEnemyInput(false)
       }
+      // Reset input visibility states
+      setShowFriendlyInput(false)
+      setShowEnemyInput(false)
     }
   }, [isVisible, editingReport])
 
-  const saveReportMutation = useMutation({
+  const createReportMutation = useMutation({
     mutationFn: async (reportData: any) => {
-      if (editingReport) {
-        // Update existing report
-        console.log('Updating report with data:', reportData)
-        const response = await apiRequest("PUT", `/api/reports/${editingReport.id}`, reportData)
-        console.log('Report update response:', response)
-        return response
-      } else {
-        // Create new report
-        console.log('Creating report with data:', reportData)
-        const response = await apiRequest("POST", "/api/reports", reportData)
-        console.log('Report creation response:', response)
-        return response
-      }
+      console.log('Creating report with data:', reportData)
+      const response = await apiRequest("POST", "/api/reports", reportData)
+      console.log('Report creation response:', response)
+      return response
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
@@ -107,38 +86,33 @@ export default function GeneralReportModal({
       onClose()
     },
     onError: (error) => {
-      console.error(editingReport ? 'Report update failed:' : 'Report creation failed:', error)
+      console.error('Report creation failed:', error)
     }
   })
 
   const handleSave = () => {
-    if (saveReportMutation.isPending) return // Prevent multiple submissions
+    if (createReportMutation.isPending) return // Prevent multiple submissions
     
     // Convert player strings to arrays
-    const enemyPlayers = formData.enemyPlayers ? 
-      formData.enemyPlayers.split(',').map(p => p.trim()).filter(p => p) : []
-    const friendlyPlayers = formData.friendlyPlayers ? 
-      formData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p) : []
-    
-    // Determine report type based on modalType and whether baseId is provided
-    let reportType = "general" // Default to general
-    if (baseId || modalType === "enemy" || modalType === "friendly") {
-      reportType = "base"
+    const playerTags = []
+    if (formData.enemyPlayers) {
+      playerTags.push(...formData.enemyPlayers.split(',').map(p => p.trim()).filter(p => p))
     }
-
+    if (formData.friendlyPlayers) {
+      playerTags.push(...formData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p))
+    }
+    
     const reportData = {
-      type: reportType,
+      type: "base", // Report type for database
       notes: formData.notes || `${formData.type.replace('report-', '')} report at ${baseName || baseCoords}`,
       outcome: formData.reportOutcome,
-      playerTags: reportType === "general" ? [...enemyPlayers, ...friendlyPlayers] : [], // Only use for general reports
-      enemyPlayers: enemyPlayers,
-      friendlyPlayers: friendlyPlayers,
+      playerTags: playerTags,
       baseTags: baseId ? [baseId] : [],
       screenshots: [],
       location: baseCoords ? parseCoordinates(baseCoords) : { gridX: 0, gridY: 0 }
     }
     
-    saveReportMutation.mutate(reportData)
+    createReportMutation.mutate(reportData)
   }
 
   // Helper function to parse coordinates like "A1" to {gridX: 0, gridY: 1}
@@ -167,7 +141,7 @@ export default function GeneralReportModal({
         </button>
         
         <h3 className="text-lg font-bold text-white mb-2">
-          {editingReport ? (editingReport.type === "general" ? "Edit General Report" : "Edit Base Report") : (baseId ? "Create Base Report" : "Create General Report")}
+          {editingReport ? "Edit Base Report" : "Create Base Report"}
         </h3>
         
         {baseId && (
@@ -301,14 +275,14 @@ export default function GeneralReportModal({
             </button>
             <button
               onClick={handleSave}
-              disabled={saveReportMutation.isPending}
+              disabled={createReportMutation.isPending}
               className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                saveReportMutation.isPending 
+                createReportMutation.isPending 
                   ? 'bg-blue-400 text-gray-300 cursor-not-allowed' 
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >
-              {saveReportMutation.isPending ? 'Saving...' : (editingReport ? 'Update Report' : 'Save Report')}
+              {createReportMutation.isPending ? 'Saving...' : 'Save Report'}
             </button>
           </div>
         </div>

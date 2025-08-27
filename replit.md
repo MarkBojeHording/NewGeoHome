@@ -13,9 +13,6 @@ This project is a Rust-themed tactical map and raid calculator application desig
 - **Fixed Player Tagging**: Resolved modalType scoping issue in PlayerSearchSelector component for proper player status indicators
 - **Restored Base Owner Display**: Fixed base modal initialization to properly display existing base owners from database
 - **Implemented Gene Progress System**: Successfully integrated popup-to-main window communication system using postMessage API to sync gene data from calculator popup to progression modal. Features automatic real-time updates and manual sync capability. Displays identical gene information as calculator's "Best 🧬" field with proper gene quality colors and progress percentages.
-- **Fixed General Report Player Tag Persistence**: Resolved critical bug where player tags in general reports weren't persisting or displaying properly. Added proper report type determination logic, enhanced ReportPreview component to display player tags as blue badges, and integrated GeneralReportModal functionality into LogsModal for editing reports. Player tags now properly convert between array storage and comma-separated form inputs.
-- **Fixed General Report Edit Modal Bug**: Resolved major issue where clicking external link icon on general reports opened blank new report instead of existing report data. Fixed input field visibility reset bug that was hiding enemy/friendly player data when editing existing reports. Modal now correctly displays saved enemy players when editing reports.
-- **Fixed External Link Icon Bug**: Resolved critical issue where LogsModal was calling GeneralReportModal instead of BaseModal for editing reports. External link icons now correctly open BaseModal (the same component used for creating reports) with existing report data pre-filled, including proper mapping of playerTags to enemy/friendly player fields for editing.
 
 # User Preferences
 

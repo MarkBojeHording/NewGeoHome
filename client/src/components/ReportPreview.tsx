@@ -6,10 +6,9 @@ import { format } from "date-fns"
 interface ReportPreviewProps {
   report: Report
   onViewReport?: (reportId: number) => void
-  variant?: 'base' | 'general' // Add variant prop for styling
 }
 
-export function ReportPreview({ report, onViewReport, variant }: ReportPreviewProps) {
+export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
   const getReportTypeLabel = (type: string) => {
     switch (type) {
       case 'general': return 'General'
@@ -24,14 +23,8 @@ export function ReportPreview({ report, onViewReport, variant }: ReportPreviewPr
   const hasScreenshots = report.screenshots && report.screenshots.length > 0
   const hasNotes = report.notes && report.notes.trim().length > 0
 
-  // Determine styling based on variant and report type
-  const isGeneralReport = variant === 'general' || (report.type === 'general' && !variant)
-  const borderColor = isGeneralReport ? 'border-blue-500/40' : 'border-orange-500/40'
-  const hoverColor = isGeneralReport ? 'hover:bg-blue-900/40' : 'hover:bg-orange-900/40'
-  const gradientColor = isGeneralReport ? 'to-blue-950/20' : 'to-orange-950/20'
-
   return (
-    <div className={`flex items-center justify-between p-1 border-b ${borderColor} ${hoverColor} transition-colors bg-gradient-to-r from-gray-800 ${gradientColor}`}>
+    <div className="flex items-center justify-between p-1 border-b border-orange-500/40 hover:bg-orange-900/40 transition-colors bg-gradient-to-r from-gray-800 to-orange-950/20">
       <div className="flex items-center gap-1 flex-1 min-w-0">
         {/* Report Type & ID */}
         <div className="flex flex-col min-w-0">
@@ -50,33 +43,6 @@ export function ReportPreview({ report, onViewReport, variant }: ReportPreviewPr
           <p className="text-xs truncate font-mono text-orange-200" title={report.notes}>
             {report.notes || "[NO DATA]"}
           </p>
-          {/* Player Tags - Enemy and Friendly separated */}
-          {((report.enemyPlayers && report.enemyPlayers.length > 0) || 
-            (report.friendlyPlayers && report.friendlyPlayers.length > 0) ||
-            (report.playerTags && report.playerTags.length > 0)) && (
-            <div className="flex flex-wrap gap-1 mt-1">
-              {/* Enemy Players - Red */}
-              {report.enemyPlayers && report.enemyPlayers.map((playerTag, index) => (
-                <span key={`enemy-${index}`} className="text-xs px-1 py-0.5 bg-red-900/40 text-red-200 rounded font-mono border border-red-600/30">
-                  {playerTag}
-                </span>
-              ))}
-              
-              {/* Friendly Players - Green */}
-              {report.friendlyPlayers && report.friendlyPlayers.map((playerTag, index) => (
-                <span key={`friendly-${index}`} className="text-xs px-1 py-0.5 bg-green-900/40 text-green-200 rounded font-mono border border-green-600/30">
-                  {playerTag}
-                </span>
-              ))}
-              
-              {/* Legacy PlayerTags - Blue (for backward compatibility) */}
-              {report.playerTags && report.playerTags.map((playerTag, index) => (
-                <span key={`legacy-${index}`} className="text-xs px-1 py-0.5 bg-blue-600 text-white rounded font-mono border border-blue-400">
-                  {playerTag}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
 
 

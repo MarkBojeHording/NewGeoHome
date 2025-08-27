@@ -111,17 +111,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all reports for a base (direct base reports + general reports with base players)
-  app.get("/api/reports/for-base/:baseId", async (req, res) => {
-    try {
-      const { baseId } = req.params;
-      const reports = await storage.getReportsForBase(baseId);
-      res.json(reports);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch reports for base" });
-    }
-  });
-
   // Get specific report
   app.get("/api/reports/:id", async (req, res) => {
     try {
