@@ -1587,8 +1587,9 @@ export default function InteractiveTacticalMap() {
             notes: report.notes,
             enemyPlayers: report.playerTags.join(', '),
             friendlyPlayers: '', // Reports don't distinguish between enemy/friendly in database
-            reportId: report.id
+            reportId: report.id // Use the actual database ID
           })
+          console.log('Set editingLocation with reportId:', report.id)
           setModalType('report')
           setNewBaseModal({ x: location.x, y: location.y, visible: true })
           return
@@ -1789,7 +1790,7 @@ export default function InteractiveTacticalMap() {
             
             // Create a visual marker on the map for this report
             const reportMarker = {
-              id: `report-${Date.now()}`,
+              id: `report-${savedReport.id}`, // Use database ID for consistency
               name: getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null),
               x: newBaseModal.x,
               y: newBaseModal.y,

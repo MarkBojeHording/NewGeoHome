@@ -532,7 +532,7 @@ const BaseModal = ({
         primaryRockets: editingLocation.primaryRockets || 0,
         enemyPlayers: editingLocation.enemyPlayers || '',
         friendlyPlayers: editingLocation.friendlyPlayers || '',
-        reportId: editingLocation.reportId || generateReportId()
+        reportId: editingLocation.reportId || null // Don't generate client-side ID when editing
       })
     } else if (modalType === 'report') {
       const now = new Date()
@@ -913,7 +913,7 @@ const BaseModal = ({
             {modalType === 'report' && (
               <div className="absolute top-2 left-2 z-20">
                 <span className="text-yellow-400 font-bold text-xs bg-gray-800 px-1 py-0.5 rounded border border-yellow-600">
-                  {formData.reportId}
+                  {formData.reportId || 'New Report'}
                 </span>
               </div>
             )}
