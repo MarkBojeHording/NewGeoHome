@@ -515,6 +515,7 @@ const BaseModal = ({
   // Initialize form data when editing
   useEffect(() => {
     if (editingLocation) {
+      console.log('BaseModal editingLocation:', editingLocation)
       setFormData({
         type: editingLocation.type,
         notes: editingLocation.notes || '',
@@ -913,7 +914,7 @@ const BaseModal = ({
             {modalType === 'report' && (
               <div className="absolute top-2 left-2 z-20">
                 <span className="text-yellow-400 font-bold text-xs bg-gray-800 px-1 py-0.5 rounded border border-yellow-600">
-                  {formData.reportId || 'New Report'}
+                  {modalType === 'report' && formData.reportId ? formData.reportId : 'New Report'}
                 </span>
               </div>
             )}
