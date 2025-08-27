@@ -110,9 +110,6 @@ export default function GeneralReportModal({
     const friendlyPlayers = formData.friendlyPlayers ? 
       formData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p) : []
     
-    // Keep legacy playerTags for backward compatibility
-    const playerTags = [...enemyPlayers, ...friendlyPlayers]
-    
     // Determine report type based on modalType and whether baseId is provided
     let reportType = "general" // Default to general
     if (baseId || modalType === "enemy" || modalType === "friendly") {
@@ -123,7 +120,7 @@ export default function GeneralReportModal({
       type: reportType,
       notes: formData.notes || `${formData.type.replace('report-', '')} report at ${baseName || baseCoords}`,
       outcome: formData.reportOutcome,
-      playerTags: playerTags, // Keep for backward compatibility
+      playerTags: reportType === "general" ? [...enemyPlayers, ...friendlyPlayers] : [], // Only use for general reports
       enemyPlayers: enemyPlayers,
       friendlyPlayers: friendlyPlayers,
       baseTags: baseId ? [baseId] : [],
@@ -160,7 +157,7 @@ export default function GeneralReportModal({
         </button>
         
         <h3 className="text-lg font-bold text-white mb-2">
-          {editingReport ? "Edit Base Report" : "Create Base Report"}
+          {editingReport ? (editingReport.type === "general" ? "Edit General Report" : "Edit Base Report") : (baseId ? "Create Base Report" : "Create General Report")}
         </h3>
         
         {baseId && (
