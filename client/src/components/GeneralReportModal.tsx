@@ -47,6 +47,7 @@ export default function GeneralReportModal({
 
   useEffect(() => {
     if (isVisible) {
+      console.log('Modal opened with editingReport:', editingReport)
       if (editingReport) {
         // Load existing report data for editing
         // Use separate enemy and friendly player arrays, fallback to legacy playerTags if needed
