@@ -1731,19 +1731,13 @@ export default function InteractiveTacticalMap() {
   const handleSaveBase = useCallback(async (baseData) => {
     // If this is a report, save to database instead of creating a map location
     if (modalType === 'report') {
-      const playerTags = []
-      if (baseData.enemyPlayers) {
-        playerTags.push(...baseData.enemyPlayers.split(',').map(p => p.trim()).filter(p => p))
-      }
-      if (baseData.friendlyPlayers) {
-        playerTags.push(...baseData.friendlyPlayers.split(',').map(p => p.trim()).filter(p => p))
-      }
-      
       const reportData = {
         type: "general",
         notes: baseData.notes || `${baseData.type.replace('report-', '')} report`,
         outcome: baseData.outcome === 'won' ? 'good' : baseData.outcome === 'lost' ? 'bad' : 'neutral',
-        playerTags: playerTags,
+        enemyPlayers: baseData.enemyPlayers || "",
+        friendlyPlayers: baseData.friendlyPlayers || "",
+        playerTags: [], // Keep legacy field empty
         baseTags: [],
         screenshots: [],
         location: { 
