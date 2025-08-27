@@ -1571,7 +1571,34 @@ export default function InteractiveTacticalMap() {
 
   
   // Report Modal Handlers
-  const onOpenReport = useCallback((location) => {
+  const onOpenReport = useCallback(async (location) => {
+    // If this is a report marker (has reportId), fetch the actual report from database
+    if (location.isReportMarker && location.reportId) {
+      try {
+        const response = await fetch(`/api/reports/${location.reportId}`)
+        if (response.ok) {
+          const report = await response.json()
+          console.log('Loaded report for viewing:', report)
+          // Open the report for editing in BaseModal
+          setEditingLocation({
+            ...location,
+            // Map report data to location format for BaseModal
+            outcome: report.outcome === 'good' ? 'won' : report.outcome === 'bad' ? 'lost' : 'neutral',
+            notes: report.notes,
+            enemyPlayers: report.playerTags.join(', '),
+            friendlyPlayers: '', // Reports don't distinguish between enemy/friendly in database
+            reportId: report.id
+          })
+          setModalType('report')
+          setNewBaseModal({ x: location.x, y: location.y, visible: true })
+          return
+        }
+      } catch (error) {
+        console.error('Error loading report:', error)
+      }
+    }
+    
+    // Fallback for non-report locations or if report loading fails
     setBaseReportData({
       baseId: location.id,
       baseName: location.name,
@@ -1725,31 +1752,58 @@ export default function InteractiveTacticalMap() {
       
       console.log('Saving report:', reportData)
       try {
-        const response = await fetch('/api/reports', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(reportData)
-        })
-        if (response.ok) {
-          console.log('Report saved successfully')
-          // Refresh reports in any open logs modal
-          queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
-          
-          // Create a visual marker on the map for this report
-          const reportMarker = {
-            id: `report-${Date.now()}`,
-            name: getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null),
-            x: newBaseModal.x,
-            y: newBaseModal.y,
-            type: baseData.type,
-            notes: baseData.notes,
-            outcome: baseData.outcome,
-            time: new Date().toLocaleTimeString(),
-            isReportMarker: true // Flag to distinguish from regular bases
+        // Check if this is editing an existing report
+        if (editingLocation?.reportId) {
+          // Update existing report
+          const response = await fetch(`/api/reports/${editingLocation.reportId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reportData)
+          })
+          if (response.ok) {
+            console.log('Report updated successfully')
+            // Refresh reports and update the map location
+            queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
+            
+            // Update the visual marker on the map
+            setLocations(prev => prev.map(loc => 
+              loc.id === editingLocation.id 
+                ? { ...loc, ...baseData, outcome: baseData.outcome }
+                : loc
+            ))
+          } else {
+            console.error('Failed to update report:', await response.text())
           }
-          setLocations(prev => [...prev, reportMarker])
         } else {
-          console.error('Failed to save report:', await response.text())
+          // Create new report
+          const response = await fetch('/api/reports', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reportData)
+          })
+          if (response.ok) {
+            const savedReport = await response.json()
+            console.log('Report saved successfully')
+            // Refresh reports in any open logs modal
+            queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
+            
+            // Create a visual marker on the map for this report
+            const reportMarker = {
+              id: `report-${Date.now()}`,
+              name: getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null),
+              x: newBaseModal.x,
+              y: newBaseModal.y,
+              type: baseData.type,
+              notes: baseData.notes,
+              outcome: baseData.outcome,
+              time: new Date().toLocaleTimeString(),
+              isReportMarker: true, // Flag to distinguish from regular bases
+              reportId: savedReport.id // Link to the actual database report
+            }
+            setLocations(prev => [...prev, reportMarker])
+          } else {
+            console.error('Failed to save report:', await response.text())
+          }
         }
       } catch (error) {
         console.error('Error saving report:', error)
