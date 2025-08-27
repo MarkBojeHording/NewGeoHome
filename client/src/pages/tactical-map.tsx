@@ -1767,10 +1767,10 @@ export default function InteractiveTacticalMap() {
             // Refresh reports and update the map location
             queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
             
-            // Update the visual marker on the map
+            // Update the visual marker on the map, preserving the database reportId
             setLocations(prev => prev.map(loc => 
               loc.id === editingLocation.id 
-                ? { ...loc, ...baseData, outcome: baseData.outcome }
+                ? { ...loc, ...baseData, outcome: baseData.outcome, reportId: editingLocation.reportId, notes: baseData.notes }
                 : loc
             ))
           } else {
