@@ -510,7 +510,7 @@ export default function WipeCountdownTimer() {
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 mt-2 bg-gray-900 border-2 border-orange-600 rounded-lg shadow-2xl p-4 z-[60]" style={{ width: '870px' }}>
           <div className="flex space-x-4">
             {/* Left side */}
-            <div className="flex flex-col space-y-2" style={{ width: '490px' }}>
+            <div className="flex flex-col space-y-1" style={{ width: '490px' }}>
               <div className="w-full">
                 {/* Upkeep Summary */}
                 <div className="bg-gray-800 border border-orange-600/50 rounded p-2 w-full text-xs text-orange-300">
@@ -544,7 +544,7 @@ export default function WipeCountdownTimer() {
               
               {/* Upkeep List */}
               <div className="border border-orange-600/50 rounded max-h-24 overflow-y-auto overflow-x-hidden bg-gray-800">
-                <div className="flex justify-between items-center p-2 border-b border-orange-600/50 text-xs font-medium text-orange-300 font-mono">
+                <div className="flex justify-between items-center px-2 py-1 border-b border-orange-600/50 text-xs font-medium text-orange-300 font-mono">
                   <div className="flex">
                     <span className="w-20">[GOOD FOR WIPE]</span>
                     <span className="border-l border-orange-600/50 pl-2 w-32">[NAME]</span>
@@ -563,10 +563,10 @@ export default function WipeCountdownTimer() {
                   </div>
                 </div>
                 {upkeepEntries.length === 0 ? (
-                  <div className="p-3 text-xs text-orange-500 text-center font-mono">No upkeep entries added</div>
+                  <div className="px-2 py-1 text-xs text-orange-500 text-center font-mono">No upkeep entries added</div>
                 ) : (
                   upkeepEntries.map(entry => (
-                    <div key={entry.id} className="flex justify-between text-xs p-2 border-b border-orange-600/30 last:border-b-0 text-orange-300">
+                    <div key={entry.id} className="flex justify-between text-xs px-2 py-1 border-b border-orange-600/30 last:border-b-0 text-orange-300">
                       <div className="flex">
                         <span className="w-20 font-mono">{/* TODO: Add Good for wipe function */}</span>
                         <span className="border-l border-orange-600/30 pl-2 w-32 truncate font-mono">{entry.name}</span>
