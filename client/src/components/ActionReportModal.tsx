@@ -53,10 +53,10 @@ export default function ActionReportModal({
         const playerTagsStr = editingReport.playerTags ? editingReport.playerTags.join(', ') : ''
         
         setFormData({
-          type: editingReport.content?.type || 'report-pvp',
-          reportTime: editingReport.content?.reportTime || new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+          type: 'report-pvp', // Default to PvP for general reports
+          reportTime: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
           enemyPlayers: playerTagsStr, // Use playerTags from the report object
-          friendlyPlayers: editingReport.content?.friendlyPlayers || '',
+          friendlyPlayers: '', // Keep friendly empty since we store all tags together
           notes: editingReport.notes || '',
           reportOutcome: editingReport.outcome || 'neutral'
         })
