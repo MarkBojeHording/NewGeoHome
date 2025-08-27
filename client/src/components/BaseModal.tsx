@@ -527,23 +527,35 @@ const BaseModal = ({
   // Initialize form data when editing
   useEffect(() => {
     if (editingLocation) {
+      console.log('BaseModal: Editing report:', editingLocation)
+      
+      // For reports, map playerTags to enemyPlayers if no enemyPlayers exist
+      const enemyPlayers = editingLocation.enemyPlayers && editingLocation.enemyPlayers.length > 0 
+        ? editingLocation.enemyPlayers.join(', ')
+        : editingLocation.playerTags && editingLocation.playerTags.length > 0
+        ? editingLocation.playerTags.join(', ')
+        : ''
+      
+      const friendlyPlayers = editingLocation.friendlyPlayers && editingLocation.friendlyPlayers.length > 0
+        ? editingLocation.friendlyPlayers.join(', ')
+        : ''
+      
       setFormData({
-        type: editingLocation.type,
+        type: editingLocation.type || 'report-pvp',
         notes: editingLocation.notes || '',
         oldestTC: editingLocation.oldestTC || 0,
         players: editingLocation.players || '',
         upkeep: editingLocation.upkeep || { wood: 0, stone: 0, metal: 0, hqm: 0 },
-        reportTime: editingLocation.time || '',
+        reportTime: editingLocation.reportTime || new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
         reportOutcome: editingLocation.outcome || 'neutral',
         ownerCoordinates: editingLocation.ownerCoordinates || '',
         library: editingLocation.library || '',
         youtube: editingLocation.youtube || '',
         roofCamper: editingLocation.roofCamper || false,
         hostileSamsite: editingLocation.hostileSamsite || false,
-
         primaryRockets: editingLocation.primaryRockets || 0,
-        enemyPlayers: editingLocation.enemyPlayers || '',
-        friendlyPlayers: editingLocation.friendlyPlayers || '',
+        enemyPlayers: enemyPlayers,
+        friendlyPlayers: friendlyPlayers,
         reportId: editingLocation.reportId || generateReportId()
       })
     } else if (modalType === 'report') {
