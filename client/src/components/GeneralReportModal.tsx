@@ -76,10 +76,10 @@ export default function GeneralReportModal({
           notes: '',
           reportOutcome: 'neutral'
         })
-        // Show input fields by default for new reports
-        setShowEnemyInput(true)
-        setShowFriendlyInput(true)
       }
+      // Reset input visibility states
+      setShowFriendlyInput(false)
+      setShowEnemyInput(false)
     }
   }, [isVisible, editingReport])
 
