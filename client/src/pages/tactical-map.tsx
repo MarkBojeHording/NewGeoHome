@@ -1587,10 +1587,10 @@ export default function InteractiveTacticalMap() {
             notes: report.notes,
             enemyPlayers: report.playerTags.join(', '),
             friendlyPlayers: '', // Reports don't distinguish between enemy/friendly in database
-            reportId: location.displayReportId, // Use the stored alphanumeric ID for display
+            reportId: location.displayReportId || `R${report.id}`, // Use stored alphanumeric ID or fallback
             databaseId: report.id // Store the database ID for API calls
           })
-          console.log('Set editingLocation with reportId:', report.reportId, 'databaseId:', report.id)
+          console.log('Set editingLocation with reportId:', location.displayReportId, 'databaseId:', report.id)
           setModalType('report')
           setNewBaseModal({ x: location.x, y: location.y, visible: true })
           return
@@ -1785,7 +1785,7 @@ export default function InteractiveTacticalMap() {
           })
           if (response.ok) {
             const savedReport = await response.json()
-            console.log('Report saved successfully')
+            console.log('Report saved successfully with ID:', savedReport.id, 'Display ID:', baseData.reportId)
             // Refresh reports in any open logs modal
             queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
             
@@ -1803,6 +1803,7 @@ export default function InteractiveTacticalMap() {
               reportId: savedReport.id, // Database ID for API calls
               displayReportId: baseData.reportId // Alphanumeric ID for display
             }
+            console.log('Created report marker:', reportMarker)
             setLocations(prev => [...prev, reportMarker])
           } else {
             console.error('Failed to save report:', await response.text())
