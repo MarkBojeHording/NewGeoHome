@@ -50,6 +50,16 @@ export function ReportPreview({ report, onViewReport, variant }: ReportPreviewPr
           <p className="text-xs truncate font-mono text-orange-200" title={report.notes}>
             {report.notes || "[NO DATA]"}
           </p>
+          {/* Player Tags */}
+          {report.playerTags && report.playerTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1">
+              {report.playerTags.map((playerTag, index) => (
+                <span key={index} className="text-xs px-1 py-0.5 bg-blue-900/40 text-blue-200 rounded font-mono border border-blue-600/30">
+                  {playerTag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
 

@@ -49,13 +49,16 @@ export default function ActionReportModal({
     if (isVisible) {
       if (editingReport) {
         // Load existing report data for editing
+        // Convert playerTags array back to comma-separated strings for form inputs
+        const playerTagsStr = editingReport.playerTags ? editingReport.playerTags.join(', ') : ''
+        
         setFormData({
           type: editingReport.content?.type || 'report-pvp',
           reportTime: editingReport.content?.reportTime || new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
-          enemyPlayers: editingReport.content?.enemyPlayers || '',
+          enemyPlayers: playerTagsStr, // Use playerTags from the report object
           friendlyPlayers: editingReport.content?.friendlyPlayers || '',
-          notes: editingReport.content?.notes || '',
-          reportOutcome: editingReport.content?.reportOutcome || 'neutral'
+          notes: editingReport.notes || '',
+          reportOutcome: editingReport.outcome || 'neutral'
         })
       } else {
         // Reset form for new report
