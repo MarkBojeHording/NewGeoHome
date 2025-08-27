@@ -308,10 +308,7 @@ export default function WipeCountdownTimer() {
   const [showBackpacks, setShowBackpacks] = useState({ stone: false, metal: false, hqm: false })
   const [customItems, setCustomItems] = useState<CustomItem[]>([])
   const [upkeepEntries, setUpkeepEntries] = useState<UpkeepEntry[]>([])
-  const [mainImage, setMainImage] = useState<string | null>(null)
   const [editingUpkeepId, setEditingUpkeepId] = useState<string | null>(null)
-  
-  const mainImageInputRef = useRef<HTMLInputElement>(null)
   
   const [newUpkeepEntry, setNewUpkeepEntry] = useState({
     name: '', stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0
@@ -514,32 +511,7 @@ export default function WipeCountdownTimer() {
           <div className="flex space-x-4">
             {/* Left side */}
             <div className="flex flex-col space-y-2" style={{ width: '490px' }}>
-              <div className="flex justify-between">
-                <div 
-                  className="w-64 h-32 border-2 border-dashed border-orange-600/50 rounded-lg flex items-center justify-center cursor-pointer hover:border-orange-600"
-                  onClick={() => mainImageInputRef.current?.click()}
-                >
-                  {mainImage ? (
-                    <img src={mainImage} alt="Base" className="w-full h-full object-cover rounded-lg" />
-                  ) : (
-                    <span className="text-sm text-orange-400 font-mono">Click to upload</span>
-                  )}
-                </div>
-                <input
-                  ref={mainImageInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      const reader = new FileReader()
-                      reader.onloadend = () => setMainImage(reader.result as string)
-                      reader.readAsDataURL(file)
-                    }
-                  }}
-                  className="hidden"
-                />
-                
+              <div className="flex justify-end">
                 {/* Upkeep Summary */}
                 <div className="bg-gray-800 border border-orange-600/50 rounded p-2 w-56 text-xs text-orange-300">
                   <div className="font-medium mb-1 font-mono">[DAILY UPKEEP]</div>
