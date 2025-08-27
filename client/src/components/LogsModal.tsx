@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useQuery } from '@tanstack/react-query'
 import { ReportPreview } from './ReportPreview'
+import ActionReportModal from './ActionReportModal'
 import { Search, Filter, Calendar, User, MapPin } from 'lucide-react'
 import type { Report } from '@shared/schema'
 
@@ -17,6 +18,8 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [outcomeFilter, setOutcomeFilter] = useState<string>('all')
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingReport, setEditingReport] = useState<Report | null>(null)
 
   const { data: reports = [], isLoading } = useQuery<Report[]>({
     queryKey: ['/api/reports'],
@@ -53,6 +56,14 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
   const sortedReports = filteredReports.sort((a, b) => 
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   )
+
+  const handleViewReport = (reportId: number) => {
+    const report = reports.find(r => r.id === reportId)
+    if (report) {
+      setEditingReport(report)
+      setShowEditModal(true)
+    }
+  }
 
   const getTypeOptions = () => {
     const types = [...new Set(reports.map(r => r.type))]
@@ -155,7 +166,7 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
           ) : (
             <div className="space-y-0 border-2 border-orange-500/60 m-2 bg-gray-800/90">
               {sortedReports.map((report) => (
-                <ReportPreview key={report.id} report={report} />
+                <ReportPreview key={report.id} report={report} onViewReport={handleViewReport} />
               ))}
             </div>
           )}
@@ -163,6 +174,16 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
 
 
       </DialogContent>
+
+      {/* Report Edit Modal */}
+      <ActionReportModal
+        isVisible={showEditModal}
+        onClose={() => {
+          setShowEditModal(false)
+          setEditingReport(null)
+        }}
+        editingReport={editingReport}
+      />
     </Dialog>
   )
 }
