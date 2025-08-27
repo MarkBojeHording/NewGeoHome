@@ -16,6 +16,7 @@ export interface IStorage {
   getReportsByType(type: string): Promise<Report[]>;
   getReportsByPlayerTag(playerId: string): Promise<Report[]>;
   getReportsByBaseTag(baseId: string): Promise<Report[]>;
+  getReportsForBase(baseId: string): Promise<Report[]>;
   updateReport(id: number, report: Partial<InsertReport>): Promise<Report>;
   deleteReport(id: number): Promise<boolean>;
   
@@ -101,6 +102,32 @@ export class DatabaseStorage implements IStorage {
   async getReportsByBaseTag(baseId: string): Promise<Report[]> {
     const baseReports = await db.select().from(reports).where(sql`${reports.baseTags} @> ARRAY[${baseId}]`);
     return baseReports;
+  }
+
+  async getReportsForBase(baseId: string): Promise<Report[]> {
+    // Get direct base reports
+    const baseReports = await db.select().from(reports).where(sql`${reports.baseTags} @> ARRAY[${baseId}]`);
+    
+    // Get players associated with this base
+    const basePlayerTags = await db.select().from(playerBaseTags).where(eq(playerBaseTags.baseId, baseId));
+    const playerNames = basePlayerTags.map(tag => tag.playerName);
+    
+    if (playerNames.length === 0) {
+      return baseReports;
+    }
+    
+    // Get general reports where any of the base's players are tagged
+    const generalReports = await db.select().from(reports).where(
+      sql`${reports.type} = 'general' AND ${reports.playerTags} && ARRAY[${playerNames.map(name => `'${name}'`).join(',')}]`
+    );
+    
+    // Combine and deduplicate reports
+    const allReports = [...baseReports, ...generalReports];
+    const uniqueReports = allReports.filter((report, index, self) => 
+      index === self.findIndex(r => r.id === report.id)
+    );
+    
+    return uniqueReports.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
   async updateReport(id: number, report: Partial<InsertReport>): Promise<Report> {

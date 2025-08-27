@@ -6,9 +6,10 @@ import { format } from "date-fns"
 interface ReportPreviewProps {
   report: Report
   onViewReport?: (reportId: number) => void
+  variant?: 'base' | 'general' // Add variant prop for styling
 }
 
-export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
+export function ReportPreview({ report, onViewReport, variant }: ReportPreviewProps) {
   const getReportTypeLabel = (type: string) => {
     switch (type) {
       case 'general': return 'General'
@@ -23,8 +24,14 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
   const hasScreenshots = report.screenshots && report.screenshots.length > 0
   const hasNotes = report.notes && report.notes.trim().length > 0
 
+  // Determine styling based on variant and report type
+  const isGeneralReport = variant === 'general' || (report.type === 'general' && !variant)
+  const borderColor = isGeneralReport ? 'border-blue-500/40' : 'border-orange-500/40'
+  const hoverColor = isGeneralReport ? 'hover:bg-blue-900/40' : 'hover:bg-orange-900/40'
+  const gradientColor = isGeneralReport ? 'to-blue-950/20' : 'to-orange-950/20'
+
   return (
-    <div className="flex items-center justify-between p-1 border-b border-orange-500/40 hover:bg-orange-900/40 transition-colors bg-gradient-to-r from-gray-800 to-orange-950/20">
+    <div className={`flex items-center justify-between p-1 border-b ${borderColor} ${hoverColor} transition-colors bg-gradient-to-r from-gray-800 ${gradientColor}`}>
       <div className="flex items-center gap-1 flex-1 min-w-0">
         {/* Report Type & ID */}
         <div className="flex flex-col min-w-0">

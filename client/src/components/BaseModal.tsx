@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
 import { ReportPreview } from './ReportPreview'
-import type { ExternalPlayer } from '@shared/schema'
+import type { ExternalPlayer, Report } from '@shared/schema'
 
 // ============= CONSTANTS =============
 const LABELS = {
@@ -96,8 +96,13 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
 }
 
 // ============= BASE REPORTS CONTENT COMPONENT =============
-const BaseReportsContent = ({ baseId, onOpenReport }) => {
-  const { data: reports = [], isLoading } = useQuery({
+const BaseReportsContent = ({ baseId, onOpenReport }: { baseId: string; onOpenReport: (reportId: number) => void }) => {
+  const { data: reports = [], isLoading } = useQuery<Report[]>({
+    queryKey: ['/api/reports/for-base', baseId],
+    enabled: !!baseId
+  })
+
+  const { data: baseReports = [] } = useQuery<Report[]>({
     queryKey: ['/api/reports/base', baseId],
     enabled: !!baseId
   })
@@ -115,15 +120,22 @@ const BaseReportsContent = ({ baseId, onOpenReport }) => {
     )
   }
 
+  // Determine which reports are direct base reports vs general reports
+  const baseReportIds = new Set(baseReports.map(r => r.id))
+
   return (
     <div className="border">
-      {reports.map((report) => (
-        <ReportPreview 
-          key={report.id} 
-          report={report} 
-          onViewReport={onOpenReport}
-        />
-      ))}
+      {reports.map((report) => {
+        const isBaseReport = baseReportIds.has(report.id)
+        return (
+          <ReportPreview 
+            key={report.id} 
+            report={report} 
+            onViewReport={onOpenReport}
+            variant={isBaseReport ? 'base' : 'general'}
+          />
+        )
+      })}
     </div>
   )
 }
