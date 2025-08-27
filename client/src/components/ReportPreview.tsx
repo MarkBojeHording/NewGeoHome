@@ -71,7 +71,7 @@ export function ReportPreview({ report, onViewReport, variant }: ReportPreviewPr
               
               {/* Legacy PlayerTags - Blue (for backward compatibility) */}
               {report.playerTags && report.playerTags.map((playerTag, index) => (
-                <span key={`legacy-${index}`} className="text-xs px-1 py-0.5 bg-blue-900/40 text-blue-200 rounded font-mono border border-blue-600/30">
+                <span key={`legacy-${index}`} className="text-xs px-1 py-0.5 bg-blue-600 text-white rounded font-mono border border-blue-400">
                   {playerTag}
                 </span>
               ))}
