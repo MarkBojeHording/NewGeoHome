@@ -7,6 +7,7 @@ interface UpkeepEntry {
   stoneUpkeep: number
   metalUpkeep: number
   hqmUpkeep: number
+  goodForWipe: boolean
 }
 
 interface CustomItem {
@@ -311,7 +312,7 @@ export default function WipeCountdownTimer() {
   const [editingUpkeepId, setEditingUpkeepId] = useState<string | null>(null)
   
   const [newUpkeepEntry, setNewUpkeepEntry] = useState({
-    name: '', stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0
+    name: '', stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0, goodForWipe: false
   })
   
   const [newItem, setNewItem] = useState({
@@ -350,11 +351,13 @@ export default function WipeCountdownTimer() {
   }, [])
   
   const totalUpkeep = useMemo(() => 
-    upkeepEntries.reduce((acc, entry) => ({
-      stone: acc.stone + entry.stoneUpkeep,
-      metal: acc.metal + entry.metalUpkeep,
-      hqm: acc.hqm + entry.hqmUpkeep
-    }), { stone: 0, metal: 0, hqm: 0 })
+    upkeepEntries
+      .filter(entry => !entry.goodForWipe)
+      .reduce((acc, entry) => ({
+        stone: acc.stone + entry.stoneUpkeep,
+        metal: acc.metal + entry.metalUpkeep,
+        hqm: acc.hqm + entry.hqmUpkeep
+      }), { stone: 0, metal: 0, hqm: 0 })
   , [upkeepEntries])
   
   const handleAddUpkeep = useCallback(() => {
@@ -369,7 +372,7 @@ export default function WipeCountdownTimer() {
       setUpkeepEntries(entries => [...entries, { id: Date.now().toString(), ...newUpkeepEntry }])
     }
     
-    setNewUpkeepEntry({ name: '', stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0 })
+    setNewUpkeepEntry({ name: '', stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0, goodForWipe: false })
     setShowModals(m => ({ ...m, upkeep: false }))
   }, [newUpkeepEntry, editingUpkeepId])
   
@@ -568,7 +571,24 @@ export default function WipeCountdownTimer() {
                   upkeepEntries.map(entry => (
                     <div key={entry.id} className="flex justify-between text-xs px-2 py-1 border-b border-orange-600/30 last:border-b-0 text-orange-300">
                       <div className="flex">
-                        <span className="w-20 font-mono">{/* TODO: Add Good for wipe function */}</span>
+                        <div className="w-20 flex space-x-1">
+                          <button
+                            onClick={() => setUpkeepEntries(entries => entries.map(e => 
+                              e.id === entry.id ? { ...e, goodForWipe: false } : e
+                            ))}
+                            className={`text-xs px-1 rounded font-mono ${!entry.goodForWipe ? 'bg-red-600 text-white' : 'text-red-400 hover:bg-red-600 hover:text-white'}`}
+                          >
+                            NO
+                          </button>
+                          <button
+                            onClick={() => setUpkeepEntries(entries => entries.map(e => 
+                              e.id === entry.id ? { ...e, goodForWipe: true } : e
+                            ))}
+                            className={`text-xs px-1 rounded font-mono ${entry.goodForWipe ? 'bg-green-600 text-white' : 'text-green-400 hover:bg-green-600 hover:text-white'}`}
+                          >
+                            YES
+                          </button>
+                        </div>
                         <span className="border-l border-orange-600/30 pl-2 w-32 truncate font-mono">{entry.name}</span>
                       </div>
                       <div className="flex items-center space-x-8">
