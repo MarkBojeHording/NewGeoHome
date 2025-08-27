@@ -83,12 +83,21 @@ export default function GeneralReportModal({
     }
   }, [isVisible, editingReport])
 
-  const createReportMutation = useMutation({
+  const saveReportMutation = useMutation({
     mutationFn: async (reportData: any) => {
-      console.log('Creating report with data:', reportData)
-      const response = await apiRequest("POST", "/api/reports", reportData)
-      console.log('Report creation response:', response)
-      return response
+      if (editingReport) {
+        // Update existing report
+        console.log('Updating report with data:', reportData)
+        const response = await apiRequest("PUT", `/api/reports/${editingReport.id}`, reportData)
+        console.log('Report update response:', response)
+        return response
+      } else {
+        // Create new report
+        console.log('Creating report with data:', reportData)
+        const response = await apiRequest("POST", "/api/reports", reportData)
+        console.log('Report creation response:', response)
+        return response
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
@@ -97,12 +106,12 @@ export default function GeneralReportModal({
       onClose()
     },
     onError: (error) => {
-      console.error('Report creation failed:', error)
+      console.error(editingReport ? 'Report update failed:' : 'Report creation failed:', error)
     }
   })
 
   const handleSave = () => {
-    if (createReportMutation.isPending) return // Prevent multiple submissions
+    if (saveReportMutation.isPending) return // Prevent multiple submissions
     
     // Convert player strings to arrays
     const enemyPlayers = formData.enemyPlayers ? 
@@ -128,7 +137,7 @@ export default function GeneralReportModal({
       location: baseCoords ? parseCoordinates(baseCoords) : { gridX: 0, gridY: 0 }
     }
     
-    createReportMutation.mutate(reportData)
+    saveReportMutation.mutate(reportData)
   }
 
   // Helper function to parse coordinates like "A1" to {gridX: 0, gridY: 1}
