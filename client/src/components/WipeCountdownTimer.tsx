@@ -514,23 +514,30 @@ export default function WipeCountdownTimer() {
               <div className="flex justify-end">
                 {/* Upkeep Summary */}
                 <div className="bg-gray-800 border border-orange-600/50 rounded p-2 w-56 text-xs text-orange-300">
-                  <div className="font-medium mb-1 font-mono">[DAILY UPKEEP]</div>
-                  {Object.entries(totalUpkeep).map(([type, value]) => (
-                    <div key={type} className="font-mono">{type}: <span className="font-bold text-red-400">{formatNumber(value)}</span></div>
-                  ))}
-                  <div className="mt-2 pt-2 border-t border-orange-600/50">
-                    <div className="font-medium mb-1 font-mono">[UNTIL WIPE]</div>
-                    {Object.entries(totalUpkeep).map(([type, value]) => {
-                      const total = Math.ceil(value * (countdown.days + countdown.hours / 24))
-                      const boxSize = type === 'hqm' ? 4800 : 48000
-                      const boxes = Math.ceil(total / boxSize)
-                      return (
-                        <div key={type} className="font-mono">
-                          {type}: <span className="font-bold text-red-400">{formatNumber(total)}</span>
-                          {total > 0 && <span className="text-orange-500 ml-1 text-[11px]">({boxes} {boxes === 1 ? 'box' : 'boxes'})</span>}
-                        </div>
-                      )
-                    })}
+                  <div className="flex space-x-4">
+                    {/* Daily Upkeep */}
+                    <div className="flex-1">
+                      <div className="font-medium mb-1 font-mono">[DAILY UPKEEP]</div>
+                      {Object.entries(totalUpkeep).map(([type, value]) => (
+                        <div key={type} className="font-mono">{type}: <span className="font-bold text-red-400">{formatNumber(value)}</span></div>
+                      ))}
+                    </div>
+                    
+                    {/* Until Wipe */}
+                    <div className="flex-1 pl-2 border-l border-orange-600/50">
+                      <div className="font-medium mb-1 font-mono">[UNTIL WIPE]</div>
+                      {Object.entries(totalUpkeep).map(([type, value]) => {
+                        const total = Math.ceil(value * (countdown.days + countdown.hours / 24))
+                        const boxSize = type === 'hqm' ? 4800 : 48000
+                        const boxes = Math.ceil(total / boxSize)
+                        return (
+                          <div key={type} className="font-mono">
+                            {type}: <span className="font-bold text-red-400">{formatNumber(total)}</span>
+                            {total > 0 && <span className="text-orange-500 ml-1 text-[11px]">({boxes} {boxes === 1 ? 'box' : 'boxes'})</span>}
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
