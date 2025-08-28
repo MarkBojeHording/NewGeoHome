@@ -717,20 +717,22 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             zIndex: 1
           }}
         >
-          <svg width="60" height="60" viewBox="0 0 60 60" className="absolute" style={{ transform: 'translate(-50%, -50%)' }}>
-            <defs>
-              <pattern id={`stripes-yellow-${location.id}`} patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
-                <rect x="0" y="0" width="4" height="8" fill="yellow" opacity="0.25"/>
-                <rect x="4" y="0" width="4" height="8" fill="transparent"/>
-              </pattern>
-              <path id={`circle-hostile-${location.id}`} d="M 30,10 A 20,20 0 0,0 30,50" fill="none" />
-            </defs>
-            <circle cx="30" cy="30" r="20" fill={`url(#stripes-yellow-${location.id})`} stroke="none"/>
-            <text fontFamily="Arial, sans-serif" fontSize="6" fill="#886600" opacity="0.55">
-              <textPath href={`#circle-hostile-${location.id}`} startOffset="50%" textAnchor="middle">
-                Hostile Samsite
-              </textPath>
-            </text>
+          <svg width="60" height="60" viewBox="0 0 300 300" className="absolute" style={{ transform: 'translate(-50%, -50%)' }}>
+            <g transform="rotate(-90 150 150)">
+              <defs>
+                <path id={`circle-hostile-${location.id}`} d="M 150,50 A 100,100 0 0,0 150,250" fill="none" />
+                <pattern id={`stripes-yellow-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                  <rect x="0" y="0" width="10" height="20" fill="yellow" opacity="0.25"/>
+                  <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+                </pattern>
+              </defs>
+              <circle cx="150" cy="150" r="100" fill={`url(#stripes-yellow-${location.id})`} stroke="none"/>
+              <text fontFamily="Arial, sans-serif" fontSize="20" fill="#886600" opacity="0.55">
+                <textPath href={`#circle-hostile-${location.id}`} startOffset="50%" textAnchor="middle">
+                  Hostile Samsite
+                </textPath>
+              </text>
+            </g>
           </svg>
         </div>
       )}
@@ -746,20 +748,22 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             zIndex: 1
           }}
         >
-          <svg width="60" height="60" viewBox="0 0 60 60" className="absolute" style={{ transform: 'translate(-50%, -50%)' }}>
-            <defs>
-              <pattern id={`stripes-red-${location.id}`} patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
-                <rect x="0" y="0" width="4" height="8" fill="red" opacity="0.25"/>
-                <rect x="4" y="0" width="4" height="8" fill="transparent"/>
-              </pattern>
-              <path id={`circle-roof-${location.id}`} d="M 30,10 A 20,20 0 0,1 30,50" fill="none" />
-            </defs>
-            <circle cx="30" cy="30" r="20" fill={`url(#stripes-red-${location.id})`} stroke="none"/>
-            <text fontFamily="Arial, sans-serif" fontSize="6" fill="#660000" opacity="0.55" dominantBaseline="hanging">
-              <textPath href={`#circle-roof-${location.id}`} startOffset="50%" textAnchor="middle">
-                Roofcamper
-              </textPath>
-            </text>
+          <svg width="60" height="60" viewBox="0 0 300 300" className="absolute" style={{ transform: 'translate(-50%, -50%)' }}>
+            <g transform="rotate(-90 150 150)">
+              <defs>
+                <path id={`circle-roof-${location.id}`} d="M 150,50 A 100,100 0 0,1 150,250" fill="none" />
+                <pattern id={`stripes-red-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                  <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
+                  <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+                </pattern>
+              </defs>
+              <circle cx="150" cy="150" r="100" fill={`url(#stripes-red-${location.id})`} stroke="none"/>
+              <text fontFamily="Arial, sans-serif" fontSize="20" fill="#660000" dominantBaseline="hanging" opacity="0.55">
+                <textPath href={`#circle-roof-${location.id}`} startOffset="50%" textAnchor="middle">
+                  Roofcamper
+                </textPath>
+              </text>
+            </g>
           </svg>
         </div>
       )}
