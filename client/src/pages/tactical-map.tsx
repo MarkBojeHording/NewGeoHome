@@ -595,6 +595,25 @@ const TowerIcon = () => (
   </svg>
 )
 
+// Task Report Icons
+const StoneIcon = () => (
+  <div className="w-4 h-4 bg-gray-600 rounded-sm border border-gray-800 shadow-lg flex items-center justify-center" title="Ore Pickup">
+    <svg className="w-2.5 h-2.5 text-gray-200" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2L4 7l8 5 8-5-8-5zM4 7v10l8 5 8-5V7l-8 5-8-5z"/>
+    </svg>
+  </div>
+)
+
+const CardboardBoxIcon = () => (
+  <div className="w-4 h-4 bg-amber-600 rounded-sm border border-amber-800 shadow-lg flex items-center justify-center" title="Loot Pickup">
+    <svg className="w-2.5 h-2.5 text-amber-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+      <path d="m3.3 7 8.7 5 8.7-5"/>
+      <path d="M12 22V12"/>
+    </svg>
+  </div>
+)
+
 const LocationName = ({ name, className = '' }) => {
   const match = name.match(/^([A-Z]+\d+)(\(\d+\))?/)
   if (match) {
@@ -672,8 +691,15 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
   )
 }
 
-const LocationMarker = ({ location, locations = [], isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport }) => {
+const LocationMarker = ({ location, locations = [], isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport, pendingTaskReports = [] }) => {
   const ownedBases = getOwnedBases(location.name)
+  
+  // Find task reports for this base
+  const taskReports = useMemo(() => {
+    return pendingTaskReports.filter(report => 
+      report.baseTags && report.baseTags.includes(location.id)
+    )
+  }, [pendingTaskReports, location.id])
 
   // Calculate online player count for this base (regular players only, premium players are always counted as online)
   const onlinePlayerCount = useMemo(() => {
@@ -936,10 +962,19 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           </div>
         )}
         
-        
-
-        
-
+        {/* Task Report Icons */}
+        {taskReports.length > 0 && (
+          <div className="absolute -bottom-2 -right-2" style={{ zIndex: 10 }}>
+            <div className="flex flex-row gap-0.5">
+              {taskReports.map((report, index) => (
+                <div key={report.id}>
+                  {report.taskData && report.taskData.pickupType === 'ore' && <StoneIcon />}
+                  {report.taskData && report.taskData.pickupType === 'loot' && <CardboardBoxIcon />}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         
         {location.oldestTC && location.oldestTC > 0 && (
           <div className="absolute inset-0 pointer-events-none">
@@ -1723,6 +1758,15 @@ export default function InteractiveTacticalMap() {
     retry: 1,
     throwOnError: false,
   })
+  
+  // Fetch all reports for task report icons
+  const { data: reports = [] } = useQuery({
+    queryKey: ['/api/reports'],
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+    throwOnError: false,
+  })
 
   // Combine external and premium players - memoized for performance
   const players = useMemo(() => [
@@ -1733,6 +1777,15 @@ export default function InteractiveTacticalMap() {
       totalSessions: 0
     }))
   ], [externalPlayers, premiumPlayers])
+  
+  // Get pending task reports for map icons
+  const pendingTaskReports = useMemo(() => {
+    return reports.filter(report => 
+      report.type === 'task' && 
+      report.status === 'pending' &&
+      report.baseTags && report.baseTags.length > 0
+    )
+  }, [reports])
 
   const mapRef = useRef(null)
   const [locationTimers, setLocationTimers] = useLocationTimers()
@@ -2227,6 +2280,7 @@ export default function InteractiveTacticalMap() {
                     })
                     setShowBaseReportModal(true)
                   }}
+                  pendingTaskReports={pendingTaskReports}
                 />
               ))}
             </div>
