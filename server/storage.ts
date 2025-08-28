@@ -95,8 +95,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getReportsByPlayerTag(playerId: string): Promise<Report[]> {
-    const playerReports = await db.select().from(reports).where(sql`${reports.playerTags} @> ARRAY[${playerId}]`);
-    return playerReports;
+    // Search in playerTags array, enemyPlayers, and friendlyPlayers fields
+    const playerReports = await db.select().from(reports).where(
+      sql`${reports.playerTags} @> ARRAY[${playerId}] OR 
+          ${reports.enemyPlayers} LIKE ${'%' + playerId + '%'} OR 
+          ${reports.friendlyPlayers} LIKE ${'%' + playerId + '%'}`
+    );
+    
+    // Sort by creation date (newest first)
+    return playerReports.sort((a, b) => 
+      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    );
   }
 
   async getReportsByBaseTag(baseId: string): Promise<Report[]> {
