@@ -1585,8 +1585,8 @@ export default function InteractiveTacticalMap() {
             // Map report data to location format for BaseModal
             outcome: report.outcome === 'good' ? 'won' : report.outcome === 'bad' ? 'lost' : 'neutral',
             notes: report.notes,
-            enemyPlayers: report.playerTags.join(', '),
-            friendlyPlayers: '', // Reports don't distinguish between enemy/friendly in database
+            enemyPlayers: report.enemyPlayers || '',
+            friendlyPlayers: report.friendlyPlayers || '',
             reportId: location.displayReportId || `R${report.id}`, // Use stored alphanumeric ID or fallback
             databaseId: report.id // Store the database ID for API calls
           })
