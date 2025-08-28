@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes taskPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes taskBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
 :root {
   --background: hsl(220 10% 11%);
   --foreground: hsl(30 80% 95%);

@@ -595,13 +595,14 @@ const TowerIcon = () => (
   </svg>
 )
 
-// Task Report Icons - using emoji style to match interface
+// Task Report Icons - using emoji style to match interface with custom keyframes
 const TaskOreIcon = () => (
   <span 
     className="text-xs" 
     title="Ore Pickup"
     style={{
-      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite, bounce 1s infinite'
+      animation: 'taskPulse 2s ease-in-out infinite, taskBounce 1s ease-in-out infinite',
+      animationDelay: '0s, 0.5s'
     }}
   >
     🪨
@@ -613,7 +614,8 @@ const TaskLootIcon = () => (
     className="text-xs" 
     title="Loot Pickup"
     style={{
-      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite, bounce 1s infinite'
+      animation: 'taskPulse 2s ease-in-out infinite, taskBounce 1s ease-in-out infinite',
+      animationDelay: '0s, 0.25s'
     }}
   >
     📦
