@@ -192,11 +192,11 @@ const BaseHeatMap = ({ players: playersString }) => {
                   const maxActivity = 20 // Arbitrary max for normalization  
                   const intensity = Math.min(activityCount / maxActivity, 1)
                   
-                  // Show color based on actual player data or fallback pattern
+                  // Only show color when players are actually tagged
                   const hasPlayerData = selectedPlayersList.length > 0 && players.length > 0
                   const opacity = hasPlayerData 
                     ? (intensity > 0 ? 0.2 + (intensity * 0.6) : 0.1) 
-                    : (hour >= 18 || hour <= 2 ? 0.4 : 0.1) // Fallback demo pattern
+                    : 0.05 // Very minimal background when no players tagged
                   
                   return (
                     <div
