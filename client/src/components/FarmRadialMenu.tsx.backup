@@ -998,18 +998,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
                 2,
                 selectedInner === '2-0' ? 'REQUEST REPAIR' : 'REQUEST UPGRADE',
                 '',
-                (e) => { 
-                  e.stopPropagation(); 
-                  // Create express task report for repair/upgrade
-                  if (onOpenTaskReport && baseId && baseName && baseCoords) {
-                    onOpenTaskReport({
-                      baseId,
-                      baseName, 
-                      baseCoords
-                    });
-                  }
-                  setSelectedInner(null);
-                },
+                (e) => { e.stopPropagation(); setSelectedInner(null); },
                 (e) => { e.stopPropagation(); setSelectedInner(null); },
                 false,  // showTimers
                 false   // isSplit
