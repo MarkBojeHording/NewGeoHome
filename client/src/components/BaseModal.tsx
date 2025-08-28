@@ -525,6 +525,8 @@ const BaseModal = ({
   
   // Handler for opening reports from previews
   const handleOpenReport = useCallback((report) => {
+    console.log('Opening report:', report)
+    
     // Transform the report data to match ActionReportModal's expected structure
     const transformedReport = {
       id: report.id,
@@ -537,6 +539,8 @@ const BaseModal = ({
         reportOutcome: report.outcome || 'neutral'
       }
     }
+    
+    console.log('Transformed report for ActionReportModal:', transformedReport)
     
     setViewingReport(transformedReport)
     setShowReportModal(true)

@@ -158,7 +158,7 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
                 <ReportPreview 
                   key={report.id} 
                   report={report}
-                  onViewReport={() => {
+                  onViewReport={(report) => {
                     // For now, LogsModal doesn't have edit functionality
                     // This could be added later if needed
                     console.log('Report viewing not implemented in LogsModal:', report)

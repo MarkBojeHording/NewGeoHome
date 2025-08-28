@@ -5,7 +5,7 @@ import { format } from "date-fns"
 
 interface ReportPreviewProps {
   report: Report
-  onViewReport?: (reportId: number) => void
+  onViewReport?: (report: Report) => void
 }
 
 export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
@@ -59,7 +59,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onViewReport(report.id)}
+            onClick={() => onViewReport(report)}
             className="shrink-0 h-6 w-6 p-0 hover:bg-orange-900/50 text-orange-400"
           >
             <ExternalLink className="w-3 h-3" />
