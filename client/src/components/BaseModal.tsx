@@ -145,9 +145,15 @@ const BaseReportsContent = ({ baseId, baseOwners, onOpenReport }) => {
 }
 
 // ============= BASE HEAT MAP COMPONENT =============
-const BaseHeatMap = ({ players: playersString }) => {
-  // Get player names from the playersString
-  const selectedPlayersList = playersString ? playersString.split(',').map(p => p.trim()).filter(p => p) : []
+const BaseHeatMap = ({ baseId, modalType }) => {
+  // Fetch actual base owners from database for this specific base
+  const { data: basePlayerTags = [] } = useQuery({
+    queryKey: ['/api/player-base-tags/base', baseId],
+    enabled: !!baseId
+  })
+  
+  // Get actual player names tagged to this specific base
+  const selectedPlayersList = basePlayerTags.map((tag: any) => tag.playerName).filter((name: string) => name)
   
   // Fetch session data for all selected players in a single query
   const { data: allSessionsData = {} } = useQuery({
@@ -677,7 +683,6 @@ const BaseModal = ({
   // Initialize form data when editing
   useEffect(() => {
     if (editingLocation) {
-      console.log('BaseModal editingLocation:', editingLocation)
       setFormData({
         type: editingLocation.type,
         notes: editingLocation.notes || '',
@@ -971,7 +976,7 @@ const BaseModal = ({
         )}
         
         {modalType === 'enemy' && (
-          <BaseHeatMap players={formData.players} />
+          <BaseHeatMap baseId={editingLocation?.id} modalType={modalType} />
         )}
         
         <div>
