@@ -1163,6 +1163,38 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
               Action
             </text>
           </g>
+
+          {/* Express pickup button (appears when pickup type is selected) */}
+          {expressPickupType && (
+            <g 
+              className="transition-transform duration-200 cursor-pointer hover:scale-105"
+              onClick={handleExpressPickup}
+            >
+              <circle
+                cx={centerX + 80}
+                cy={centerY - 80}
+                r="25"
+                fill="hsl(120, 70%, 45%)"
+                stroke="hsl(120, 70%, 35%)"
+                strokeWidth="3"
+                className="transition-all duration-300"
+                filter="url(#actionButtonGlow)"
+              />
+              <text
+                x={centerX + 80}
+                y={centerY - 80}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize="12"
+                fontWeight="bold"
+                fill="white"
+                className="select-none"
+                style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+              >
+                CREATE
+              </text>
+            </g>
+          )}
       </svg>
     </>
   );
