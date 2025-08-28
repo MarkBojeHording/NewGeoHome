@@ -1783,24 +1783,47 @@ export default function InteractiveTacticalMap() {
 
   const handleCreateExpressTaskReport = useCallback(async (baseData) => {
     try {
-      // Create task report directly with preset values
-      const taskReport = {
-        type: 'task',
-        notes: `Express ${baseData.pickupType} pickup - Created via radial menu`,
-        outcome: 'neutral',
-        enemyPlayers: '',
-        friendlyPlayers: '',
-        baseTags: [baseData.baseId],
-        screenshots: [],
-        location: { gridX: 0, gridY: 0 }, // Will be updated by backend if needed
-        taskType: 'needs_pickup',
-        taskData: {
-          pickupType: baseData.pickupType, // 'ore' or 'loot'
-          subtask: baseData.pickupType === 'ore' ? 'Pickaxe' : 'Package',
-          details: `Express ${baseData.pickupType} pickup task for ${baseData.baseName}`,
-          urgency: 'medium'
-        },
-        status: 'pending'
+      let taskReport
+      
+      if (baseData.pickupType) {
+        // Create pickup task report
+        taskReport = {
+          type: 'task',
+          notes: `Express ${baseData.pickupType} pickup - Created via radial menu`,
+          outcome: 'neutral',
+          enemyPlayers: '',
+          friendlyPlayers: '',
+          baseTags: [baseData.baseId],
+          screenshots: [],
+          location: { gridX: 0, gridY: 0 }, // Will be updated by backend if needed
+          taskType: 'needs_pickup',
+          taskData: {
+            pickupType: baseData.pickupType, // 'ore' or 'loot'
+            subtask: baseData.pickupType === 'ore' ? 'Pickaxe' : 'Package',
+            details: `Express ${baseData.pickupType} pickup task for ${baseData.baseName}`,
+            urgency: 'medium'
+          },
+          status: 'pending'
+        }
+      } else if (baseData.repairUpgradeType) {
+        // Create repair/upgrade task report
+        taskReport = {
+          type: 'task',
+          notes: `Express ${baseData.repairUpgradeType} - Created via radial menu`,
+          outcome: 'neutral',
+          enemyPlayers: '',
+          friendlyPlayers: '',
+          baseTags: [baseData.baseId],
+          screenshots: [],
+          location: { gridX: 0, gridY: 0 }, // Will be updated by backend if needed
+          taskType: 'repair_upgrade',
+          taskData: {
+            repairUpgradeType: baseData.repairUpgradeType, // 'repair' or 'upgrade'
+            details: `Express ${baseData.repairUpgradeType} task for ${baseData.baseName}`,
+            urgency: 'medium'
+          },
+          status: 'pending'
+        }
       }
 
       // Save the task report

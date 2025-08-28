@@ -1001,13 +1001,12 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
                 (e) => { 
                   e.stopPropagation(); 
                   // Create express task report for repair/upgrade
-                  if (onOpenTaskReport && baseId && baseName && baseCoords) {
+                  if (onCreateExpressTaskReport && baseId && baseName && baseCoords) {
                     const repairType = selectedInner === '2-0' ? 'repair' : 'upgrade';
-                    onOpenTaskReport({
+                    onCreateExpressTaskReport({
                       baseId,
                       baseName, 
                       baseCoords,
-                      taskType: 'repair_upgrade',
                       repairUpgradeType: repairType
                     });
                   }
