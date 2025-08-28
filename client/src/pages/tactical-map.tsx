@@ -7,6 +7,7 @@ import { PlayerModal } from '../components/PlayerModal'
 import { LogsModal } from '../components/LogsModal'
 import ActionReportModal from '../components/ActionReportModal'
 import TaskReportModal from '../components/TaskReportModal'
+import TaskSummaryPopup from '../components/TaskSummaryPopup'
 import { TeamsModal } from '../components/TeamsModal'
 import { ProgressionModal } from '../components/ProgressionModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
@@ -597,10 +598,11 @@ const TowerIcon = () => (
 )
 
 // Task Report Icons - using emoji style with subtle animations
-const TaskOreIcon = () => (
+const TaskOreIcon = ({ onClick, task }) => (
   <span 
-    className="text-xs inline-block" 
-    title="Ore Pickup"
+    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
+    title="Ore Pickup - Click for details"
+    onClick={(e) => onClick(e, task)}
     style={{
       animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite'
     }}
@@ -609,10 +611,11 @@ const TaskOreIcon = () => (
   </span>
 )
 
-const TaskLootIcon = () => (
+const TaskLootIcon = ({ onClick, task }) => (
   <span 
-    className="text-xs inline-block" 
-    title="Loot Pickup"
+    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
+    title="Loot Pickup - Click for details"
+    onClick={(e) => onClick(e, task)}
     style={{
       animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite',
       animationDelay: '0s, 0.5s'
@@ -976,8 +979,10 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             <div className="flex flex-row gap-0.5">
               {taskReports.map((report, index) => (
                 <div key={report.id}>
-                  {report.taskData && report.taskData.pickupType === 'ore' && <TaskOreIcon />}
-                  {report.taskData && report.taskData.pickupType === 'loot' && <TaskLootIcon />}
+                  {report.taskData && report.taskData.pickupType === 'ore' && 
+                    <TaskOreIcon onClick={handleTaskIconClick} task={report} />}
+                  {report.taskData && report.taskData.pickupType === 'loot' && 
+                    <TaskLootIcon onClick={handleTaskIconClick} task={report} />}
                 </div>
               ))}
             </div>
@@ -1641,6 +1646,11 @@ export default function InteractiveTacticalMap() {
   const [showTaskReportModal, setShowTaskReportModal] = useState(false)
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [showProgressionModal, setShowProgressionModal] = useState(false)
+  const [taskSummaryPopup, setTaskSummaryPopup] = useState({
+    isVisible: false,
+    task: null,
+    position: { x: 0, y: 0 }
+  })
   
   // Progression Display State
   const [progressionDisplay, setProgressionDisplay] = useState({
@@ -1783,6 +1793,19 @@ export default function InteractiveTacticalMap() {
     } catch (error) {
       console.error('Failed to create express task report:', error)
     }
+  }, [])
+
+  const handleTaskIconClick = useCallback((event, task) => {
+    event.stopPropagation()
+    const rect = event.currentTarget.getBoundingClientRect()
+    setTaskSummaryPopup({
+      isVisible: true,
+      task: task,
+      position: { 
+        x: rect.left - 120, // Position popup to the left of icon
+        y: rect.top - 10 
+      }
+    })
   }, [])
 
   // Fetch player data for online count display
@@ -2396,6 +2419,13 @@ export default function InteractiveTacticalMap() {
           baseName={taskReportData.baseName || ''}
           baseCoords={taskReportData.baseCoords || ''}
           editingReport={editingTaskReport}
+        />
+
+        <TaskSummaryPopup
+          isVisible={taskSummaryPopup.isVisible}
+          onClose={() => setTaskSummaryPopup(prev => ({ ...prev, isVisible: false }))}
+          task={taskSummaryPopup.task}
+          position={taskSummaryPopup.position}
         />
 
         <PlayerModal
