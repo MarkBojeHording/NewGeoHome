@@ -1,0 +1,49 @@
+<svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hostile Samsite Circle -->
+  <g transform="translate(0, 0) rotate(-90 150 150)">
+    <defs>
+      <!-- Define the circle path for Hostile Samsite -->
+      <path id="circle-hostile" d="M 150,50 A 100,100 0 0,0 150,250" fill="none" />
+      
+      <!-- Define the yellow stripe pattern -->
+      <pattern id="stripes-yellow" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+        <rect x="0" y="0" width="10" height="20" fill="yellow" opacity="0.25"/>
+        <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+      </pattern>
+    </defs>
+    
+    <!-- Draw the visible circle with yellow striped background -->
+    <circle cx="150" cy="150" r="100" fill="url(#stripes-yellow)" stroke="none"/>
+    
+    <!-- Hostile Samsite text -->
+    <text font-family="Arial, sans-serif" font-size="20" fill="#886600" opacity="0.55">
+      <textPath href="#circle-hostile" startOffset="50%" text-anchor="middle">
+        Hostile Samsite
+      </textPath>
+    </text>
+  </g>
+
+  <!-- Roofcamper Circle -->
+  <g transform="translate(300, 0) rotate(-90 150 150)">
+    <defs>
+      <!-- Define the circle path for Roofcamper -->
+      <path id="circle-roof" d="M 150,50 A 100,100 0 0,1 150,250" fill="none" />
+      
+      <!-- Define the red stripe pattern -->
+      <pattern id="stripes-red" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+        <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
+        <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+      </pattern>
+    </defs>
+    
+    <!-- Draw the visible circle with red striped background -->
+    <circle cx="150" cy="150" r="100" fill="url(#stripes-red)" stroke="none"/>
+    
+    <!-- Roofcamper text -->
+    <text font-family="Arial, sans-serif" font-size="20" fill="#660000" dominant-baseline="hanging" opacity="0.55">
+      <textPath href="#circle-roof" startOffset="50%" text-anchor="middle">
+        Roofcamper
+      </textPath>
+    </text>
+  </g>
+</svg>

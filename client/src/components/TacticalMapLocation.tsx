@@ -121,6 +121,66 @@ const TacticalMapLocation = memo(({
         />
       )}
 
+      {/* Hostile Samsite Circle - 150 meter radius */}
+      {location.hostileSamsite && (
+        <div
+          className="absolute"
+          style={{
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: -2,
+            pointerEvents: 'none'
+          }}
+        >
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <defs>
+              <pattern id="stripes-yellow-hostile" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                <rect x="0" y="0" width="10" height="20" fill="yellow" opacity="0.25"/>
+                <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+              </pattern>
+              <path id="circle-hostile-text" d="M 60,20 A 40,40 0 0,0 60,100" fill="none" />
+            </defs>
+            <circle cx="60" cy="60" r="40" fill="url(#stripes-yellow-hostile)" stroke="none"/>
+            <text fontFamily="Arial, sans-serif" fontSize="8" fill="#886600" opacity="0.55">
+              <textPath href="#circle-hostile-text" startOffset="50%" textAnchor="middle">
+                Hostile Samsite
+              </textPath>
+            </text>
+          </svg>
+        </div>
+      )}
+
+      {/* Roofcamper Circle - 150 meter radius */}
+      {location.roofCamper && (
+        <div
+          className="absolute"
+          style={{
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: -2,
+            pointerEvents: 'none'
+          }}
+        >
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <defs>
+              <pattern id="stripes-red-roof" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
+                <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+              </pattern>
+              <path id="circle-roof-text" d="M 60,20 A 40,40 0 0,1 60,100" fill="none" />
+            </defs>
+            <circle cx="60" cy="60" r="40" fill="url(#stripes-red-roof)" stroke="none"/>
+            <text fontFamily="Arial, sans-serif" fontSize="8" fill="#660000" dominantBaseline="hanging" opacity="0.55">
+              <textPath href="#circle-roof-text" startOffset="50%" textAnchor="middle">
+                Roofcamper
+              </textPath>
+            </text>
+          </svg>
+        </div>
+      )}
+
       {/* Online player count display - green circle */}
       {location.type.startsWith("enemy") && onlinePlayerCount > 0 && (
         <div 
