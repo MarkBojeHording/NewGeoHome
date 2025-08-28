@@ -1618,6 +1618,8 @@ export default function InteractiveTacticalMap() {
     baseCoords: null
   })
   
+  const [editingTaskReport, setEditingTaskReport] = useState(null)
+  
   // Heat map configuration state
   const [heatMapConfig, setHeatMapConfig] = useState<HeatMapConfig>({
     enabled: false,
@@ -1640,21 +1642,35 @@ export default function InteractiveTacticalMap() {
         if (response.ok) {
           const report = await response.json()
           console.log('Loaded report for viewing:', report)
-          // Open the report for editing in BaseModal
-          setEditingLocation({
-            ...location,
-            // Map report data to location format for BaseModal
-            outcome: report.outcome === 'good' ? 'won' : report.outcome === 'bad' ? 'lost' : 'neutral',
-            notes: report.notes,
-            enemyPlayers: report.enemyPlayers || '',
-            friendlyPlayers: report.friendlyPlayers || '',
-            reportId: location.displayReportId || `R${report.id}`, // Use stored alphanumeric ID or fallback
-            databaseId: report.id // Store the database ID for API calls
-          })
-          console.log('Set editingLocation with reportId:', location.displayReportId, 'databaseId:', report.id)
-          setModalType('report')
-          setNewBaseModal({ x: location.x, y: location.y, visible: true })
-          return
+          
+          // Check report type and open appropriate modal
+          if (report.type === 'task') {
+            // Open task report in TaskReportModal
+            setTaskReportData({
+              baseId: report.baseTags[0] || location.id,
+              baseName: location.name,
+              baseCoords: location.coordinates || location.name
+            })
+            setEditingTaskReport(report)
+            setShowTaskReportModal(true)
+            return
+          } else {
+            // Open other report types in BaseModal (ActionReportModal)
+            setEditingLocation({
+              ...location,
+              // Map report data to location format for BaseModal
+              outcome: report.outcome === 'good' ? 'won' : report.outcome === 'bad' ? 'lost' : 'neutral',
+              notes: report.notes,
+              enemyPlayers: report.enemyPlayers || '',
+              friendlyPlayers: report.friendlyPlayers || '',
+              reportId: location.displayReportId || `R${report.id}`, // Use stored alphanumeric ID or fallback
+              databaseId: report.id // Store the database ID for API calls
+            })
+            console.log('Set editingLocation with reportId:', location.displayReportId, 'databaseId:', report.id)
+            setModalType('report')
+            setNewBaseModal({ x: location.x, y: location.y, visible: true })
+            return
+          }
         }
       } catch (error) {
         console.error('Error loading report:', error)
@@ -1687,6 +1703,7 @@ export default function InteractiveTacticalMap() {
       baseName: baseData.baseName,
       baseCoords: baseData.baseCoords
     })
+    setEditingTaskReport(null) // Clear any existing editing report for new task
     setShowTaskReportModal(true)
   }, [])
 
@@ -2273,10 +2290,14 @@ export default function InteractiveTacticalMap() {
 
         <TaskReportModal
           isVisible={showTaskReportModal}
-          onClose={() => setShowTaskReportModal(false)}
+          onClose={() => {
+            setShowTaskReportModal(false)
+            setEditingTaskReport(null)
+          }}
           baseId={taskReportData.baseId || ''}
           baseName={taskReportData.baseName || ''}
           baseCoords={taskReportData.baseCoords || ''}
+          editingReport={editingTaskReport}
         />
 
         <PlayerModal
