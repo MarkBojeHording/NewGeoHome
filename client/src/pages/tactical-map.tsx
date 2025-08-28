@@ -597,11 +597,27 @@ const TowerIcon = () => (
 
 // Task Report Icons - using emoji style to match interface
 const TaskOreIcon = () => (
-  <span className="text-xs animate-pulse animate-bounce" title="Ore Pickup">🪨</span>
+  <span 
+    className="text-xs" 
+    title="Ore Pickup"
+    style={{
+      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite, bounce 1s infinite'
+    }}
+  >
+    🪨
+  </span>
 )
 
 const TaskLootIcon = () => (
-  <span className="text-xs animate-pulse animate-bounce" title="Loot Pickup">📦</span>
+  <span 
+    className="text-xs" 
+    title="Loot Pickup"
+    style={{
+      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite, bounce 1s infinite'
+    }}
+  >
+    📦
+  </span>
 )
 
 const LocationName = ({ name, className = '' }) => {
