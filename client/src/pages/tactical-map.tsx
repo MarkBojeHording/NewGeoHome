@@ -601,7 +601,7 @@ const TaskOreIcon = () => (
     className="text-xs inline-block" 
     title="Ore Pickup"
     style={{
-      animation: 'taskPulse 3s ease-in-out infinite, taskBounce 3s ease-in-out infinite'
+      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite'
     }}
   >
     🪨
@@ -613,7 +613,7 @@ const TaskLootIcon = () => (
     className="text-xs inline-block" 
     title="Loot Pickup"
     style={{
-      animation: 'taskPulse 3s ease-in-out infinite, taskBounce 3s ease-in-out infinite',
+      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite',
       animationDelay: '0s, 0.5s'
     }}
   >
