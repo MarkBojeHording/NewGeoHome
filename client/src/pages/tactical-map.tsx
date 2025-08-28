@@ -597,11 +597,11 @@ const TowerIcon = () => (
 
 // Task Report Icons - using emoji style to match interface
 const TaskOreIcon = () => (
-  <span className="text-xs animate-pulse" title="Ore Pickup">🪨</span>
+  <span className="text-xs animate-pulse animate-bounce" title="Ore Pickup">🪨</span>
 )
 
 const TaskLootIcon = () => (
-  <span className="text-xs animate-pulse" title="Loot Pickup">📦</span>
+  <span className="text-xs animate-pulse animate-bounce" title="Loot Pickup">📦</span>
 )
 
 const LocationName = ({ name, className = '' }) => {
@@ -954,7 +954,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
         {/* Task Report Icons - positioned above the base */}
         {taskReports.length > 0 && (
-          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2" style={{ zIndex: 10 }}>
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2" style={{ zIndex: 10 }}>
             <div className="flex flex-row gap-0.5">
               {taskReports.map((report, index) => (
                 <div key={report.id}>
