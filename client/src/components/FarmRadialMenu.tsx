@@ -238,23 +238,29 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
                     `${index + 1}A${subSegment ? subSegment + 1 : ''}`;
       console.log(`Inner segment ${label} selected`);
       
-      // Handle express pickup creation for NEEDS PICKUP section
-      if (index === 1 && subSegment !== null && onCreateExpressTaskReport && baseId && baseName && baseCoords) {
-        const pickupType = subSegment === 0 ? 'ore' : 'loot';
-        onCreateExpressTaskReport({
-          baseId,
-          baseName, 
-          baseCoords,
-          pickupType
-        });
-      }
+      // Just set selection for NEEDS PICKUP section, don't create report yet
     } else {
       setSelectedOuter(index);
       console.log(`Outer segment ADVANCED (position ${index + 1}) selected`);
       
       // Handle "NEEDS PICKUP" Advanced button click (index 1)
-      if (index === 1 && onOpenTaskReport && baseId && baseName && baseCoords) {
-        onOpenTaskReport({ baseId, baseName, baseCoords });
+      if (index === 1 && baseId && baseName && baseCoords) {
+        // Check if an inner segment was selected (ore or loot)
+        if (selectedInner === '1-0' || selectedInner === '1-1') {
+          // Create express task report
+          if (onCreateExpressTaskReport) {
+            const pickupType = selectedInner === '1-0' ? 'ore' : 'loot';
+            onCreateExpressTaskReport({
+              baseId,
+              baseName, 
+              baseCoords,
+              pickupType
+            });
+          }
+        } else if (onOpenTaskReport) {
+          // Open full task report modal if no inner segment selected
+          onOpenTaskReport({ baseId, baseName, baseCoords });
+        }
       }
     }
   };
