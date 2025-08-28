@@ -16,6 +16,7 @@ This project is a Rust-themed tactical map and raid calculator application desig
 - **RESOLVED Report Modal ID System Bug**: Fixed critical report ID display issue where reports were showing database sequence numbers (19, 20, 21) instead of proper alphanumeric report IDs (R12ABC3, ROJH1GT). System now properly links map markers to database reports using dual ID system - database integer IDs for API operations and alphanumeric IDs for user display. Report modals now correctly show "Update Report" for existing reports with proper alphanumeric identifiers.
 - **RESOLVED Report Update Duplication Bug**: Fixed issue where updating existing reports created duplicate map markers instead of updating in-place. System now correctly uses database reportId for API calls while preserving display functionality.
 - **Enhanced Report Player Tagging**: Implemented separate enemy and friendly player storage using comma-separated strings like base owners. Added enemy_players and friendly_players database columns for organized player tracking in reports.
+- **FIXED Report Preview Link Consistency**: Resolved critical user feedback issue where report preview links opened ActionReportModal with confusing "Edit Base Report" title instead of using the same modal system as map markers. Report preview links now trigger identical onOpenReport function as map report markers for consistent user experience throughout the application.
 
 # User Preferences
 

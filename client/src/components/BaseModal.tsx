@@ -485,7 +485,8 @@ const BaseModal = ({
   onSave,
   onCancel,
   onDelete,
-  onOpenBaseReport
+  onOpenBaseReport,
+  onOpenReport
 }) => {
   const [formData, setFormData] = useState({
     type: modalType === 'friendly' ? 'friendly-main' : modalType === 'enemy' ? 'enemy-small' : 'report-pvp',
@@ -522,25 +523,29 @@ const BaseModal = ({
   
   const ownerInputRef = useRef(null)
   
-  // Handler for opening reports from previews
+  // Handler for opening reports from previews - use same system as map markers
   const handleOpenReport = useCallback((report) => {
-    // Transform the report data to match ActionReportModal's expected structure
-    const transformedReport = {
-      id: report.id,
-      content: {
-        type: report.type === 'general' ? 'report-pvp' : report.type, // Map general to pvp for ActionReportModal
-        reportTime: report.createdAt ? new Date(report.createdAt).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }) : '',
+    if (onOpenReport) {
+      // Create a location object similar to what map markers have
+      const reportLocation = {
+        id: `report-${report.id}`,
+        name: `Report ${report.id}`,
+        x: 50, // Default position
+        y: 50, 
+        type: 'report-pvp',
+        isReportMarker: true,
+        reportId: report.id,
+        displayReportId: `R${report.id}`,
+        outcome: report.outcome,
+        notes: report.notes,
         enemyPlayers: report.enemyPlayers || '',
-        friendlyPlayers: report.friendlyPlayers || '', 
-        notes: report.notes || '',
-        reportOutcome: report.outcome || 'neutral'
+        friendlyPlayers: report.friendlyPlayers || ''
       }
+      
+      onOpenReport(reportLocation)
+      setShowReportPanel(false) // Close the report panel
     }
-    
-    setViewingReport(transformedReport)
-    setShowReportModal(true)
-    setShowReportPanel(false) // Close the report panel
-  }, [])
+  }, [onOpenReport])
   
   const handleToggleRocketCalculator = useCallback((e) => {
     e.stopPropagation()
@@ -1365,15 +1370,7 @@ const BaseModal = ({
 
       </div>
       
-      {/* Report Viewing Modal */}
-      <ActionReportModal
-        isVisible={showReportModal}
-        onClose={() => {
-          setShowReportModal(false)
-          setViewingReport(null)
-        }}
-        editingReport={viewingReport}
-      />
+
       
     </div>
   )

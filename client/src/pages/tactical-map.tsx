@@ -2185,10 +2185,7 @@ export default function InteractiveTacticalMap() {
             onCancel={handleCancel}
             onDelete={handleDeleteLocation}
             onOpenBaseReport={onOpenBaseReport}
-
-
-
-
+            onOpenReport={onOpenReport}
           />
         )}
 
