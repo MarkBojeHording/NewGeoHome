@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, User, Plus } from 'lucide-react'
+import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, User, Plus, Package, Pickaxe } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
@@ -595,22 +595,16 @@ const TowerIcon = () => (
   </svg>
 )
 
-// Task Report Icons
-const StoneIcon = () => (
-  <div className="w-4 h-4 bg-gray-600 rounded-sm border border-gray-800 shadow-lg flex items-center justify-center" title="Ore Pickup">
-    <svg className="w-2.5 h-2.5 text-gray-200" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2L4 7l8 5 8-5-8-5zM4 7v10l8 5 8-5V7l-8 5-8-5z"/>
-    </svg>
+// Task Report Icons - matching TaskReportModal icons
+const TaskOreIcon = () => (
+  <div className="w-4 h-4 bg-gray-700 rounded border border-gray-600 shadow-lg flex items-center justify-center" title="Ore Pickup">
+    <Pickaxe className="w-2.5 h-2.5 text-gray-300" />
   </div>
 )
 
-const CardboardBoxIcon = () => (
-  <div className="w-4 h-4 bg-amber-600 rounded-sm border border-amber-800 shadow-lg flex items-center justify-center" title="Loot Pickup">
-    <svg className="w-2.5 h-2.5 text-amber-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-      <path d="m3.3 7 8.7 5 8.7-5"/>
-      <path d="M12 22V12"/>
-    </svg>
+const TaskLootIcon = () => (
+  <div className="w-4 h-4 bg-amber-700 rounded border border-amber-600 shadow-lg flex items-center justify-center" title="Loot Pickup">
+    <Package className="w-2.5 h-2.5 text-amber-300" />
   </div>
 )
 
@@ -962,14 +956,14 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           </div>
         )}
         
-        {/* Task Report Icons */}
+        {/* Task Report Icons - positioned above the base */}
         {taskReports.length > 0 && (
-          <div className="absolute -bottom-2 -right-2" style={{ zIndex: 10 }}>
+          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2" style={{ zIndex: 10 }}>
             <div className="flex flex-row gap-0.5">
               {taskReports.map((report, index) => (
                 <div key={report.id}>
-                  {report.taskData && report.taskData.pickupType === 'ore' && <StoneIcon />}
-                  {report.taskData && report.taskData.pickupType === 'loot' && <CardboardBoxIcon />}
+                  {report.taskData && report.taskData.pickupType === 'ore' && <TaskOreIcon />}
+                  {report.taskData && report.taskData.pickupType === 'loot' && <TaskLootIcon />}
                 </div>
               ))}
             </div>
