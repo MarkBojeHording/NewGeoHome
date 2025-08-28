@@ -63,7 +63,11 @@ CRITICAL RULE: When user says "do not change" something, that command must be fo
 ## Core Features
 - **Interactive Tactical Map**: Features zoom/pan, base placement (friendly/enemy), rocket calculator, timers, location action menus, and report tracking. Includes a 26x26 grid system (A0-Z25) aligned with an authentic Rust game map.
 - **Base Management**: Comprehensive BaseModal for detailed base information, including rocket and ammo calculations, upkeep tracking, base types, and heat map integration for activity visualization. Supports duplicate base naming (e.g., A1, A1(2)).
-- **Centralized Reporting System**: Unified report architecture supporting 3 types (general, base, action) with consistent data model. Reports use proper array-based player and base tagging, replacing old comma-separated strings. Features unified ReportPreview component for consistent display across BaseModal and PlayerModal.
+- **Centralized Reporting System**: Unified report architecture supporting 3 types:
+  - **General Reports**: Historical documentation of events using ActionReportModal with enemy/friendly player tagging
+  - **Base Reports**: Base-specific information and status documentation
+  - **Task Reports**: Future-focused planning system for tasks that need to happen, always tagged to bases with interactive map icons, summary popups, and completion tracking
+Reports use proper array-based player and base tagging, with unified ReportPreview component for consistent display.
 - **Player Management System**: A comprehensive modal for tracking players with search, online/offline status, and session history. Includes a premium player system with dual creation methods. Player activity is visualized through a heatmap based on session data. Now features player-specific report filtering using centralized API.
 - **Base Grouping & Visualization**: Implements player-based and proximity-based grouping of bases, displaying colored rings and connection lines between main and subordinate bases.
 - **User Interface Enhancements**: Features a consistent design with Shadcn/ui, optimized layouts, and visual indicators for various functionalities (e.g., player count circles, content indicators).
