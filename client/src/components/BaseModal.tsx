@@ -166,9 +166,37 @@ const BaseHeatMap = ({ players: playersString }) => {
                   const topPercent = (hourIndex / 24) * 100
                   const heightPercent = 100 / 24
                   
-                  // Simple demo coloring based on hour
-                  const isActiveHour = hour >= 18 || hour <= 2 // Evening/night hours
-                  const opacity = isActiveHour ? 0.6 : 0.2
+                  // Calculate activity based on tagged players
+                  const selectedPlayersList = playersString ? playersString.split(',').map(p => p.trim()).filter(p => p) : []
+                  let activityCount = 0
+                  
+                  // Debug: log what we have
+                  if (dayIndex === 0 && hourIndex === 0) {
+                    console.log('Heatmap players:', selectedPlayersList)
+                    console.log('External players data:', players)
+                  }
+                  
+                  // Check player sessions for this specific day/hour combination
+                  selectedPlayersList.forEach(playerName => {
+                    const player = players.find(p => p.playerName === playerName)
+                    if (player && player.totalSessions) {
+                      // Simple activity simulation based on player online status and session count
+                      const baseActivity = Math.floor(player.totalSessions / 10)
+                      const hourWeight = hour >= 16 && hour <= 23 ? 2 : hour >= 8 && hour <= 15 ? 1.5 : 1
+                      const dayWeight = dayIndex >= 5 ? 1.5 : 1.2 // Weekend boost
+                      activityCount += Math.floor(baseActivity * hourWeight * dayWeight * (player.isOnline ? 1.3 : 1))
+                    }
+                  })
+                  
+                  // Normalize activity to opacity (0-1)
+                  const maxActivity = 20 // Arbitrary max for normalization  
+                  const intensity = Math.min(activityCount / maxActivity, 1)
+                  
+                  // Show color based on actual player data or fallback pattern
+                  const hasPlayerData = selectedPlayersList.length > 0 && players.length > 0
+                  const opacity = hasPlayerData 
+                    ? (intensity > 0 ? 0.2 + (intensity * 0.6) : 0.1) 
+                    : (hour >= 18 || hour <= 2 ? 0.4 : 0.1) // Fallback demo pattern
                   
                   return (
                     <div
@@ -180,7 +208,7 @@ const BaseHeatMap = ({ players: playersString }) => {
                         backgroundColor: `rgba(239, 68, 68, ${opacity})`,
                         borderTop: hourIndex === 0 ? 'none' : '1px solid rgba(0,0,0,0.2)'
                       }}
-                      title={`${day} ${hour}:00`}
+                      title={`${day} ${hour}:00 - Players: ${selectedPlayersList.join(', ') || 'None'} - Activity: ${activityCount} - Opacity: ${opacity.toFixed(2)}`}
                     />
                   )
                 })}
