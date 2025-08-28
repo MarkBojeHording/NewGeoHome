@@ -130,6 +130,8 @@ export default function ActionReportModal({
 
   if (!isVisible) return null
 
+  console.log('ActionReportModal rendering with isVisible:', isVisible, 'editingReport:', editingReport)
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style={{ zIndex: 10000 }}>
       <div className="bg-gradient-to-b from-gray-700 to-gray-800 rounded-xl border border-gray-600 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -141,7 +143,7 @@ export default function ActionReportModal({
         </button>
         
         <h3 className="text-lg font-bold text-white mb-2">
-          {editingReport ? "Edit Base Report" : "Create Base Report"}
+          {editingReport ? "View/Edit Report" : "Create Report"}
         </h3>
         
         {baseId && (

@@ -540,6 +540,7 @@ const BaseModal = ({
     }
     
     console.log('Transformed report for ActionReportModal:', transformedReport)
+    console.log('Setting showReportModal to true')
     
     setViewingReport(transformedReport)
     setShowReportModal(true)
