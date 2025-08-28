@@ -149,19 +149,40 @@ const BaseHeatMap = ({ players: playersString }) => {
   // Get player names from the playersString
   const selectedPlayersList = playersString ? playersString.split(',').map(p => p.trim()).filter(p => p) : []
   
-  // Fetch session data for each selected player
-  const sessionQueries = selectedPlayersList.map(playerName => 
-    useQuery({
-      queryKey: ['/api/players', playerName, 'sessions'],
-      enabled: !!playerName
-    })
-  )
+  // Fetch session data for all selected players in a single query
+  const { data: allSessionsData = {} } = useQuery({
+    queryKey: ['/api/players/sessions/batch', selectedPlayersList],
+    queryFn: async () => {
+      if (selectedPlayersList.length === 0) return {}
+      
+      const sessionsData: { [key: string]: any[] } = {}
+      
+      // Fetch sessions for each player
+      for (const playerName of selectedPlayersList) {
+        try {
+          const response = await fetch(`/api/players/${playerName}/sessions`)
+          if (response.ok) {
+            sessionsData[playerName] = await response.json()
+          } else {
+            sessionsData[playerName] = []
+          }
+        } catch (error) {
+          console.error(`Error fetching sessions for ${playerName}:`, error)
+          sessionsData[playerName] = []
+        }
+      }
+      
+      return sessionsData
+    },
+    enabled: selectedPlayersList.length > 0
+  })
 
-  // Generate heat map data from session history (same logic as PlayerModal)
-  const generateHeatMapData = (allSessions: any[]) => {
-    if (!allSessions || allSessions.length === 0) return {};
+  // Generate heat map data from session history - multi-player version
+  const generateHeatMapData = (allSessionsData: { [key: string]: any[] }) => {
+    if (!allSessionsData || Object.keys(allSessionsData).length === 0) return {};
     
     // Create a map for each day of the week and each hour (0-23)
+    // Track how many players are active in each hour
     const heatMap: { [key: string]: { [key: number]: number } } = {};
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     
@@ -173,50 +194,80 @@ const BaseHeatMap = ({ players: playersString }) => {
       }
     });
     
-    // Process each session and add to heat map
-    allSessions.forEach(session => {
-      const startTime = new Date(session.startTime);
-      const endTime = new Date(session.endTime);
+    // Process sessions from each player separately to count overlapping activity
+    Object.entries(allSessionsData).forEach(([playerName, sessions]) => {
+      if (!sessions || sessions.length === 0) return;
       
-      // Handle sessions that span multiple hours or days
-      let currentTime = new Date(startTime);
-      while (currentTime < endTime) {
-        const currentDayIndex = currentTime.getDay();
-        const currentDayName = days[currentDayIndex];
-        const currentHour = currentTime.getHours();
+      // Track which time slots this player is active in
+      const playerActivity: { [key: string]: Set<number> } = {};
+      days.forEach(day => {
+        playerActivity[day] = new Set();
+      });
+      
+      sessions.forEach((session: any) => {
+        const startTime = new Date(session.startTime);
+        const endTime = new Date(session.endTime);
         
-        // Calculate how much of this hour is covered by the session
-        const hourEnd = new Date(currentTime);
-        hourEnd.setMinutes(59, 59, 999);
-        
-        const sessionEndForThisHour = endTime < hourEnd ? endTime : hourEnd;
-        const minutesInThisHour = (sessionEndForThisHour.getTime() - currentTime.getTime()) / (1000 * 60);
-        
-        // Add intensity based on minutes (0-60 minutes = 0-1 intensity)
-        if (heatMap[currentDayName]) {
-          heatMap[currentDayName][currentHour] += Math.min(minutesInThisHour / 60, 1);
+        // Handle sessions that span multiple hours or days
+        let currentTime = new Date(startTime);
+        while (currentTime < endTime) {
+          const currentDayIndex = currentTime.getDay();
+          const currentDayName = days[currentDayIndex];
+          const currentHour = currentTime.getHours();
+          
+          // Calculate how much of this hour is covered by the session
+          const hourEnd = new Date(currentTime);
+          hourEnd.setMinutes(59, 59, 999);
+          
+          const sessionEndForThisHour = endTime < hourEnd ? endTime : hourEnd;
+          const minutesInThisHour = (sessionEndForThisHour.getTime() - currentTime.getTime()) / (1000 * 60);
+          
+          // If player has significant activity in this hour (>30 minutes), count them as active
+          if (minutesInThisHour > 30) {
+            playerActivity[currentDayName].add(currentHour);
+          }
+          
+          // Move to next hour
+          currentTime = new Date(hourEnd.getTime() + 1);
         }
-        
-        // Move to next hour
-        currentTime = new Date(hourEnd.getTime() + 1);
-      }
+      });
+      
+      // Add this player's activity to the heat map (increment player count for each active hour)
+      days.forEach(day => {
+        playerActivity[day].forEach(hour => {
+          heatMap[day][hour] += 1;
+        });
+      });
     });
     
     return heatMap;
   };
 
-  // Combine all session data from all players
-  const allSessions = sessionQueries.flatMap(query => query.data || []);
-  const heatMapData = generateHeatMapData(allSessions);
+  // Generate heat map data from all players
+  const heatMapData = generateHeatMapData(allSessionsData);
 
-  // Get heat map color intensity (same as PlayerModal)
-  const getHeatMapColor = (intensity: number) => {
-    if (intensity === 0) return { className: 'bg-gray-800', style: {} };
-    const opacity = Math.min(intensity * 0.8 + 0.2, 1); // Min 20% opacity, max 100%
-    return { 
-      className: 'bg-white', 
-      style: { opacity: opacity.toString() }
-    };
+  // Get heat map color based on number of players active in that hour
+  const getHeatMapColor = (playerCount: number) => {
+    if (playerCount === 0) return { className: 'bg-gray-800', style: {} };
+    
+    // Multi-player color coding system:
+    // 1 player = light blue
+    // 2 players = light blue (same as 1)
+    // 3 players = yellow
+    // 4 players = orange  
+    // 5+ players = red
+    switch (true) {
+      case playerCount >= 5:
+        return { className: 'bg-red-500', style: { opacity: '0.8' } };
+      case playerCount === 4:
+        return { className: 'bg-orange-500', style: { opacity: '0.8' } };
+      case playerCount === 3:
+        return { className: 'bg-yellow-500', style: { opacity: '0.8' } };
+      case playerCount >= 1: // 1 or 2 players
+        return { className: 'bg-blue-400', style: { opacity: '0.8' } };
+      default:
+        return { className: 'bg-gray-800', style: {} };
+    }
   };
 
   // Helper function to render hour blocks for a day
@@ -225,8 +276,23 @@ const BaseHeatMap = ({ players: playersString }) => {
     const hours = Array.from({ length: 24 }, (_, i) => 23 - i); // Start from 23 at top
     
     return hours.map(hour => {
-      const intensity = dayData[hour] || 0;
-      const colorConfig = getHeatMapColor(intensity);
+      const playerCount = dayData[hour] || 0;
+      const colorConfig = getHeatMapColor(playerCount);
+      
+      // Create player count description
+      const getPlayerCountText = (count: number) => {
+        if (count === 0) return 'No players';
+        if (count === 1) return '1 player';
+        return `${count} players`;
+      };
+      
+      const getColorDescription = (count: number) => {
+        if (count === 0) return '';
+        if (count >= 5) return ' (Red)';
+        if (count === 4) return ' (Orange)';
+        if (count === 3) return ' (Yellow)';
+        return ' (Light Blue)';
+      };
       
       return (
         <div
@@ -237,7 +303,7 @@ const BaseHeatMap = ({ players: playersString }) => {
             marginBottom: '0.5px',
             ...colorConfig.style
           }}
-          title={`${day} ${hour}:00 - Activity: ${Math.round(intensity * 100)}%`}
+          title={`${day} ${hour}:00 - ${getPlayerCountText(playerCount)}${getColorDescription(playerCount)}`}
         />
       );
     });
@@ -271,6 +337,31 @@ const BaseHeatMap = ({ players: playersString }) => {
               </div>
             </div>
           ))}
+        </div>
+        
+        {/* Multi-player Heat Map Legend */}
+        <div className="mt-3 flex items-center justify-center gap-3 text-xs text-gray-400">
+          <span>Players Active:</span>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-gray-800 rounded border border-gray-600"></div>
+            <span>0</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-blue-400 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
+            <span>1-2</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-yellow-500 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
+            <span>3</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-orange-500 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
+            <span>4</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-red-500 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
+            <span>5+</span>
+          </div>
         </div>
       </div>
     </div>
