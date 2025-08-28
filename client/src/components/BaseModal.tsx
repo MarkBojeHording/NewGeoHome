@@ -159,42 +159,28 @@ const BaseHeatMap = ({ players: playersString }) => {
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, dayIndex) => (
             <div key={day} className="flex-1">
               <div className="text-[10px] text-gray-400 text-center">{day}</div>
-              <div className="bg-gray-800 rounded relative" style={{height: '160px'}}>
-                {/* Create 24 hour blocks for this day */}
-                {Array.from({length: 24}, (_, hourIndex) => {
+              <div className="bg-gray-800 rounded relative overflow-hidden" style={{height: '160px'}}>
+                {/* Create 24 hour blocks for this day - simple test version */}
+                {Array.from({length: 24}).map((_, hourIndex) => {
                   const hour = 23 - hourIndex // Start from 23 at top, go down to 0
+                  const topPercent = (hourIndex / 24) * 100
+                  const heightPercent = 100 / 24
                   
-                  // Calculate activity intensity for this hour and day based on tagged players
-                  const selectedPlayersList = playersString ? playersString.split(',').map(p => p.trim()).filter(p => p) : []
-                  let activityCount = 0
-                  
-                  // Check player sessions for this specific day/hour combination
-                  selectedPlayersList.forEach(playerName => {
-                    const player = players.find(p => p.playerName === playerName)
-                    if (player && player.totalSessions) {
-                      // Simple activity simulation based on player online status and session count
-                      const baseActivity = Math.floor(player.totalSessions / 10)
-                      const hourWeight = hour >= 16 && hour <= 23 ? 2 : hour >= 8 && hour <= 15 ? 1.5 : 1
-                      const dayWeight = dayIndex >= 5 ? 1.5 : 1.2 // Weekend boost
-                      activityCount += Math.floor(baseActivity * hourWeight * dayWeight * (player.isOnline ? 1.3 : 1))
-                    }
-                  })
-                  
-                  // Normalize activity to opacity (0-1)
-                  const maxActivity = 20 // Arbitrary max for normalization
-                  const intensity = Math.min(activityCount / maxActivity, 1)
-                  const opacity = intensity > 0 ? 0.2 + (intensity * 0.8) : 0.05
+                  // Simple demo coloring based on hour
+                  const isActiveHour = hour >= 18 || hour <= 2 // Evening/night hours
+                  const opacity = isActiveHour ? 0.6 : 0.2
                   
                   return (
                     <div
-                      key={hour}
-                      className="absolute inset-x-0"
+                      key={`${day}-${hourIndex}`}
+                      className="absolute left-0.5 right-0.5"
                       style={{
-                        top: `${(hourIndex / 24) * 100}%`,
-                        height: `${100 / 24}%`,
-                        backgroundColor: `rgba(239, 68, 68, ${opacity})`, // Red for enemy activity
+                        top: `${topPercent}%`,
+                        height: `${heightPercent}%`,
+                        backgroundColor: `rgba(239, 68, 68, ${opacity})`,
+                        borderTop: hourIndex === 0 ? 'none' : '1px solid rgba(0,0,0,0.2)'
                       }}
-                      title={`${day} ${hour}:00 - Activity: ${activityCount}`}
+                      title={`${day} ${hour}:00`}
                     />
                   )
                 })}
