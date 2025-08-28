@@ -180,11 +180,27 @@ const BaseHeatMap = ({ players: playersString }) => {
                   selectedPlayersList.forEach(playerName => {
                     const player = players.find(p => p.playerName === playerName)
                     if (player && player.totalSessions) {
-                      // Simple activity simulation based on player online status and session count
-                      const baseActivity = Math.floor(player.totalSessions / 10)
-                      const hourWeight = hour >= 16 && hour <= 23 ? 2 : hour >= 8 && hour <= 15 ? 1.5 : 1
-                      const dayWeight = dayIndex >= 5 ? 1.5 : 1.2 // Weekend boost
-                      activityCount += Math.floor(baseActivity * hourWeight * dayWeight * (player.isOnline ? 1.3 : 1))
+                      // Create realistic activity pattern based on player data
+                      const sessionDensity = player.totalSessions / 100 // Normalize to 0-1 range
+                      
+                      // Create pseudo-random but consistent activity based on player name + day + hour
+                      const seed = playerName.length + dayIndex + hour
+                      const pseudoRandom = Math.sin(seed * 12.9898) * 43758.5453
+                      const random = (pseudoRandom - Math.floor(pseudoRandom))
+                      
+                      // Higher chance of activity during peak hours and if player has many sessions
+                      const peakHourBonus = (hour >= 18 && hour <= 23) || (hour >= 12 && hour <= 16) ? 0.3 : 0
+                      const weekendBonus = dayIndex >= 5 ? 0.2 : 0
+                      const onlineBonus = player.isOnline ? 0.2 : 0
+                      
+                      const activityChance = sessionDensity + peakHourBonus + weekendBonus + onlineBonus
+                      
+                      // Only show activity if random value is less than activity chance
+                      if (random < activityChance) {
+                        // Activity intensity based on how likely this time slot is
+                        const intensity = Math.min(random / activityChance, 1)
+                        activityCount += intensity * 10 // Scale to reasonable range
+                      }
                     }
                   })
                   
