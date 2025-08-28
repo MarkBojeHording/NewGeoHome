@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { X, Package, Pickaxe } from 'lucide-react'
+import { Package, Pickaxe } from 'lucide-react'
 import { Button } from './ui/button'
 import { apiRequest } from '../lib/queryClient'
 import { useToast } from '@/hooks/use-toast'
@@ -77,29 +77,12 @@ export default function TaskSummaryPopup({
         maxWidth: '300px'
       }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-2 border-b border-orange-500/30">
-        <div className="flex items-center gap-1">
-          {taskIcon}
-          <span className="text-sm font-medium text-orange-400">
-            {task.displayId || `T${task.id}`}
-          </span>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onClose}
-          className="text-orange-400 hover:text-orange-300 h-5 w-5 p-0"
-        >
-          <X className="h-3 w-3" />
-        </Button>
-      </div>
-
       {/* Content */}
       <div className="p-2 space-y-2">
-        <div>
-          <p className="text-xs font-medium text-orange-300">Task:</p>
-          <p className="text-sm text-white">{taskLabel}</p>
+        <div className="flex items-center gap-1">
+          {taskIcon}
+          <span className="text-xs font-medium text-orange-300">Task:</span>
+          <span className="text-sm text-white">{taskLabel}</span>
         </div>
 
         {task.notes && task.notes.trim() !== '' && !task.notes.includes('Express') && (
