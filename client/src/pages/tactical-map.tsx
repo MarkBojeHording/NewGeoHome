@@ -1760,6 +1760,7 @@ export default function InteractiveTacticalMap() {
             console.log('Report updated successfully')
             // Refresh reports and update the map location
             queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
+            queryClient.invalidateQueries({ queryKey: ['/api/reports/base'] })
             
             // Update the visual marker on the map, preserving the database reportId
             setLocations(prev => prev.map(loc => 
@@ -1782,6 +1783,7 @@ export default function InteractiveTacticalMap() {
             console.log('Report saved successfully with ID:', savedReport.id, 'Display ID:', baseData.reportId)
             // Refresh reports in any open logs modal
             queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
+            queryClient.invalidateQueries({ queryKey: ['/api/reports/base'] })
             
             // Create a visual marker on the map for this report
             const reportMarker = {
