@@ -145,20 +145,32 @@ const BaseReportsContent = ({ baseId, baseOwners, onOpenReport }) => {
 }
 
 // ============= BASE HEAT MAP COMPONENT =============
-const BaseHeatMap = ({ baseId, modalType }) => {
+const BaseHeatMap = ({ baseId, modalType, fallbackPlayers }) => {
   // Fetch actual base owners from database for this specific base
   const { data: basePlayerTags = [] } = useQuery({
     queryKey: ['/api/player-base-tags/base', baseId],
     enabled: !!baseId
   })
   
-  console.log('BaseHeatMap baseId:', baseId)
-  console.log('BaseHeatMap basePlayerTags:', basePlayerTags)
+  // Get actual player names tagged to this specific base from database
+  let selectedPlayersList = basePlayerTags.map((tag: any) => tag.playerName).filter((name: string) => name)
   
-  // Get actual player names tagged to this specific base
-  const selectedPlayersList = basePlayerTags.map((tag: any) => tag.playerName).filter((name: string) => name)
+  // If no database tags found and we have fallback players from form, use those
+  if (selectedPlayersList.length === 0 && fallbackPlayers) {
+    selectedPlayersList = fallbackPlayers.split(',').map(p => p.trim()).filter(p => p)
+  }
   
-  console.log('BaseHeatMap selectedPlayersList from DB:', selectedPlayersList)
+  // Show message if no players are assigned
+  if (selectedPlayersList.length === 0) {
+    return (
+      <div className="mt-4 p-4 bg-gray-800 rounded border border-gray-600">
+        <h3 className="text-sm font-mono text-orange-400 mb-2">[ACTIVITY HEATMAP]</h3>
+        <div className="text-gray-400 text-sm text-center py-4">
+          No players assigned to this base
+        </div>
+      </div>
+    )
+  }
   
   // Fetch session data for all selected players in a single query
   const { data: allSessionsData = {} } = useQuery({
@@ -981,7 +993,11 @@ const BaseModal = ({
         )}
         
         {modalType === 'enemy' && (
-          <BaseHeatMap baseId={editingLocation?.id} modalType={modalType} />
+          <BaseHeatMap 
+            baseId={editingLocation?.id} 
+            modalType={modalType} 
+            fallbackPlayers={formData.players} 
+          />
         )}
         
         <div>
