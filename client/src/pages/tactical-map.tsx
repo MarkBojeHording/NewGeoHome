@@ -1044,7 +1044,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                         </pattern>
                       </defs>
                       <circle cx="150" cy="150" r="100" fill="url(#stripes-red)" stroke="none"/>
-                      <text fontFamily="Arial, sans-serif" fontSize="20" fill="#660000" dominantBaseline="hanging" opacity="0.55">
+                      <text fontFamily="Arial, sans-serif" fontSize="20" fill="#660000" dominantBaseline="central" opacity="0.55">
                         <textPath href="#circle-roof" startOffset="50%" textAnchor="middle">
                           Roofcamper
                         </textPath>
@@ -1072,7 +1072,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                         </pattern>
                       </defs>
                       <circle cx="150" cy="150" r="100" fill="url(#stripes-yellow)" stroke="none"/>
-                      <text fontFamily="Arial, sans-serif" fontSize="20" fill="#886600" opacity="0.55">
+                      <text fontFamily="Arial, sans-serif" fontSize="20" fill="#886600" opacity="0.55" dominantBaseline="central">
                         <textPath href="#circle-hostile" startOffset="50%" textAnchor="middle">
                           Hostile Samsite
                         </textPath>
@@ -1589,25 +1589,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
         )}
         
         
-        {location.roofCamper && (
-          <div className="absolute -top-2 -left-2">
-            <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center shadow-lg border border-gray-800" title="Roof Camper">
-              <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <circle cx="12" cy="12" r="8" />
-                <line x1="12" y1="8" x2="12" y2="16" />
-                <line x1="8" y1="12" x2="16" y2="12" />
-              </svg>
-            </div>
-          </div>
-        )}
-        
-        {location.hostileSamsite && (
-          <div className="absolute -top-2 -right-2">
-            <div className="w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg border border-gray-800" title="Hostile Samsite">
-              <span className="text-[10px] font-bold text-black">!</span>
-            </div>
-          </div>
-        )}
+
         
         {location.abandoned && (
           <div className="absolute -bottom-2 -left-2">
