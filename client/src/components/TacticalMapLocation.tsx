@@ -121,8 +121,8 @@ const TacticalMapLocation = memo(({
         />
       )}
 
-      {/* Hostile Samsite Circle - 150 meter radius */}
-      {location.hostileSamsite && (
+      {/* Visual overlays when checkboxes are checked */}
+      {(location.hostileSamsite || location.roofCamper) && (
         <div
           className="absolute"
           style={{
@@ -133,54 +133,41 @@ const TacticalMapLocation = memo(({
             pointerEvents: 'none'
           }}
         >
-          <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="120" height="120">
-            <g transform="rotate(-90 150 150)">
-              <defs>
-                <path id={`circle-hostile-${location.id}`} d="M 150,50 A 100,100 0 0,0 150,250" fill="none" />
-                <pattern id={`stripes-yellow-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
-                  <rect x="0" y="0" width="10" height="20" fill="yellow" opacity="0.25"/>
-                  <rect x="10" y="0" width="10" height="20" fill="transparent"/>
-                </pattern>
-              </defs>
-              <circle cx="150" cy="150" r="100" fill={`url(#stripes-yellow-${location.id})`} stroke="none"/>
-              <text font-family="Arial, sans-serif" font-size="20" fill="#886600" opacity="0.55">
-                <textPath href={`#circle-hostile-${location.id}`} startOffset="50%" text-anchor="middle">
-                  Hostile Samsite
-                </textPath>
-              </text>
-            </g>
-          </svg>
-        </div>
-      )}
-
-      {/* Roofcamper Circle - 150 meter radius */}
-      {location.roofCamper && (
-        <div
-          className="absolute"
-          style={{
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: -2,
-            pointerEvents: 'none'
-          }}
-        >
-          <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="120" height="120">
-            <g transform="rotate(-90 150 150)">
-              <defs>
-                <path id={`circle-roof-${location.id}`} d="M 150,50 A 100,100 0 0,1 150,250" fill="none" />
-                <pattern id={`stripes-red-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
-                  <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
-                  <rect x="10" y="0" width="10" height="20" fill="transparent"/>
-                </pattern>
-              </defs>
-              <circle cx="150" cy="150" r="100" fill={`url(#stripes-red-${location.id})`} stroke="none"/>
-              <text font-family="Arial, sans-serif" font-size="20" fill="#660000" dominant-baseline="hanging" opacity="0.55">
-                <textPath href={`#circle-roof-${location.id}`} startOffset="50%" text-anchor="middle">
-                  Roofcamper
-                </textPath>
-              </text>
-            </g>
+          <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" width="120" height="60">
+            {location.hostileSamsite && (
+              <g transform="translate(0, 0) rotate(-90 150 150)">
+                <defs>
+                  <path id="circle-hostile" d="M 150,50 A 100,100 0 0,0 150,250" fill="none" />
+                  <pattern id="stripes-yellow" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                    <rect x="0" y="0" width="10" height="20" fill="yellow" opacity="0.25"/>
+                    <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+                  </pattern>
+                </defs>
+                <circle cx="150" cy="150" r="100" fill="url(#stripes-yellow)" stroke="none"/>
+                <text font-family="Arial, sans-serif" font-size="20" fill="#886600" opacity="0.55">
+                  <textPath href="#circle-hostile" startOffset="50%" text-anchor="middle">
+                    Hostile Samsite
+                  </textPath>
+                </text>
+              </g>
+            )}
+            {location.roofCamper && (
+              <g transform="translate(300, 0) rotate(-90 150 150)">
+                <defs>
+                  <path id="circle-roof" d="M 150,50 A 100,100 0 0,1 150,250" fill="none" />
+                  <pattern id="stripes-red" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                    <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
+                    <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+                  </pattern>
+                </defs>
+                <circle cx="150" cy="150" r="100" fill="url(#stripes-red)" stroke="none"/>
+                <text font-family="Arial, sans-serif" font-size="20" fill="#660000" dominant-baseline="hanging" opacity="0.55">
+                  <textPath href="#circle-roof" startOffset="50%" text-anchor="middle">
+                    Roofcamper
+                  </textPath>
+                </text>
+              </g>
+            )}
           </svg>
         </div>
       )}
