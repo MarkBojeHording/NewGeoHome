@@ -772,67 +772,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
   
   return (
     <>
-      {/* Hostile Samsite Circle - 150m radius visual indicator */}
-      {location.hostileSamsite && (
-        <div 
-          className="absolute pointer-events-none"
-          style={{ 
-            left: `${location.x}%`, 
-            top: `${location.y}%`,
-            transform: 'translate(-50%, -50%)',
-            zIndex: 1
-          }}
-        >
-          <svg width="60" height="60" viewBox="0 0 300 300" className="absolute" style={{ transform: 'translate(-50%, -50%)' }}>
-            <g transform="rotate(-90 150 150)">
-              <defs>
-                <path id={`circle-hostile-${location.id}`} d="M 150,50 A 100,100 0 0,0 150,250" fill="none" />
-                <pattern id={`stripes-yellow-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
-                  <rect x="0" y="0" width="10" height="20" fill="yellow" opacity="0.25"/>
-                  <rect x="10" y="0" width="10" height="20" fill="transparent"/>
-                </pattern>
-              </defs>
-              <circle cx="150" cy="150" r="100" fill={`url(#stripes-yellow-${location.id})`} stroke="none"/>
-              <text font-family="Arial, sans-serif" font-size="20" fill="#886600" opacity="0.55">
-                <textPath href={`#circle-hostile-${location.id}`} startOffset="50%" text-anchor="middle">
-                  Hostile Samsite
-                </textPath>
-              </text>
-            </g>
-          </svg>
-        </div>
-      )}
 
-      {/* Roofcamper Circle - 150m radius visual indicator */}
-      {location.roofCamper && (
-        <div 
-          className="absolute pointer-events-none"
-          style={{ 
-            left: `${location.x}%`, 
-            top: `${location.y}%`,
-            transform: 'translate(-50%, -50%)',
-            zIndex: 1
-          }}
-        >
-          <svg width="60" height="60" viewBox="0 0 300 300" className="absolute" style={{ transform: 'translate(-50%, -50%)' }}>
-            <g transform="rotate(-90 150 150)">
-              <defs>
-                <path id={`circle-roof-${location.id}`} d="M 150,50 A 100,100 0 0,1 150,250" fill="none" />
-                <pattern id={`stripes-red-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
-                  <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
-                  <rect x="10" y="0" width="10" height="20" fill="transparent"/>
-                </pattern>
-              </defs>
-              <circle cx="150" cy="150" r="100" fill={`url(#stripes-red-${location.id})`} stroke="none"/>
-              <text font-family="Arial, sans-serif" font-size="20" fill="#660000" dominant-baseline="hanging" opacity="0.55">
-                <textPath href={`#circle-roof-${location.id}`} startOffset="50%" text-anchor="middle">
-                  Roofcamper
-                </textPath>
-              </text>
-            </g>
-          </svg>
-        </div>
-      )}
 
       <button
         className="absolute transform -translate-x-1/2 -translate-y-1/2"
