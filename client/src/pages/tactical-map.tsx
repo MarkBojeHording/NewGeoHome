@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, User, Plus, Package, Pickaxe } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryClient, apiRequest } from '@/lib/queryClient'
 import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import { LogsModal } from '../components/LogsModal'
@@ -1264,6 +1265,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           }}>
             <FarmRadialMenu 
               onOpenTaskReport={onOpenTaskReport}
+              onCreateExpressTaskReport={handleCreateExpressTaskReport}
               baseId={location.id}
               baseName={location.name}
               baseCoords={location.name}
@@ -1747,6 +1749,41 @@ export default function InteractiveTacticalMap() {
     })
     setEditingTaskReport(null) // Clear any existing editing report for new task
     setShowTaskReportModal(true)
+  }, [])
+
+  const handleCreateExpressTaskReport = useCallback(async (baseData) => {
+    try {
+      // Create task report directly with preset values
+      const taskReport = {
+        reportId: `T${Date.now().toString(36).toUpperCase()}`, // Generate unique ID
+        taskType: 'pickup',
+        taskData: {
+          pickupType: baseData.pickupType, // 'ore' or 'loot' from express selection
+          subtask: baseData.pickupType === 'ore' ? 'Pickaxe' : 'Package',
+          details: `Express ${baseData.pickupType} pickup task for ${baseData.baseName}`,
+          urgency: 'medium'
+        },
+        baseTags: [baseData.baseId],
+        enemyPlayers: [],
+        friendlyPlayers: [],
+        details: `Express ${baseData.pickupType} pickup - Created via radial menu`,
+        outcome: null,
+        createdAt: new Date().toISOString()
+      }
+
+      // Save the task report
+      await apiRequest('/api/reports', {
+        method: 'POST',
+        body: JSON.stringify(taskReport)
+      })
+
+      // Invalidate reports query to refresh the list and map icons
+      queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
+      
+      console.log('Express task report created:', taskReport)
+    } catch (error) {
+      console.error('Failed to create express task report:', error)
+    }
   }, [])
 
   // Fetch player data for online count display

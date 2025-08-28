@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 interface FarmRadialMenuProps {
   onOpenTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string }) => void;
+  onCreateExpressTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string; pickupType: string }) => void;
   baseId?: string;
   baseName?: string;
   baseCoords?: string;
 }
 
-const RadialMenu = ({ onOpenTaskReport, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
+const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
   const [selectedInner, setSelectedInner] = useState(null);
   const [selectedOuter, setSelectedOuter] = useState(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -15,6 +16,7 @@ const RadialMenu = ({ onOpenTaskReport, baseId, baseName, baseCoords }: FarmRadi
   const [segment1A2Value, setSegment1A2Value] = useState('00');
   const [segmentCoreValue, setSegmentCoreValue] = useState('00');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [expressPickupType, setExpressPickupType] = useState(null); // 'ore' or 'loot'
   
   // Resource values in raw numbers (will be divided by 1000 for display)
   const [resources, setResources] = useState({
@@ -107,6 +109,14 @@ const RadialMenu = ({ onOpenTaskReport, baseId, baseName, baseCoords }: FarmRadi
     setIsExpanded(!isExpanded);
   };
   
+  // Handle express pickup creation
+  const handleExpressPickup = () => {
+    if (expressPickupType && onCreateExpressTaskReport && baseId && baseName && baseCoords) {
+      onCreateExpressTaskReport({ baseId, baseName, baseCoords, pickupType: expressPickupType });
+      setExpressPickupType(null); // Reset after creation
+    }
+  };
+
   // Function to update resource values
   const updateResources = (updates) => {
     setResources(prev => ({ ...prev, ...updates }));
@@ -233,6 +243,12 @@ const RadialMenu = ({ onOpenTaskReport, baseId, baseName, baseCoords }: FarmRadi
                     id === 5 ? 'Folder 📁' :
                     `${index + 1}A${subSegment ? subSegment + 1 : ''}`;
       console.log(`Inner segment ${label} selected`);
+      
+      // Handle express pickup type selection for NEEDS PICKUP section
+      if (index === 1 && subSegment !== null) {
+        const pickupType = subSegment === 0 ? 'ore' : 'loot';
+        setExpressPickupType(pickupType);
+      }
     } else {
       setSelectedOuter(index);
       console.log(`Outer segment ADVANCED (position ${index + 1}) selected`);
@@ -1153,8 +1169,8 @@ const RadialMenu = ({ onOpenTaskReport, baseId, baseName, baseCoords }: FarmRadi
 };
 
 // Create a wrapper function to pass through props
-const FarmRadialMenu = ({ onOpenTaskReport, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
-  return <RadialMenu onOpenTaskReport={onOpenTaskReport} baseId={baseId} baseName={baseName} baseCoords={baseCoords} />;
+const FarmRadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
+  return <RadialMenu onOpenTaskReport={onOpenTaskReport} onCreateExpressTaskReport={onCreateExpressTaskReport} baseId={baseId} baseName={baseName} baseCoords={baseCoords} />;
 };
 
 export default FarmRadialMenu;
