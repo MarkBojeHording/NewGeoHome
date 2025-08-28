@@ -752,7 +752,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             <g transform="rotate(-90 150 150)">
               <defs>
                 <path id={`circle-roof-${location.id}`} d="M 150,50 A 100,100 0 0,1 150,250" fill="none" />
-                <pattern id={`stripes-red-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                <pattern id={`stripes-red-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(-45)">
                   <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
                   <rect x="10" y="0" width="10" height="20" fill="transparent"/>
                 </pattern>
@@ -938,13 +938,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
 
         
-        {location.hostileSamsite && (
-          <div className={`absolute ${location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' ? '-right-2.5' : '-right-1'} ${"-bottom-1"}`} style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center" title="Hostile Samsite">
-              <span className="text-[8px] font-bold text-black">!</span>
-            </div>
-          </div>
-        )}
+
         
         {location.oldestTC && location.oldestTC > 0 && (
           <div className="absolute inset-0 pointer-events-none">
