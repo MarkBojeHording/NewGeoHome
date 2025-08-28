@@ -525,7 +525,20 @@ const BaseModal = ({
   
   // Handler for opening reports from previews
   const handleOpenReport = useCallback((report) => {
-    setViewingReport(report)
+    // Transform the report data to match ActionReportModal's expected structure
+    const transformedReport = {
+      id: report.id,
+      content: {
+        type: report.type === 'general' ? 'report-pvp' : report.type, // Map general to pvp for ActionReportModal
+        reportTime: report.createdAt ? new Date(report.createdAt).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }) : '',
+        enemyPlayers: report.enemyPlayers || '',
+        friendlyPlayers: report.friendlyPlayers || '', 
+        notes: report.notes || '',
+        reportOutcome: report.outcome || 'neutral'
+      }
+    }
+    
+    setViewingReport(transformedReport)
     setShowReportModal(true)
     setShowReportPanel(false) // Close the report panel
   }, [])

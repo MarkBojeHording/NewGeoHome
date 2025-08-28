@@ -155,7 +155,15 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
           ) : (
             <div className="space-y-0 border-2 border-orange-500/60 m-2 bg-gray-800/90">
               {sortedReports.map((report) => (
-                <ReportPreview key={report.id} report={report} />
+                <ReportPreview 
+                  key={report.id} 
+                  report={report}
+                  onViewReport={() => {
+                    // For now, LogsModal doesn't have edit functionality
+                    // This could be added later if needed
+                    console.log('Report viewing not implemented in LogsModal:', report)
+                  }}
+                />
               ))}
             </div>
           )}
