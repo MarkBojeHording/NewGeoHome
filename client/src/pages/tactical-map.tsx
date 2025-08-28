@@ -1755,20 +1755,22 @@ export default function InteractiveTacticalMap() {
     try {
       // Create task report directly with preset values
       const taskReport = {
-        reportId: `T${Date.now().toString(36).toUpperCase()}`, // Generate unique ID
-        taskType: 'pickup',
+        type: 'task',
+        notes: `Express ${baseData.pickupType} pickup - Created via radial menu`,
+        outcome: 'neutral',
+        enemyPlayers: '',
+        friendlyPlayers: '',
+        baseTags: [baseData.baseId],
+        screenshots: [],
+        location: { gridX: 0, gridY: 0 }, // Will be updated by backend if needed
+        taskType: 'needs_pickup',
         taskData: {
-          pickupType: baseData.pickupType, // 'ore' or 'loot' from express selection
+          pickupType: baseData.pickupType, // 'ore' or 'loot'
           subtask: baseData.pickupType === 'ore' ? 'Pickaxe' : 'Package',
           details: `Express ${baseData.pickupType} pickup task for ${baseData.baseName}`,
           urgency: 'medium'
         },
-        baseTags: [baseData.baseId],
-        enemyPlayers: [],
-        friendlyPlayers: [],
-        details: `Express ${baseData.pickupType} pickup - Created via radial menu`,
-        outcome: null,
-        createdAt: new Date().toISOString()
+        status: 'pending'
       }
 
       // Save the task report
