@@ -1905,7 +1905,7 @@ export default function InteractiveTacticalMap() {
       const offsetX = mouseX - centerX
       const offsetY = mouseY - centerY
       
-      const newZoom = Math.min(Math.max(zoom + delta, 1), 3.75)
+      const newZoom = Math.min(Math.max(zoom + delta, 1), 8)
       
       if (newZoom !== zoom) {
         const zoomRatio = newZoom / zoom
@@ -1916,7 +1916,7 @@ export default function InteractiveTacticalMap() {
         setPan({ x: newPanX, y: newPanY })
       }
     } else {
-      setZoom(Math.min(Math.max(zoom + delta, 1), 3.75))
+      setZoom(Math.min(Math.max(zoom + delta, 1), 8))
     }
   }, [zoom, setZoom, pan, setPan])
   
