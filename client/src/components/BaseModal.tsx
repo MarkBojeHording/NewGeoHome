@@ -152,8 +152,13 @@ const BaseHeatMap = ({ baseId, modalType }) => {
     enabled: !!baseId
   })
   
+  console.log('BaseHeatMap baseId:', baseId)
+  console.log('BaseHeatMap basePlayerTags:', basePlayerTags)
+  
   // Get actual player names tagged to this specific base
   const selectedPlayersList = basePlayerTags.map((tag: any) => tag.playerName).filter((name: string) => name)
+  
+  console.log('BaseHeatMap selectedPlayersList from DB:', selectedPlayersList)
   
   // Fetch session data for all selected players in a single query
   const { data: allSessionsData = {} } = useQuery({
