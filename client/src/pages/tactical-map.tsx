@@ -727,8 +727,8 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                 </pattern>
               </defs>
               <circle cx="150" cy="150" r="100" fill={`url(#stripes-yellow-${location.id})`} stroke="none"/>
-              <text fontFamily="Arial, sans-serif" fontSize="20" fill="#886600" opacity="0.55">
-                <textPath href={`#circle-hostile-${location.id}`} startOffset="50%" textAnchor="middle">
+              <text font-family="Arial, sans-serif" font-size="20" fill="#886600" opacity="0.55">
+                <textPath href={`#circle-hostile-${location.id}`} startOffset="50%" text-anchor="middle">
                   Hostile Samsite
                 </textPath>
               </text>
@@ -752,14 +752,14 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
             <g transform="rotate(-90 150 150)">
               <defs>
                 <path id={`circle-roof-${location.id}`} d="M 150,50 A 100,100 0 0,1 150,250" fill="none" />
-                <pattern id={`stripes-red-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(-45)">
+                <pattern id={`stripes-red-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
                   <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
                   <rect x="10" y="0" width="10" height="20" fill="transparent"/>
                 </pattern>
               </defs>
               <circle cx="150" cy="150" r="100" fill={`url(#stripes-red-${location.id})`} stroke="none"/>
-              <text fontFamily="Arial, sans-serif" fontSize="20" fill="#660000" dominantBaseline="hanging" opacity="0.55">
-                <textPath href={`#circle-roof-${location.id}`} startOffset="50%" textAnchor="middle">
+              <text font-family="Arial, sans-serif" font-size="20" fill="#660000" dominant-baseline="hanging" opacity="0.55">
+                <textPath href={`#circle-roof-${location.id}`} startOffset="50%" text-anchor="middle">
                   Roofcamper
                 </textPath>
               </text>
