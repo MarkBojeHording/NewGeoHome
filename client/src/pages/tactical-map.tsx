@@ -1039,8 +1039,8 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                       <defs>
                         <path id="circle-roof" d="M 150,50 A 100,100 0 0,1 150,250" fill="none" />
                         <pattern id="stripes-red" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
-                          <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
-                          <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+                          <rect x="0" y="0" width="10" height="20" fill="transparent"/>
+                          <rect x="10" y="0" width="10" height="20" fill="red" opacity="0.25"/>
                         </pattern>
                       </defs>
                       <circle cx="150" cy="150" r="100" fill="url(#stripes-red)" stroke="none"/>
