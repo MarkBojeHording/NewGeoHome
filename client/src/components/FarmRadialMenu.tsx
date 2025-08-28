@@ -248,6 +248,12 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
         // Open full task report modal (pulsating overlay handles express reports)
         onOpenTaskReport({ baseId, baseName, baseCoords });
       }
+      
+      // Handle "REPAIR/UPGRADE" Advanced button click (index 2)
+      if (index === 2 && onOpenTaskReport && baseId && baseName && baseCoords) {
+        // Open task report modal with repair_upgrade dropdown pre-selected
+        onOpenTaskReport({ baseId, baseName, baseCoords, taskType: 'repair_upgrade' });
+      }
     }
   };
   

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { X, Package, Pickaxe, Upload, ImageIcon, Trash2 } from 'lucide-react'
+import { X, Package, Pickaxe, Upload, ImageIcon, Trash2, Wrench, Construction } from 'lucide-react'
 import { Button } from './ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Textarea } from './ui/textarea'
@@ -14,6 +14,7 @@ interface TaskReportModalProps {
   baseName: string;
   baseCoords: string;
   editingReport?: any;
+  taskType?: string;
 }
 
 export default function TaskReportModal({
@@ -23,12 +24,14 @@ export default function TaskReportModal({
   baseName,
   baseCoords,
   editingReport,
+  taskType,
 }: TaskReportModalProps) {
   const queryClient = useQueryClient()
   const { toast } = useToast()
   
   const [selectedTaskType, setSelectedTaskType] = useState('needs_pickup')
   const [pickupType, setPickupType] = useState('')
+  const [repairUpgradeType, setRepairUpgradeType] = useState('')
   const [screenshots, setScreenshots] = useState<string[]>([])
   const [notes, setNotes] = useState('')
 
@@ -38,17 +41,19 @@ export default function TaskReportModal({
         // Load existing task report data for editing
         setSelectedTaskType(editingReport.taskType || 'needs_pickup')
         setPickupType(editingReport.taskData?.pickupType || '')
+        setRepairUpgradeType(editingReport.taskData?.repairUpgradeType || '')
         setScreenshots(editingReport.screenshots || [])
         setNotes(editingReport.notes || '')
       } else {
         // Reset form for new task report
-        setSelectedTaskType('needs_pickup')
+        setSelectedTaskType(taskType || 'needs_pickup')
         setPickupType('')
+        setRepairUpgradeType('')
         setScreenshots([])
         setNotes('')
       }
     }
-  }, [isVisible, editingReport])
+  }, [isVisible, editingReport, taskType])
 
   // Generate consistent display ID
   const generateDisplayId = (dbId: number) => {
@@ -182,12 +187,32 @@ export default function TaskReportModal({
       return
     }
 
+    if (selectedTaskType === 'repair_upgrade' && !repairUpgradeType) {
+      toast({
+        title: "Error",
+        description: "Please select repair or upgrade option.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    let taskDataDetails = {}
+    let defaultNotes = ''
+    
+    if (selectedTaskType === 'needs_pickup') {
+      taskDataDetails = { pickupType }
+      defaultNotes = `Task: Pickup ${pickupType}`
+    } else if (selectedTaskType === 'repair_upgrade') {
+      taskDataDetails = { repairUpgradeType }
+      defaultNotes = `Task: ${repairUpgradeType.charAt(0).toUpperCase() + repairUpgradeType.slice(1)}`
+    }
+
     const taskData = {
       type: 'task',
       taskType: selectedTaskType,
-      taskData: selectedTaskType === 'needs_pickup' ? { pickupType } : {},
+      taskData: taskDataDetails,
       baseTags: [baseId],
-      notes: notes || `Task: ${selectedTaskType === 'needs_pickup' ? `Pickup ${pickupType}` : selectedTaskType}`,
+      notes: notes || defaultNotes,
       outcome: 'neutral',
       status: 'pending',
       location: { gridX: 0, gridY: 0 }, // Will be set by the location where base is placed
@@ -350,6 +375,7 @@ export default function TaskReportModal({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="needs_pickup">Needs Pick up</SelectItem>
+              <SelectItem value="repair_upgrade">Repair/Upgrade</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -382,6 +408,39 @@ export default function TaskReportModal({
               >
                 <Pickaxe className="h-4 w-4 mr-2" />
                 Ore
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Repair/Upgrade Options */}
+        {selectedTaskType === 'repair_upgrade' && (
+          <div className="mb-6 p-4 border border-orange-500/40 rounded-lg bg-gray-900/50">
+            <h3 className="text-sm font-medium text-orange-300 mb-3">Repair/Upgrade Options</h3>
+            <div className="flex gap-3">
+              <Button
+                variant={repairUpgradeType === 'repair' ? 'default' : 'outline'}
+                onClick={() => setRepairUpgradeType('repair')}
+                className={`flex-1 ${
+                  repairUpgradeType === 'repair'
+                    ? 'bg-orange-600 hover:bg-orange-700'
+                    : 'border-orange-500 text-orange-400 hover:bg-orange-500/20'
+                }`}
+              >
+                <Wrench className="h-4 w-4 mr-2" />
+                Repair
+              </Button>
+              <Button
+                variant={repairUpgradeType === 'upgrade' ? 'default' : 'outline'}
+                onClick={() => setRepairUpgradeType('upgrade')}
+                className={`flex-1 ${
+                  repairUpgradeType === 'upgrade'
+                    ? 'bg-orange-600 hover:bg-orange-700'
+                    : 'border-orange-500 text-orange-400 hover:bg-orange-500/20'
+                }`}
+              >
+                <Construction className="h-4 w-4 mr-2" />
+                Upgrade
               </Button>
             </div>
           </div>

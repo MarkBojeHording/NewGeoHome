@@ -625,6 +625,34 @@ const TaskLootIcon = ({ onClick, task }) => (
   </span>
 )
 
+const TaskRepairIcon = ({ onClick, task }) => (
+  <span 
+    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
+    title="Repair Task - Click for details"
+    onClick={(e) => onClick(e, task)}
+    style={{
+      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite',
+      animationDelay: '0s, 1s'
+    }}
+  >
+    🔧
+  </span>
+)
+
+const TaskUpgradeIcon = ({ onClick, task }) => (
+  <span 
+    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
+    title="Upgrade Task - Click for details"
+    onClick={(e) => onClick(e, task)}
+    style={{
+      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite',
+      animationDelay: '0s, 1.5s'
+    }}
+  >
+    🚧
+  </span>
+)
+
 const LocationName = ({ name, className = '' }) => {
   const match = name.match(/^([A-Z]+\d+)(\(\d+\))?/)
   if (match) {
@@ -983,6 +1011,10 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                     <TaskOreIcon onClick={onTaskIconClick} task={report} />}
                   {report.taskData && report.taskData.pickupType === 'loot' && 
                     <TaskLootIcon onClick={onTaskIconClick} task={report} />}
+                  {report.taskData && report.taskData.repairUpgradeType === 'repair' && 
+                    <TaskRepairIcon onClick={onTaskIconClick} task={report} />}
+                  {report.taskData && report.taskData.repairUpgradeType === 'upgrade' && 
+                    <TaskUpgradeIcon onClick={onTaskIconClick} task={report} />}
                 </div>
               ))}
             </div>
@@ -1669,7 +1701,8 @@ export default function InteractiveTacticalMap() {
   const [taskReportData, setTaskReportData] = useState({
     baseId: null,
     baseName: null,
-    baseCoords: null
+    baseCoords: null,
+    taskType: null
   })
   
   const [editingTaskReport, setEditingTaskReport] = useState(null)
@@ -1755,7 +1788,8 @@ export default function InteractiveTacticalMap() {
     setTaskReportData({
       baseId: baseData.baseId,
       baseName: baseData.baseName,
-      baseCoords: baseData.baseCoords
+      baseCoords: baseData.baseCoords,
+      taskType: baseData.taskType || null
     })
     setEditingTaskReport(null) // Clear any existing editing report for new task
     setShowTaskReportModal(true)
@@ -2422,6 +2456,7 @@ export default function InteractiveTacticalMap() {
           baseName={taskReportData.baseName || ''}
           baseCoords={taskReportData.baseCoords || ''}
           editingReport={editingTaskReport}
+          taskType={taskReportData.taskType}
         />
 
         <TaskSummaryPopup
