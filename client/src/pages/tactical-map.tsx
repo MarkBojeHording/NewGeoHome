@@ -1188,7 +1188,7 @@ const DecayingMenu = ({ style, onClose, onStartTimer, title = "Decay Calculator"
 }
 
 
-const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport, onOpenTaskReport, players, locations }) => {
+const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport, onOpenTaskReport, onCreateExpressTaskReport, players, locations }) => {
   const [showActionMenu, setShowActionMenu] = useState(false)
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
@@ -1265,7 +1265,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           }}>
             <FarmRadialMenu 
               onOpenTaskReport={onOpenTaskReport}
-              onCreateExpressTaskReport={handleCreateExpressTaskReport}
+              onCreateExpressTaskReport={onCreateExpressTaskReport}
               baseId={location.id}
               baseName={location.name}
               baseCoords={location.name}
@@ -2351,6 +2351,7 @@ export default function InteractiveTacticalMap() {
                 setShowBaseReportModal(true)
               }}
               onOpenTaskReport={onOpenTaskReport}
+              onCreateExpressTaskReport={handleCreateExpressTaskReport}
             />
           )}
         </div>
