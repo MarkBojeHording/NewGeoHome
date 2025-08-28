@@ -17,6 +17,7 @@ This project is a Rust-themed tactical map and raid calculator application desig
 - **RESOLVED Report Update Duplication Bug**: Fixed issue where updating existing reports created duplicate map markers instead of updating in-place. System now correctly uses database reportId for API calls while preserving display functionality.
 - **Enhanced Report Player Tagging**: Implemented separate enemy and friendly player storage using comma-separated strings like base owners. Added enemy_players and friendly_players database columns for organized player tracking in reports.
 - **FIXED Report Preview Link Consistency**: Resolved critical user feedback issue where report preview links opened ActionReportModal with confusing "Edit Base Report" title instead of using the same modal system as map markers. Report preview links now trigger identical onOpenReport function as map report markers for consistent user experience throughout the application.
+- **Enhanced BaseModal Heatmap Multi-Player System**: Fixed React Hooks error and implemented multi-player color coding for BaseModal heatmap displaying overlapping player activity hours. Uses light blue (1-2 players), yellow (3 players), orange (4 players), red (5+ players). System properly combines session data from all tagged base owners and calculates accurate overlapping activity based on real session timestamps. Removed legend per user feedback.
 
 # User Preferences
 

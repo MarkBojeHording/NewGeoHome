@@ -145,13 +145,36 @@ const BaseReportsContent = ({ baseId, baseOwners, onOpenReport }) => {
 }
 
 // ============= BASE HEAT MAP COMPONENT =============
-const BaseHeatMap = ({ players: playersString }) => {
-  // Get player names from the playersString
-  const selectedPlayersList = playersString ? playersString.split(',').map(p => p.trim()).filter(p => p) : []
+const BaseHeatMap = ({ baseId, modalType, fallbackPlayers }) => {
+  // Fetch actual base owners from database for this specific base
+  const { data: basePlayerTags = [] } = useQuery({
+    queryKey: ['/api/player-base-tags/base', baseId],
+    enabled: !!baseId
+  })
+  
+  // Get actual player names tagged to this specific base from database
+  let selectedPlayersList = basePlayerTags.map((tag: any) => tag.playerName).filter((name: string) => name)
+  
+  // If no database tags found and we have fallback players from form, use those
+  if (selectedPlayersList.length === 0 && fallbackPlayers) {
+    selectedPlayersList = fallbackPlayers.split(',').map(p => p.trim()).filter(p => p)
+  }
+  
+  // Show message if no players are assigned
+  if (selectedPlayersList.length === 0) {
+    return (
+      <div className="mt-4 p-4 bg-gray-800 rounded border border-gray-600">
+        <h3 className="text-sm font-mono text-orange-400 mb-2">[ACTIVITY HEATMAP]</h3>
+        <div className="text-gray-400 text-sm text-center py-4">
+          No players assigned to this base
+        </div>
+      </div>
+    )
+  }
   
   // Fetch session data for all selected players in a single query
   const { data: allSessionsData = {} } = useQuery({
-    queryKey: ['/api/players/sessions/batch', selectedPlayersList],
+    queryKey: ['/api/players/sessions/batch', selectedPlayersList.join(',')],
     queryFn: async () => {
       if (selectedPlayersList.length === 0) return {}
       
@@ -160,9 +183,10 @@ const BaseHeatMap = ({ players: playersString }) => {
       // Fetch sessions for each player
       for (const playerName of selectedPlayersList) {
         try {
-          const response = await fetch(`/api/players/${playerName}/sessions`)
+          const response = await fetch(`/api/players/${encodeURIComponent(playerName)}/sessions`)
           if (response.ok) {
-            sessionsData[playerName] = await response.json()
+            const playerSessions = await response.json()
+            sessionsData[playerName] = playerSessions
           } else {
             sessionsData[playerName] = []
           }
@@ -171,7 +195,6 @@ const BaseHeatMap = ({ players: playersString }) => {
           sessionsData[playerName] = []
         }
       }
-      
       return sessionsData
     },
     enabled: selectedPlayersList.length > 0
@@ -337,31 +360,6 @@ const BaseHeatMap = ({ players: playersString }) => {
               </div>
             </div>
           ))}
-        </div>
-        
-        {/* Multi-player Heat Map Legend */}
-        <div className="mt-3 flex items-center justify-center gap-3 text-xs text-gray-400">
-          <span>Players Active:</span>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-gray-800 rounded border border-gray-600"></div>
-            <span>0</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-blue-400 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
-            <span>1-2</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-yellow-500 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
-            <span>3</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-orange-500 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
-            <span>4</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-red-500 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
-            <span>5+</span>
-          </div>
         </div>
       </div>
     </div>
@@ -702,7 +700,6 @@ const BaseModal = ({
   // Initialize form data when editing
   useEffect(() => {
     if (editingLocation) {
-      console.log('BaseModal editingLocation:', editingLocation)
       setFormData({
         type: editingLocation.type,
         notes: editingLocation.notes || '',
@@ -996,7 +993,11 @@ const BaseModal = ({
         )}
         
         {modalType === 'enemy' && (
-          <BaseHeatMap players={formData.players} />
+          <BaseHeatMap 
+            baseId={editingLocation?.id} 
+            modalType={modalType} 
+            fallbackPlayers={formData.players} 
+          />
         )}
         
         <div>

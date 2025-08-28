@@ -705,17 +705,80 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
   }, [location.players, players])
   
   return (
-    <button
-      className="absolute transform -translate-x-1/2 -translate-y-1/2"
-      style={{ left: `${location.x}%`, top: `${location.y}%` }}
-      onMouseDown={(e) => e.stopPropagation()}
-      onClick={(e) => {
-        e.stopPropagation()
-        e.preventDefault()
-        onClick(location)
-      }}
-    >
-      <div className="relative">
+    <>
+      {/* Hostile Samsite Circle - 150m radius visual indicator */}
+      {location.hostileSamsite && (
+        <div 
+          className="absolute pointer-events-none"
+          style={{ 
+            left: `${location.x}%`, 
+            top: `${location.y}%`,
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1
+          }}
+        >
+          <svg width="60" height="60" viewBox="0 0 300 300" className="absolute" style={{ transform: 'translate(-50%, -50%)' }}>
+            <g transform="rotate(-90 150 150)">
+              <defs>
+                <path id={`circle-hostile-${location.id}`} d="M 150,50 A 100,100 0 0,0 150,250" fill="none" />
+                <pattern id={`stripes-yellow-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                  <rect x="0" y="0" width="10" height="20" fill="yellow" opacity="0.25"/>
+                  <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+                </pattern>
+              </defs>
+              <circle cx="150" cy="150" r="100" fill={`url(#stripes-yellow-${location.id})`} stroke="none"/>
+              <text font-family="Arial, sans-serif" font-size="20" fill="#886600" opacity="0.55">
+                <textPath href={`#circle-hostile-${location.id}`} startOffset="50%" text-anchor="middle">
+                  Hostile Samsite
+                </textPath>
+              </text>
+            </g>
+          </svg>
+        </div>
+      )}
+
+      {/* Roofcamper Circle - 150m radius visual indicator */}
+      {location.roofCamper && (
+        <div 
+          className="absolute pointer-events-none"
+          style={{ 
+            left: `${location.x}%`, 
+            top: `${location.y}%`,
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1
+          }}
+        >
+          <svg width="60" height="60" viewBox="0 0 300 300" className="absolute" style={{ transform: 'translate(-50%, -50%)' }}>
+            <g transform="rotate(-90 150 150)">
+              <defs>
+                <path id={`circle-roof-${location.id}`} d="M 150,50 A 100,100 0 0,1 150,250" fill="none" />
+                <pattern id={`stripes-red-${location.id}`} patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(45)">
+                  <rect x="0" y="0" width="10" height="20" fill="red" opacity="0.25"/>
+                  <rect x="10" y="0" width="10" height="20" fill="transparent"/>
+                </pattern>
+              </defs>
+              <circle cx="150" cy="150" r="100" fill={`url(#stripes-red-${location.id})`} stroke="none"/>
+              <text font-family="Arial, sans-serif" font-size="20" fill="#660000" dominant-baseline="hanging" opacity="0.55">
+                <textPath href={`#circle-roof-${location.id}`} startOffset="50%" text-anchor="middle">
+                  Roofcamper
+                </textPath>
+              </text>
+            </g>
+          </svg>
+        </div>
+      )}
+
+      <button
+        className="absolute transform -translate-x-1/2 -translate-y-1/2"
+        style={{ left: `${location.x}%`, top: `${location.y}%`, zIndex: 5 }}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation()
+          e.preventDefault()
+          onClick(location)
+        }}
+      >
+        <div className="relative">
         {/* Group Color Ring - shows for bases that belong to a group */}
         {(() => {
           const groupColor = getGroupColor(location.id, locations)
@@ -873,25 +936,9 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         )}
         
         
-        {location.roofCamper && (
-          <div className="absolute -top-1 -left-1" style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center" title="Roof Camper">
-              <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                <circle cx="12" cy="12" r="8" />
-                <line x1="12" y1="8" x2="12" y2="16" />
-                <line x1="8" y1="12" x2="16" y2="12" />
-              </svg>
-            </div>
-          </div>
-        )}
+
         
-        {location.hostileSamsite && (
-          <div className={`absolute ${location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' ? '-right-2.5' : '-right-1'} ${"-bottom-1"}`} style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center" title="Hostile Samsite">
-              <span className="text-[8px] font-bold text-black">!</span>
-            </div>
-          </div>
-        )}
+
         
         {location.oldestTC && location.oldestTC > 0 && (
           <div className="absolute inset-0 pointer-events-none">
@@ -913,6 +960,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         )}
       </div>
     </button>
+    </>
   )
 }
 
