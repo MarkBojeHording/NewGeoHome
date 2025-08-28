@@ -16,7 +16,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
   const [segment1A2Value, setSegment1A2Value] = useState('00');
   const [segmentCoreValue, setSegmentCoreValue] = useState('00');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [expressPickupType, setExpressPickupType] = useState(null); // 'ore' or 'loot'
+
   
   // Resource values in raw numbers (will be divided by 1000 for display)
   const [resources, setResources] = useState({
@@ -109,13 +109,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
     setIsExpanded(!isExpanded);
   };
   
-  // Handle express pickup creation
-  const handleExpressPickup = () => {
-    if (expressPickupType && onCreateExpressTaskReport && baseId && baseName && baseCoords) {
-      onCreateExpressTaskReport({ baseId, baseName, baseCoords, pickupType: expressPickupType });
-      setExpressPickupType(null); // Reset after creation
-    }
-  };
+
 
   // Function to update resource values
   const updateResources = (updates) => {
@@ -244,10 +238,15 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
                     `${index + 1}A${subSegment ? subSegment + 1 : ''}`;
       console.log(`Inner segment ${label} selected`);
       
-      // Handle express pickup type selection for NEEDS PICKUP section
-      if (index === 1 && subSegment !== null) {
+      // Handle express pickup creation for NEEDS PICKUP section
+      if (index === 1 && subSegment !== null && onCreateExpressTaskReport && baseId && baseName && baseCoords) {
         const pickupType = subSegment === 0 ? 'ore' : 'loot';
-        setExpressPickupType(pickupType);
+        onCreateExpressTaskReport({
+          baseId,
+          baseName, 
+          baseCoords,
+          pickupType
+        });
       }
     } else {
       setSelectedOuter(index);
@@ -1164,37 +1163,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
             </text>
           </g>
 
-          {/* Express pickup button (appears when pickup type is selected) */}
-          {expressPickupType && (
-            <g 
-              className="transition-transform duration-200 cursor-pointer hover:scale-105"
-              onClick={handleExpressPickup}
-            >
-              <circle
-                cx={centerX + 80}
-                cy={centerY - 80}
-                r="25"
-                fill="hsl(120, 70%, 45%)"
-                stroke="hsl(120, 70%, 35%)"
-                strokeWidth="3"
-                className="transition-all duration-300"
-                filter="url(#actionButtonGlow)"
-              />
-              <text
-                x={centerX + 80}
-                y={centerY - 80}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="12"
-                fontWeight="bold"
-                fill="white"
-                className="select-none"
-                style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
-              >
-                CREATE
-              </text>
-            </g>
-          )}
+
       </svg>
     </>
   );
