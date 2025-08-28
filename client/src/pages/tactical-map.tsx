@@ -1798,12 +1798,14 @@ export default function InteractiveTacticalMap() {
   const handleTaskIconClick = useCallback((event, task) => {
     event.stopPropagation()
     const rect = event.currentTarget.getBoundingClientRect()
+    const iconCenterX = rect.left + (rect.width / 2)
+    const iconCenterY = rect.top + (rect.height / 2)
     setTaskSummaryPopup({
       isVisible: true,
       task: task,
       position: { 
-        x: rect.left - 120, // Position popup to the left of icon
-        y: rect.top - 10 
+        x: iconCenterX - 240, // Position popup so its bottom-right corner aligns with icon center (assuming 240px width)
+        y: iconCenterY - 120  // Position popup so its bottom-right corner aligns with icon center (assuming ~120px height)
       }
     })
   }, [])
