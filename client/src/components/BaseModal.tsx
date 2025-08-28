@@ -96,9 +96,17 @@ const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], 
 }
 
 // ============= BASE REPORTS CONTENT COMPONENT =============
-const BaseReportsContent = ({ baseId, onOpenReport }) => {
+const BaseReportsContent = ({ baseId, baseOwners, onOpenReport }) => {
   const { data: reports = [], isLoading } = useQuery({
-    queryKey: ['/api/reports/base', baseId],
+    queryKey: ['/api/reports/base', baseId, baseOwners],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (baseOwners) {
+        params.append('baseOwners', baseOwners);
+      }
+      const response = await fetch(`/api/reports/base/${baseId}?${params}`);
+      return response.json();
+    },
     enabled: !!baseId
   })
 
@@ -110,7 +118,7 @@ const BaseReportsContent = ({ baseId, onOpenReport }) => {
     return (
       <div className="text-center py-8 text-muted-foreground">
         <p>No reports found for this base</p>
-        <p className="text-sm mt-1">Reports will appear here when tagged with this base</p>
+        <p className="text-sm mt-1">Reports will appear here when tagged with this base or involving base owners</p>
       </div>
     )
   }
@@ -1298,7 +1306,11 @@ const BaseModal = ({
               
               {/* Reports List */}
               <div className="flex-1 overflow-y-auto mb-4">
-                <BaseReportsContent baseId={editingLocation?.id} onOpenReport={editingLocation ? () => onOpenBaseReport(editingLocation) : null} />
+                <BaseReportsContent 
+                  baseId={editingLocation?.id} 
+                  baseOwners={formData.players}
+                  onOpenReport={editingLocation ? () => onOpenBaseReport(editingLocation) : null} 
+                />
               </div>
               
               {/* Create Report Button */}

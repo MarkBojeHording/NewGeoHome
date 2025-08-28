@@ -104,8 +104,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/reports/base/:baseId", async (req, res) => {
     try {
       const { baseId } = req.params;
-      const reports = await storage.getReportsByBaseTag(baseId);
-      res.json(reports);
+      const { baseOwners } = req.query;
+      
+      // If baseOwners provided, use enhanced method that includes player-matched reports
+      if (baseOwners && typeof baseOwners === 'string') {
+        const reports = await storage.getReportsForBaseWithPlayers(baseId, baseOwners);
+        res.json(reports);
+      } else {
+        // Fall back to original method
+        const reports = await storage.getReportsByBaseTag(baseId);
+        res.json(reports);
+      }
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch reports by base" });
     }

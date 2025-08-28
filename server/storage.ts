@@ -16,6 +16,7 @@ export interface IStorage {
   getReportsByType(type: string): Promise<Report[]>;
   getReportsByPlayerTag(playerId: string): Promise<Report[]>;
   getReportsByBaseTag(baseId: string): Promise<Report[]>;
+  getReportsForBaseWithPlayers(baseId: string, baseOwners: string): Promise<Report[]>;
   updateReport(id: number, report: Partial<InsertReport>): Promise<Report>;
   deleteReport(id: number): Promise<boolean>;
   
@@ -101,6 +102,44 @@ export class DatabaseStorage implements IStorage {
   async getReportsByBaseTag(baseId: string): Promise<Report[]> {
     const baseReports = await db.select().from(reports).where(sql`${reports.baseTags} @> ARRAY[${baseId}]`);
     return baseReports;
+  }
+
+  // Enhanced method to get reports for a base including player-matched general reports
+  async getReportsForBaseWithPlayers(baseId: string, baseOwners: string): Promise<Report[]> {
+    // Parse comma-separated base owners
+    const ownerNames = baseOwners ? baseOwners.split(',').map(name => name.trim()).filter(name => name) : [];
+    
+    if (ownerNames.length === 0) {
+      // If no base owners, just return base-tagged reports
+      return this.getReportsByBaseTag(baseId);
+    }
+
+    // Get base-tagged reports
+    const baseReports = await db.select().from(reports).where(sql`${reports.baseTags} @> ARRAY[${baseId}]`);
+    
+    // Get general reports that include any of the base owners in enemy or friendly players
+    const playerConditions = ownerNames.map(name => 
+      sql`${reports.enemyPlayers} LIKE ${'%' + name + '%'} OR ${reports.friendlyPlayers} LIKE ${'%' + name + '%'}`
+    );
+    
+    const combinedCondition = playerConditions.reduce((acc, condition) => 
+      acc ? sql`${acc} OR ${condition}` : condition, null
+    );
+    
+    const playerMatchedReports = await db.select().from(reports).where(
+      sql`${reports.type} = 'general' AND (${combinedCondition})`
+    );
+
+    // Combine and deduplicate reports by ID
+    const allReports = [...baseReports, ...playerMatchedReports];
+    const uniqueReports = allReports.filter((report, index, self) => 
+      index === self.findIndex(r => r.id === report.id)
+    );
+
+    // Sort by creation date (newest first)
+    return uniqueReports.sort((a, b) => 
+      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    );
   }
 
   async updateReport(id: number, report: Partial<InsertReport>): Promise<Report> {
