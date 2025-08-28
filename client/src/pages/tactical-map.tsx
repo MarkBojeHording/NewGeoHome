@@ -932,17 +932,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         )}
         
         
-        {location.roofCamper && (
-          <div className="absolute -top-1 -left-1" style={{ zIndex: 10 }}>
-            <div className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center" title="Roof Camper">
-              <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                <circle cx="12" cy="12" r="8" />
-                <line x1="12" y1="8" x2="12" y2="16" />
-                <line x1="8" y1="12" x2="16" y2="12" />
-              </svg>
-            </div>
-          </div>
-        )}
+
         
         {location.hostileSamsite && (
           <div className={`absolute ${location.type.startsWith('report') && location.outcome && location.outcome !== 'neutral' ? '-right-2.5' : '-right-1'} ${"-bottom-1"}`} style={{ zIndex: 10 }}>
