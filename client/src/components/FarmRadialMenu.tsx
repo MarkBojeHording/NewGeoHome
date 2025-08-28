@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const RadialMenu = () => {
+interface FarmRadialMenuProps {
+  onOpenTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string }) => void;
+  baseId?: string;
+  baseName?: string;
+  baseCoords?: string;
+}
+
+const RadialMenu = ({ onOpenTaskReport, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
   const [selectedInner, setSelectedInner] = useState(null);
   const [selectedOuter, setSelectedOuter] = useState(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -229,6 +236,11 @@ const RadialMenu = () => {
     } else {
       setSelectedOuter(index);
       console.log(`Outer segment ADVANCED (position ${index + 1}) selected`);
+      
+      // Handle "NEEDS PICKUP" Advanced button click (index 1)
+      if (index === 1 && onOpenTaskReport && baseId && baseName && baseCoords) {
+        onOpenTaskReport({ baseId, baseName, baseCoords });
+      }
     }
   };
   
@@ -1140,4 +1152,9 @@ const RadialMenu = () => {
   );
 };
 
-export default RadialMenu;
+// Create a wrapper function to pass through props
+const FarmRadialMenu = ({ onOpenTaskReport, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
+  return <RadialMenu onOpenTaskReport={onOpenTaskReport} baseId={baseId} baseName={baseName} baseCoords={baseCoords} />;
+};
+
+export default FarmRadialMenu;

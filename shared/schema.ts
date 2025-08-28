@@ -21,7 +21,7 @@ export type User = typeof users.$inferSelect;
 export const reports = pgTable("reports", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   displayId: text("display_id"), // Alphanumeric ID like "RKW6X91"
-  type: text("type").notNull(), // "general" | "base" | "action"
+  type: text("type").notNull(), // "general" | "base" | "task"
   notes: text("notes").notNull(),
   outcome: text("outcome").notNull(), // "good" | "neutral" | "bad"
   playerTags: text("player_tags").array().default([]), // Array of player IDs (legacy)
@@ -32,8 +32,11 @@ export const reports = pgTable("reports", {
   location: jsonb("location").notNull(), // {gridX: number, gridY: number}
   createdBy: text("created_by"), // User ID who created the report
   createdAt: timestamp("created_at").defaultNow(),
-  completedBy: text("completed_by"), // User ID who completed (only for action reports)
-  completedAt: timestamp("completed_at"), // Completion timestamp (only for action reports)
+  completedBy: text("completed_by"), // User ID who completed (only for task reports)
+  completedAt: timestamp("completed_at"), // Completion timestamp (only for task reports)
+  status: text("status").default("pending"), // "pending" | "completed" | "failed" (only for task reports)
+  taskType: text("task_type"), // "needs_pickup" | etc (only for task reports)
+  taskData: jsonb("task_data") // Task-specific data like {pickupType: "loot"} (only for task reports)
 });
 
 // Standard report templates

@@ -5,6 +5,7 @@ import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import { LogsModal } from '../components/LogsModal'
 import ActionReportModal from '../components/ActionReportModal'
+import TaskReportModal from '../components/TaskReportModal'
 import { TeamsModal } from '../components/TeamsModal'
 import { ProgressionModal } from '../components/ProgressionModal'
 import { HeatMapOverlay, HeatMapControls, HeatMapConfig } from '../components/HeatMap'
@@ -1144,7 +1145,7 @@ const DecayingMenu = ({ style, onClose, onStartTimer, title = "Decay Calculator"
 }
 
 
-const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport, players, locations }) => {
+const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocation, locationTimers, onAddTimer, onOpenReport, onOpenBaseReport, onOpenTaskReport, players, locations }) => {
   const [showActionMenu, setShowActionMenu] = useState(false)
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
@@ -1219,7 +1220,12 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             marginTop: '-250px',
             marginLeft: '-220px'
           }}>
-            <FarmRadialMenu />
+            <FarmRadialMenu 
+              onOpenTaskReport={onOpenTaskReport}
+              baseId={location.id}
+              baseName={location.name}
+              baseCoords={location.name}
+            />
           </div>
         </div>
       )}
@@ -1588,6 +1594,7 @@ export default function InteractiveTacticalMap() {
   const [showPlayerModal, setShowPlayerModal] = useState(false)
   const [showTeamsModal, setShowTeamsModal] = useState(false)
   const [showBaseReportModal, setShowBaseReportModal] = useState(false)
+  const [showTaskReportModal, setShowTaskReportModal] = useState(false)
   const [showLogsModal, setShowLogsModal] = useState(false)
   const [showProgressionModal, setShowProgressionModal] = useState(false)
   
@@ -1603,6 +1610,12 @@ export default function InteractiveTacticalMap() {
     baseName: null,
     baseCoords: null,
     baseType: null
+  })
+  
+  const [taskReportData, setTaskReportData] = useState({
+    baseId: null,
+    baseName: null,
+    baseCoords: null
   })
   
   // Heat map configuration state
@@ -1666,6 +1679,15 @@ export default function InteractiveTacticalMap() {
       baseType: location.type
     })
     setShowBaseReportModal(true)
+  }, [])
+
+  const onOpenTaskReport = useCallback((baseData) => {
+    setTaskReportData({
+      baseId: baseData.baseId,
+      baseName: baseData.baseName,
+      baseCoords: baseData.baseCoords
+    })
+    setShowTaskReportModal(true)
   }, [])
 
   // Fetch player data for online count display
@@ -2213,6 +2235,7 @@ export default function InteractiveTacticalMap() {
                 })
                 setShowBaseReportModal(true)
               }}
+              onOpenTaskReport={onOpenTaskReport}
             />
           )}
         </div>
@@ -2246,6 +2269,14 @@ export default function InteractiveTacticalMap() {
           baseId={baseReportData.baseId || ''}
           baseName={baseReportData.baseName || ''}
           baseCoords={baseReportData.baseCoords || ''}
+        />
+
+        <TaskReportModal
+          isVisible={showTaskReportModal}
+          onClose={() => setShowTaskReportModal(false)}
+          baseId={taskReportData.baseId || ''}
+          baseName={taskReportData.baseName || ''}
+          baseCoords={taskReportData.baseCoords || ''}
         />
 
         <PlayerModal

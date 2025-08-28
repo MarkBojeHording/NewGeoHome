@@ -32,20 +32,15 @@ const standardTemplates = [
     }
   },
   {
-    name: "Raid Report",
-    reportType: "raid", 
+    name: "Task Report",
+    reportType: "task", 
     template: {
       fields: [
-        { name: "title", type: "text", label: "Report Title", required: true },
-        { name: "targetBase", type: "text", label: "Target Base", required: true },
-        { name: "raidStatus", type: "select", label: "Raid Status", options: ["planned", "in-progress", "successful", "failed", "cancelled"], required: true },
-        { name: "participantCount", type: "number", label: "Number of Participants", required: false },
-        { name: "resourcesUsed", type: "textarea", label: "Resources Used", required: false },
-        { name: "lootObtained", type: "textarea", label: "Loot Obtained", required: false },
-        { name: "casualties", type: "textarea", label: "Casualties/Losses", required: false },
-        { name: "description", type: "textarea", label: "Raid Details", required: true },
-        { name: "priority", type: "select", label: "Priority", options: ["low", "medium", "high", "critical"], required: true },
-        { name: "tags", type: "tags", label: "Tags", required: false }
+        { name: "taskType", type: "select", label: "Task Type", options: ["needs_pickup"], required: true },
+        { name: "status", type: "select", label: "Status", options: ["pending", "completed", "failed"], required: true },
+        { name: "taskData", type: "json", label: "Task Data", required: false },
+        { name: "description", type: "textarea", label: "Task Details", required: true },
+        { name: "priority", type: "select", label: "Priority", options: ["low", "medium", "high", "critical"], required: true }
       ]
     }
   }
