@@ -202,6 +202,9 @@ const BaseHeatMap = ({ baseId, modalType, fallbackPlayers }) => {
 
   // Generate heat map data from session history - multi-player version
   const generateHeatMapData = (allSessionsData: { [key: string]: any[] }) => {
+    console.log('generateHeatMapData received allSessionsData:', allSessionsData)
+    console.log('generateHeatMapData players:', Object.keys(allSessionsData))
+    
     if (!allSessionsData || Object.keys(allSessionsData).length === 0) return {};
     
     // Create a map for each day of the week and each hour (0-23)
