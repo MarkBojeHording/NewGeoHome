@@ -595,16 +595,16 @@ const TowerIcon = () => (
   </svg>
 )
 
-// Task Report Icons - matching TaskReportModal icons
+// Task Report Icons - using emoji style to match interface
 const TaskOreIcon = () => (
-  <div className="w-4 h-4 bg-gray-700 rounded border border-gray-600 shadow-lg flex items-center justify-center" title="Ore Pickup">
-    <Pickaxe className="w-2.5 h-2.5 text-gray-300" />
+  <div className="w-4 h-4 bg-gray-800 rounded border border-gray-600 shadow-lg flex items-center justify-center" title="Ore Pickup">
+    <span className="text-sm">🪨</span>
   </div>
 )
 
 const TaskLootIcon = () => (
-  <div className="w-4 h-4 bg-amber-700 rounded border border-amber-600 shadow-lg flex items-center justify-center" title="Loot Pickup">
-    <Package className="w-2.5 h-2.5 text-amber-300" />
+  <div className="w-4 h-4 bg-amber-800 rounded border border-amber-600 shadow-lg flex items-center justify-center" title="Loot Pickup">
+    <span className="text-sm">📦</span>
   </div>
 )
 
