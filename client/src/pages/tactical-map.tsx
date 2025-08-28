@@ -1953,7 +1953,7 @@ export default function InteractiveTacticalMap() {
   }, [setLocationTimers])
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black font-mono">
+    <div className="h-screen w-screen bg-gradient-to-b from-gray-900 to-black font-mono overflow-hidden">
 
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
@@ -2038,13 +2038,12 @@ export default function InteractiveTacticalMap() {
         progressionDisplay={progressionDisplay}
       />
 
-      <div className="max-w-6xl mx-auto mt-20 px-4">
-
-        <div className="relative">
+      <div className="w-full h-full pt-20">
+        <div className="relative w-full h-full">
           <div 
             ref={mapRef}
-            className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 rounded-3xl shadow-2xl overflow-hidden cursor-default select-none"
-            style={{ aspectRatio: '4/3', touchAction: 'none' }}
+            className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 shadow-2xl overflow-hidden cursor-default select-none w-full h-full"
+            style={{ touchAction: 'none' }}
             onContextMenu={handleContextMenu}
             onClick={handleClick}
             onWheel={handleWheel}
