@@ -705,17 +705,68 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
   }, [location.players, players])
   
   return (
-    <button
-      className="absolute transform -translate-x-1/2 -translate-y-1/2"
-      style={{ left: `${location.x}%`, top: `${location.y}%` }}
-      onMouseDown={(e) => e.stopPropagation()}
-      onClick={(e) => {
-        e.stopPropagation()
-        e.preventDefault()
-        onClick(location)
-      }}
-    >
-      <div className="relative">
+    <>
+      {/* Hostile Samsite Circle - 150m radius visual indicator */}
+      {location.hostileSamsite && (
+        <div 
+          className="absolute pointer-events-none"
+          style={{ 
+            left: `${location.x}%`, 
+            top: `${location.y}%`,
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1
+          }}
+        >
+          <div 
+            className="absolute border-2 border-dashed border-yellow-400"
+            style={{
+              width: '60px',
+              height: '60px',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: 'rgba(255, 255, 0, 0.1)',
+              borderRadius: '50%',
+              opacity: 0.7
+            }}
+          />
+        </div>
+      )}
+
+      {/* Roofcamper Circle - 150m radius visual indicator */}
+      {location.roofCamper && (
+        <div 
+          className="absolute pointer-events-none"
+          style={{ 
+            left: `${location.x}%`, 
+            top: `${location.y}%`,
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1
+          }}
+        >
+          <div 
+            className="absolute border-2 border-dashed border-red-400"
+            style={{
+              width: '60px',
+              height: '60px',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              borderRadius: '50%',
+              opacity: 0.7
+            }}
+          />
+        </div>
+      )}
+
+      <button
+        className="absolute transform -translate-x-1/2 -translate-y-1/2"
+        style={{ left: `${location.x}%`, top: `${location.y}%`, zIndex: 5 }}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation()
+          e.preventDefault()
+          onClick(location)
+        }}
+      >
+        <div className="relative">
         {/* Group Color Ring - shows for bases that belong to a group */}
         {(() => {
           const groupColor = getGroupColor(location.id, locations)
@@ -913,6 +964,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         )}
       </div>
     </button>
+    </>
   )
 }
 
