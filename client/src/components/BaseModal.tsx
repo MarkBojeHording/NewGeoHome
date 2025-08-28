@@ -151,7 +151,7 @@ const BaseHeatMap = ({ players: playersString }) => {
   
   // Fetch session data for all selected players in a single query
   const { data: allSessionsData = {} } = useQuery({
-    queryKey: ['/api/players/sessions/batch', selectedPlayersList],
+    queryKey: ['/api/players/sessions/batch', selectedPlayersList.join(',')],
     queryFn: async () => {
       if (selectedPlayersList.length === 0) return {}
       
@@ -160,9 +160,10 @@ const BaseHeatMap = ({ players: playersString }) => {
       // Fetch sessions for each player
       for (const playerName of selectedPlayersList) {
         try {
-          const response = await fetch(`/api/players/${playerName}/sessions`)
+          const response = await fetch(`/api/players/${encodeURIComponent(playerName)}/sessions`)
           if (response.ok) {
-            sessionsData[playerName] = await response.json()
+            const playerSessions = await response.json()
+            sessionsData[playerName] = playerSessions
           } else {
             sessionsData[playerName] = []
           }
@@ -171,7 +172,6 @@ const BaseHeatMap = ({ players: playersString }) => {
           sessionsData[playerName] = []
         }
       }
-      
       return sessionsData
     },
     enabled: selectedPlayersList.length > 0
@@ -337,31 +337,6 @@ const BaseHeatMap = ({ players: playersString }) => {
               </div>
             </div>
           ))}
-        </div>
-        
-        {/* Multi-player Heat Map Legend */}
-        <div className="mt-3 flex items-center justify-center gap-3 text-xs text-gray-400">
-          <span>Players Active:</span>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-gray-800 rounded border border-gray-600"></div>
-            <span>0</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-blue-400 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
-            <span>1-2</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-yellow-500 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
-            <span>3</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-orange-500 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
-            <span>4</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-red-500 rounded border border-gray-600" style={{ opacity: 0.8 }}></div>
-            <span>5+</span>
-          </div>
         </div>
       </div>
     </div>
