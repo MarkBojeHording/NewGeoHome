@@ -160,19 +160,7 @@ const BaseHeatMap = ({ baseId, modalType, fallbackPlayers }) => {
     selectedPlayersList = fallbackPlayers.split(',').map(p => p.trim()).filter(p => p)
   }
   
-  // Show message if no players are assigned
-  if (selectedPlayersList.length === 0) {
-    return (
-      <div className="mt-4 p-4 bg-gray-800 rounded border border-gray-600">
-        <h3 className="text-sm font-mono text-orange-400 mb-2">[ACTIVITY HEATMAP]</h3>
-        <div className="text-gray-400 text-sm text-center py-4">
-          No players assigned to this base
-        </div>
-      </div>
-    )
-  }
-  
-  // Fetch session data for all selected players in a single query
+  // Fetch session data for all selected players in a single query - ALWAYS call this hook
   const { data: allSessionsData = {} } = useQuery({
     queryKey: ['/api/players/sessions/batch', selectedPlayersList.join(',')],
     queryFn: async () => {
@@ -200,11 +188,20 @@ const BaseHeatMap = ({ baseId, modalType, fallbackPlayers }) => {
     enabled: selectedPlayersList.length > 0
   })
 
+  // Show message if no players are assigned (AFTER all hooks are called)
+  if (selectedPlayersList.length === 0) {
+    return (
+      <div className="mt-4 p-4 bg-gray-800 rounded border border-gray-600">
+        <h3 className="text-sm font-mono text-orange-400 mb-2">[ACTIVITY HEATMAP]</h3>
+        <div className="text-gray-400 text-sm text-center py-4">
+          No players assigned to this base
+        </div>
+      </div>
+    )
+  }
+
   // Generate heat map data from session history - multi-player version
   const generateHeatMapData = (allSessionsData: { [key: string]: any[] }) => {
-    console.log('generateHeatMapData received allSessionsData:', allSessionsData)
-    console.log('generateHeatMapData players:', Object.keys(allSessionsData))
-    
     if (!allSessionsData || Object.keys(allSessionsData).length === 0) return {};
     
     // Create a map for each day of the week and each hour (0-23)
