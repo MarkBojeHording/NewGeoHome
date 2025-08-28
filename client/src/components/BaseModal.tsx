@@ -529,13 +529,13 @@ const BaseModal = ({
       // Create a location object similar to what map markers have
       const reportLocation = {
         id: `report-${report.id}`,
-        name: `Report ${report.id}`,
+        name: report.displayId || `R${report.id}`,
         x: 50, // Default position
         y: 50, 
         type: 'report-pvp',
         isReportMarker: true,
         reportId: report.id,
-        displayReportId: `R${report.id}`,
+        displayReportId: report.displayId || `R${report.id}`,
         outcome: report.outcome,
         notes: report.notes,
         enemyPlayers: report.enemyPlayers || '',

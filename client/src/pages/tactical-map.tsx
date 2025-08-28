@@ -1786,7 +1786,7 @@ export default function InteractiveTacticalMap() {
             // Create a visual marker on the map for this report
             const reportMarker = {
               id: `report-${savedReport.id}`, // Use database ID for consistency
-              name: getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null),
+              name: savedReport.displayId || baseData.reportId, // Use the actual displayId from database
               x: newBaseModal.x,
               y: newBaseModal.y,
               type: baseData.type,
@@ -1795,7 +1795,7 @@ export default function InteractiveTacticalMap() {
               time: new Date().toLocaleTimeString(),
               isReportMarker: true, // Flag to distinguish from regular bases
               reportId: savedReport.id, // Database ID for API calls
-              displayReportId: baseData.reportId, // Alphanumeric ID for display
+              displayReportId: savedReport.displayId || baseData.reportId, // Alphanumeric ID for display
               enemyPlayers: baseData.enemyPlayers || '',
               friendlyPlayers: baseData.friendlyPlayers || ''
             }
