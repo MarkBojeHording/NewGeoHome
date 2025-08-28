@@ -702,7 +702,7 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
   )
 }
 
-const LocationMarker = ({ location, locations = [], isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport, pendingTaskReports = [] }) => {
+const LocationMarker = ({ location, locations = [], isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport, pendingTaskReports = [], onTaskIconClick }) => {
   const ownedBases = getOwnedBases(location.name)
   
   // Find task reports for this base
@@ -980,9 +980,9 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
               {taskReports.map((report, index) => (
                 <div key={report.id}>
                   {report.taskData && report.taskData.pickupType === 'ore' && 
-                    <TaskOreIcon onClick={handleTaskIconClick} task={report} />}
+                    <TaskOreIcon onClick={onTaskIconClick} task={report} />}
                   {report.taskData && report.taskData.pickupType === 'loot' && 
-                    <TaskLootIcon onClick={handleTaskIconClick} task={report} />}
+                    <TaskLootIcon onClick={onTaskIconClick} task={report} />}
                 </div>
               ))}
             </div>
@@ -2347,6 +2347,7 @@ export default function InteractiveTacticalMap() {
                     setShowBaseReportModal(true)
                   }}
                   pendingTaskReports={pendingTaskReports}
+                  onTaskIconClick={handleTaskIconClick}
                 />
               ))}
             </div>
