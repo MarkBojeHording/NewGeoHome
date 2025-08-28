@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
 import { ReportPreview } from './ReportPreview'
+import ActionReportModal from './ActionReportModal'
 import type { ExternalPlayer } from '@shared/schema'
 
 // ============= CONSTANTS =============
@@ -110,6 +111,14 @@ const BaseReportsContent = ({ baseId, baseOwners, onOpenReport }) => {
     enabled: !!baseId
   })
 
+  const handleViewReport = (reportId) => {
+    // Find the report and call the onOpenReport with the report data
+    const report = reports.find(r => r.id === reportId);
+    if (report && onOpenReport) {
+      onOpenReport(report);
+    }
+  }
+
   if (isLoading) {
     return <div className="text-center py-4">Loading reports...</div>
   }
@@ -129,7 +138,7 @@ const BaseReportsContent = ({ baseId, baseOwners, onOpenReport }) => {
         <ReportPreview 
           key={report.id} 
           report={report} 
-          onViewReport={onOpenReport}
+          onViewReport={handleViewReport}
         />
       ))}
     </div>
@@ -508,7 +517,18 @@ const BaseModal = ({
   const [isEditingCoordinate, setIsEditingCoordinate] = useState(false)
   const [editableCoordinate, setEditableCoordinate] = useState('')
   
+  // Report viewing state
+  const [viewingReport, setViewingReport] = useState(null)
+  const [showReportModal, setShowReportModal] = useState(false)
+  
   const ownerInputRef = useRef(null)
+  
+  // Handler for opening reports from previews
+  const handleOpenReport = useCallback((report) => {
+    setViewingReport(report)
+    setShowReportModal(true)
+    setShowReportPanel(false) // Close the report panel
+  }, [])
   
   const handleToggleRocketCalculator = useCallback((e) => {
     e.stopPropagation()
@@ -1309,7 +1329,7 @@ const BaseModal = ({
                 <BaseReportsContent 
                   baseId={editingLocation?.id} 
                   baseOwners={formData.players}
-                  onOpenReport={editingLocation ? () => onOpenBaseReport(editingLocation) : null} 
+                  onOpenReport={handleOpenReport}
                 />
               </div>
               
@@ -1332,6 +1352,17 @@ const BaseModal = ({
         )}
 
       </div>
+      
+      {/* Report Viewing Modal */}
+      <ActionReportModal
+        isVisible={showReportModal}
+        onClose={() => {
+          setShowReportModal(false)
+          setViewingReport(null)
+        }}
+        editingReport={viewingReport}
+      />
+      
     </div>
   )
 }
