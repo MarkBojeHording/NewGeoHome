@@ -244,23 +244,9 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
       console.log(`Outer segment ADVANCED (position ${index + 1}) selected`);
       
       // Handle "NEEDS PICKUP" Advanced button click (index 1)
-      if (index === 1 && baseId && baseName && baseCoords) {
-        // Check if an inner segment was selected (ore or loot)
-        if (selectedInner === '1-0' || selectedInner === '1-1') {
-          // Create express task report
-          if (onCreateExpressTaskReport) {
-            const pickupType = selectedInner === '1-0' ? 'ore' : 'loot';
-            onCreateExpressTaskReport({
-              baseId,
-              baseName, 
-              baseCoords,
-              pickupType
-            });
-          }
-        } else if (onOpenTaskReport) {
-          // Open full task report modal if no inner segment selected
-          onOpenTaskReport({ baseId, baseName, baseCoords });
-        }
+      if (index === 1 && onOpenTaskReport && baseId && baseName && baseCoords) {
+        // Open full task report modal (pulsating overlay handles express reports)
+        onOpenTaskReport({ baseId, baseName, baseCoords });
       }
     }
   };
@@ -982,7 +968,20 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
                 1,
                 'NEEDS PICKUP',
                 '',
-                (e) => { e.stopPropagation(); setSelectedInner(null); },
+                (e) => { 
+                  e.stopPropagation(); 
+                  // Create express task report
+                  if (onCreateExpressTaskReport && baseId && baseName && baseCoords) {
+                    const pickupType = selectedInner === '1-0' ? 'ore' : 'loot';
+                    onCreateExpressTaskReport({
+                      baseId,
+                      baseName, 
+                      baseCoords,
+                      pickupType
+                    });
+                  }
+                  setSelectedInner(null);
+                },
                 (e) => { e.stopPropagation(); setSelectedInner(null); },
                 false,  // showTimers
                 false   // isSplit
