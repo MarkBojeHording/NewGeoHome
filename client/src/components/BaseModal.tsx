@@ -111,9 +111,8 @@ const BaseReportsContent = ({ baseId, baseOwners, onOpenReport }) => {
     enabled: !!baseId
   })
 
-  const handleViewReport = (reportId) => {
-    // Find the report and call the onOpenReport with the report data
-    const report = reports.find(r => r.id === reportId);
+  const handleViewReport = (report) => {
+    // Pass the report directly to onOpenReport
     if (report && onOpenReport) {
       onOpenReport(report);
     }
