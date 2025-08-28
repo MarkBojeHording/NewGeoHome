@@ -157,16 +157,16 @@ const BaseHeatMap = ({ players: playersString }) => {
       <div className="p-2 pt-3">
         {/* Time labels on the left - from midnight at top to start of day at bottom */}
         <div className="flex">
-          <div className="w-8 flex flex-col justify-between text-[9px] text-orange-500 font-mono mr-1" style={{height: '160px'}}>
-            <span>[23:59]</span>
-            <span>[18:00]</span>
-            <span>[12:00]</span>
-            <span>[6:00]</span>
-            <span>[0:00]</span>
+          <div className="w-8 flex flex-col justify-between text-[8px] text-orange-500 font-mono mr-1" style={{height: '72px'}}>
+            <span>[23]</span>
+            <span>[18]</span>
+            <span>[12]</span>
+            <span>[6]</span>
+            <span>[0]</span>
           </div>
-          <div className="flex-1 bg-gray-900 border border-orange-600/30 rounded relative" style={{height: '160px'}}>
+          <div className="flex-1 bg-gray-900 border border-orange-600/30 rounded relative" style={{height: '72px'}}>
             {/* Heat Map Grid - 7 days (columns) x 24 hours (rows) */}
-            <div className="absolute inset-1 flex">
+            <div className="absolute inset-0.5 flex">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, dayIndex) => (
                 <div key={day} className="flex-1 flex flex-col">
                   {/* Hours from 23 (top) to 0 (bottom) */}
@@ -197,10 +197,10 @@ const BaseHeatMap = ({ players: playersString }) => {
                     return (
                       <div
                         key={hour}
-                        className="flex-1 border-b border-orange-600/10 last:border-b-0 border-r border-orange-600/10 last:border-r-0"
+                        className="border-b border-orange-600/10 last:border-b-0 border-r border-orange-600/10 last:border-r-0"
                         style={{
                           backgroundColor: `rgba(239, 68, 68, ${opacity})`, // Red for enemy activity
-                          minHeight: '1px'
+                          height: '3px'
                         }}
                         title={`${day} ${hour}:00 - Activity: ${activityCount}`}
                       />
@@ -212,14 +212,14 @@ const BaseHeatMap = ({ players: playersString }) => {
           </div>
         </div>
         {/* Day labels at the bottom */}
-        <div className="mt-1 ml-9 flex justify-between text-[9px] text-orange-500 font-mono">
-          <span>[Sun]</span>
-          <span>[Mon]</span>
-          <span>[Tue]</span>
-          <span>[Wed]</span>
-          <span>[Thu]</span>
-          <span>[Fri]</span>
-          <span>[Sat]</span>
+        <div className="mt-0.5 ml-9 flex justify-between text-[8px] text-orange-500 font-mono">
+          <span>[S]</span>
+          <span>[M]</span>
+          <span>[T]</span>
+          <span>[W]</span>
+          <span>[T]</span>
+          <span>[F]</span>
+          <span>[S]</span>
         </div>
       </div>
     </div>
