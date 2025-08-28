@@ -597,14 +597,14 @@ const TowerIcon = () => (
 
 // Task Report Icons - using emoji style to match interface
 const TaskOreIcon = () => (
-  <div className="w-4 h-4 bg-gray-800 rounded border border-gray-600 shadow-lg flex items-center justify-center" title="Ore Pickup">
-    <span className="text-sm">🪨</span>
+  <div className="w-3 h-3 bg-gray-800 rounded border border-gray-600 shadow-lg flex items-center justify-center animate-pulse" title="Ore Pickup">
+    <span className="text-xs">🪨</span>
   </div>
 )
 
 const TaskLootIcon = () => (
-  <div className="w-4 h-4 bg-amber-800 rounded border border-amber-600 shadow-lg flex items-center justify-center" title="Loot Pickup">
-    <span className="text-sm">📦</span>
+  <div className="w-3 h-3 bg-amber-800 rounded border border-amber-600 shadow-lg flex items-center justify-center animate-pulse" title="Loot Pickup">
+    <span className="text-xs">📦</span>
   </div>
 )
 
@@ -956,9 +956,9 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
           </div>
         )}
         
-        {/* Task Report Icons - positioned above the base */}
+        {/* Task Report Icons - positioned higher above the base */}
         {taskReports.length > 0 && (
-          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2" style={{ zIndex: 10 }}>
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2" style={{ zIndex: 10 }}>
             <div className="flex flex-row gap-0.5">
               {taskReports.map((report, index) => (
                 <div key={report.id}>
