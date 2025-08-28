@@ -1772,10 +1772,7 @@ export default function InteractiveTacticalMap() {
       }
 
       // Save the task report
-      await apiRequest('/api/reports', {
-        method: 'POST',
-        body: JSON.stringify(taskReport)
-      })
+      await apiRequest('/api/reports', 'POST', taskReport)
 
       // Invalidate reports query to refresh the list and map icons
       queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
