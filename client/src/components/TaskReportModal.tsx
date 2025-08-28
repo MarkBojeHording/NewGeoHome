@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { X, Package, Pickaxe } from 'lucide-react'
+import { X, Package, Pickaxe, Upload, ImageIcon, Trash2 } from 'lucide-react'
 import { Button } from './ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
+import { Textarea } from './ui/textarea'
 import { apiRequest } from '../lib/queryClient'
 import { useToast } from '@/hooks/use-toast'
 
@@ -28,6 +29,8 @@ export default function TaskReportModal({
   
   const [selectedTaskType, setSelectedTaskType] = useState('needs_pickup')
   const [pickupType, setPickupType] = useState('')
+  const [screenshots, setScreenshots] = useState<string[]>([])
+  const [notes, setNotes] = useState('')
 
   useEffect(() => {
     if (isVisible) {
@@ -35,10 +38,14 @@ export default function TaskReportModal({
         // Load existing task report data for editing
         setSelectedTaskType(editingReport.taskType || 'needs_pickup')
         setPickupType(editingReport.taskData?.pickupType || '')
+        setScreenshots(editingReport.screenshots || [])
+        setNotes(editingReport.notes || '')
       } else {
         // Reset form for new task report
         setSelectedTaskType('needs_pickup')
         setPickupType('')
+        setScreenshots([])
+        setNotes('')
       }
     }
   }, [isVisible, editingReport])
@@ -180,10 +187,13 @@ export default function TaskReportModal({
       taskType: selectedTaskType,
       taskData: selectedTaskType === 'needs_pickup' ? { pickupType } : {},
       baseTags: [baseId],
-      notes: `Task: ${selectedTaskType === 'needs_pickup' ? `Pickup ${pickupType}` : selectedTaskType}`,
+      notes: notes || `Task: ${selectedTaskType === 'needs_pickup' ? `Pickup ${pickupType}` : selectedTaskType}`,
       outcome: 'neutral',
       status: 'pending',
       location: { gridX: 0, gridY: 0 }, // Will be set by the location where base is placed
+      screenshots: screenshots,
+      enemyPlayers: '',
+      friendlyPlayers: '',
       createdBy: "user" // Replace with actual user ID when auth is implemented
     }
 
@@ -235,6 +245,100 @@ export default function TaskReportModal({
           </Button>
         </div>
 
+        {/* Screenshot Upload Section */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-orange-300 mb-2">
+            Screenshots (Optional)
+          </label>
+          <div className="border border-orange-500/40 rounded-lg p-3 bg-gray-900/30">
+            {screenshots.length === 0 ? (
+              <div className="text-center py-4">
+                <ImageIcon className="h-8 w-8 mx-auto text-gray-500 mb-2" />
+                <p className="text-sm text-gray-400 mb-3">No screenshots uploaded</p>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      const newFiles = Array.from(e.target.files)
+                      newFiles.forEach(file => {
+                        const reader = new FileReader()
+                        reader.onload = (event) => {
+                          if (event.target?.result) {
+                            setScreenshots(prev => [...prev, event.target.result as string])
+                          }
+                        }
+                        reader.readAsDataURL(file)
+                      })
+                    }
+                  }}
+                  className="hidden"
+                  id="screenshot-upload"
+                />
+                <label
+                  htmlFor="screenshot-upload"
+                  className="inline-flex items-center px-3 py-1 text-xs bg-orange-600 hover:bg-orange-700 text-white rounded cursor-pointer"
+                >
+                  <Upload className="h-3 w-3 mr-1" />
+                  Upload Screenshots
+                </label>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-orange-300">{screenshots.length} screenshot{screenshots.length > 1 ? 's' : ''}</span>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        const newFiles = Array.from(e.target.files)
+                        newFiles.forEach(file => {
+                          const reader = new FileReader()
+                          reader.onload = (event) => {
+                            if (event.target?.result) {
+                              setScreenshots(prev => [...prev, event.target.result as string])
+                            }
+                          }
+                          reader.readAsDataURL(file)
+                        })
+                      }
+                    }}
+                    className="hidden"
+                    id="screenshot-upload-more"
+                  />
+                  <label
+                    htmlFor="screenshot-upload-more"
+                    className="inline-flex items-center px-2 py-1 text-xs bg-orange-600 hover:bg-orange-700 text-white rounded cursor-pointer"
+                  >
+                    <Upload className="h-3 w-3 mr-1" />
+                    Add More
+                  </label>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {screenshots.map((screenshot, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={screenshot}
+                        alt={`Screenshot ${index + 1}`}
+                        className="w-full h-16 object-cover rounded border border-orange-500/30"
+                      />
+                      <button
+                        onClick={() => setScreenshots(prev => prev.filter((_, i) => i !== index))}
+                        className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Task Type Dropdown */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-orange-300 mb-2">
@@ -282,6 +386,23 @@ export default function TaskReportModal({
             </div>
           </div>
         )}
+
+        {/* Notes Section */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-orange-300 mb-2">
+            Additional Notes (Optional)
+          </label>
+          <Textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add any additional details, context, or instructions for this task..."
+            className="bg-gray-700 border-orange-500/40 text-white placeholder-gray-400 min-h-[80px] resize-none"
+            rows={3}
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            These notes will be saved with the task report for reference.
+          </p>
+        </div>
 
         {/* Action Buttons */}
         <div className="flex gap-2">
