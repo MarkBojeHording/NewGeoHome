@@ -130,8 +130,6 @@ export default function ActionReportModal({
 
   if (!isVisible) return null
 
-  console.log('ActionReportModal rendering with isVisible:', isVisible, 'editingReport:', editingReport)
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style={{ zIndex: 10000 }}>
       <div className="bg-gradient-to-b from-gray-700 to-gray-800 rounded-xl border border-gray-600 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
