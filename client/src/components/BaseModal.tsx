@@ -146,72 +146,128 @@ const BaseReportsContent = ({ baseId, baseOwners, onOpenReport }) => {
 
 // ============= BASE HEAT MAP COMPONENT =============
 const BaseHeatMap = ({ players: playersString }) => {
-  // Fetch player data for heat map
-  const { data: players = [] } = useQuery<ExternalPlayer[]>({
-    queryKey: ['/api/players']
-  })
+  // Get player names from the playersString
+  const selectedPlayersList = playersString ? playersString.split(',').map(p => p.trim()).filter(p => p) : []
+  
+  // Fetch session data for each selected player
+  const sessionQueries = selectedPlayersList.map(playerName => 
+    useQuery({
+      queryKey: ['/api/players', playerName, 'sessions'],
+      enabled: !!playerName
+    })
+  )
+
+  // Generate heat map data from session history (same logic as PlayerModal)
+  const generateHeatMapData = (allSessions: any[]) => {
+    if (!allSessions || allSessions.length === 0) return {};
+    
+    // Create a map for each day of the week and each hour (0-23)
+    const heatMap: { [key: string]: { [key: number]: number } } = {};
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    // Initialize heat map structure
+    days.forEach(day => {
+      heatMap[day] = {};
+      for (let hour = 0; hour < 24; hour++) {
+        heatMap[day][hour] = 0;
+      }
+    });
+    
+    // Process each session and add to heat map
+    allSessions.forEach(session => {
+      const startTime = new Date(session.startTime);
+      const endTime = new Date(session.endTime);
+      
+      // Handle sessions that span multiple hours or days
+      let currentTime = new Date(startTime);
+      while (currentTime < endTime) {
+        const currentDayIndex = currentTime.getDay();
+        const currentDayName = days[currentDayIndex];
+        const currentHour = currentTime.getHours();
+        
+        // Calculate how much of this hour is covered by the session
+        const hourEnd = new Date(currentTime);
+        hourEnd.setMinutes(59, 59, 999);
+        
+        const sessionEndForThisHour = endTime < hourEnd ? endTime : hourEnd;
+        const minutesInThisHour = (sessionEndForThisHour.getTime() - currentTime.getTime()) / (1000 * 60);
+        
+        // Add intensity based on minutes (0-60 minutes = 0-1 intensity)
+        if (heatMap[currentDayName]) {
+          heatMap[currentDayName][currentHour] += Math.min(minutesInThisHour / 60, 1);
+        }
+        
+        // Move to next hour
+        currentTime = new Date(hourEnd.getTime() + 1);
+      }
+    });
+    
+    return heatMap;
+  };
+
+  // Combine all session data from all players
+  const allSessions = sessionQueries.flatMap(query => query.data || []);
+  const heatMapData = generateHeatMapData(allSessions);
+
+  // Get heat map color intensity (same as PlayerModal)
+  const getHeatMapColor = (intensity: number) => {
+    if (intensity === 0) return { className: 'bg-gray-800', style: {} };
+    const opacity = Math.min(intensity * 0.8 + 0.2, 1); // Min 20% opacity, max 100%
+    return { 
+      className: 'bg-white', 
+      style: { opacity: opacity.toString() }
+    };
+  };
+
+  // Helper function to render hour blocks for a day
+  const renderDayColumn = (day: string) => {
+    const dayData = heatMapData[day] || {};
+    const hours = Array.from({ length: 24 }, (_, i) => 23 - i); // Start from 23 at top
+    
+    return hours.map(hour => {
+      const intensity = dayData[hour] || 0;
+      const colorConfig = getHeatMapColor(intensity);
+      
+      return (
+        <div
+          key={hour}
+          className={`${colorConfig.className} border-b border-gray-700`}
+          style={{
+            height: '6.5px',
+            marginBottom: '0.5px',
+            ...colorConfig.style
+          }}
+          title={`${day} ${hour}:00 - Activity: ${Math.round(intensity * 100)}%`}
+        />
+      );
+    });
+  };
 
   return (
     <div className="border border-gray-600 rounded-lg bg-gray-700 mb-3 relative">
       <label className="absolute top-0 left-0 text-xs font-medium text-gray-300 pl-0.5">Heat Map</label>
       <div className="p-2 pt-3">
         <div className="flex gap-1">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, dayIndex) => (
+          {/* Hour labels column */}
+          <div className="w-8">
+            <div className="text-[10px] text-gray-400 text-center mb-1 h-4"></div>
+            <div style={{height: '160px'}} className="flex flex-col justify-between py-1">
+              {[0, 6, 12, 18].map((hour) => (
+                <div key={hour} className="text-[9px] text-gray-500 text-right pr-1">
+                  {hour.toString().padStart(2, '0')}:00
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Day columns */}
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
             <div key={day} className="flex-1">
-              <div className="text-[10px] text-gray-400 text-center">{day}</div>
-              <div className="bg-gray-800 rounded relative overflow-hidden" style={{height: '160px'}}>
-                {/* Create 24 hour blocks for this day - simple test version */}
-                {Array.from({length: 24}).map((_, hourIndex) => {
-                  const hour = 23 - hourIndex // Start from 23 at top, go down to 0
-                  const topPercent = (hourIndex / 24) * 100
-                  const heightPercent = 100 / 24
-                  
-                  // Calculate activity based on tagged players
-                  const selectedPlayersList = playersString ? playersString.split(',').map(p => p.trim()).filter(p => p) : []
-                  let activityCount = 0
-                  
-                  // Debug: log what we have
-                  if (dayIndex === 0 && hourIndex === 0) {
-                    console.log('Heatmap players:', selectedPlayersList)
-                    console.log('External players data:', players)
-                  }
-                  
-                  // Check if any tagged players have actual session data for this time slot
-                  selectedPlayersList.forEach(playerName => {
-                    const player = players.find(p => p.playerName === playerName)
-                    if (player) {
-                      // Only show activity if player is currently online
-                      // Real session times would come from actual API data, not totalSessions count
-                      if (player.isOnline) {
-                        activityCount += 1
-                      }
-                    }
-                  })
-                  
-                  // Normalize activity to opacity (0-1)
-                  const maxActivity = 20 // Arbitrary max for normalization  
-                  const intensity = Math.min(activityCount / maxActivity, 1)
-                  
-                  // Only show color when players are actually tagged
-                  const hasPlayerData = selectedPlayersList.length > 0 && players.length > 0
-                  const opacity = hasPlayerData 
-                    ? (intensity > 0 ? 0.2 + (intensity * 0.6) : 0.1) 
-                    : 0.05 // Very minimal background when no players tagged
-                  
-                  return (
-                    <div
-                      key={`${day}-${hourIndex}`}
-                      className="absolute left-0.5 right-0.5"
-                      style={{
-                        top: `${topPercent}%`,
-                        height: `${heightPercent}%`,
-                        backgroundColor: `rgba(239, 68, 68, ${opacity})`,
-                        borderTop: hourIndex === 0 ? 'none' : '1px solid rgba(0,0,0,0.2)'
-                      }}
-                      title={`${day} ${hour}:00 - Players: ${selectedPlayersList.join(', ') || 'None'} - Activity: ${activityCount} - Opacity: ${opacity.toFixed(2)}`}
-                    />
-                  )
-                })}
+              <div className="text-[10px] text-gray-400 text-center mb-1">{day}</div>
+              <div className="bg-gray-800 rounded p-0.5" style={{height: '160px', position: 'relative'}}>
+                <div className="flex flex-col h-full">
+                  {renderDayColumn(day)}
+                </div>
               </div>
             </div>
           ))}
