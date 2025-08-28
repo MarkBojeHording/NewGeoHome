@@ -1,6 +1,16 @@
 import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer, type PlayerBaseTag, type InsertPlayerBaseTag, type PlayerProfile, type InsertPlayerProfile } from "@shared/schema";
 import { randomUUID } from "crypto";
 
+// Utility function to generate consistent alphanumeric report IDs
+const generateReportDisplayId = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let result = 'R'
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
+}
+
 // modify the interface with any CRUD methods
 // you might need
 
@@ -76,7 +86,10 @@ export class DatabaseStorage implements IStorage {
   async createReport(report: InsertReport): Promise<Report> {
     const [newReport] = await db
       .insert(reports)
-      .values(report)
+      .values({
+        ...report,
+        displayId: generateReportDisplayId()
+      })
       .returning();
     return newReport;
   }

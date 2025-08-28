@@ -18,6 +18,19 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
     }
   }
 
+  // Generate consistent alphanumeric ID from database ID
+  const generateDisplayId = (dbId: number) => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    // Use database ID as seed for consistent generation
+    let seed = dbId
+    let result = 'R'
+    for (let i = 0; i < 6; i++) {
+      result += chars.charAt(seed % chars.length)
+      seed = Math.floor(seed / chars.length) + (i * 7) // Add variation
+    }
+    return result
+  }
+
 
 
   const hasScreenshots = report.screenshots && report.screenshots.length > 0
@@ -29,7 +42,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
         {/* Report Type & ID */}
         <div className="flex flex-col min-w-0">
           <span className="font-mono text-xs text-orange-400 font-bold">[{getReportTypeLabel(report.type).toUpperCase()}]</span>
-          <span className="text-xs text-orange-600 font-mono">#{String(report.id).padStart(6, '0')}</span>
+          <span className="text-xs text-orange-600 font-mono">{report.displayId || generateDisplayId(report.id)}</span>
         </div>
 
         {/* Content Indicators */}
@@ -51,7 +64,7 @@ export function ReportPreview({ report, onViewReport }: ReportPreviewProps) {
 
         {/* Timestamp */}
         <div className="text-xs text-orange-600 shrink-0 font-mono">
-          {format(new Date(report.createdAt), 'MMM d, HH:mm')}
+          {report.createdAt ? format(new Date(report.createdAt), 'MMM d, HH:mm') : 'No date'}
         </div>
 
         {/* Action Button */}

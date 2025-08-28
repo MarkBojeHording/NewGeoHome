@@ -20,6 +20,7 @@ export type User = typeof users.$inferSelect;
 // Centralized reports table for all report types
 export const reports = pgTable("reports", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  displayId: text("display_id"), // Alphanumeric ID like "RKW6X91"
   type: text("type").notNull(), // "general" | "base" | "action"
   notes: text("notes").notNull(),
   outcome: text("outcome").notNull(), // "good" | "neutral" | "bad"
@@ -44,7 +45,7 @@ export const reportTemplates = pgTable("report_templates", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertReportSchema = createInsertSchema(reports).omit({ id: true, createdAt: true, completedAt: true });
+export const insertReportSchema = createInsertSchema(reports).omit({ id: true, displayId: true, createdAt: true, completedAt: true });
 export type InsertReport = z.infer<typeof insertReportSchema>;
 export type Report = typeof reports.$inferSelect;
 
