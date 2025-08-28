@@ -15,6 +15,7 @@ interface TaskReportModalProps {
   baseCoords: string;
   editingReport?: any;
   taskType?: string;
+  initialRepairType?: string;
 }
 
 export default function TaskReportModal({
@@ -25,6 +26,7 @@ export default function TaskReportModal({
   baseCoords,
   editingReport,
   taskType,
+  initialRepairType,
 }: TaskReportModalProps) {
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -48,12 +50,12 @@ export default function TaskReportModal({
         // Reset form for new task report
         setSelectedTaskType(taskType || 'needs_pickup')
         setPickupType('')
-        setRepairUpgradeType('')
+        setRepairUpgradeType(initialRepairType || '')
         setScreenshots([])
         setNotes('')
       }
     }
-  }, [isVisible, editingReport, taskType])
+  }, [isVisible, editingReport, taskType, initialRepairType])
 
   // Generate consistent display ID
   const generateDisplayId = (dbId: number) => {

@@ -1774,7 +1774,8 @@ export default function InteractiveTacticalMap() {
       baseId: baseData.baseId,
       baseName: baseData.baseName,
       baseCoords: baseData.baseCoords,
-      taskType: baseData.taskType || null
+      taskType: baseData.taskType || null,
+      initialRepairType: baseData.repairUpgradeType || null
     })
     setEditingTaskReport(null) // Clear any existing editing report for new task
     setShowTaskReportModal(true)
@@ -2442,6 +2443,7 @@ export default function InteractiveTacticalMap() {
           baseCoords={taskReportData.baseCoords || ''}
           editingReport={editingTaskReport}
           taskType={taskReportData.taskType}
+          initialRepairType={taskReportData.initialRepairType}
         />
 
         <TaskSummaryPopup
