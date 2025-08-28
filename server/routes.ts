@@ -138,6 +138,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/reports", async (req, res) => {
     try {
       const validatedData = insertReportSchema.parse(req.body);
+      
+      // If this is a task report, check for duplicates and limits
+      if (validatedData.type === 'task' && validatedData.status === 'pending') {
+        const allReports = await storage.getAllReports();
+        
+        // Get base tags for this report
+        const baseTags = validatedData.baseTags || [];
+        
+        for (const baseId of baseTags) {
+          // Check for existing task report of same type and pickup type for this base
+          const existingTask = allReports.find(report => 
+            report.type === 'task' && 
+            report.status === 'pending' && 
+            report.baseTags.includes(baseId) &&
+            report.taskType === validatedData.taskType &&
+            report.taskData?.pickupType === validatedData.taskData?.pickupType
+          );
+          
+          if (existingTask) {
+            return res.status(400).json({ 
+              error: "Task report already exists for this pickup type on this base" 
+            });
+          }
+          
+          // Check total pending task reports for this base (limit to 5)
+          const pendingTasksForBase = allReports.filter(report => 
+            report.type === 'task' && 
+            report.status === 'pending' && 
+            report.baseTags.includes(baseId)
+          );
+          
+          if (pendingTasksForBase.length >= 5) {
+            return res.status(400).json({ 
+              error: "Maximum task reports reached for this base (5)" 
+            });
+          }
+        }
+      }
+      
       const report = await storage.createReport(validatedData);
       res.status(201).json(report);
     } catch (error) {
