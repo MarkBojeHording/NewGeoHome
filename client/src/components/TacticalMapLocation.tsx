@@ -44,28 +44,28 @@ const getIcon = (type: string) => {
   // Text labels for non-main friendly bases
   if (type === 'friendly-flank') {
     return (
-      <div className="flex items-center justify-center h-8 w-8 text-[10px] font-bold">
+      <div className="flex items-center justify-center h-8 w-8 text-[8px] font-black text-white leading-none">
         FLANK
       </div>
     )
   }
   if (type === 'friendly-farm') {
     return (
-      <div className="flex items-center justify-center h-8 w-8 text-[10px] font-bold">
+      <div className="flex items-center justify-center h-8 w-8 text-[9px] font-black text-white leading-none">
         FARM
       </div>
     )
   }
   if (type === 'friendly-boat') {
     return (
-      <div className="flex items-center justify-center h-8 w-8 text-[10px] font-bold">
+      <div className="flex items-center justify-center h-8 w-8 text-[9px] font-black text-white leading-none">
         BOAT
       </div>
     )
   }
   if (type === 'friendly-garage') {
     return (
-      <div className="flex items-center justify-center h-8 w-8 text-[10px] font-bold">
+      <div className="flex items-center justify-center h-8 w-8 text-[7px] font-black text-white leading-none">
         GARAGE
       </div>
     )
