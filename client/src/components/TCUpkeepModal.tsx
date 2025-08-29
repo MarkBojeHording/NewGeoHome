@@ -499,13 +499,13 @@ export default function TCUpkeepModal({ onClose }) {
             </button>
           </div>
           <div className="border border-orange-600/40 rounded max-h-40 overflow-y-auto overflow-x-hidden bg-gray-900">
-            <div className="flex justify-between items-center py-1 px-2 border-b border-orange-600/30 text-xs font-medium bg-gray-800">
+            <div className="flex justify-between items-center py-0.5 px-2 border-b border-orange-600/30 text-xs font-medium bg-gray-800">
               <div className="flex items-center">
-                <span className="w-20 text-[11px] text-orange-400 font-mono">Time</span>
+                <span className="w-12 text-[10px] text-orange-400 font-mono">Time</span>
                 <span className="border-l border-orange-600/30 pl-2 w-24 text-orange-400 font-mono">Name:</span>
               </div>
-              <div className="flex items-center space-x-8">
-                <span className="w-40 text-center text-orange-400 font-mono">Upkeep per day</span>
+              <div className="flex items-center space-x-6">
+                <span className="w-32 text-center text-orange-400 font-mono">Upkeep per day</span>
                 <div className="flex items-center space-x-1">
                   <span className="text-orange-400 font-mono">Edits</span>
                   <button
@@ -527,18 +527,18 @@ export default function TCUpkeepModal({ onClose }) {
               <div className="py-1.5 px-3 text-xs text-orange-400/60 text-center font-mono">No external TCs added</div>
             ) : (
               additionalTCs.map(tc => (
-                <div key={tc.id} className="flex justify-between items-center py-1 px-2 border-b border-orange-600/20 text-xs bg-gray-900">
+                <div key={tc.id} className="flex justify-between items-center py-0.5 px-2 border-b border-orange-600/20 text-xs bg-gray-900">
                   <div className="flex items-center">
-                    <span className="w-20 text-orange-200 font-mono text-[11px]">
+                    <span className="w-12 text-orange-200 font-mono text-[10px]">
                       {tc.remainingDays || tc.remainingHours || tc.remainingMinutes ? 
-                        `${tc.remainingDays || '00'}:${tc.remainingHours || '00'}:${tc.remainingMinutes || '00'}` : 
-                        '--:--:--'
+                        `${tc.remainingDays || '0'}:${tc.remainingHours || '0'}:${tc.remainingMinutes || '0'}` : 
+                        '--:--'
                       }
                     </span>
                     <span className="border-l border-orange-600/30 pl-2 w-24 text-orange-200 font-mono truncate">{tc.name}</span>
                   </div>
-                  <div className="flex items-center space-x-8">
-                    <span className="w-40 text-center text-orange-200 font-mono">
+                  <div className="flex items-center space-x-6">
+                    <span className="w-32 text-center text-orange-200 font-mono">
                       {(() => {
                         const materials = []
                         if (tc.woodUpkeep > 0) materials.push(`W${tc.woodUpkeep}`)
