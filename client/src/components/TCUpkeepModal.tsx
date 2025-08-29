@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 
 // Utility function
 const formatNumber = (num) => num.toLocaleString()
@@ -62,18 +62,8 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null, initialUp
   
 
   
-  // Notify parent when upkeep values change
-  useEffect(() => {
-    if (onUpkeepChange) {
-      const upkeepData = {
-        wood: parseInt(mainTC.wood) || 0,
-        stone: parseInt(mainTC.stone) || 0,
-        metal: parseInt(mainTC.metal) || 0,
-        hqm: parseInt(mainTC.hqm) || 0
-      }
-      onUpkeepChange(upkeepData)
-    }
-  }, [mainTC, onUpkeepChange])
+  // Remove the callback for now to prevent infinite loop
+  // Will implement persistence differently
 
   // Stop timer when tracking is disabled
   useEffect(() => {

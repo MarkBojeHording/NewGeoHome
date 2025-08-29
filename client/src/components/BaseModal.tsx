@@ -972,7 +972,6 @@ const BaseModal = ({
           <TCUpkeepModal 
             onClose={() => {}} 
             initialUpkeep={formData.upkeep}
-            onUpkeepChange={(upkeepData) => setFormData(prev => ({ ...prev, upkeep: upkeepData }))}
           />
         )}
         
