@@ -1153,34 +1153,43 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, l
                           >
                             {resource.label}:
                           </text>
-                          {/* Input field background */}
-                          <rect
+
+                          {/* HTML input field using foreignObject */}
+                          <foreignObject
                             x={rectX + 50}
                             y={rectY + (index * 35) + 5}
                             width="50"
                             height="20"
-                            rx="3"
-                            fill="rgba(0,0,0,0.4)"
-                            stroke="rgba(255,255,255,0.3)"
-                            strokeWidth="1"
-                            className="cursor-text"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // In a real implementation, this would focus an input field
-                            }}
-                          />
-                          {/* Current value (input field text) */}
-                          <text
-                            x={rectX + 75}
-                            y={rectY + (index * 35) + 18}
-                            textAnchor="middle"
-                            fill="white"
-                            fontSize="12"
-                            fontWeight="bold"
-                            className="pointer-events-none"
                           >
-                            {decayResources[resource.type].current}
-                          </text>
+                            <input
+                              type="number"
+                              min="0"
+                              max={decayResources[resource.type].max}
+                              value={decayResources[resource.type].current}
+                              onChange={(e) => {
+                                const value = Math.min(Number(e.target.value), decayResources[resource.type].max);
+                                setDecayResources(prev => ({
+                                  ...prev,
+                                  [resource.type]: {
+                                    ...prev[resource.type],
+                                    current: value
+                                  }
+                                }));
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              style={{
+                                width: "50px",
+                                height: "20px",
+                                backgroundColor: "rgba(0,0,0,0.4)",
+                                border: "1px solid rgba(255,255,255,0.3)",
+                                borderRadius: "3px",
+                                color: "white",
+                                fontSize: "12px",
+                                textAlign: "center",
+                                fontWeight: "bold"
+                              }}
+                            />
+                          </foreignObject>
                           {/* Slash and Max value combined */}
                           <text
                             x={rectX + 100}
