@@ -444,14 +444,13 @@ export default function TCUpkeepModal({ onClose }) {
               <button
                 onClick={() => setShowTCAdvanced(true)}
                 disabled={
-                  !trackRemainingTime ||
                   (getNumericValue(mainTC.wood) === 0 && getNumericValue(mainTC.stone) === 0 && 
                    getNumericValue(mainTC.metal) === 0 && getNumericValue(mainTC.hqm) === 0)
                 }
                 className={`px-2 py-1 text-xs rounded text-white font-mono ${(() => {
                   const hasUpkeep = getNumericValue(mainTC.wood) > 0 || getNumericValue(mainTC.stone) > 0 || 
                                    getNumericValue(mainTC.metal) > 0 || getNumericValue(mainTC.hqm) > 0
-                  if (!hasUpkeep || !trackRemainingTime) return 'bg-gray-500 cursor-not-allowed'
+                  if (!hasUpkeep) return 'bg-gray-500 cursor-not-allowed'
                   
                   // Check current time vs wipe time
                   const days = parseInt(timerDays) || 0
@@ -468,7 +467,8 @@ export default function TCUpkeepModal({ onClose }) {
                   const hasUpkeep = getNumericValue(mainTC.wood) > 0 || getNumericValue(mainTC.stone) > 0 || 
                                    getNumericValue(mainTC.metal) > 0 || getNumericValue(mainTC.hqm) > 0
                   if (!hasUpkeep) return "Set upkeep amounts first"
-                  if (!trackRemainingTime) return "Enable time tracking"
+                  
+                  if (!trackRemainingTime) return "Open TC Advanced Storage Calculator"
                   
                   const days = parseInt(timerDays) || 0
                   const hours = parseInt(timerHours) || 0
