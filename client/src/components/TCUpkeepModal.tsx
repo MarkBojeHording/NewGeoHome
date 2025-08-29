@@ -686,25 +686,28 @@ export default function TCUpkeepModal({ onClose }) {
               {/* Storage Grid */}
               <div className="mb-4">
                 <div className="text-sm font-semibold mb-2 text-orange-300 font-mono">Optimal TC Storage (24 slots)</div>
-                <div className="grid grid-cols-6 gap-1 mb-3">
+                <div className="grid grid-cols-8 gap-1 mb-3 bg-gray-900 p-2 rounded border border-orange-600/30">
                   {calculateOptimalStorage.slots.map((slot, index) => (
                     <div
                       key={index}
-                      className={`w-12 h-12 border-2 rounded flex flex-col items-center justify-center text-xs font-bold ${
-                        slot.type === 'empty' ? 'bg-gray-100 border-gray-300' :
-                        slot.type === 'wood' ? 'bg-yellow-100 border-yellow-400 text-yellow-800' :
-                        slot.type === 'stone' ? 'bg-gray-200 border-gray-400 text-gray-800' :
-                        slot.type === 'metal' ? 'bg-gray-300 border-gray-500 text-gray-900' :
-                        'bg-blue-100 border-blue-400 text-blue-800'
+                      className={`w-10 h-10 border-2 rounded flex flex-col items-center justify-center text-xs font-bold ${
+                        slot.type === 'empty' ? 'bg-gray-800 border-gray-600 text-gray-500' :
+                        slot.type === 'wood' ? 'bg-yellow-900/70 border-yellow-600 text-yellow-200' :
+                        slot.type === 'stone' ? 'bg-gray-700 border-gray-500 text-gray-200' :
+                        slot.type === 'metal' ? 'bg-blue-900/70 border-blue-600 text-blue-200' :
+                        'bg-purple-900/70 border-purple-600 text-purple-200'
                       }`}
+                      title={slot.type !== 'empty' ? `${slot.type.toUpperCase()}: ${formatNumber(slot.amount)}` : 'Empty slot'}
                     >
                       {slot.type !== 'empty' && (
                         <>
-                          <div className="text-[8px] leading-none">
-                            {slot.type.toUpperCase()}
+                          <div className="text-[7px] leading-none">
+                            {slot.type === 'wood' ? 'WD' : 
+                             slot.type === 'stone' ? 'ST' :
+                             slot.type === 'metal' ? 'MT' : 'HQ'}
                           </div>
-                          <div className="text-[10px] leading-none">
-                            {formatNumber(slot.amount)}
+                          <div className="text-[8px] leading-none">
+                            {slot.amount > 999 ? `${Math.floor(slot.amount/1000)}k` : slot.amount}
                           </div>
                         </>
                       )}
@@ -714,33 +717,57 @@ export default function TCUpkeepModal({ onClose }) {
               </div>
               
               {/* Storage Summary */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <div className="font-semibold mb-2 text-orange-300 font-mono">Storage Summary</div>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-orange-200">
-                      <span className="font-mono">Max Days (unlimited):</span>
-                      <span className="font-mono">{formatNumber(Math.floor(calculateOptimalStorage.maxDays))}</span>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="bg-gray-900 p-3 rounded border border-orange-600/30">
+                    <div className="font-semibold mb-2 text-orange-300 font-mono">Storage Summary</div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-orange-200">
+                        <span className="font-mono">Max Days (unlimited):</span>
+                        <span className="font-mono">{formatNumber(Math.floor(calculateOptimalStorage.maxDays || 0))}</span>
+                      </div>
+                      <div className="flex justify-between text-orange-200">
+                        <span className="font-mono">Effective Days (until wipe):</span>
+                        <span className="font-mono">{formatNumber(Math.floor(calculateOptimalStorage.effectiveMaxDays || 0))}</span>
+                      </div>
+                      <div className="flex justify-between text-orange-200">
+                        <span className="font-mono">Days until wipe:</span>
+                        <span className="font-mono">{formatNumber(Math.floor(calculateOptimalStorage.daysUntilWipe || 0))}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-orange-200">
-                      <span className="font-mono">Effective Days (until wipe):</span>
-                      <span className="font-mono">{formatNumber(Math.floor(calculateOptimalStorage.effectiveMaxDays))}</span>
-                    </div>
-                    <div className="flex justify-between text-orange-200">
-                      <span className="font-mono">Days until wipe:</span>
-                      <span className="font-mono">{formatNumber(Math.floor(calculateOptimalStorage.daysUntilWipe))}</span>
+                  </div>
+                  <div className="bg-gray-900 p-3 rounded border border-orange-600/30">
+                    <div className="font-semibold mb-2 text-orange-300 font-mono">Materials Needed</div>
+                    <div className="space-y-1">
+                      {Object.entries(calculateOptimalStorage.totalMaterials || {}).map(([type, amount]) => (
+                        <div key={type} className="flex justify-between text-orange-200">
+                          <span className="font-mono">{type.toUpperCase()}:</span>
+                          <span className="font-mono">{formatNumber(amount)}</span>
+                        </div>
+                      ))}
+                      {Object.keys(calculateOptimalStorage.totalMaterials || {}).length === 0 && (
+                        <div className="text-orange-400/60 text-xs font-mono">Set upkeep amounts to calculate</div>
+                      )}
                     </div>
                   </div>
                 </div>
-                <div>
-                  <div className="font-semibold mb-2 text-orange-300 font-mono">Materials Needed</div>
-                  <div className="space-y-1">
-                    {Object.entries(calculateOptimalStorage.totalMaterials).map(([type, amount]) => (
-                      <div key={type} className="flex justify-between text-orange-200">
-                        <span className="font-mono">{type.toUpperCase()}:</span>
-                        <span className="font-mono">{formatNumber(amount)}</span>
-                      </div>
-                    ))}
+                
+                {/* Slot Allocation Info */}
+                <div className="bg-gray-900 p-3 rounded border border-orange-600/30">
+                  <div className="font-semibold mb-2 text-orange-300 font-mono text-sm">Optimal Slot Distribution</div>
+                  <div className="grid grid-cols-4 gap-2 text-xs">
+                    {['wood', 'stone', 'metal', 'hqm'].map(type => {
+                      const dailyAmount = getNumericValue(mainTC[type])
+                      const slotsUsed = calculateOptimalStorage.slots.filter(slot => slot.type === type).length
+                      const totalCapacity = slotsUsed * (type === 'hqm' ? 100 : 1000)
+                      return (
+                        <div key={type} className="text-center">
+                          <div className="text-orange-400 font-mono">{type.toUpperCase()}</div>
+                          <div className="text-orange-200 font-mono">{slotsUsed} slots</div>
+                          <div className="text-orange-200/70 font-mono">{formatNumber(totalCapacity)} max</div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
