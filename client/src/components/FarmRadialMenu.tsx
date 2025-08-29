@@ -142,7 +142,11 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
       return { wood: 0, stone: 0, metal: 0, hqm: 0 };
     }
 
-    const getNumericValue = (val) => parseInt(val) || 0;
+    const getNumericValue = (val) => {
+      if (!val || val === "") return 0;
+      const num = parseInt(val);
+      return isNaN(num) ? 0 : num;
+    };
     const mainTC = tcData.mainTC;
     
     const daily = {
@@ -151,6 +155,8 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
       metal: getNumericValue(mainTC.metal),
       hqm: getNumericValue(mainTC.hqm)
     };
+    
+    console.log('daily values:', daily);
 
     // Calculate "Max Upkeep in TC" (daily upkeep × wipe days)
     const maxUpkeepInTC = {};
