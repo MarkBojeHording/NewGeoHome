@@ -443,43 +443,124 @@ export default function TCUpkeepModal({ onClose }) {
               <span className="text-xs font-semibold text-orange-300 font-mono">External TCs</span>
               <button
                 onClick={() => setShowTCAdvanced(true)}
-                className="text-xs bg-orange-700 text-white px-2 py-0.5 rounded hover:bg-orange-800 font-mono"
+                className={`px-2 py-0.5 text-white text-xs rounded font-mono ${
+                  (() => {
+                    // Check if any upkeep is set
+                    const hasUpkeep = getNumericValue(mainTC.wood) > 0 || getNumericValue(mainTC.stone) > 0 || 
+                                     getNumericValue(mainTC.metal) > 0 || getNumericValue(mainTC.hqm) > 0
+                    if (!hasUpkeep) return 'bg-red-500 hover:bg-red-600'
+                    
+                    // If not tracking time, default to red
+                    if (!trackRemainingTime) return 'bg-red-500 hover:bg-red-600'
+                    
+                    // Check current time vs wipe time
+                    const days = parseInt(timerDays) || 0
+                    const hours = parseInt(timerHours) || 0
+                    const minutes = parseInt(timerMinutes) || 0
+                    const totalMinutes = (days * 24 * 60) + (hours * 60) + minutes
+                    const wipeMinutes = countdown.days * 24 * 60 + countdown.hours * 60
+                    
+                    if (totalMinutes >= wipeMinutes * 0.8) return 'bg-green-500 hover:bg-green-600'
+                    if (totalMinutes >= wipeMinutes * 0.5) return 'bg-yellow-500 hover:bg-yellow-600'
+                    return 'bg-red-500 hover:bg-red-600'
+                  })()
+                }`}
+                title={(() => {
+                  const hasUpkeep = getNumericValue(mainTC.wood) > 0 || getNumericValue(mainTC.stone) > 0 || 
+                                   getNumericValue(mainTC.metal) > 0 || getNumericValue(mainTC.hqm) > 0
+                  if (!hasUpkeep) return "Set upkeep amounts first"
+                  if (!trackRemainingTime) return "Enable time tracking"
+                  
+                  const days = parseInt(timerDays) || 0
+                  const hours = parseInt(timerHours) || 0
+                  const minutes = parseInt(timerMinutes) || 0
+                  const totalMinutes = (days * 24 * 60) + (hours * 60) + minutes
+                  const wipeMinutes = countdown.days * 24 * 60 + countdown.hours * 60
+                  
+                  if (totalMinutes >= wipeMinutes * 0.8) {
+                    return "TC has enough resources for wipe"
+                  } else {
+                    return "TC needs more resources for wipe"
+                  }
+                })()}
               >
                 TC Advanced
               </button>
             </div>
             <button
-              onClick={() => setShowAddModal(true)}
-              className="text-xs bg-orange-600 text-white px-2 py-0.5 rounded hover:bg-orange-700 font-mono"
+              onClick={() => {
+                setTcEntry({ name: '', woodUpkeep: 0, stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0, remainingDays: '', remainingHours: '', remainingMinutes: '' })
+                setEditingId(null)
+                setShowAddModal(true)
+              }}
+              className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 font-mono"
             >
-              + Add
+              + Add TC
             </button>
           </div>
-          <div className="space-y-1 max-h-32 overflow-y-auto">
-            {additionalTCs.map(tc => (
-              <div key={tc.id} className="flex items-center justify-between text-xs border border-orange-600/40 rounded px-2 py-1 bg-gray-900">
-                <span className="font-medium truncate text-orange-200 font-mono">{tc.name}</span>
+          <div className="border border-orange-600/40 rounded max-h-40 overflow-y-auto overflow-x-hidden bg-gray-900">
+            <div className="flex justify-between items-center py-1 px-2 border-b border-orange-600/30 text-xs font-medium bg-gray-800">
+              <div className="flex items-center">
+                <span className="w-20 text-[11px] text-orange-400 font-mono">Time</span>
+                <span className="border-l border-orange-600/30 pl-2 w-24 text-orange-400 font-mono">Name:</span>
+              </div>
+              <div className="flex items-center space-x-8">
+                <span className="w-40 text-center text-orange-400 font-mono">Upkeep per day</span>
                 <div className="flex items-center space-x-1">
-                  <span className="text-orange-400 font-mono">
-                    {[tc.woodUpkeep, tc.stoneUpkeep, tc.metalUpkeep, tc.hqmUpkeep].filter(x => x > 0).length > 0 ? 
-                      [tc.woodUpkeep, tc.stoneUpkeep, tc.metalUpkeep, tc.hqmUpkeep].map(x => x || 0).join('/') : '0'
-                    }
-                  </span>
+                  <span className="text-orange-400 font-mono">Edits</span>
                   <button
-                    onClick={() => handleEditTC(tc)}
-                    className="text-orange-500 hover:text-orange-300 text-xs font-mono"
+                    type="button"
+                    onClick={() => {
+                      setTcEntry({ name: '', woodUpkeep: 0, stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0, remainingDays: '', remainingHours: '', remainingMinutes: '' })
+                      setEditingId(null)
+                      setShowAddModal(true)
+                    }}
+                    className="w-4 h-4 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 flex-shrink-0"
                   >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteTC(tc.id)}
-                    className="text-red-500 hover:text-red-300 text-xs font-mono"
-                  >
-                    ×
+                    +
                   </button>
                 </div>
               </div>
-            ))}
+            </div>
+            
+            {additionalTCs.length === 0 ? (
+              <div className="py-1.5 px-3 text-xs text-orange-400/60 text-center font-mono">No external TCs added</div>
+            ) : (
+              additionalTCs.map(tc => (
+                <div key={tc.id} className="flex justify-between items-center py-1 px-2 border-b border-orange-600/20 text-xs bg-gray-900">
+                  <div className="flex items-center">
+                    <span className="w-20 text-orange-200 font-mono text-[11px]">
+                      {tc.remainingDays || tc.remainingHours || tc.remainingMinutes ? 
+                        `${tc.remainingDays || '00'}:${tc.remainingHours || '00'}:${tc.remainingMinutes || '00'}` : 
+                        '--:--:--'
+                      }
+                    </span>
+                    <span className="border-l border-orange-600/30 pl-2 w-24 text-orange-200 font-mono truncate">{tc.name}</span>
+                  </div>
+                  <div className="flex items-center space-x-8">
+                    <span className="w-40 text-center text-orange-200 font-mono">
+                      {[tc.woodUpkeep, tc.stoneUpkeep, tc.metalUpkeep, tc.hqmUpkeep].filter(x => x > 0).length > 0 ? 
+                        [tc.woodUpkeep, tc.stoneUpkeep, tc.metalUpkeep, tc.hqmUpkeep].map(x => x || 0).join('/') : '0/0/0/0'
+                      }
+                    </span>
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => handleEditTC(tc)}
+                        className="text-orange-500 hover:text-orange-300 text-xs font-mono"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTC(tc.id)}
+                        className="text-red-500 hover:text-red-300 text-xs font-mono"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
         
