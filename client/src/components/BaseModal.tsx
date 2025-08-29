@@ -655,7 +655,6 @@ const BaseModal = ({
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
-  const [showTCUpkeepModal, setShowTCUpkeepModal] = useState(false)
   const [isEditingCoordinate, setIsEditingCoordinate] = useState(false)
   const [editableCoordinate, setEditableCoordinate] = useState('')
   
@@ -970,15 +969,7 @@ const BaseModal = ({
 
       <div className="col-span-3">
         {modalType === 'friendly' && (
-          <div className="border border-orange-600/50 rounded-lg p-3 bg-gray-800 mb-3">
-            <label className="block text-sm font-medium mb-2 text-orange-300 font-mono tracking-wide">[UPKEEP TRACKER]</label>
-            <button
-              onClick={() => setShowTCUpkeepModal(true)}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded font-mono text-sm transition-colors"
-            >
-              Open TC Upkeep Manager
-            </button>
-          </div>
+          <TCUpkeepModal onClose={() => {}} />
         )}
         
         {modalType === 'enemy' && (
@@ -1508,10 +1499,7 @@ const BaseModal = ({
       </div>
       
 
-      {/* TCUpkeepModal - only show when button is clicked */}
-      {showTCUpkeepModal && (
-        <TCUpkeepModal onClose={() => setShowTCUpkeepModal(false)} />
-      )}
+
       
     </div>
   )
