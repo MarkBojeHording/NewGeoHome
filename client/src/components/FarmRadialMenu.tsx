@@ -9,9 +9,21 @@ interface FarmRadialMenuProps {
   baseId?: string;
   baseName?: string;
   baseCoords?: string;
+  tcData?: {
+    mainTC?: { wood?: string; stone?: string; metal?: string; hqm?: string };
+    trackRemainingTime?: boolean;
+    timerDays?: string;
+    timerHours?: string;
+    timerMinutes?: string;
+  };
+  wipeCountdown?: {
+    days: number;
+    hours: number;
+    fractionalDays: number;
+  };
 }
 
-const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseReport, onAddTimer, locationId, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
+const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseReport, onAddTimer, locationId, baseId, baseName, baseCoords, tcData, wipeCountdown }: FarmRadialMenuProps) => {
   const [selectedInner, setSelectedInner] = useState(null);
   const [selectedOuter, setSelectedOuter] = useState(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -119,11 +131,67 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     setResources(prev => ({ ...prev, ...updates }));
   };
   
+  // Calculate TC upkeep values based on tcData
+  const calculateTCResources = () => {
+    if (!tcData || !tcData.mainTC) {
+      return { wood: 0, stone: 0, metal: 0, hqm: 0 };
+    }
+
+    const getNumericValue = (val) => parseInt(val) || 0;
+    const mainTC = tcData.mainTC;
+    
+    // Daily upkeep amounts
+    const daily = {
+      wood: getNumericValue(mainTC.wood),
+      stone: getNumericValue(mainTC.stone), 
+      metal: getNumericValue(mainTC.metal),
+      hqm: getNumericValue(mainTC.hqm)
+    };
+
+    // If timer is set and active, use "Upkeep that can fit" calculation
+    if (tcData.trackRemainingTime && tcData.timerDays && tcData.timerHours && tcData.timerMinutes) {
+      const timerDays = parseInt(tcData.timerDays) || 0;
+      const timerHours = parseInt(tcData.timerHours) || 0; 
+      const timerMinutes = parseInt(tcData.timerMinutes) || 0;
+      const timerTotalDays = timerDays + (timerHours / 24) + (timerMinutes / (24 * 60));
+      
+      if (timerTotalDays > 0) {
+        // Calculate "Upkeep that can fit" - how much more is needed for the timer duration
+        const upkeepNeeded = {};
+        Object.keys(daily).forEach(type => {
+          if (daily[type] > 0) {
+            upkeepNeeded[type] = Math.ceil(daily[type] * timerTotalDays);
+          } else {
+            upkeepNeeded[type] = 0;
+          }
+        });
+        return upkeepNeeded;
+      }
+    }
+
+    // Default to "Max Upkeep in TC" calculation
+    if (wipeCountdown?.fractionalDays) {
+      const maxUpkeep = {};
+      Object.keys(daily).forEach(type => {
+        if (daily[type] > 0) {
+          maxUpkeep[type] = Math.ceil(daily[type] * wipeCountdown.fractionalDays);
+        } else {
+          maxUpkeep[type] = 0;
+        }
+      });
+      return maxUpkeep;
+    }
+
+    return { wood: 0, stone: 0, metal: 0, hqm: 0 };
+  };
+
   // Format resource value with K suffix
   const formatResourceValue = (value) => {
+    if (!value || value === 0) return '';
     return value >= 1000 
       ? `${(value / 1000).toFixed(value % 1000 === 0 ? 0 : 1)}K` 
       : value.toString();
+
   };
   
   // Generate path for a segment
@@ -953,7 +1021,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                             style={resource.style || { textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
                           >
                             <textPath href={`#${resource.key}TextPath`} startOffset="0%" textAnchor="start">
-                              {resource.name}: {formatResourceValue(resources[resource.key])}
+                              {resource.name}: {formatResourceValue(calculateTCResources()[resource.key])}
                             </textPath>
                           </text>
                         ))}
@@ -1261,8 +1329,8 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
 };
 
 // Create a wrapper function to pass through props
-const FarmRadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseReport, onAddTimer, locationId, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
-  return <RadialMenu onOpenTaskReport={onOpenTaskReport} onCreateExpressTaskReport={onCreateExpressTaskReport} onOpenBaseReport={onOpenBaseReport} onAddTimer={onAddTimer} locationId={locationId} baseId={baseId} baseName={baseName} baseCoords={baseCoords} />;
+const FarmRadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseReport, onAddTimer, locationId, baseId, baseName, baseCoords, tcData, wipeCountdown }: FarmRadialMenuProps) => {
+  return <RadialMenu onOpenTaskReport={onOpenTaskReport} onCreateExpressTaskReport={onCreateExpressTaskReport} onOpenBaseReport={onOpenBaseReport} onAddTimer={onAddTimer} locationId={locationId} baseId={baseId} baseName={baseName} baseCoords={baseCoords} tcData={tcData} wipeCountdown={wipeCountdown} />;
 };
 
 export default FarmRadialMenu;
