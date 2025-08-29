@@ -745,7 +745,7 @@ export default function TCUpkeepModal({ onClose }) {
                       {calculateOptimalStorage.effectiveMaxDays > 0 && (
                         <div>
                           <div className="font-semibold text-orange-200 mb-1 font-mono">
-                            Resources Needed (until max: {Math.floor(calculateOptimalStorage.effectiveMaxDays)}d {Math.floor((calculateOptimalStorage.effectiveMaxDays % 1) * 24)}h):
+                            Max Upkeep in TC (until max: {Math.floor(calculateOptimalStorage.effectiveMaxDays)}d {Math.floor((calculateOptimalStorage.effectiveMaxDays % 1) * 24)}h):
                           </div>
                           <div className="grid grid-cols-1 gap-1 mb-2">
                             {Object.entries(calculateOptimalStorage.totalMaterials).map(([type, amount]) => (
@@ -780,7 +780,7 @@ export default function TCUpkeepModal({ onClose }) {
                 return calculateOptimalStorage.effectiveMaxDays > 0 && (
                   <div>
                     <div className="font-semibold text-orange-200 mb-1 font-mono">
-                      Resources Needed (until max: {Math.floor(calculateOptimalStorage.effectiveMaxDays)}d {Math.floor((calculateOptimalStorage.effectiveMaxDays % 1) * 24)}h):
+                      Max Upkeep in TC (until max: {Math.floor(calculateOptimalStorage.effectiveMaxDays)}d {Math.floor((calculateOptimalStorage.effectiveMaxDays % 1) * 24)}h):
                     </div>
                     <div className="grid grid-cols-1 gap-1 mb-2">
                       {Object.entries(calculateOptimalStorage.totalMaterials).map(([type, amount]) => (
