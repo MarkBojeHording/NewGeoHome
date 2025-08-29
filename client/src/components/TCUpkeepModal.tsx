@@ -766,7 +766,7 @@ export default function TCUpkeepModal({ onClose }) {
                               amount > 0 && (
                                 <div key={type} className="flex justify-between">
                                   <span className="text-orange-300 font-mono">{type.toUpperCase()}:</span>
-                                  <span className="font-bold text-red-400 font-mono">{formatNumber(amount)}(1 box)</span>
+                                  <span className="font-bold text-red-400 font-mono">{formatNumber(amount)}</span>
                                 </div>
                               )
                             )}
