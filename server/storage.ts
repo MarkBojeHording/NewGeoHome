@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer, type PlayerBaseTag, type InsertPlayerBaseTag, type PlayerProfile, type InsertPlayerProfile } from "@shared/schema";
+import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer, type PlayerBaseTag, type InsertPlayerBaseTag, type PlayerProfile, type InsertPlayerProfile, type BaseLocation, type InsertBaseLocation } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 // Utility function to generate consistent alphanumeric report IDs
@@ -56,11 +56,18 @@ export interface IStorage {
   getAllPlayerProfiles(): Promise<PlayerProfile[]>;
   deletePlayerProfile(playerName: string): Promise<boolean>;
   
+  // Base location methods for TC upkeep persistence
+  createBaseLocation(baseLocation: InsertBaseLocation): Promise<BaseLocation>;
+  getBaseLocation(id: string): Promise<BaseLocation | undefined>;
+  getAllBaseLocations(): Promise<BaseLocation[]>;
+  updateBaseLocation(id: string, baseLocation: Partial<InsertBaseLocation>): Promise<BaseLocation>;
+  deleteBaseLocation(id: string): Promise<boolean>;
+  
   // Note: Regular player data comes from external API, no local storage needed
 }
 
 import { db } from "./db";
-import { users, reports, reportTemplates, premiumPlayers, playerBaseTags, playerProfiles } from "@shared/schema";
+import { users, reports, reportTemplates, premiumPlayers, playerBaseTags, playerProfiles, baseLocations } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
@@ -288,6 +295,47 @@ export class DatabaseStorage implements IStorage {
 
   async deletePlayerProfile(playerName: string): Promise<boolean> {
     const result = await db.delete(playerProfiles).where(eq(playerProfiles.playerName, playerName));
+    return result.rowCount > 0;
+  }
+
+  // Base location methods for TC upkeep persistence
+  async createBaseLocation(baseLocation: InsertBaseLocation): Promise<BaseLocation> {
+    const [newBaseLocation] = await db
+      .insert(baseLocations)
+      .values({
+        ...baseLocation,
+        updatedAt: new Date()
+      })
+      .returning();
+    return newBaseLocation;
+  }
+
+  async getBaseLocation(id: string): Promise<BaseLocation | undefined> {
+    const [baseLocation] = await db
+      .select()
+      .from(baseLocations)
+      .where(eq(baseLocations.id, id));
+    return baseLocation || undefined;
+  }
+
+  async getAllBaseLocations(): Promise<BaseLocation[]> {
+    return await db.select().from(baseLocations);
+  }
+
+  async updateBaseLocation(id: string, baseLocation: Partial<InsertBaseLocation>): Promise<BaseLocation> {
+    const [updatedBaseLocation] = await db
+      .update(baseLocations)
+      .set({
+        ...baseLocation,
+        updatedAt: new Date()
+      })
+      .where(eq(baseLocations.id, id))
+      .returning();
+    return updatedBaseLocation;
+  }
+
+  async deleteBaseLocation(id: string): Promise<boolean> {
+    const result = await db.delete(baseLocations).where(eq(baseLocations.id, id));
     return result.rowCount > 0;
   }
 

@@ -118,3 +118,42 @@ export const teams = pgTable("teams", {
 export const insertTeamSchema = createInsertSchema(teams).omit({ id: true, createdAt: true });
 export type InsertTeam = z.infer<typeof insertTeamSchema>;
 export type Team = typeof teams.$inferSelect;
+
+// Base locations table for storing individual base data with TC upkeep information
+export const baseLocations = pgTable("base_locations", {
+  id: text("id").primaryKey(), // Unique ID like "A1", "B3(2)"
+  name: text("name").notNull(), // Display name like "A1", "B3(2)"
+  type: text("type").notNull(), // enemy-small, friendly-main, etc.
+  coordinates: text("coordinates").notNull(), // "A1", "B3", etc.
+  gridX: integer("grid_x").notNull(), // Grid position X (0-25)
+  gridY: integer("grid_y").notNull(), // Grid position Y (0-25)
+  mapX: integer("map_x").notNull(), // Map pixel position X
+  mapY: integer("map_y").notNull(), // Map pixel position Y
+  notes: text("notes").default(""),
+  
+  // TC Upkeep data
+  tcUpkeep: jsonb("tc_upkeep"), // {wood: number, stone: number, metal: number, hqm: number}
+  tcTimerDays: text("tc_timer_days").default("00"),
+  tcTimerHours: text("tc_timer_hours").default("00"), 
+  tcTimerMinutes: text("tc_timer_minutes").default("00"),
+  trackRemainingTime: boolean("track_remaining_time").default(false),
+  
+  // Other base data
+  players: text("players").default(""), // Comma-separated player names
+  upkeep: text("upkeep").default(""),
+  isMainBase: boolean("is_main_base").default(false),
+  oldestTC: integer("oldest_tc").default(0),
+  ownerCoordinates: text("owner_coordinates").default(""),
+  library: boolean("library").default(false),
+  youtube: boolean("youtube").default(false),
+  roofCamper: boolean("roof_camper").default(false),
+  hostileSamsite: boolean("hostile_samsite").default(false),
+  primaryRockets: integer("primary_rockets").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertBaseLocationSchema = createInsertSchema(baseLocations).omit({ createdAt: true, updatedAt: true });
+export type InsertBaseLocation = z.infer<typeof insertBaseLocationSchema>;
+export type BaseLocation = typeof baseLocations.$inferSelect;
