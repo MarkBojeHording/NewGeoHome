@@ -133,9 +133,6 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
   
   // Calculate TC upkeep values based on tcData
   const calculateTCResources = () => {
-    // Debug: log the actual structure
-    console.log('Full tcData received:', tcData);
-    
     if (!tcData || !tcData.mainTC) {
       return { wood: 0, stone: 0, metal: 0, hqm: 0 };
     }
@@ -152,7 +149,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     };
 
     // If timer is set and active, use "Upkeep that can fit" calculation
-    if (tcData.trackRemainingTime && tcData.timerDays && tcData.timerHours && tcData.timerMinutes) {
+    if (tcData.trackRemainingTime && (parseInt(tcData.timerDays) > 0 || parseInt(tcData.timerHours) > 0 || parseInt(tcData.timerMinutes) > 0)) {
       const timerDays = parseInt(tcData.timerDays) || 0;
       const timerHours = parseInt(tcData.timerHours) || 0; 
       const timerMinutes = parseInt(tcData.timerMinutes) || 0;
