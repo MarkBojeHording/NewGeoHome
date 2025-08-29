@@ -651,7 +651,6 @@ const BaseModal = ({
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false)
-  const [showTCUpkeepModal, setShowTCUpkeepModal] = useState(false)
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
@@ -969,14 +968,8 @@ const BaseModal = ({
 
       <div className="col-span-3">
         {modalType === 'friendly' && (
-          <div className="border border-orange-600/50 rounded-lg p-3 bg-gray-800 mb-3">
-            <label className="block text-sm font-medium mb-1 text-orange-300 font-mono tracking-wide">[UPKEEP TRACKER]</label>
-            <button
-              onClick={() => setShowTCUpkeepModal(true)}
-              className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors border border-blue-500 hover:border-blue-400"
-            >
-              Open TC Upkeep Calculator
-            </button>
+          <div className="border border-orange-600/50 rounded-lg bg-gray-800 mb-3">
+            <TCUpkeepModal onClose={() => {}} />
           </div>
         )}
         
@@ -1504,10 +1497,7 @@ const BaseModal = ({
           </div>
         )}
 
-        {/* TC Upkeep Modal */}
-        {showTCUpkeepModal && (
-          <TCUpkeepModal onClose={() => setShowTCUpkeepModal(false)} />
-        )}
+
 
       </div>
       
