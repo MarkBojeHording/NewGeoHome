@@ -371,20 +371,31 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, l
 
   // Create decay timers for resources with health > 0
   const createDecayTimers = () => {
-    if (!onAddTimer || !locationId) return;
+    console.log('Creating decay timers...', { onAddTimer: !!onAddTimer, locationId, decayResources });
     
+    if (!onAddTimer || !locationId) {
+      console.log('Missing onAddTimer or locationId', { onAddTimer: !!onAddTimer, locationId });
+      return;
+    }
+    
+    let timersCreated = 0;
     Object.entries(decayResources).forEach(([resourceType, resource]) => {
+      console.log(`Checking ${resourceType}:`, resource);
       if (resource.current > 0) {
         const timeInSeconds = calculateDecayTime(resourceType, resource.current);
+        console.log(`Creating timer for ${resourceType}: ${timeInSeconds} seconds`);
         if (timeInSeconds > 0) {
           onAddTimer(locationId, {
             id: Date.now() + Math.random(),
             type: `${resourceType}_decay`,
             remaining: timeInSeconds
           });
+          timersCreated++;
         }
       }
     });
+    
+    console.log(`Created ${timersCreated} timers`);
     
     // Reset decay resources after creating timers
     setDecayResources({
