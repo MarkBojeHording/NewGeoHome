@@ -956,7 +956,7 @@ const BaseModal = ({
           />
         )}
         
-        <label className="block text-sm font-medium mb-1 text-orange-200 font-mono tracking-wide">[BASE OWNERS]</label>
+        <label className="block text-sm font-medium mb-1 text-orange-200 font-mono tracking-wide">[BED OWNERS]</label>
         <div className="border border-orange-600/50 rounded-md bg-gray-800 flex-1" style={{minHeight: modalType === 'enemy' ? '160px' : '300px'}}>
           <PlayerSearchSelector 
             selectedPlayers={formData.players}
