@@ -1233,13 +1233,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
   
-  // Debug logging for props
-  console.log('SelectedLocationPanel props:', { 
-    onAddTimer: !!onAddTimer, 
-    locationId: location?.id, 
-    locationType: location?.type 
-  });
-  
   // Get players from the location data (same as BaseModal)
   // For subsidiary bases, get players from their main base
   const locationPlayers = (() => {
@@ -1314,10 +1307,10 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               onOpenTaskReport={onOpenTaskReport}
               onCreateExpressTaskReport={onCreateExpressTaskReport}
               onAddTimer={onAddTimer}
-              locationId={location.id}
-              baseId={location.id}
-              baseName={location.name}
-              baseCoords={location.name}
+              locationId={location?.id}
+              baseId={location?.id}
+              baseName={location?.name}
+              baseCoords={location?.name}
             />
           </div>
         </div>
