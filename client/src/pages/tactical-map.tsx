@@ -1233,6 +1233,13 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
   
+  // Debug logging for props
+  console.log('SelectedLocationPanel props:', { 
+    onAddTimer: !!onAddTimer, 
+    locationId: location?.id, 
+    locationType: location?.type 
+  });
+  
   // Get players from the location data (same as BaseModal)
   // For subsidiary bases, get players from their main base
   const locationPlayers = (() => {
