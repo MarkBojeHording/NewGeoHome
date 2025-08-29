@@ -133,7 +133,12 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
   
   // Simple calculation: "Max Upkeep in TC" - "Currently in TC" 
   const calculateTCResources = () => {
+    console.log('calculateTCResources called');
+    console.log('tcData:', tcData);
+    console.log('wipeCountdown:', wipeCountdown);
+    
     if (!tcData || !tcData.mainTC || !wipeCountdown?.fractionalDays) {
+      console.log('Missing data - returning zeros');
       return { wood: 0, stone: 0, metal: 0, hqm: 0 };
     }
 
@@ -180,6 +185,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
         result[type] = Math.max(0, maxUpkeepInTC[type] - currentlyInTC[type]);
       });
       
+      console.log('Final result:', result);
       return result;
     }
 
