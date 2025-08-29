@@ -337,7 +337,6 @@ export default function TCUpkeepModal({ onClose }) {
       <div className="bg-gray-800 rounded-lg text-orange-200">
         {/* Header */}
         <div className="px-3 py-2 border-b border-orange-600/30">
-          <label className="block text-sm font-medium mb-2 text-orange-300 font-mono tracking-wide">[UPKEEP TRACKER]</label>
           <div className="flex items-center space-x-4">
             <label className="flex items-center text-xs text-orange-200">
               <input 
