@@ -120,7 +120,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null, tcData, o
     
     const totalSeconds = (days * 24 * 60 * 60) + (hours * 60 * 60) + (minutes * 60)
     if (totalSeconds > 0) {
-      setIsTimerActive(true)
+      updateTCData({ isTimerActive: true })
     }
   }
   
