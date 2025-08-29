@@ -1,0 +1,20 @@
+Modal type set to: report Modal should be visible: true
+Console.js:61 Context menu should be visible at: 530 284
+Console.js:61 Modal type set to: friendly Modal should be visible: true
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 Inner segment DECAY selected
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SCHEDULE clicked - Debug: {onAddTimer: false, locationId: undefined, decayResources: {…}}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLocationId: '1756477025173'}
+Console.js:61 SelectedLocationPanel debug: {receivedOnAddTimer: true, receivedLocationId: '1756477025173', passingOnAddTimer: true, passingLoc

@@ -1088,7 +1088,6 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, l
                       '',
                       (e) => { 
                         e.stopPropagation();
-                        console.log('SCHEDULE clicked - Debug:', { onAddTimer: !!onAddTimer, locationId, decayResources });
                         createDecayTimers();
                       },
                       (e) => { e.stopPropagation(); setSelectedInner(null); },
@@ -1251,8 +1250,8 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, l
 };
 
 // Create a wrapper function to pass through props
-const FarmRadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
-  return <RadialMenu onOpenTaskReport={onOpenTaskReport} onCreateExpressTaskReport={onCreateExpressTaskReport} baseId={baseId} baseName={baseName} baseCoords={baseCoords} />;
+const FarmRadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, locationId, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
+  return <RadialMenu onOpenTaskReport={onOpenTaskReport} onCreateExpressTaskReport={onCreateExpressTaskReport} onAddTimer={onAddTimer} locationId={locationId} baseId={baseId} baseName={baseName} baseCoords={baseCoords} />;
 };
 
 export default FarmRadialMenu;

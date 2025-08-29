@@ -1233,16 +1233,6 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
   const [showDecayingMenu, setShowDecayingMenu] = useState(false)
   const ownedBases = getOwnedBases(location.name)
   
-  // Debug what we receive and pass
-  if (location.type === 'friendly-farm') {
-    console.log('SelectedLocationPanel debug:', {
-      receivedOnAddTimer: !!onAddTimer,
-      receivedLocationId: location?.id,
-      passingOnAddTimer: !!onAddTimer,
-      passingLocationId: location?.id
-    });
-  }
-  
   // Get players from the location data (same as BaseModal)
   // For subsidiary bases, get players from their main base
   const locationPlayers = (() => {
