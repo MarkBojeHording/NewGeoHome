@@ -40,6 +40,37 @@ const TowerIcon = memo(() => (
 const getIcon = (type: string) => {
   if (type === 'enemy-decaying') return <DecayingIcon />
   if (type === 'enemy-tower') return <TowerIcon />
+  
+  // Text labels for non-main friendly bases
+  if (type === 'friendly-flank') {
+    return (
+      <div className="flex items-center justify-center h-8 w-8 text-[10px] font-bold">
+        FLANK
+      </div>
+    )
+  }
+  if (type === 'friendly-farm') {
+    return (
+      <div className="flex items-center justify-center h-8 w-8 text-[10px] font-bold">
+        FARM
+      </div>
+    )
+  }
+  if (type === 'friendly-boat') {
+    return (
+      <div className="flex items-center justify-center h-8 w-8 text-[10px] font-bold">
+        BOAT
+      </div>
+    )
+  }
+  if (type === 'friendly-garage') {
+    return (
+      <div className="flex items-center justify-center h-8 w-8 text-[10px] font-bold">
+        GARAGE
+      </div>
+    )
+  }
+  
   const Icon = ICON_MAP[type] || MapPin
   return <Icon className="h-8 w-8" />
 }
