@@ -656,34 +656,35 @@ export default function TCUpkeepModal({ onClose }) {
       
       {/* TC Advanced Modal */}
       {showTCAdvanced && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-[60]" onClick={() => setShowTCAdvanced(false)}>
-          <div className="bg-white rounded p-4 shadow-lg" style={{ width: '360px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]" onClick={() => setShowTCAdvanced(false)}>
+          <div className="bg-gray-800 rounded-lg shadow-xl border border-orange-600/50 p-4" style={{ width: '400px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-bold">TC Advanced - Maximum Upkeep</h3>
-              <button onClick={() => setShowTCAdvanced(false)} className="text-gray-500 hover:text-gray-700">×</button>
+              <h3 className="text-sm font-bold text-orange-300 font-mono">TC Advanced Storage Calculator</h3>
+              <button onClick={() => setShowTCAdvanced(false)} className="text-orange-400 hover:text-orange-200 text-lg">×</button>
             </div>
             
             {/* 24 Slot Grid */}
-            <div className="border rounded p-2 mb-3">
-              <div className="grid grid-cols-6 gap-0">
+            <div className="border border-orange-600/40 rounded-lg p-3 mb-3 bg-gray-900/50">
+              <div className="text-xs text-orange-400 font-mono mb-2">TC Storage Layout (24 slots):</div>
+              <div className="grid grid-cols-6 gap-1">
                 {calculateOptimalStorage.slots.map((slot, i) => (
                   <div 
                     key={i} 
-                    className={`w-10 h-10 border flex flex-col items-center justify-center text-xs font-bold
-                      ${slot.type === 'empty' ? 'bg-gray-50 border-gray-300' : 
-                        slot.type === 'wood' ? 'bg-yellow-600 border-yellow-700 text-white' :
-                        slot.type === 'stone' ? 'bg-gray-600 border-gray-700 text-white' :
-                        slot.type === 'metal' ? 'bg-gray-500 border-gray-600 text-white' :
-                        'bg-blue-600 border-blue-700 text-white'}`}
+                    className={`w-12 h-12 border-2 rounded flex flex-col items-center justify-center text-xs font-bold font-mono
+                      ${slot.type === 'empty' ? 'bg-gray-700 border-gray-600 text-gray-500' : 
+                        slot.type === 'wood' ? 'bg-yellow-600 border-yellow-500 text-white' :
+                        slot.type === 'stone' ? 'bg-gray-500 border-gray-400 text-white' :
+                        slot.type === 'metal' ? 'bg-zinc-600 border-zinc-500 text-white' :
+                        'bg-blue-600 border-blue-500 text-white'}`}
                   >
                     {slot.type !== 'empty' && (
                       <>
                         <span className="text-[10px] leading-none">
                           {slot.type === 'wood' ? 'W' : 
                            slot.type === 'stone' ? 'S' :
-                           slot.type === 'metal' ? 'M' : 'HQM'}
+                           slot.type === 'metal' ? 'M' : 'HQ'}
                         </span>
-                        <span className="text-[10px]">{slot.amount}</span>
+                        <span className="text-[9px] font-normal">{slot.amount}</span>
                       </>
                     )}
                   </div>
@@ -692,10 +693,10 @@ export default function TCUpkeepModal({ onClose }) {
             </div>
             
             {/* Summary */}
-            <div className="text-xs space-y-2">
-              <div className="font-semibold text-gray-700">
+            <div className="text-xs space-y-3 bg-gray-900/30 rounded-lg p-3 border border-orange-600/30">
+              <div className="font-semibold text-orange-200 font-mono">
                 Days until wipe: 
-                <span className="text-purple-600 ml-1">
+                <span className="text-orange-400 ml-1">
                   {Math.floor(calculateOptimalStorage.daysUntilWipe)} days {Math.floor((calculateOptimalStorage.daysUntilWipe % 1) * 24)} hours
                 </span>
               </div>
@@ -730,18 +731,18 @@ export default function TCUpkeepModal({ onClose }) {
                   
                   return (
                     <>
-                      <div className={`font-semibold ${isGoodForWipe ? 'text-green-600' : 'text-orange-600'} mb-1`}>
+                      <div className={`font-semibold font-mono ${isGoodForWipe ? 'text-green-400' : 'text-red-400'} mb-2`}>
                         Current Status: {isGoodForWipe ? 'Good for wipe!' : 'Needs more resources'}
                       </div>
                       
                       {Object.keys(currentInTC).length > 0 && (
                         <div>
-                          <div className="font-semibold text-gray-700 mb-1">Currently in TC:</div>
+                          <div className="font-semibold text-orange-200 mb-1 font-mono">Currently in TC:</div>
                           <div className="grid grid-cols-2 gap-2 mb-2">
                             {Object.entries(currentInTC).map(([type, amount]) => (
                               <div key={type} className="flex justify-between">
-                                <span className="text-gray-600">{type.toUpperCase()}:</span>
-                                <span className="font-bold">{formatNumber(amount)}</span>
+                                <span className="text-orange-300 font-mono">{type.toUpperCase()}:</span>
+                                <span className="font-bold text-orange-100 font-mono">{formatNumber(amount)}</span>
                               </div>
                             ))}
                           </div>
@@ -750,13 +751,13 @@ export default function TCUpkeepModal({ onClose }) {
                       
                       {!isGoodForWipe && Object.values(neededToFill).some(val => val > 0) && (
                         <div>
-                          <div className="font-semibold text-gray-700 mb-1">Still need to add:</div>
+                          <div className="font-semibold text-orange-200 mb-1 font-mono">Still need to add:</div>
                           <div className="grid grid-cols-2 gap-2 mb-2">
                             {Object.entries(neededToFill).map(([type, amount]) => 
                               amount > 0 && (
                                 <div key={type} className="flex justify-between">
-                                  <span className="text-gray-600">{type.toUpperCase()}:</span>
-                                  <span className="font-bold text-red-600">{formatNumber(amount)}</span>
+                                  <span className="text-orange-300 font-mono">{type.toUpperCase()}:</span>
+                                  <span className="font-bold text-red-400 font-mono">{formatNumber(amount)}</span>
                                 </div>
                               )
                             )}
@@ -779,10 +780,10 @@ export default function TCUpkeepModal({ onClose }) {
                 if (!((currentTimeInDays > 0 || isTimerActive) && calculateOptimalStorage.effectiveMaxDays > 0 && trackRemainingTime)) {
                   return calculateOptimalStorage.effectiveMaxDays > 0 && (
                     <div>
-                      <div className="font-semibold text-gray-700 mb-1">
+                      <div className="font-semibold text-orange-200 mb-1 font-mono">
                         Resources Needed {calculateOptimalStorage.effectiveMaxDays >= calculateOptimalStorage.daysUntilWipe ? "(for full wipe)" : `(until max: ${Math.floor(calculateOptimalStorage.effectiveMaxDays)}d ${Math.floor((calculateOptimalStorage.effectiveMaxDays % 1) * 24)}h)`}:
                         {calculateOptimalStorage.maxDays > calculateOptimalStorage.daysUntilWipe && calculateOptimalStorage.effectiveMaxDays < calculateOptimalStorage.daysUntilWipe && (
-                          <span className="text-xs text-gray-500 ml-1">
+                          <span className="text-xs text-orange-400/70 ml-1 font-mono">
                             (capped from {Math.floor(calculateOptimalStorage.maxDays)}d)
                           </span>
                         )}
@@ -790,8 +791,8 @@ export default function TCUpkeepModal({ onClose }) {
                       <div className="grid grid-cols-2 gap-2 mb-2">
                         {Object.entries(calculateOptimalStorage.totalMaterials).map(([type, amount]) => (
                           <div key={type} className="flex justify-between">
-                            <span className="text-gray-600">{type.toUpperCase()}:</span>
-                            <span className="font-bold">{formatNumber(amount)}</span>
+                            <span className="text-orange-300 font-mono">{type.toUpperCase()}:</span>
+                            <span className="font-bold text-orange-100 font-mono">{formatNumber(amount)}</span>
                           </div>
                         ))}
                       </div>
@@ -801,7 +802,7 @@ export default function TCUpkeepModal({ onClose }) {
                 return null
               })()} 
               
-              <div className="text-[10px] text-gray-500 border-t pt-2">
+              <div className="text-[10px] text-orange-400/60 border-t border-orange-600/30 pt-2 font-mono">
                 Resources are optimized to last until wipe. No materials are wasted on upkeep beyond the wipe time.
               </div>
             </div>
