@@ -133,6 +133,9 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
   
   // Calculate TC upkeep values based on tcData
   const calculateTCResources = () => {
+    // Debug: log the actual structure
+    console.log('Full tcData received:', tcData);
+    
     if (!tcData || !tcData.mainTC) {
       return { wood: 0, stone: 0, metal: 0, hqm: 0 };
     }
