@@ -9,9 +9,10 @@ interface TacticalMapToolbarProps {
     aloneWeapon: string
     counteringWeapon: string
   }
+  onWipeCountdownChange?: (countdown: any) => void
 }
 
-const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay }: TacticalMapToolbarProps) => {
+const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay, onWipeCountdownChange }: TacticalMapToolbarProps) => {
   const [showMenuDropdown, setShowMenuDropdown] = useState(false)
 
   // Close menu dropdown when clicking outside
@@ -79,7 +80,7 @@ const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay }: Tactical
                   ))}
                 </div>
                 <div className="flex items-center">
-                  <WipeCountdownTimer />
+                  <WipeCountdownTimer onCountdownChange={onWipeCountdownChange} />
                 </div>
                 <div className="flex gap-2">
                   {['Teams', 'Turret Control'].map((btn) => (

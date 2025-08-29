@@ -1706,6 +1706,9 @@ export default function InteractiveTacticalMap() {
   })
   const [showHeatMapControls, setShowHeatMapControls] = useState(false)
   
+  // Wipe countdown state
+  const [wipeCountdown, setWipeCountdown] = useState(null)
+  
 
 
   
@@ -2293,6 +2296,7 @@ export default function InteractiveTacticalMap() {
           else if (buttonType === 'Teams') setShowTeamsModal(true)
         }}
         progressionDisplay={progressionDisplay}
+        onWipeCountdownChange={setWipeCountdown}
       />
 
       <div className="w-full h-full pt-20">
@@ -2415,6 +2419,7 @@ export default function InteractiveTacticalMap() {
               onCreateExpressTaskReport={handleCreateExpressTaskReport}
               players={players}
               locations={locations}
+              wipeCountdown={wipeCountdown}
               onOpenBaseReport={(location) => {
                 setBaseReportData({
                   baseId: location.id,

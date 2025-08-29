@@ -301,7 +301,11 @@ function calculateTCCapacity(
 }
 
 // Main Component
-export default function WipeCountdownTimer() {
+interface WipeCountdownTimerProps {
+  onCountdownChange?: (countdown: Countdown & { fractionalDays: number }) => void
+}
+
+export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownTimerProps = {}) {
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0 })
   const [showMainBox, setShowMainBox] = useState(false)
   const [showModals, setShowModals] = useState({ item: false, upkeep: false })
@@ -326,17 +330,29 @@ export default function WipeCountdownTimer() {
       const target = getNextFirstThursday()
       const diff = target.getTime() - Date.now()
       if (diff > 0) {
-        setCountdown({
+        const newCountdown = {
           days: Math.floor(diff / (1000 * 60 * 60 * 24)),
           hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
           minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-        })
+        }
+        setCountdown(newCountdown)
+        
+        // Calculate fractional days for TC calculations
+        const fractionalDays = newCountdown.days + newCountdown.hours / 24 + newCountdown.minutes / (24 * 60)
+        
+        // Notify parent component of countdown changes
+        if (onCountdownChange) {
+          onCountdownChange({
+            ...newCountdown,
+            fractionalDays
+          })
+        }
       }
     }
     updateCountdown()
     const interval = setInterval(updateCountdown, 60000) // Update every minute
     return () => clearInterval(interval)
-  }, [])
+  }, [onCountdownChange])
   
   // Keyboard handlers
   useEffect(() => {
