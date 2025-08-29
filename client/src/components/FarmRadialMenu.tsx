@@ -140,6 +140,8 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     const getNumericValue = (val) => parseInt(val) || 0;
     const mainTC = tcData.mainTC;
     
+    console.log('Raw mainTC data:', mainTC);
+    
     // Daily upkeep amounts
     const daily = {
       wood: getNumericValue(mainTC.wood),
