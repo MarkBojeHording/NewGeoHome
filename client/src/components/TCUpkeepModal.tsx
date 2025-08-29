@@ -439,7 +439,15 @@ export default function TCUpkeepModal({ onClose }) {
         {/* External TCs Section */}
         <div className="px-3 py-2 border-b border-orange-600/30">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-orange-300 font-mono">External TCs</span>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs font-semibold text-orange-300 font-mono">External TCs</span>
+              <button
+                onClick={() => setShowTCAdvanced(true)}
+                className="text-xs bg-orange-700 text-white px-2 py-0.5 rounded hover:bg-orange-800 font-mono"
+              >
+                TC Advanced
+              </button>
+            </div>
             <button
               onClick={() => setShowAddModal(true)}
               className="text-xs bg-orange-600 text-white px-2 py-0.5 rounded hover:bg-orange-700 font-mono"
@@ -509,16 +517,6 @@ export default function TCUpkeepModal({ onClose }) {
               </div>
             </div>
           </div>
-        </div>
-        
-        {/* TC Advanced Button */}
-        <div className="px-3 py-2">
-          <button
-            onClick={() => setShowTCAdvanced(true)}
-            className="w-full bg-orange-600 text-white py-1 px-3 rounded text-sm hover:bg-orange-700 font-mono"
-          >
-            TC Advanced
-          </button>
         </div>
       </div>
       
