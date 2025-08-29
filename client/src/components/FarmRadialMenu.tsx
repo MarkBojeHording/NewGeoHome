@@ -1087,7 +1087,8 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, l
                       'SCHEDULE',
                       '',
                       (e) => { 
-                        e.stopPropagation(); 
+                        e.stopPropagation();
+                        console.log('SCHEDULE clicked - Debug:', { onAddTimer: !!onAddTimer, locationId, decayResources });
                         createDecayTimers();
                       },
                       (e) => { e.stopPropagation(); setSelectedInner(null); },
