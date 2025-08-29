@@ -898,8 +898,8 @@ const BaseModal = ({
   )
   
   const renderBaseModal = () => (
-    <div className="grid grid-cols-5 gap-4">
-      <div className="col-span-2 flex flex-col">
+    <div className="grid grid-cols-7 gap-4">
+      <div className="col-span-3 flex flex-col">
         <label className="block text-sm font-medium mb-1 text-orange-200 font-mono tracking-wide">[BASE TYPE]</label>
         <div className="relative mb-3">
           <select 
@@ -967,9 +967,11 @@ const BaseModal = ({
         </div>
       </div>
 
-      <div className="col-span-3">
+      <div className="col-span-4">
         {modalType === 'friendly' && (
-          <TCUpkeepModal onClose={() => {}} />
+          <div className="max-w-md">
+            <TCUpkeepModal onClose={() => {}} />
+          </div>
         )}
         
         {modalType === 'enemy' && (
