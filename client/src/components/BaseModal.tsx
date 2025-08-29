@@ -915,9 +915,9 @@ const BaseModal = ({
           >
             {modalType === 'friendly' && (
               <>
-                <option value="friendly-main">Friendly Main Base</option>
-                <option value="friendly-flank">Friendly Flank Base</option>
-                <option value="friendly-farm">Friendly Farm</option>
+                <option value="friendly-main">Main Base</option>
+                <option value="friendly-flank">Flank Base</option>
+                <option value="friendly-farm">Farm</option>
                 <option value="friendly-boat">Boat Base</option>
                 <option value="friendly-garage">Garage</option>
               </>
@@ -1134,7 +1134,12 @@ const BaseModal = ({
                     </div>
                   </div>
                 )}
-                {modalType !== 'enemy' && <div></div>}
+                {modalType === 'friendly' && (
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="text-green-400 font-bold text-lg flex-shrink-0 tracking-wider">[FRIENDLY]</div>
+                  </div>
+                )}
+                {modalType !== 'enemy' && modalType !== 'friendly' && <div></div>}
                 <button 
                   onClick={(e) => {
                     e.preventDefault()
