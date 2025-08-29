@@ -46,10 +46,10 @@ export default function TCUpkeepModal({ onClose }) {
   const [editingId, setEditingId] = useState(null)
   const [tcEntry, setTcEntry] = useState({
     name: '',
-    woodUpkeep: 0,
-    stoneUpkeep: 0,
-    metalUpkeep: 0,
-    hqmUpkeep: 0,
+    woodUpkeep: '',
+    stoneUpkeep: '',
+    metalUpkeep: '',
+    hqmUpkeep: '',
     remainingDays: '',
     remainingHours: '',
     remainingMinutes: ''
@@ -299,17 +299,17 @@ export default function TCUpkeepModal({ onClose }) {
       }])
     }
     
-    setTcEntry({ name: '', woodUpkeep: 0, stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0, remainingDays: '', remainingHours: '', remainingMinutes: '' })
+    setTcEntry({ name: '', woodUpkeep: '', stoneUpkeep: '', metalUpkeep: '', hqmUpkeep: '', remainingDays: '', remainingHours: '', remainingMinutes: '' })
     setShowAddModal(false)
   }
   
   const handleEditTC = (tc) => {
     setTcEntry({
       name: tc.name,
-      woodUpkeep: tc.woodUpkeep || 0,
-      stoneUpkeep: tc.stoneUpkeep,
-      metalUpkeep: tc.metalUpkeep,
-      hqmUpkeep: tc.hqmUpkeep,
+      woodUpkeep: tc.woodUpkeep || '',
+      stoneUpkeep: tc.stoneUpkeep || '',
+      metalUpkeep: tc.metalUpkeep || '',
+      hqmUpkeep: tc.hqmUpkeep || '',
       remainingDays: tc.remainingDays || '',
       remainingHours: tc.remainingHours || '',
       remainingMinutes: tc.remainingMinutes || ''
@@ -489,7 +489,7 @@ export default function TCUpkeepModal({ onClose }) {
             </div>
             <button
               onClick={() => {
-                setTcEntry({ name: '', woodUpkeep: 0, stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0, remainingDays: '', remainingHours: '', remainingMinutes: '' })
+                setTcEntry({ name: '', woodUpkeep: '', stoneUpkeep: '', metalUpkeep: '', hqmUpkeep: '', remainingDays: '', remainingHours: '', remainingMinutes: '' })
                 setEditingId(null)
                 setShowAddModal(true)
               }}
@@ -508,17 +508,6 @@ export default function TCUpkeepModal({ onClose }) {
                 <span className="w-32 text-center text-orange-400 font-mono">Upkeep per day</span>
                 <div className="flex items-center space-x-1">
                   <span className="text-orange-400 font-mono">Edits</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTcEntry({ name: '', woodUpkeep: 0, stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0, remainingDays: '', remainingHours: '', remainingMinutes: '' })
-                      setEditingId(null)
-                      setShowAddModal(true)
-                    }}
-                    className="w-4 h-4 bg-green-500 text-white rounded-full text-xs hover:bg-green-600 flex-shrink-0"
-                  >
-                    +
-                  </button>
                 </div>
               </div>
             </div>
@@ -628,7 +617,7 @@ export default function TCUpkeepModal({ onClose }) {
                     <input
                       type="number"
                       value={tcEntry[`${type}Upkeep`]}
-                      onChange={e => setTcEntry({ ...tcEntry, [`${type}Upkeep`]: Number(e.target.value) || 0 })}
+                      onChange={e => setTcEntry({ ...tcEntry, [`${type}Upkeep`]: e.target.value })}
                       className="w-full border border-orange-600/40 rounded px-1 py-0.5 text-sm bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
                       min="0"
                     />
