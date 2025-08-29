@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 // Utility function
 const formatNumber = (num) => num.toLocaleString()
 
-export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
+export default function TCUpkeepModal({ onClose, wipeCountdown = null, initialUpkeep = null, onUpkeepChange = null }) {
   // Use provided countdown or calculate fallback
   const countdown = useMemo(() => {
     if (wipeCountdown) {
@@ -40,10 +40,10 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
   const [isTimerActive, setIsTimerActive] = useState(false)
   const [showTCAdvanced, setShowTCAdvanced] = useState(false)
   const [mainTC, setMainTC] = useState({
-    wood: '',
-    stone: '',
-    metal: '',
-    hqm: ''
+    wood: initialUpkeep?.wood?.toString() || '',
+    stone: initialUpkeep?.stone?.toString() || '',
+    metal: initialUpkeep?.metal?.toString() || '',
+    hqm: initialUpkeep?.hqm?.toString() || ''
   })
   
   const [additionalTCs, setAdditionalTCs] = useState([])
@@ -62,6 +62,19 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
   
 
   
+  // Notify parent when upkeep values change
+  useEffect(() => {
+    if (onUpkeepChange) {
+      const upkeepData = {
+        wood: parseInt(mainTC.wood) || 0,
+        stone: parseInt(mainTC.stone) || 0,
+        metal: parseInt(mainTC.metal) || 0,
+        hqm: parseInt(mainTC.hqm) || 0
+      }
+      onUpkeepChange(upkeepData)
+    }
+  }, [mainTC, onUpkeepChange])
+
   // Stop timer when tracking is disabled
   useEffect(() => {
     if (!trackRemainingTime) {
