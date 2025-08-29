@@ -2409,6 +2409,8 @@ export default function InteractiveTacticalMap() {
               locationTimers={locationTimers}
               onAddTimer={handleAddTimer}
               onOpenReport={onOpenBaseReport}
+              onOpenTaskReport={onOpenTaskReport}
+              onCreateExpressTaskReport={onCreateExpressTaskReport}
               players={players}
               locations={locations}
               onOpenBaseReport={(location) => {
@@ -2420,8 +2422,6 @@ export default function InteractiveTacticalMap() {
                 })
                 setShowBaseReportModal(true)
               }}
-              onOpenTaskReport={onOpenTaskReport}
-              onCreateExpressTaskReport={handleCreateExpressTaskReport}
             />
           )}
         </div>
