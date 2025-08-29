@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Package, Pickaxe } from 'lucide-react'
+import { Package, Pickaxe, Wrench } from 'lucide-react'
 import { Button } from './ui/button'
 import { apiRequest } from '../lib/queryClient'
 import { useToast } from '@/hooks/use-toast'
@@ -64,8 +64,20 @@ export default function TaskSummaryPopup({
   if (!isVisible || !task) return null
 
   const pickupType = task.taskData?.pickupType
-  const taskIcon = pickupType === 'ore' ? <Pickaxe className="h-3 w-3" /> : <Package className="h-3 w-3" />
-  const taskLabel = pickupType ? `${pickupType.charAt(0).toUpperCase() + pickupType.slice(1)} Needs Pickup` : 'Task'
+  const repairUpgradeType = task.taskData?.repairUpgradeType
+  
+  let taskIcon, taskLabel
+  
+  if (pickupType) {
+    taskIcon = pickupType === 'ore' ? <Pickaxe className="h-3 w-3" /> : <Package className="h-3 w-3" />
+    taskLabel = `${pickupType.charAt(0).toUpperCase() + pickupType.slice(1)} Needs Pickup`
+  } else if (repairUpgradeType) {
+    taskIcon = <Wrench className="h-3 w-3 text-orange-400" />
+    taskLabel = `${repairUpgradeType.charAt(0).toUpperCase() + repairUpgradeType.slice(1)}`
+  } else {
+    taskIcon = <Package className="h-3 w-3" />
+    taskLabel = 'Task'
+  }
 
   return (
     <div
