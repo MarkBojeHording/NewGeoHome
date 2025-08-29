@@ -323,7 +323,7 @@ export default function TCUpkeepModal({ onClose }) {
   }
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
+    <div className="border border-orange-600/50 rounded-lg bg-gray-800 mb-3">
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
@@ -334,45 +334,45 @@ export default function TCUpkeepModal({ onClose }) {
           -moz-appearance: textfield;
         }
       `}</style>
-      <div className="bg-white rounded-lg shadow-xl" style={{ width: '400px' }} onClick={e => e.stopPropagation()}>
+      <div className="bg-gray-800 rounded-lg text-orange-200">
         {/* Header */}
-        <div className="flex justify-between items-center px-3 py-1 border-b">
+        <div className="px-3 py-2 border-b border-orange-600/30">
+          <label className="block text-sm font-medium mb-2 text-orange-300 font-mono tracking-wide">[UPKEEP TRACKER]</label>
           <div className="flex items-center space-x-4">
-            <label className="flex items-center text-xs">
+            <label className="flex items-center text-xs text-orange-200">
               <input 
                 type="checkbox" 
                 checked={goodForWipe}
                 onChange={e => setGoodForWipe(e.target.checked)}
-                className="mr-1"
+                className="mr-1 text-orange-600 bg-gray-800 border-orange-600/50 rounded focus:ring-orange-500"
               />
               Good for wipe
             </label>
-            <label className="flex items-center text-xs">
+            <label className="flex items-center text-xs text-orange-200">
               <input 
                 type="checkbox" 
                 checked={trackForTotal}
                 onChange={e => setTrackForTotal(e.target.checked)}
-                className="mr-1"
+                className="mr-1 text-orange-600 bg-gray-800 border-orange-600/50 rounded focus:ring-orange-500"
               />
               Track for total
             </label>
-            <label className="flex items-center text-xs" title="Enable to track and countdown remaining upkeep time">
+            <label className="flex items-center text-xs text-orange-200" title="Enable to track and countdown remaining upkeep time">
               <input 
                 type="checkbox" 
                 checked={trackRemainingTime}
                 onChange={e => setTrackRemainingTime(e.target.checked)}
-                className="mr-1"
+                className="mr-1 text-orange-600 bg-gray-800 border-orange-600/50 rounded focus:ring-orange-500"
               />
               Track time
             </label>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-lg leading-none">×</button>
         </div>
         
         {/* Main TC Section */}
-        <div className="px-3 py-2 border-b">
+        <div className="px-3 py-2 border-b border-orange-600/30">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-gray-700">Main TC Daily Upkeep</span>
+            <span className="text-xs font-semibold text-orange-300 font-mono">Main TC Daily Upkeep</span>
             <div className="flex items-center">
               <input
                 type="text"
@@ -382,9 +382,9 @@ export default function TCUpkeepModal({ onClose }) {
                 onKeyPress={handleKeyPress}
                 onBlur={handleBlur}
                 disabled={!trackRemainingTime}
-                className={`w-8 border rounded-l px-1 text-xs text-center font-mono ${
-                  !trackRemainingTime ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
-                  isLowTime() ? 'text-red-600 font-bold' : ''
+                className={`w-8 border border-orange-600/40 rounded-l px-1 text-xs text-center font-mono bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none ${
+                  !trackRemainingTime ? 'bg-gray-800 text-gray-500 cursor-not-allowed' :
+                  isLowTime() ? 'text-red-400 font-bold' : ''
                 }`}
                 maxLength="2"
               />
@@ -397,9 +397,9 @@ export default function TCUpkeepModal({ onClose }) {
                 onKeyPress={handleKeyPress}
                 onBlur={handleBlur}
                 disabled={!trackRemainingTime}
-                className={`w-8 border-y px-1 text-xs text-center font-mono ${
-                  !trackRemainingTime ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
-                  isLowTime() ? 'text-red-600 font-bold' : ''
+                className={`w-8 border-y border-orange-600/40 px-1 text-xs text-center font-mono bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none ${
+                  !trackRemainingTime ? 'bg-gray-800 text-gray-500 cursor-not-allowed' :
+                  isLowTime() ? 'text-red-400 font-bold' : ''
                 }`}
                 maxLength="2"
               />
@@ -412,9 +412,9 @@ export default function TCUpkeepModal({ onClose }) {
                 onKeyPress={handleKeyPress}
                 onBlur={handleBlur}
                 disabled={!trackRemainingTime}
-                className={`w-8 border rounded-r px-1 text-xs text-center font-mono ${
-                  !trackRemainingTime ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
-                  isLowTime() ? 'text-red-600 font-bold' : ''
+                className={`w-8 border border-orange-600/40 rounded-r px-1 text-xs text-center font-mono bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none ${
+                  !trackRemainingTime ? 'bg-gray-800 text-gray-500 cursor-not-allowed' :
+                  isLowTime() ? 'text-red-400 font-bold' : ''
                 }`}
                 maxLength="2"
               />
@@ -423,12 +423,12 @@ export default function TCUpkeepModal({ onClose }) {
           <div className="grid grid-cols-4 gap-1">
             {['wood', 'stone', 'metal', 'hqm'].map(type => (
               <div key={type}>
-                <label className="text-xs text-gray-600 block">{type.toUpperCase()}</label>
+                <label className="text-xs text-orange-400 block font-mono">{type.toUpperCase()}</label>
                 <input
                   type="number"
                   value={mainTC[type]}
                   onChange={e => setMainTC({ ...mainTC, [type]: e.target.value })}
-                  className="w-full border rounded px-1 py-0.5 text-sm"
+                  className="w-full border border-orange-600/40 rounded px-1 py-0.5 text-sm bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
                   min="0"
                   placeholder=""
                 />
@@ -438,35 +438,35 @@ export default function TCUpkeepModal({ onClose }) {
         </div>
         
         {/* External TCs Section */}
-        <div className="px-3 py-2 border-b">
+        <div className="px-3 py-2 border-b border-orange-600/30">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-gray-700">External TCs</span>
+            <span className="text-xs font-semibold text-orange-300 font-mono">External TCs</span>
             <button
               onClick={() => setShowAddModal(true)}
-              className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded hover:bg-blue-600"
+              className="text-xs bg-orange-600 text-white px-2 py-0.5 rounded hover:bg-orange-700 font-mono"
             >
               + Add
             </button>
           </div>
           <div className="space-y-1 max-h-32 overflow-y-auto">
             {additionalTCs.map(tc => (
-              <div key={tc.id} className="flex items-center justify-between text-xs border rounded px-2 py-1">
-                <span className="font-medium truncate">{tc.name}</span>
+              <div key={tc.id} className="flex items-center justify-between text-xs border border-orange-600/40 rounded px-2 py-1 bg-gray-900">
+                <span className="font-medium truncate text-orange-200 font-mono">{tc.name}</span>
                 <div className="flex items-center space-x-1">
-                  <span className="text-gray-500">
+                  <span className="text-orange-400 font-mono">
                     {[tc.woodUpkeep, tc.stoneUpkeep, tc.metalUpkeep, tc.hqmUpkeep].filter(x => x > 0).length > 0 ? 
                       [tc.woodUpkeep, tc.stoneUpkeep, tc.metalUpkeep, tc.hqmUpkeep].map(x => x || 0).join('/') : '0'
                     }
                   </span>
                   <button
                     onClick={() => handleEditTC(tc)}
-                    className="text-blue-500 hover:text-blue-700 text-xs"
+                    className="text-orange-500 hover:text-orange-300 text-xs font-mono"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDeleteTC(tc.id)}
-                    className="text-red-500 hover:text-red-700 text-xs"
+                    className="text-red-500 hover:text-red-300 text-xs font-mono"
                   >
                     ×
                   </button>
@@ -477,19 +477,19 @@ export default function TCUpkeepModal({ onClose }) {
         </div>
         
         {/* Totals Section */}
-        <div className="px-3 py-2 border-b">
+        <div className="px-3 py-2 border-b border-orange-600/30">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-xs font-semibold text-gray-700">Totals</span>
-            <span className="text-xs text-gray-500">Days until wipe: {countdown.days}D {countdown.hours}H</span>
+            <span className="text-xs font-semibold text-orange-300 font-mono">Totals</span>
+            <span className="text-xs text-orange-400 font-mono">Days until wipe: {countdown.days}D {countdown.hours}H</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
-              <div className="font-medium text-gray-600">Daily Upkeep:</div>
+              <div className="font-medium text-orange-300 font-mono">Daily Upkeep:</div>
               <div className="space-y-0.5">
                 {Object.entries(totals.daily).map(([type, amount]) => (
                   amount > 0 && (
-                    <div key={type} className="flex justify-between">
-                      <span>{type.toUpperCase()}:</span>
+                    <div key={type} className="flex justify-between text-orange-200">
+                      <span className="font-mono">{type.toUpperCase()}:</span>
                       <span className="font-mono">{formatNumber(amount)}</span>
                     </div>
                   )
@@ -497,12 +497,12 @@ export default function TCUpkeepModal({ onClose }) {
               </div>
             </div>
             <div>
-              <div className="font-medium text-gray-600">Until Wipe:</div>
+              <div className="font-medium text-orange-300 font-mono">Until Wipe:</div>
               <div className="space-y-0.5">
                 {Object.entries(totals.untilWipe).map(([type, amount]) => (
                   amount > 0 && (
-                    <div key={type} className="flex justify-between">
-                      <span>{type.toUpperCase()}:</span>
+                    <div key={type} className="flex justify-between text-orange-200">
+                      <span className="font-mono">{type.toUpperCase()}:</span>
                       <span className="font-mono">{formatNumber(amount)}</span>
                     </div>
                   )
@@ -516,7 +516,7 @@ export default function TCUpkeepModal({ onClose }) {
         <div className="px-3 py-2">
           <button
             onClick={() => setShowTCAdvanced(true)}
-            className="w-full bg-gray-500 text-white py-1 px-3 rounded text-sm hover:bg-gray-600"
+            className="w-full bg-orange-600 text-white py-1 px-3 rounded text-sm hover:bg-orange-700 font-mono"
           >
             TC Advanced
           </button>
@@ -526,78 +526,78 @@ export default function TCUpkeepModal({ onClose }) {
       {/* Add TC Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60" onClick={() => setShowAddModal(false)}>
-          <div className="bg-white rounded-lg shadow-xl" style={{ width: '350px' }} onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center px-3 py-2 border-b">
-              <span className="text-sm font-semibold">{editingId ? 'Edit TC' : 'Add External TC'}</span>
-              <button onClick={() => setShowAddModal(false)} className="text-gray-500 hover:text-gray-700">×</button>
+          <div className="bg-gray-800 rounded-lg shadow-xl border border-orange-600/50" style={{ width: '350px' }} onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center px-3 py-2 border-b border-orange-600/30">
+              <span className="text-sm font-semibold text-orange-300 font-mono">{editingId ? 'Edit TC' : 'Add External TC'}</span>
+              <button onClick={() => setShowAddModal(false)} className="text-orange-400 hover:text-orange-200">×</button>
             </div>
             <div className="px-3 py-2 space-y-2">
               <div>
-                <label className="text-xs text-gray-600 block">TC Name</label>
+                <label className="text-xs text-orange-400 block font-mono">TC Name</label>
                 <input
                   type="text"
                   value={tcEntry.name}
                   onChange={e => setTcEntry({ ...tcEntry, name: e.target.value })}
-                  className="w-full border rounded px-2 py-1 text-sm"
+                  className="w-full border border-orange-600/40 rounded px-2 py-1 text-sm bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
                   placeholder="Enter TC name"
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {['wood', 'stone', 'metal', 'hqm'].map(type => (
                   <div key={type}>
-                    <label className="text-xs text-gray-600 block">{type.toUpperCase()} Upkeep</label>
+                    <label className="text-xs text-orange-400 block font-mono">{type.toUpperCase()} Upkeep</label>
                     <input
                       type="number"
                       value={tcEntry[`${type}Upkeep`]}
                       onChange={e => setTcEntry({ ...tcEntry, [`${type}Upkeep`]: Number(e.target.value) || 0 })}
-                      className="w-full border rounded px-1 py-0.5 text-sm"
+                      className="w-full border border-orange-600/40 rounded px-1 py-0.5 text-sm bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
                       min="0"
                     />
                   </div>
                 ))}
               </div>
               <div>
-                <label className="text-xs text-gray-600 block">Remaining Time</label>
+                <label className="text-xs text-orange-400 block font-mono">Remaining Time</label>
                 <div className="flex items-center space-x-1">
                   <input
                     type="text"
                     value={tcEntry.remainingDays}
                     onChange={e => setTcEntry({ ...tcEntry, remainingDays: e.target.value })}
-                    className="w-16 border rounded px-1 py-0.5 text-xs text-center"
+                    className="w-16 border border-orange-600/40 rounded px-1 py-0.5 text-xs text-center bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
                     placeholder="DD"
                     maxLength="2"
                   />
-                  <span className="text-xs">:</span>
+                  <span className="text-xs text-orange-400">:</span>
                   <input
                     type="text"
                     value={tcEntry.remainingHours}
                     onChange={e => setTcEntry({ ...tcEntry, remainingHours: e.target.value })}
-                    className="w-16 border rounded px-1 py-0.5 text-xs text-center"
+                    className="w-16 border border-orange-600/40 rounded px-1 py-0.5 text-xs text-center bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
                     placeholder="HH"
                     maxLength="2"
                   />
-                  <span className="text-xs">:</span>
+                  <span className="text-xs text-orange-400">:</span>
                   <input
                     type="text"
                     value={tcEntry.remainingMinutes}
                     onChange={e => setTcEntry({ ...tcEntry, remainingMinutes: e.target.value })}
-                    className="w-16 border rounded px-1 py-0.5 text-xs text-center"
+                    className="w-16 border border-orange-600/40 rounded px-1 py-0.5 text-xs text-center bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
                     placeholder="MM"
                     maxLength="2"
                   />
                 </div>
               </div>
             </div>
-            <div className="flex justify-end space-x-2 px-3 py-2 border-t">
+            <div className="flex justify-end space-x-2 px-3 py-2 border-t border-orange-600/30">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                className="px-3 py-1 text-sm text-orange-400 hover:text-orange-200 font-mono"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveTC}
-                className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-3 py-1 text-sm bg-orange-600 text-white rounded hover:bg-orange-700 font-mono"
               >
                 {editingId ? 'Update' : 'Add'}
               </button>
