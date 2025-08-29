@@ -131,72 +131,112 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     setResources(prev => ({ ...prev, ...updates }));
   };
   
-  // Calculate TC upkeep values based on tcData
+  // Use EXACT same calculation as TC Advanced modal (lines 724-729)
   const calculateTCResources = () => {
-    if (!tcData || !tcData.mainTC) {
+    if (!tcData || !tcData.mainTC || !wipeCountdown?.fractionalDays) {
       return { wood: 0, stone: 0, metal: 0, hqm: 0 };
     }
 
     const getNumericValue = (val) => parseInt(val) || 0;
     const mainTC = tcData.mainTC;
     
-    console.log('Raw mainTC data:', mainTC);
-    
-    // Daily upkeep amounts
-    const daily = {
-      wood: getNumericValue(mainTC.wood),
-      stone: getNumericValue(mainTC.stone), 
-      metal: getNumericValue(mainTC.metal),
-      hqm: getNumericValue(mainTC.hqm)
-    };
-
-    if (!wipeCountdown?.fractionalDays) {
-      return { wood: 0, stone: 0, metal: 0, hqm: 0 };
-    }
-
-    // Calculate "Max Upkeep in TC" (for wipe duration)
-    const maxUpkeep = {};
-    Object.keys(daily).forEach(type => {
-      if (daily[type] > 0) {
-        maxUpkeep[type] = Math.ceil(daily[type] * wipeCountdown.fractionalDays);
-      } else {
-        maxUpkeep[type] = 0;
-      }
-    });
-
-    // If timer is set, calculate "Upkeep that can fit" = Max Upkeep - Currently in TC
+    // If timer is set, use EXACT TC Advanced "Upkeep that can fit" calculation
     if (tcData.trackRemainingTime && (parseInt(tcData.timerDays) > 0 || parseInt(tcData.timerHours) > 0 || parseInt(tcData.timerMinutes) > 0)) {
       const timerDays = parseInt(tcData.timerDays) || 0;
       const timerHours = parseInt(tcData.timerHours) || 0; 
       const timerMinutes = parseInt(tcData.timerMinutes) || 0;
       const currentTimeInDays = timerDays + (timerHours / 24) + (timerMinutes / (24 * 60));
       
-      // Calculate "Currently in TC"
-      const currentInTC = {};
+      // EXACT copy from TC Advanced calculateOptimalStorage
+      const daily = {
+        wood: getNumericValue(mainTC.wood),
+        stone: getNumericValue(mainTC.stone),
+        metal: getNumericValue(mainTC.metal),
+        hqm: getNumericValue(mainTC.hqm)
+      };
+      
+      const SLOTS = 24;
+      const STACK_LIMITS = { wood: 1000, stone: 1000, metal: 1000, hqm: 100 };
+      
+      // Skip if no upkeep
+      const totalDaily = daily.wood + daily.stone + daily.metal + daily.hqm;
+      if (totalDaily === 0) {
+        return { wood: 0, stone: 0, metal: 0, hqm: 0 };
+      }
+      
+      // Initialize slot allocation
+      let slotAllocation = { wood: 0, stone: 0, metal: 0, hqm: 0 };
+      let remainingSlots = SLOTS;
+      
+      // Allocate slots to maximize minimum days
+      while (remainingSlots > 0) {
+        let worstType = null;
+        let worstDays = Infinity;
+        
+        // Find which resource runs out first (has least days)
+        Object.keys(daily).forEach(type => {
+          if (daily[type] > 0) {
+            const currentCapacity = slotAllocation[type] * STACK_LIMITS[type];
+            const days = currentCapacity / daily[type];
+            if (days < worstDays) {
+              worstDays = days;
+              worstType = type;
+            }
+          }
+        });
+        
+        if (worstType) {
+          slotAllocation[worstType]++;
+          remainingSlots--;
+        } else {
+          break;
+        }
+      }
+      
+      // Calculate actual max days (limited by resource that runs out first)
+      let maxDays = Infinity;
       Object.keys(daily).forEach(type => {
         if (daily[type] > 0) {
-          currentInTC[type] = Math.floor(daily[type] * currentTimeInDays);
-        } else {
-          currentInTC[type] = 0;
+          const capacity = slotAllocation[type] * STACK_LIMITS[type];
+          const days = capacity / daily[type];
+          maxDays = Math.min(maxDays, days);
         }
       });
       
-      // Calculate "Upkeep that can fit" = Max Upkeep - Currently in TC
-      const upkeepThatCanFit = {};
+      // Cap max days at wipe time
+      const daysUntilWipe = wipeCountdown.fractionalDays;
+      const effectiveMaxDays = Math.min(maxDays, daysUntilWipe);
+      
+      // Calculate total materials (same as TC Advanced totalMaterials)
+      const totalMaterials = {};
       Object.keys(daily).forEach(type => {
-        upkeepThatCanFit[type] = Math.max(0, maxUpkeep[type] - currentInTC[type]);
+        if (daily[type] > 0) {
+          const totalNeeded = Math.min(
+            slotAllocation[type] * STACK_LIMITS[type],
+            Math.floor(daily[type] * effectiveMaxDays)
+          );
+          totalMaterials[type] = totalNeeded;
+        }
       });
       
-      console.log('Daily upkeep amounts:', daily);
-      console.log('Max Upkeep:', maxUpkeep);
-      console.log('Current in TC:', currentInTC);
-      console.log('Upkeep that can fit:', upkeepThatCanFit);
+      // EXACT copy from TC Advanced lines 724-729
+      const neededToAdd = {};
+      Object.keys(mainTC).forEach(type => {
+        const numericValue = getNumericValue(mainTC[type]);
+        if (numericValue > 0) {
+          const currentInTC = Math.floor(numericValue * currentTimeInDays);
+          const maxInTC = totalMaterials[type] || 0;
+          neededToAdd[type] = Math.max(0, maxInTC - currentInTC);
+        } else {
+          neededToAdd[type] = 0;
+        }
+      });
       
-      return upkeepThatCanFit;
+      return neededToAdd;
     }
-
-    // Default to "Max Upkeep in TC" if no timer
-    return maxUpkeep;
+    
+    // Default: show nothing if no timer
+    return { wood: 0, stone: 0, metal: 0, hqm: 0 };
   };
 
   // Format resource value with K suffix
