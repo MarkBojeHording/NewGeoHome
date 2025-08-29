@@ -20,14 +20,75 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
   const [segmentCoreValue, setSegmentCoreValue] = useState('00');
   const [isExpanded, setIsExpanded] = useState(false);
 
-  
-  // Resource values in raw numbers (will be divided by 1000 for display)
-  const [resources, setResources] = useState({
-    stone: 0,
-    metal: 0,
-    hqm: 0,
-    wood: 0
+  // TC calculation state for resource needs
+  const [mainTC] = useState({
+    wood: '10',  // Example daily upkeep values
+    stone: '15', 
+    metal: '5',
+    hqm: '2'
   });
+  
+  // Timer state (to determine if we show "Upkeep that can fit" instead)
+  const [trackRemainingTime] = useState(false); // Set to true when timer is entered
+  const [timerDays] = useState('00');
+  const [timerHours] = useState('00');
+  const [timerMinutes] = useState('00');
+
+  // Helper to get numeric value
+  const getNumericValue = (value) => value === '' ? 0 : Number(value);
+
+  // Calculate TC storage needs
+  const calculateTCNeeds = () => {
+    const daily = {
+      wood: getNumericValue(mainTC.wood),
+      stone: getNumericValue(mainTC.stone), 
+      metal: getNumericValue(mainTC.metal),
+      hqm: getNumericValue(mainTC.hqm)
+    };
+    
+    // Get wipe countdown
+    const now = new Date();
+    let target = new Date(now.getFullYear(), now.getMonth(), 1);
+    while (target.getDay() !== 4) target.setDate(target.getDate() + 1);
+    target.setHours(14, 0, 0, 0);
+    if (target <= now) {
+      target = new Date(target.setMonth(target.getMonth() + 1));
+      target.setDate(1);
+      while (target.getDay() !== 4) target.setDate(target.getDate() + 1);
+      target.setHours(14, 0, 0, 0);
+    }
+    const diff = target.getTime() - now.getTime();
+    const fractionalDays = Math.floor(diff / (1000 * 60 * 60 * 24)) + Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) / 24;
+    
+    // Check if timer has been entered
+    const hasTimerTime = trackRemainingTime && (parseInt(timerDays) > 0 || parseInt(timerHours) > 0 || parseInt(timerMinutes) > 0);
+    
+    if (hasTimerTime) {
+      // Show "Upkeep that can fit" - calculate based on timer duration
+      const days = parseInt(timerDays) || 0;
+      const hours = parseInt(timerHours) || 0;
+      const minutes = parseInt(timerMinutes) || 0;
+      const timerFractionalDays = days + (hours / 24) + (minutes / (24 * 60));
+      
+      return {
+        wood: Math.floor(daily.wood * timerFractionalDays),
+        stone: Math.floor(daily.stone * timerFractionalDays),
+        metal: Math.floor(daily.metal * timerFractionalDays), 
+        hqm: Math.floor(daily.hqm * timerFractionalDays)
+      };
+    } else {
+      // Show "Max Upkeep in TC" - calculate max until wipe
+      return {
+        wood: Math.floor(daily.wood * fractionalDays),
+        stone: Math.floor(daily.stone * fractionalDays),
+        metal: Math.floor(daily.metal * fractionalDays), 
+        hqm: Math.floor(daily.hqm * fractionalDays)
+      };
+    }
+  };
+
+  // Resource values based on TC calculations (replaces old useState)
+  const resources = calculateTCNeeds();
   
   // Decay schedule values
   const [decayResources, setDecayResources] = useState({
