@@ -609,15 +609,15 @@ export default function TCUpkeepModal({ onClose }) {
       {/* TC Advanced Modal */}
       {showTCAdvanced && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60" onClick={() => setShowTCAdvanced(false)}>
-          <div className="bg-white rounded-lg shadow-xl" style={{ width: '500px', maxHeight: '80vh' }} onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center px-4 py-3 border-b">
-              <span className="text-lg font-semibold">TC Advanced Storage Calculator</span>
-              <button onClick={() => setShowTCAdvanced(false)} className="text-gray-500 hover:text-gray-700 text-xl">×</button>
+          <div className="bg-gray-800 rounded-lg shadow-xl border border-orange-600/50" style={{ width: '500px', maxHeight: '80vh' }} onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center px-4 py-3 border-b border-orange-600/30">
+              <span className="text-lg font-semibold text-orange-300 font-mono">TC Advanced Storage Calculator</span>
+              <button onClick={() => setShowTCAdvanced(false)} className="text-orange-400 hover:text-orange-200 text-xl">×</button>
             </div>
-            <div className="px-4 py-3 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 120px)' }}>
+            <div className="px-4 py-3 overflow-y-auto text-orange-200" style={{ maxHeight: 'calc(80vh - 120px)' }}>
               {/* Storage Grid */}
               <div className="mb-4">
-                <div className="text-sm font-semibold mb-2">Optimal TC Storage (24 slots)</div>
+                <div className="text-sm font-semibold mb-2 text-orange-300 font-mono">Optimal TC Storage (24 slots)</div>
                 <div className="grid grid-cols-6 gap-1 mb-3">
                   {calculateOptimalStorage.slots.map((slot, index) => (
                     <div
@@ -648,28 +648,28 @@ export default function TCUpkeepModal({ onClose }) {
               {/* Storage Summary */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <div className="font-semibold mb-2">Storage Summary</div>
+                  <div className="font-semibold mb-2 text-orange-300 font-mono">Storage Summary</div>
                   <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <span>Max Days (unlimited):</span>
+                    <div className="flex justify-between text-orange-200">
+                      <span className="font-mono">Max Days (unlimited):</span>
                       <span className="font-mono">{formatNumber(Math.floor(calculateOptimalStorage.maxDays))}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Effective Days (until wipe):</span>
+                    <div className="flex justify-between text-orange-200">
+                      <span className="font-mono">Effective Days (until wipe):</span>
                       <span className="font-mono">{formatNumber(Math.floor(calculateOptimalStorage.effectiveMaxDays))}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Days until wipe:</span>
+                    <div className="flex justify-between text-orange-200">
+                      <span className="font-mono">Days until wipe:</span>
                       <span className="font-mono">{formatNumber(Math.floor(calculateOptimalStorage.daysUntilWipe))}</span>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <div className="font-semibold mb-2">Materials Needed</div>
+                  <div className="font-semibold mb-2 text-orange-300 font-mono">Materials Needed</div>
                   <div className="space-y-1">
                     {Object.entries(calculateOptimalStorage.totalMaterials).map(([type, amount]) => (
-                      <div key={type} className="flex justify-between">
-                        <span>{type.toUpperCase()}:</span>
+                      <div key={type} className="flex justify-between text-orange-200">
+                        <span className="font-mono">{type.toUpperCase()}:</span>
                         <span className="font-mono">{formatNumber(amount)}</span>
                       </div>
                     ))}
