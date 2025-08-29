@@ -716,8 +716,8 @@ export default function TCUpkeepModal({ onClose }) {
                     const numericValue = getNumericValue(mainTC[type])
                     if (numericValue > 0) {
                       currentInTC[type] = Math.floor(numericValue * currentTimeInDays)
-                      const totalNeeded = Math.floor(numericValue * daysUntilWipe)
-                      neededToAdd[type] = Math.max(0, totalNeeded - currentInTC[type])
+                      const maxInTC = calculateOptimalStorage.totalMaterials[type] || 0
+                      neededToAdd[type] = Math.max(0, maxInTC - currentInTC[type])
                     }
                   })
                   
