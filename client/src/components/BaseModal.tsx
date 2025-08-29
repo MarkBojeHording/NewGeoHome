@@ -898,7 +898,7 @@ const BaseModal = ({
   )
   
   const renderBaseModal = () => (
-    <div className="grid grid-cols-7 gap-4">
+    <div className="grid grid-cols-6 gap-3">
       <div className="col-span-3 flex flex-col">
         <label className="block text-sm font-medium mb-1 text-orange-200 font-mono tracking-wide">[BASE TYPE]</label>
         <div className="relative mb-3">
@@ -967,9 +967,9 @@ const BaseModal = ({
         </div>
       </div>
 
-      <div className="col-span-4">
+      <div className="col-span-3">
         {modalType === 'friendly' && (
-          <div className="max-w-md">
+          <div className="max-w-sm">
             <TCUpkeepModal onClose={() => {}} />
           </div>
         )}
