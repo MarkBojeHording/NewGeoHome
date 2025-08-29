@@ -185,6 +185,10 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
         upkeepThatCanFit[type] = Math.max(0, maxUpkeep[type] - currentInTC[type]);
       });
       
+      console.log('Max Upkeep:', maxUpkeep);
+      console.log('Current in TC:', currentInTC);
+      console.log('Upkeep that can fit:', upkeepThatCanFit);
+      
       return upkeepThatCanFit;
     }
 
