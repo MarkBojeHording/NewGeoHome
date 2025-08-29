@@ -96,10 +96,10 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
   // Resource configuration
   const resourceConfig = [
     { name: 'Stone', key: 'stone', color: 'white', radius: 18 },
-    { name: 'Metal', key: 'metal', color: '#E57373', radius: 30 },
-    { name: 'HQM', key: 'hqm', color: 'hsl(200, 25%, 75%)', radius: 42, 
+    { name: 'Metal', key: 'metal', color: 'white', radius: 30 },
+    { name: 'HQM', key: 'hqm', color: 'white', radius: 42, 
       style: { textShadow: '1px 1px 2px rgba(0,0,0,0.8), 0px 0px 3px rgba(255,255,255,0.3)' } },
-    { name: 'Wood', key: 'wood', color: 'hsl(30, 60%, 45%)', radius: 54 }
+    { name: 'Wood', key: 'wood', color: 'white', radius: 54 }
   ];
 
   // Plant emojis configuration
