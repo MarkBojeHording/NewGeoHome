@@ -656,7 +656,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
       {/* TC Advanced Modal */}
       {showTCAdvanced && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]" onClick={() => setShowTCAdvanced(false)}>
-          <div className="bg-gray-800 rounded-lg shadow-xl border border-orange-600/50 p-4" style={{ width: '360px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+          <div className="bg-gray-800 rounded-lg shadow-xl border border-orange-600/50 p-3" style={{ width: '320px', maxHeight: '80vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-xs font-bold text-orange-300 font-mono">TC Advanced - Maximum Upkeep</h3>
               <button onClick={() => setShowTCAdvanced(false)} className="text-orange-400 hover:text-orange-200 text-lg">×</button>
