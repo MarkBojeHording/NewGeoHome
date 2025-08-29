@@ -3,12 +3,14 @@ import React, { useState, useEffect } from 'react';
 interface FarmRadialMenuProps {
   onOpenTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string }) => void;
   onCreateExpressTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string; pickupType: string }) => void;
+  onAddTimer?: (locationId: string, timer: { id: number; type: string; remaining: number }) => void;
+  locationId?: string;
   baseId?: string;
   baseName?: string;
   baseCoords?: string;
 }
 
-const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
+const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, locationId, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
   const [selectedInner, setSelectedInner] = useState(null);
   const [selectedOuter, setSelectedOuter] = useState(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -351,6 +353,48 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
     });
   };
 
+
+  // Calculate decay time in seconds based on current health
+  const calculateDecayTime = (resourceType, currentHealth) => {
+    if (currentHealth <= 0) return 0;
+    
+    // Decay rates per hour based on Rust game mechanics
+    const decayRates = {
+      stone: 10,  // Stone loses 10 HP per hour
+      metal: 8,   // Metal loses 8 HP per hour  
+      hqm: 2      // HQM loses 2 HP per hour
+    };
+    
+    const hoursRemaining = currentHealth / decayRates[resourceType];
+    return Math.round(hoursRemaining * 3600); // Convert to seconds
+  };
+
+  // Create decay timers for resources with health > 0
+  const createDecayTimers = () => {
+    if (!onAddTimer || !locationId) return;
+    
+    Object.entries(decayResources).forEach(([resourceType, resource]) => {
+      if (resource.current > 0) {
+        const timeInSeconds = calculateDecayTime(resourceType, resource.current);
+        if (timeInSeconds > 0) {
+          onAddTimer(locationId, {
+            id: Date.now() + Math.random(),
+            type: `${resourceType}_decay`,
+            remaining: timeInSeconds
+          });
+        }
+      }
+    });
+    
+    // Reset decay resources after creating timers
+    setDecayResources({
+      stone: { current: 0, max: 500 },
+      metal: { current: 0, max: 1000 },
+      hqm: { current: 0, max: 2000 }
+    });
+    
+    setSelectedInner(null);
+  };
   // Create text path helper
   const createTextPath = (radius, segmentIndex, startOffset = 3, endOffset = 3) => {
     const startSegmentAngle = startAngle + (segmentIndex * segmentAngle) + startOffset;
@@ -1042,7 +1086,10 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, baseId, baseN
                       4,
                       'SCHEDULE',
                       '',
-                      (e) => { e.stopPropagation(); setSelectedInner(null); },
+                      (e) => { 
+                        e.stopPropagation(); 
+                        createDecayTimers();
+                      },
                       (e) => { e.stopPropagation(); setSelectedInner(null); },
                       false,  // showTimers
                       false   // isSplit

@@ -1306,6 +1306,8 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             <FarmRadialMenu 
               onOpenTaskReport={onOpenTaskReport}
               onCreateExpressTaskReport={onCreateExpressTaskReport}
+              onAddTimer={handleAddTimer}
+              locationId={location.id}
               baseId={location.id}
               baseName={location.name}
               baseCoords={location.name}
