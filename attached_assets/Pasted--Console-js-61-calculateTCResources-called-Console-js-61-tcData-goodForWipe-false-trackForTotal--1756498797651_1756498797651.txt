@@ -1,0 +1,97 @@
+
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 41, fractionalDays: 5.903472222222222}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 41, fractionalDays: 5.903472222222222}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 41, fractionalDays: 5.903472222222222}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 41, fractionalDays: 5.903472222222222}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}
+Console.js:61 calculateTCResources called
+Console.js:61 tcData: {goodForWipe: false, trackForTotal: true, mainTC: {…}, additionalTCs: Array(0), trackRemainingTime: false, …}
+Console.js:61 wipeCountdown: {days: 5, hours: 21, minutes: 40, fractionalDays: 5.902777777777778}
+Console.js:61 daily values: {wood: 0, stone: 10000, metal: 10000, hqm: 0}

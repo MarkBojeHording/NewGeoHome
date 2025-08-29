@@ -196,6 +196,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     }
 
     // No timer: show "Max Upkeep in TC"
+    console.log('Final maxUpkeepInTC:', maxUpkeepInTC);
     return maxUpkeepInTC;
   };
 
