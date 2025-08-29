@@ -656,45 +656,34 @@ export default function TCUpkeepModal({ onClose }) {
       
       {/* TC Advanced Modal */}
       {showTCAdvanced && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]" onClick={() => setShowTCAdvanced(false)}>
-          <div className="bg-gray-800 rounded-lg shadow-xl border border-orange-600/50 p-4" style={{ width: '400px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-[60]" onClick={() => setShowTCAdvanced(false)}>
+          <div className="bg-white rounded p-4 shadow-lg" style={{ width: '360px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-bold text-orange-300 font-mono">TC Advanced Storage Calculator</h3>
-              <button onClick={() => setShowTCAdvanced(false)} className="text-orange-400 hover:text-orange-200 text-lg">×</button>
+              <h3 className="text-sm font-bold">TC Advanced - Maximum Upkeep</h3>
+              <button onClick={() => setShowTCAdvanced(false)} className="text-gray-500 hover:text-gray-700">×</button>
             </div>
             
             {/* 24 Slot Grid */}
-            <div className="border border-orange-600/40 rounded-lg p-3 mb-3 bg-gray-900/50">
-              <div className="text-xs text-orange-400 font-mono mb-2">TC Storage Layout (24 slots):</div>
-              <div className="grid grid-cols-6 gap-1">
+            <div className="border rounded p-2 mb-3">
+              <div className="grid grid-cols-6 gap-0">
                 {calculateOptimalStorage.slots.map((slot, i) => (
                   <div 
                     key={i} 
-                    className={`w-12 h-12 border-2 rounded flex flex-col items-center justify-center text-xs font-bold font-mono
-                      ${slot.type === 'empty' ? 'bg-gray-700 border-gray-600 text-gray-500' : 
-                        slot.type === 'wood' ? 'text-black' :
-                        slot.type === 'stone' ? 'text-white' :
-                        slot.type === 'metal' ? 'text-white' :
-                        'text-white'}`}
-                    style={slot.type !== 'empty' ? {
-                      backgroundColor: slot.type === 'wood' ? 'hsl(30, 60%, 45%)' :
-                                     slot.type === 'stone' ? 'hsl(0, 0%, 60%)' :
-                                     slot.type === 'metal' ? 'hsl(0, 0%, 35%)' :
-                                     'hsl(200, 50%, 35%)',
-                      borderColor: slot.type === 'wood' ? 'hsl(30, 60%, 55%)' :
-                                 slot.type === 'stone' ? 'hsl(0, 0%, 75%)' :
-                                 slot.type === 'metal' ? 'hsl(0, 0%, 50%)' :
-                                 'hsl(200, 60%, 50%)'
-                    } : {}}
+                    className={`w-10 h-10 border flex flex-col items-center justify-center text-xs font-bold
+                      ${slot.type === 'empty' ? 'bg-gray-50 border-gray-300' : 
+                        slot.type === 'stone' ? 'bg-gray-600 border-gray-700 text-white' :
+                        slot.type === 'metal' ? 'bg-gray-500 border-gray-600 text-white' :
+                        slot.type === 'wood' ? 'bg-yellow-600 border-yellow-700 text-white' :
+                        'bg-blue-600 border-blue-700 text-white'}`}
                   >
                     {slot.type !== 'empty' && (
                       <>
                         <span className="text-[10px] leading-none">
                           {slot.type === 'wood' ? 'W' : 
                            slot.type === 'stone' ? 'S' :
-                           slot.type === 'metal' ? 'M' : 'HQ'}
+                           slot.type === 'metal' ? 'M' : 'HQM'}
                         </span>
-                        <span className="text-[9px] font-normal">{slot.amount}</span>
+                        <span className="text-[10px]">{slot.amount}</span>
                       </>
                     )}
                   </div>
@@ -703,10 +692,10 @@ export default function TCUpkeepModal({ onClose }) {
             </div>
             
             {/* Summary */}
-            <div className="text-xs space-y-3 bg-gray-900/30 rounded-lg p-3 border border-orange-600/30">
-              <div className="font-semibold text-orange-200 font-mono">
+            <div className="text-xs space-y-2">
+              <div className="font-semibold text-gray-700">
                 Days until wipe: 
-                <span className="text-orange-400 ml-1">
+                <span className="text-purple-600 ml-1">
                   {Math.floor(calculateOptimalStorage.daysUntilWipe)} days {Math.floor((calculateOptimalStorage.daysUntilWipe % 1) * 24)} hours
                 </span>
               </div>
@@ -721,53 +710,63 @@ export default function TCUpkeepModal({ onClose }) {
                 
                 if ((currentTimeInDays > 0 || isTimerActive) && calculateOptimalStorage.effectiveMaxDays > 0 && trackRemainingTime) {
                   const currentInTC = {}
-                  const neededToFill = {}
-                  
-                  // Check if already good for wipe
-                  const isGoodForWipe = currentTimeInDays >= daysUntilWipe
+                  const neededToAdd = {}
                   
                   Object.keys(mainTC).forEach(type => {
                     const numericValue = getNumericValue(mainTC[type])
                     if (numericValue > 0) {
                       currentInTC[type] = Math.floor(numericValue * currentTimeInDays)
-                      // Only need to fill up to wipe time, not beyond
-                      const maxNeeded = Math.floor(numericValue * daysUntilWipe)
-                      neededToFill[type] = Math.max(0, Math.min(
-                        (calculateOptimalStorage.totalMaterials[type] || 0) - currentInTC[type],
-                        maxNeeded - currentInTC[type]
-                      ))
+                      const totalNeeded = Math.floor(numericValue * daysUntilWipe)
+                      neededToAdd[type] = Math.max(0, totalNeeded - currentInTC[type])
                     }
                   })
                   
+                  const timeRemaining = currentTimeInDays
+                  const daysRem = Math.floor(timeRemaining)
+                  const hoursRem = Math.floor((timeRemaining % 1) * 24)
+                  const minutesRem = Math.floor(((timeRemaining % 1) * 24 % 1) * 60)
+                  
                   return (
                     <>
-                      <div className={`font-semibold font-mono ${isGoodForWipe ? 'text-green-400' : 'text-red-400'} mb-2`}>
-                        Current Status: {isGoodForWipe ? 'Good for wipe!' : 'Needs more resources'}
-                      </div>
-                      
                       {Object.keys(currentInTC).length > 0 && (
                         <div>
-                          <div className="font-semibold text-orange-200 mb-1 font-mono">Currently in TC:</div>
-                          <div className="grid grid-cols-2 gap-2 mb-2">
+                          <div className="font-semibold text-gray-700 mb-1">Currently in TC ({daysRem}d {hoursRem}h {minutesRem}m remaining):</div>
+                          <div className="grid grid-cols-1 gap-1 mb-2">
                             {Object.entries(currentInTC).map(([type, amount]) => (
                               <div key={type} className="flex justify-between">
-                                <span className="text-orange-300 font-mono">{type.toUpperCase()}:</span>
-                                <span className="font-bold text-orange-100 font-mono">{formatNumber(amount)}</span>
+                                <span className="text-gray-600">{type.toUpperCase()}:</span>
+                                <span className="font-bold">{formatNumber(amount)}</span>
                               </div>
                             ))}
                           </div>
                         </div>
                       )}
                       
-                      {!isGoodForWipe && Object.values(neededToFill).some(val => val > 0) && (
+                      {calculateOptimalStorage.effectiveMaxDays > 0 && (
                         <div>
-                          <div className="font-semibold text-orange-200 mb-1 font-mono">Still need to add:</div>
-                          <div className="grid grid-cols-2 gap-2 mb-2">
-                            {Object.entries(neededToFill).map(([type, amount]) => 
+                          <div className="font-semibold text-gray-700 mb-1">
+                            Resources Needed (until max: {Math.floor(calculateOptimalStorage.effectiveMaxDays)}d {Math.floor((calculateOptimalStorage.effectiveMaxDays % 1) * 24)}h):
+                          </div>
+                          <div className="grid grid-cols-1 gap-1 mb-2">
+                            {Object.entries(calculateOptimalStorage.totalMaterials).map(([type, amount]) => (
+                              <div key={type} className="flex justify-between">
+                                <span className="text-gray-600">{type.toUpperCase()}:</span>
+                                <span className="font-bold">{formatNumber(amount)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {Object.values(neededToAdd).some(val => val > 0) && (
+                        <div>
+                          <div className="font-semibold text-gray-700 mb-1">Need to add for wipe(+{Math.floor(daysUntilWipe - currentTimeInDays)}d {Math.floor(((daysUntilWipe - currentTimeInDays) % 1) * 24)}h to reach wipe):</div>
+                          <div className="grid grid-cols-1 gap-1 mb-2">
+                            {Object.entries(neededToAdd).map(([type, amount]) => 
                               amount > 0 && (
                                 <div key={type} className="flex justify-between">
-                                  <span className="text-orange-300 font-mono">{type.toUpperCase()}:</span>
-                                  <span className="font-bold text-red-400 font-mono">{formatNumber(amount)}</span>
+                                  <span className="text-gray-600">{type.toUpperCase()}:</span>
+                                  <span className="font-bold text-red-600">{formatNumber(amount)}(1 box)</span>
                                 </div>
                               )
                             )}
@@ -777,42 +776,25 @@ export default function TCUpkeepModal({ onClose }) {
                     </>
                   )
                 }
-                return null
+                
+                return calculateOptimalStorage.effectiveMaxDays > 0 && (
+                  <div>
+                    <div className="font-semibold text-gray-700 mb-1">
+                      Resources Needed (until max: {Math.floor(calculateOptimalStorage.effectiveMaxDays)}d {Math.floor((calculateOptimalStorage.effectiveMaxDays % 1) * 24)}h):
+                    </div>
+                    <div className="grid grid-cols-1 gap-1 mb-2">
+                      {Object.entries(calculateOptimalStorage.totalMaterials).map(([type, amount]) => (
+                        <div key={type} className="flex justify-between">
+                          <span className="text-gray-600">{type.toUpperCase()}:</span>
+                          <span className="font-bold">{formatNumber(amount)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
               })()}
               
-              {/* Show Resources Needed if no timer is active */}
-              {(() => {
-                const days = parseInt(timerDays) || 0
-                const hours = parseInt(timerHours) || 0
-                const minutes = parseInt(timerMinutes) || 0
-                const currentTimeInDays = days + (hours / 24) + (minutes / (24 * 60))
-                
-                if (!((currentTimeInDays > 0 || isTimerActive) && calculateOptimalStorage.effectiveMaxDays > 0 && trackRemainingTime)) {
-                  return calculateOptimalStorage.effectiveMaxDays > 0 && (
-                    <div>
-                      <div className="font-semibold text-orange-200 mb-1 font-mono">
-                        Resources Needed {calculateOptimalStorage.effectiveMaxDays >= calculateOptimalStorage.daysUntilWipe ? "(for full wipe)" : `(until max: ${Math.floor(calculateOptimalStorage.effectiveMaxDays)}d ${Math.floor((calculateOptimalStorage.effectiveMaxDays % 1) * 24)}h)`}:
-                        {calculateOptimalStorage.maxDays > calculateOptimalStorage.daysUntilWipe && calculateOptimalStorage.effectiveMaxDays < calculateOptimalStorage.daysUntilWipe && (
-                          <span className="text-xs text-orange-400/70 ml-1 font-mono">
-                            (capped from {Math.floor(calculateOptimalStorage.maxDays)}d)
-                          </span>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 mb-2">
-                        {Object.entries(calculateOptimalStorage.totalMaterials).map(([type, amount]) => (
-                          <div key={type} className="flex justify-between">
-                            <span className="text-orange-300 font-mono">{type.toUpperCase()}:</span>
-                            <span className="font-bold text-orange-100 font-mono">{formatNumber(amount)}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                }
-                return null
-              })()} 
-              
-              <div className="text-[10px] text-orange-400/60 border-t border-orange-600/30 pt-2 font-mono">
+              <div className="text-[10px] text-gray-500 border-t pt-2">
                 Resources are optimized to last until wipe. No materials are wasted on upkeep beyond the wipe time.
               </div>
             </div>
