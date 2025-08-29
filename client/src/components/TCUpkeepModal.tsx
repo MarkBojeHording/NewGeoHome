@@ -539,9 +539,14 @@ export default function TCUpkeepModal({ onClose }) {
                   </div>
                   <div className="flex items-center space-x-8">
                     <span className="w-40 text-center text-orange-200 font-mono">
-                      {[tc.woodUpkeep, tc.stoneUpkeep, tc.metalUpkeep, tc.hqmUpkeep].filter(x => x > 0).length > 0 ? 
-                        [tc.woodUpkeep, tc.stoneUpkeep, tc.metalUpkeep, tc.hqmUpkeep].map(x => x || 0).join('/') : '0/0/0/0'
-                      }
+                      {(() => {
+                        const materials = []
+                        if (tc.woodUpkeep > 0) materials.push(`W${tc.woodUpkeep}`)
+                        if (tc.stoneUpkeep > 0) materials.push(`S${tc.stoneUpkeep}`)
+                        if (tc.metalUpkeep > 0) materials.push(`M${tc.metalUpkeep}`)
+                        if (tc.hqmUpkeep > 0) materials.push(`H${tc.hqmUpkeep}`)
+                        return materials.length > 0 ? materials.join(' ') : '--'
+                      })()}
                     </span>
                     <div className="flex items-center space-x-1">
                       <button
