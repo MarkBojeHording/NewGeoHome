@@ -1077,7 +1077,7 @@ const BaseModal = ({
             )}
           </div>
 
-          <div className="bg-gray-900 rounded-lg shadow-xl w-full max-w-2xl mx-4 border-2 border-orange-600/50 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
+          <div className="bg-gray-900 rounded-lg shadow-xl w-full max-w-xl mx-4 border-2 border-orange-600/50 flex flex-col relative" style={{height: '95vh', maxHeight: '805px', zIndex: 50}}>
             {/* Report ID Display - Top Left of Modal */}
             {modalType === 'report' && (
               <div className="absolute top-2 left-2 z-20">
