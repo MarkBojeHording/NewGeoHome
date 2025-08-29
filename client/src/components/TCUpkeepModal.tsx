@@ -323,7 +323,7 @@ export default function TCUpkeepModal({ onClose }) {
   }
   
   return (
-    <div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
       <style>{`
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
@@ -334,37 +334,39 @@ export default function TCUpkeepModal({ onClose }) {
           -moz-appearance: textfield;
         }
       `}</style>
-      <div className="bg-gray-800 rounded p-3 text-white">
+      <div className="bg-white rounded-lg shadow-xl" style={{ width: '400px' }} onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center space-x-4 mb-2">
-          <span className="text-sm font-medium text-orange-300 font-mono tracking-wide">[UPKEEP TRACKER]</span>
-          <label className="flex items-center text-xs">
-            <input 
-              type="checkbox" 
-              checked={goodForWipe}
-              onChange={e => setGoodForWipe(e.target.checked)}
-              className="mr-1"
-            />
-            Good for wipe
-          </label>
-          <label className="flex items-center text-xs">
-            <input 
-              type="checkbox" 
-              checked={trackForTotal}
-              onChange={e => setTrackForTotal(e.target.checked)}
-              className="mr-1"
-            />
-            Track for total
-          </label>
-          <label className="flex items-center text-xs" title="Enable to track and countdown remaining upkeep time">
-            <input 
-              type="checkbox" 
-              checked={trackRemainingTime}
-              onChange={e => setTrackRemainingTime(e.target.checked)}
-              className="mr-1"
-            />
-            Track time
-          </label>
+        <div className="flex justify-between items-center px-3 py-1 border-b">
+          <div className="flex items-center space-x-4">
+            <label className="flex items-center text-xs">
+              <input 
+                type="checkbox" 
+                checked={goodForWipe}
+                onChange={e => setGoodForWipe(e.target.checked)}
+                className="mr-1"
+              />
+              Good for wipe
+            </label>
+            <label className="flex items-center text-xs">
+              <input 
+                type="checkbox" 
+                checked={trackForTotal}
+                onChange={e => setTrackForTotal(e.target.checked)}
+                className="mr-1"
+              />
+              Track for total
+            </label>
+            <label className="flex items-center text-xs" title="Enable to track and countdown remaining upkeep time">
+              <input 
+                type="checkbox" 
+                checked={trackRemainingTime}
+                onChange={e => setTrackRemainingTime(e.target.checked)}
+                className="mr-1"
+              />
+              Track time
+            </label>
+          </div>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-lg leading-none">×</button>
         </div>
         
         {/* Main TC Section */}
