@@ -133,7 +133,11 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
   
   // Calculate TC upkeep values based on tcData
   const calculateTCResources = () => {
+    console.log('TC Data:', tcData);
+    console.log('Wipe Countdown:', wipeCountdown);
+    
     if (!tcData || !tcData.mainTC) {
+      console.log('No TC data or mainTC found');
       return { wood: 0, stone: 0, metal: 0, hqm: 0 };
     }
 
@@ -147,6 +151,8 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
       metal: getNumericValue(mainTC.metal),
       hqm: getNumericValue(mainTC.hqm)
     };
+    
+    console.log('Daily upkeep values:', daily);
 
     // If timer is set and active, use "Upkeep that can fit" calculation
     if (tcData.trackRemainingTime && tcData.timerDays && tcData.timerHours && tcData.timerMinutes) {
@@ -179,6 +185,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
           maxUpkeep[type] = 0;
         }
       });
+      console.log('Calculated max upkeep:', maxUpkeep);
       return maxUpkeep;
     }
 
