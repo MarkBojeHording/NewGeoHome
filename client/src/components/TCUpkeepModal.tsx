@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 // Utility function
 const formatNumber = (num) => num.toLocaleString()
 
-export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
+export default function TCUpkeepModal({ onClose, wipeCountdown = null, tcData, onTCDataChange }) {
   // Use provided countdown or calculate fallback
   const countdown = useMemo(() => {
     if (wipeCountdown) {
@@ -31,22 +31,25 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
       fractionalDays: Math.floor(diff / (1000 * 60 * 60 * 24)) + Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) / 24
     }
   }, [wipeCountdown])
-  const [goodForWipe, setGoodForWipe] = useState(false)
-  const [trackForTotal, setTrackForTotal] = useState(true)
-  const [trackRemainingTime, setTrackRemainingTime] = useState(true)
-  const [timerDays, setTimerDays] = useState('')
-  const [timerHours, setTimerHours] = useState('')
-  const [timerMinutes, setTimerMinutes] = useState('')
-  const [isTimerActive, setIsTimerActive] = useState(false)
+  // Use props data instead of local state
+  const goodForWipe = tcData?.goodForWipe || false
+  const trackForTotal = tcData?.trackForTotal !== undefined ? tcData.trackForTotal : true
+  const trackRemainingTime = tcData?.trackRemainingTime || false
+  const timerDays = tcData?.timerDays || '00'
+  const timerHours = tcData?.timerHours || '00'
+  const timerMinutes = tcData?.timerMinutes || '00'
+  const isTimerActive = tcData?.isTimerActive || false
+  const mainTC = tcData?.mainTC || { wood: '', stone: '', metal: '', hqm: '' }
+  const additionalTCs = tcData?.additionalTCs || []
+
+  // Helper function to update TC data
+  const updateTCData = (updates) => {
+    if (onTCDataChange) {
+      onTCDataChange({ ...tcData, ...updates })
+    }
+  }
+
   const [showTCAdvanced, setShowTCAdvanced] = useState(false)
-  const [mainTC, setMainTC] = useState({
-    wood: '',
-    stone: '',
-    metal: '',
-    hqm: ''
-  })
-  
-  const [additionalTCs, setAdditionalTCs] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [tcEntry, setTcEntry] = useState({
@@ -65,7 +68,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
   // Stop timer when tracking is disabled
   useEffect(() => {
     if (!trackRemainingTime) {
-      setIsTimerActive(false)
+      updateTCData({ isTimerActive: false })
     }
   }, [trackRemainingTime])
   
@@ -81,10 +84,12 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
         
         if (totalSeconds <= 60) {
           // Timer expired
-          setIsTimerActive(false)
-          setTimerDays('00')
-          setTimerHours('00')
-          setTimerMinutes('00')
+          updateTCData({ 
+            isTimerActive: false,
+            timerDays: '00',
+            timerHours: '00',
+            timerMinutes: '00'
+          })
         } else {
           // Decrement by 1 minute
           totalSeconds -= 60
@@ -92,9 +97,11 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
           const newHours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60))
           const newMinutes = Math.floor((totalSeconds % (60 * 60)) / 60)
           
-          setTimerDays(newDays.toString().padStart(2, '0'))
-          setTimerHours(newHours.toString().padStart(2, '0'))
-          setTimerMinutes(newMinutes.toString().padStart(2, '0'))
+          updateTCData({
+            timerDays: newDays.toString().padStart(2, '0'),
+            timerHours: newHours.toString().padStart(2, '0'),
+            timerMinutes: newMinutes.toString().padStart(2, '0')
+          })
         }
       }, 60000)  // Update every minute
       
@@ -123,10 +130,10 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
     }
   }
   
-  const handleInputChange = (setter, value, max) => {
+  const handleInputChange = (field, value, max) => {
     // Allow typing but validate max
     if (value === '' || (parseInt(value) >= 0 && parseInt(value) <= max)) {
-      setter(value)
+      updateTCData({ [field]: value })
     }
   }
   
@@ -287,15 +294,17 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
     if (!tcEntry.name.trim()) return
     
     if (editingId) {
-      setAdditionalTCs(tcs => tcs.map(tc => 
+      const updatedTCs = additionalTCs.map(tc => 
         tc.id === editingId ? { ...tc, ...tcEntry } : tc
-      ))
+      )
+      updateTCData({ additionalTCs: updatedTCs })
       setEditingId(null)
     } else {
-      setAdditionalTCs([...additionalTCs, {
+      const newTCs = [...additionalTCs, {
         id: Date.now(),
         ...tcEntry
-      }])
+      }]
+      updateTCData({ additionalTCs: newTCs })
     }
     
     setTcEntry({ name: '', woodUpkeep: 0, stoneUpkeep: 0, metalUpkeep: 0, hqmUpkeep: 0, remainingDays: '', remainingHours: '', remainingMinutes: '' })
@@ -318,7 +327,8 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
   }
   
   const handleDeleteTC = (id) => {
-    setAdditionalTCs(additionalTCs.filter(tc => tc.id !== id))
+    const filteredTCs = additionalTCs.filter(tc => tc.id !== id)
+    updateTCData({ additionalTCs: filteredTCs })
   }
   
   return (
@@ -341,7 +351,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
               <input 
                 type="checkbox" 
                 checked={goodForWipe}
-                onChange={e => setGoodForWipe(e.target.checked)}
+                onChange={e => updateTCData({ goodForWipe: e.target.checked })}
                 className="mr-1 text-orange-600 bg-gray-800 border-orange-600/50 rounded focus:ring-orange-500"
               />
               Good for wipe
@@ -350,7 +360,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
               <input 
                 type="checkbox" 
                 checked={trackForTotal}
-                onChange={e => setTrackForTotal(e.target.checked)}
+                onChange={e => updateTCData({ trackForTotal: e.target.checked })}
                 className="mr-1 text-orange-600 bg-gray-800 border-orange-600/50 rounded focus:ring-orange-500"
               />
               Track for total
@@ -359,7 +369,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
               <input 
                 type="checkbox" 
                 checked={trackRemainingTime}
-                onChange={e => setTrackRemainingTime(e.target.checked)}
+                onChange={e => updateTCData({ trackRemainingTime: e.target.checked })}
                 className="mr-1 text-orange-600 bg-gray-800 border-orange-600/50 rounded focus:ring-orange-500"
               />
               Track time
@@ -376,7 +386,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
                 type="text"
                 placeholder="DD"
                 value={timerDays}
-                onChange={e => handleInputChange(setTimerDays, e.target.value, 99)}
+                onChange={e => handleInputChange('timerDays', e.target.value, 99)}
                 onKeyPress={handleKeyPress}
                 onBlur={handleBlur}
                 disabled={!trackRemainingTime}
@@ -391,7 +401,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
                 type="text"
                 placeholder="HH"
                 value={timerHours}
-                onChange={e => handleInputChange(setTimerHours, e.target.value, 23)}
+                onChange={e => handleInputChange('timerHours', e.target.value, 23)}
                 onKeyPress={handleKeyPress}
                 onBlur={handleBlur}
                 disabled={!trackRemainingTime}
@@ -406,7 +416,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
                 type="text"
                 placeholder="MM"
                 value={timerMinutes}
-                onChange={e => handleInputChange(setTimerMinutes, e.target.value, 59)}
+                onChange={e => handleInputChange('timerMinutes', e.target.value, 59)}
                 onKeyPress={handleKeyPress}
                 onBlur={handleBlur}
                 disabled={!trackRemainingTime}
@@ -425,7 +435,7 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
                 <input
                   type="number"
                   value={mainTC[type]}
-                  onChange={e => setMainTC({ ...mainTC, [type]: e.target.value })}
+                  onChange={e => updateTCData({ mainTC: { ...mainTC, [type]: e.target.value } })}
                   className="w-full border border-orange-600/40 rounded px-1 py-0.5 text-sm bg-gray-900 text-orange-200 focus:border-orange-500 focus:outline-none font-mono"
                   min="0"
                   placeholder=""

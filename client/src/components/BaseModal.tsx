@@ -646,7 +646,20 @@ const BaseModal = ({
     primaryRockets: 0,
     enemyPlayers: '',
     friendlyPlayers: '',
-    reportId: generateReportId()
+    reportId: generateReportId(),
+    
+    // TC Calculator data
+    tcData: {
+      goodForWipe: false,
+      trackForTotal: true,
+      mainTC: { wood: '', stone: '', metal: '', hqm: '' },
+      additionalTCs: [],
+      trackRemainingTime: false,
+      timerDays: '00',
+      timerHours: '00',
+      timerMinutes: '00',
+      isTimerActive: false
+    }
   })
   
   const [showOwnerSuggestions, setShowOwnerSuggestions] = useState(false)
@@ -718,7 +731,20 @@ const BaseModal = ({
         primaryRockets: editingLocation.primaryRockets || 0,
         enemyPlayers: editingLocation.enemyPlayers || '',
         friendlyPlayers: editingLocation.friendlyPlayers || '',
-        reportId: editingLocation.displayReportId || editingLocation.reportId || generateReportId() // Use displayReportId first
+        reportId: editingLocation.displayReportId || editingLocation.reportId || generateReportId(), // Use displayReportId first
+        
+        // Load saved TC Calculator data
+        tcData: editingLocation.tcData || {
+          goodForWipe: false,
+          trackForTotal: true,
+          mainTC: editingLocation.mainTC || { wood: '', stone: '', metal: '', hqm: '' },
+          additionalTCs: editingLocation.additionalTCs || [],
+          trackRemainingTime: editingLocation.trackRemainingTime || false,
+          timerDays: editingLocation.tcTimerDays || '00',
+          timerHours: editingLocation.tcTimerHours || '00',
+          timerMinutes: editingLocation.tcTimerMinutes || '00',
+          isTimerActive: false
+        }
       })
     } else if (modalType === 'report') {
       const now = new Date()
@@ -804,7 +830,16 @@ const BaseModal = ({
       hostileSamsite: modalType === 'enemy' ? formData.hostileSamsite : undefined,
 
       primaryRockets: modalType === 'enemy' ? formData.primaryRockets : undefined,
-      name: editableCoordinate // Use the edited coordinate as the name
+      name: editableCoordinate, // Use the edited coordinate as the name
+      
+      // Include TC Calculator data for friendly bases
+      tcData: modalType === 'friendly' ? formData.tcData : undefined,
+      mainTC: modalType === 'friendly' ? formData.tcData.mainTC : undefined,
+      additionalTCs: modalType === 'friendly' ? formData.tcData.additionalTCs : undefined,
+      trackRemainingTime: modalType === 'friendly' ? formData.tcData.trackRemainingTime : undefined,
+      tcTimerDays: modalType === 'friendly' ? formData.tcData.timerDays : undefined,
+      tcTimerHours: modalType === 'friendly' ? formData.tcData.timerHours : undefined,
+      tcTimerMinutes: modalType === 'friendly' ? formData.tcData.timerMinutes : undefined
     }
     
     onSave(baseData)
@@ -969,7 +1004,11 @@ const BaseModal = ({
 
       <div className="col-span-3">
         {modalType === 'friendly' && (
-          <TCUpkeepModal onClose={() => {}} />
+          <TCUpkeepModal 
+            onClose={() => {}} 
+            tcData={formData.tcData}
+            onTCDataChange={(newTCData) => setFormData(prev => ({ ...prev, tcData: newTCData }))}
+          />
         )}
         
         {modalType === 'enemy' && (
