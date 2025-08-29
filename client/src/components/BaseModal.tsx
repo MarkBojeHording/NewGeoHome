@@ -5,6 +5,7 @@ import { apiRequest, queryClient } from '@/lib/queryClient'
 import { RocketCalculatorSection } from './RocketCalculator'
 import { ReportPreview } from './ReportPreview'
 import ActionReportModal from './ActionReportModal'
+import TCUpkeepModal from './TCUpkeepModal'
 import type { ExternalPlayer } from '@shared/schema'
 
 // ============= CONSTANTS =============
@@ -654,6 +655,7 @@ const BaseModal = ({
   const [showRocketCalculator, setShowRocketCalculator] = useState(false)
   const [rocketCalculatorPosition, setRocketCalculatorPosition] = useState({ x: 0, y: 0 })
   const [showReportPanel, setShowReportPanel] = useState(false)
+  const [showTCUpkeepModal, setShowTCUpkeepModal] = useState(false)
   const [isEditingCoordinate, setIsEditingCoordinate] = useState(false)
   const [editableCoordinate, setEditableCoordinate] = useState('')
   
@@ -969,26 +971,13 @@ const BaseModal = ({
       <div className="col-span-3">
         {modalType === 'friendly' && (
           <div className="border border-orange-600/50 rounded-lg p-3 bg-gray-800 mb-3">
-            <label className="block text-sm font-medium mb-1 text-orange-300 font-mono tracking-wide">[UPKEEP TRACKER]</label>
-            <div className="space-y-2">
-              {['wood', 'stone', 'metal', 'hqm'].map((resource) => (
-                <div key={resource} className="flex items-center gap-3">
-                  <label className="text-xs font-medium text-orange-400 w-12 capitalize font-mono">[{resource.toUpperCase()}]</label>
-                  <input 
-                    type="number" 
-                    value={formData.upkeep[resource]} 
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      upkeep: { ...prev.upkeep, [resource]: Math.max(0, Math.min(999999, Number(e.target.value))) }
-                    }))} 
-                    className="flex-1 px-1.5 py-0.5 bg-gray-900 border border-orange-600/40 rounded text-sm text-orange-200 focus:border-orange-500 focus:outline-none font-mono" 
-                    min="0"
-                    max="999999"
-                    style={{maxWidth: '100px'}}
-                  />
-                </div>
-              ))}
-            </div>
+            <label className="block text-sm font-medium mb-2 text-orange-300 font-mono tracking-wide">[UPKEEP TRACKER]</label>
+            <button
+              onClick={() => setShowTCUpkeepModal(true)}
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded font-mono text-sm transition-colors"
+            >
+              Open TC Upkeep Manager
+            </button>
           </div>
         )}
         
@@ -1519,6 +1508,10 @@ const BaseModal = ({
       </div>
       
 
+      {/* TCUpkeepModal - only show when button is clicked */}
+      {showTCUpkeepModal && (
+        <TCUpkeepModal onClose={() => setShowTCUpkeepModal(false)} />
+      )}
       
     </div>
   )
