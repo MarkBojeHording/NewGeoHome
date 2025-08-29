@@ -443,32 +443,7 @@ export default function TCUpkeepModal({ onClose }) {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowTCAdvanced(true)}
-                disabled={
-                  (getNumericValue(mainTC.wood) === 0 && getNumericValue(mainTC.stone) === 0 && 
-                   getNumericValue(mainTC.metal) === 0 && getNumericValue(mainTC.hqm) === 0)
-                }
-                className={`px-2 py-1 text-xs rounded text-white font-mono ${(() => {
-                  const hasUpkeep = getNumericValue(mainTC.wood) > 0 || getNumericValue(mainTC.stone) > 0 || 
-                                   getNumericValue(mainTC.metal) > 0 || getNumericValue(mainTC.hqm) > 0
-                  if (!hasUpkeep) return 'bg-gray-500 cursor-not-allowed'
-                  
-                  // If time tracking is off, show blue button
-                  if (!trackRemainingTime) return 'bg-blue-500 hover:bg-blue-600'
-                  
-                  // Check current time vs wipe time
-                  const days = parseInt(timerDays) || 0
-                  const hours = parseInt(timerHours) || 0
-                  const minutes = parseInt(timerMinutes) || 0
-                  const totalMinutes = (days * 24 * 60) + (hours * 60) + minutes
-                  const wipeMinutes = countdown.days * 24 * 60 + countdown.hours * 60
-                  
-                  // If no timer is set, show blue (neutral)
-                  if (totalMinutes === 0) return 'bg-blue-500 hover:bg-blue-600'
-                  
-                  if (totalMinutes >= wipeMinutes * 0.8) return 'bg-green-500 hover:bg-green-600'
-                  if (totalMinutes >= wipeMinutes * 0.5) return 'bg-yellow-500 hover:bg-yellow-600'
-                  return 'bg-red-500 hover:bg-red-600'
-                })()}`}
+                className="px-2 py-1 text-xs rounded text-white font-mono bg-blue-500 hover:bg-blue-600"
                 title={(() => {
                   const hasUpkeep = getNumericValue(mainTC.wood) > 0 || getNumericValue(mainTC.stone) > 0 || 
                                    getNumericValue(mainTC.metal) > 0 || getNumericValue(mainTC.hqm) > 0
