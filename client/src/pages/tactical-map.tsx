@@ -1311,7 +1311,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               baseId={location?.id}
               baseName={location?.name}
               baseCoords={location?.name}
-              tcData={bases.find(base => base.id === location?.id)?.formData}
+              tcData={location?.formData}
               wipeCountdown={wipeCountdown}
             />
           </div>
