@@ -672,10 +672,16 @@ export default function TCUpkeepModal({ onClose }) {
                     key={i} 
                     className={`w-12 h-12 border-2 rounded flex flex-col items-center justify-center text-xs font-bold font-mono
                       ${slot.type === 'empty' ? 'bg-gray-700 border-gray-600 text-gray-500' : 
-                        slot.type === 'wood' ? 'bg-yellow-600 border-yellow-500 text-white' :
-                        slot.type === 'stone' ? 'bg-gray-500 border-gray-400 text-white' :
-                        slot.type === 'metal' ? 'bg-zinc-600 border-zinc-500 text-white' :
-                        'bg-blue-600 border-blue-500 text-white'}`}
+                        slot.type === 'wood' ? 'border-orange-500 text-black' :
+                        slot.type === 'stone' ? 'border-gray-300 text-black' :
+                        slot.type === 'metal' ? 'border-red-400 text-black' :
+                        'border-blue-300 text-black'}`}
+                    style={slot.type !== 'empty' ? {
+                      backgroundColor: slot.type === 'wood' ? 'hsl(30, 60%, 45%)' :
+                                     slot.type === 'stone' ? 'white' :
+                                     slot.type === 'metal' ? '#E57373' :
+                                     'hsl(200, 25%, 75%)'
+                    } : {}}
                   >
                     {slot.type !== 'empty' && (
                       <>
