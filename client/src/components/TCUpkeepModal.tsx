@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 // Utility function
 const formatNumber = (num) => num.toLocaleString()
 
-export default function TCUpkeepModal({ onClose, wipeCountdown = null, initialUpkeep = null, onUpkeepChange = null }) {
+export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
   // Use provided countdown or calculate fallback
   const countdown = useMemo(() => {
     if (wipeCountdown) {
@@ -40,10 +40,10 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null, initialUp
   const [isTimerActive, setIsTimerActive] = useState(false)
   const [showTCAdvanced, setShowTCAdvanced] = useState(false)
   const [mainTC, setMainTC] = useState({
-    wood: initialUpkeep?.wood?.toString() || '',
-    stone: initialUpkeep?.stone?.toString() || '',
-    metal: initialUpkeep?.metal?.toString() || '',
-    hqm: initialUpkeep?.hqm?.toString() || ''
+    wood: '',
+    stone: '',
+    metal: '',
+    hqm: ''
   })
   
   const [additionalTCs, setAdditionalTCs] = useState([])
@@ -62,9 +62,6 @@ export default function TCUpkeepModal({ onClose, wipeCountdown = null, initialUp
   
 
   
-  // Remove the callback for now to prevent infinite loop
-  // Will implement persistence differently
-
   // Stop timer when tracking is disabled
   useEffect(() => {
     if (!trackRemainingTime) {

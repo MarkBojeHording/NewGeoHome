@@ -1929,51 +1929,6 @@ export default function InteractiveTacticalMap() {
     }
   }, [])
 
-  // Load base locations from database on component mount
-  useEffect(() => {
-    const loadBaseLocations = async () => {
-      try {
-        const response = await fetch('/api/base-locations')
-        if (response.ok) {
-          const baseLocations = await response.json()
-          console.log('Loaded base locations from database:', baseLocations.length)
-          
-          // Transform database format to component format
-          const transformedLocations = baseLocations.map(dbBase => ({
-            id: dbBase.id,
-            name: dbBase.name,
-            type: dbBase.type,
-            x: dbBase.mapX,
-            y: dbBase.mapY,
-            notes: dbBase.notes || '',
-            upkeep: dbBase.tcUpkeep || { wood: 0, stone: 0, metal: 0, hqm: 0 },
-            tcTimerDays: dbBase.tcTimerDays || '00',
-            tcTimerHours: dbBase.tcTimerHours || '00',
-            tcTimerMinutes: dbBase.tcTimerMinutes || '00',
-            trackRemainingTime: dbBase.trackRemainingTime || false,
-            players: dbBase.players || '',
-            isMainBase: dbBase.isMainBase || false,
-            oldestTC: dbBase.oldestTC || 0,
-            ownerCoordinates: dbBase.ownerCoordinates || '',
-            library: dbBase.library || false,
-            youtube: dbBase.youtube || false,
-            roofCamper: dbBase.roofCamper || false,
-            hostileSamsite: dbBase.hostileSamsite || false,
-            primaryRockets: dbBase.primaryRockets || 0
-          }))
-          
-          setLocations(transformedLocations)
-        } else {
-          console.error('Failed to load base locations:', response.status)
-        }
-      } catch (error) {
-        console.error('Error loading base locations:', error)
-      }
-    }
-
-    loadBaseLocations()
-  }, [])
-
 
 
   const getOwnedBases = useCallback((ownerName) => {
@@ -2115,137 +2070,21 @@ export default function InteractiveTacticalMap() {
     }
     
     // Regular base/location saving logic below:
-    try {
-      if (editingLocation) {
-        // Update existing base in database
-        const updatedLocation = { ...editingLocation, ...baseData }
-        
-        // Prepare database update payload
-        const updatePayload = {
-          name: updatedLocation.name,
-          type: updatedLocation.type,
-          coordinates: updatedLocation.name,
-          gridX: Math.floor(newBaseModal.x / 3.125),
-          gridY: Math.floor(newBaseModal.y / 4.167),
-          mapX: Math.round(newBaseModal.x),
-          mapY: Math.round(newBaseModal.y),
-          notes: updatedLocation.notes || '',
-          tcUpkeep: updatedLocation.upkeep || null,
-          tcTimerDays: updatedLocation.tcTimerDays || '00',
-          tcTimerHours: updatedLocation.tcTimerHours || '00',
-          tcTimerMinutes: updatedLocation.tcTimerMinutes || '00',
-          trackRemainingTime: updatedLocation.trackRemainingTime || false,
-          players: updatedLocation.players || '',
-          upkeep: updatedLocation.upkeep ? JSON.stringify(updatedLocation.upkeep) : '',
-          isMainBase: updatedLocation.isMainBase || false,
-          oldestTC: updatedLocation.oldestTC || 0,
-          ownerCoordinates: updatedLocation.ownerCoordinates || '',
-          library: updatedLocation.library || false,
-          youtube: updatedLocation.youtube || false,
-          roofCamper: updatedLocation.roofCamper || false,
-          hostileSamsite: updatedLocation.hostileSamsite || false,
-          primaryRockets: updatedLocation.primaryRockets || 0
-        }
-        
-        const response = await fetch(`/api/base-locations/${editingLocation.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatePayload)
-        })
-        
-        if (response.ok) {
-          const savedBase = await response.json()
-          console.log('Base updated successfully:', savedBase.id)
-          
-          setLocations(prev => prev.map(loc => 
-            loc.id === editingLocation.id ? { ...loc, ...baseData } : loc
-          ))
-          setSelectedLocation({ ...editingLocation, ...baseData })
-        } else {
-          console.error('Failed to update base:', await response.text())
-          // Still update UI state as fallback
-          setLocations(prev => prev.map(loc => 
-            loc.id === editingLocation.id ? { ...loc, ...baseData } : loc
-          ))
-          setSelectedLocation({ ...editingLocation, ...baseData })
-        }
-      } else {
-        // Create new base in database
-        const baseName = getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null)
-        const newLocation = {
-          id: Date.now().toString(),
-          name: baseName,
-          x: newBaseModal.x,
-          y: newBaseModal.y,
-          ...baseData
-        }
-        
-        // Prepare database create payload
-        const createPayload = {
-          id: newLocation.id,
-          name: baseName,
-          type: newLocation.type,
-          coordinates: baseName,
-          gridX: Math.floor(newBaseModal.x / 3.125),
-          gridY: Math.floor(newBaseModal.y / 4.167),
-          mapX: Math.round(newBaseModal.x),
-          mapY: Math.round(newBaseModal.y),
-          notes: newLocation.notes || '',
-          tcUpkeep: newLocation.upkeep || null,
-          tcTimerDays: newLocation.tcTimerDays || '00',
-          tcTimerHours: newLocation.tcTimerHours || '00',
-          tcTimerMinutes: newLocation.tcTimerMinutes || '00',
-          trackRemainingTime: newLocation.trackRemainingTime || false,
-          players: newLocation.players || '',
-          upkeep: newLocation.upkeep ? JSON.stringify(newLocation.upkeep) : '',
-          isMainBase: newLocation.isMainBase || false,
-          oldestTC: newLocation.oldestTC || 0,
-          ownerCoordinates: newLocation.ownerCoordinates || '',
-          library: newLocation.library || false,
-          youtube: newLocation.youtube || false,
-          roofCamper: newLocation.roofCamper || false,
-          hostileSamsite: newLocation.hostileSamsite || false,
-          primaryRockets: newLocation.primaryRockets || 0
-        }
-        
-        const response = await fetch('/api/base-locations', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(createPayload)
-        })
-        
-        if (response.ok) {
-          const savedBase = await response.json()
-          console.log('Base saved successfully:', savedBase.id)
-          
-          setLocations(prev => [...prev, newLocation])
-          setSelectedLocation(newLocation)
-        } else {
-          console.error('Failed to save base:', await response.text())
-          // Still update UI state as fallback
-          setLocations(prev => [...prev, newLocation])
-          setSelectedLocation(newLocation)
-        }
+    if (editingLocation) {
+      setLocations(prev => prev.map(loc => 
+        loc.id === editingLocation.id ? { ...loc, ...baseData } : loc
+      ))
+      setSelectedLocation({ ...editingLocation, ...baseData })
+    } else {
+      const newLocation = {
+        id: Date.now().toString(),
+        name: getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null),
+        x: newBaseModal.x,
+        y: newBaseModal.y,
+        ...baseData
       }
-    } catch (error) {
-      console.error('Error saving base to database:', error)
-      // Fallback to original logic for UI state
-      if (editingLocation) {
-        setLocations(prev => prev.map(loc => 
-          loc.id === editingLocation.id ? { ...loc, ...baseData } : loc
-        ))
-        setSelectedLocation({ ...editingLocation, ...baseData })
-      } else {
-        const newLocation = {
-          id: Date.now().toString(),
-          name: getGridCoordinate(newBaseModal.x, newBaseModal.y, locations, null),
-          x: newBaseModal.x,
-          y: newBaseModal.y,
-          ...baseData
-        }
-        setLocations(prev => [...prev, newLocation])
-        setSelectedLocation(newLocation)
-      }
+      setLocations(prev => [...prev, newLocation])
+      setSelectedLocation(newLocation)
     }
     
     setNewBaseModal(prev => ({ ...prev, visible: false }))

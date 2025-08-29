@@ -969,10 +969,7 @@ const BaseModal = ({
 
       <div className="col-span-3">
         {modalType === 'friendly' && (
-          <TCUpkeepModal 
-            onClose={() => {}} 
-            initialUpkeep={formData.upkeep}
-          />
+          <TCUpkeepModal onClose={() => {}} />
         )}
         
         {modalType === 'enemy' && (

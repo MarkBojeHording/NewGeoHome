@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertReportSchema, insertReportTemplateSchema, insertPremiumPlayerSchema, insertPlayerBaseTagSchema, insertPlayerProfileSchema, insertBaseLocationSchema } from "@shared/schema";
+import { insertReportSchema, insertReportTemplateSchema, insertPremiumPlayerSchema, insertPlayerBaseTagSchema, insertPlayerProfileSchema } from "@shared/schema";
 
 // TEMPORARY FAKE DATA FUNCTIONS - TO BE DELETED LATER
 function getTempFakePlayers() {
@@ -479,74 +479,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting player profile:", error);
       res.status(500).json({ error: "Failed to delete player profile" });
-    }
-  });
-
-  // Base Locations API routes
-  
-  // Get all base locations
-  app.get("/api/base-locations", async (req, res) => {
-    try {
-      const baseLocations = await storage.getAllBaseLocations();
-      res.json(baseLocations);
-    } catch (error) {
-      console.error("Error fetching base locations:", error);
-      res.status(500).json({ error: "Failed to fetch base locations" });
-    }
-  });
-
-  // Get specific base location
-  app.get("/api/base-locations/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const baseLocation = await storage.getBaseLocation(id);
-      if (!baseLocation) {
-        return res.status(404).json({ error: "Base location not found" });
-      }
-      res.json(baseLocation);
-    } catch (error) {
-      console.error("Error fetching base location:", error);
-      res.status(500).json({ error: "Failed to fetch base location" });
-    }
-  });
-
-  // Create new base location
-  app.post("/api/base-locations", async (req, res) => {
-    try {
-      const validatedData = insertBaseLocationSchema.parse(req.body);
-      const baseLocation = await storage.createBaseLocation(validatedData);
-      res.status(201).json(baseLocation);
-    } catch (error) {
-      console.error("Error creating base location:", error);
-      res.status(400).json({ error: "Invalid base location data" });
-    }
-  });
-
-  // Update base location
-  app.patch("/api/base-locations/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const baseLocation = await storage.updateBaseLocation(id, req.body);
-      res.json(baseLocation);
-    } catch (error) {
-      console.error("Error updating base location:", error);
-      res.status(500).json({ error: "Failed to update base location" });
-    }
-  });
-
-  // Delete base location
-  app.delete("/api/base-locations/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const success = await storage.deleteBaseLocation(id);
-      if (success) {
-        res.json({ success: true });
-      } else {
-        res.status(404).json({ error: "Base location not found" });
-      }
-    } catch (error) {
-      console.error("Error deleting base location:", error);
-      res.status(500).json({ error: "Failed to delete base location" });
     }
   });
 
