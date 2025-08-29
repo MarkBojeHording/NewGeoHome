@@ -131,14 +131,9 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     setResources(prev => ({ ...prev, ...updates }));
   };
   
-  // Simple calculation: "Max Upkeep in TC" - "Currently in TC" 
+  // Calculate TC resource values using same logic as TC Advanced modal
   const calculateTCResources = () => {
-    console.log('calculateTCResources called');
-    console.log('tcData:', tcData);
-    console.log('wipeCountdown:', wipeCountdown);
-    
     if (!tcData || !tcData.mainTC || !wipeCountdown?.fractionalDays) {
-      console.log('Missing data - returning zeros');
       return { wood: 0, stone: 0, metal: 0, hqm: 0 };
     }
 
@@ -147,57 +142,102 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
       const num = parseInt(val);
       return isNaN(num) ? 0 : num;
     };
-    const mainTC = tcData.mainTC;
-    
+
     const daily = {
-      wood: getNumericValue(mainTC.wood),
-      stone: getNumericValue(mainTC.stone),
-      metal: getNumericValue(mainTC.metal),
-      hqm: getNumericValue(mainTC.hqm)
+      wood: getNumericValue(tcData.mainTC.wood),
+      stone: getNumericValue(tcData.mainTC.stone),
+      metal: getNumericValue(tcData.mainTC.metal),
+      hqm: getNumericValue(tcData.mainTC.hqm)
     };
     
-    console.log('daily values:', daily);
-
-    // Calculate "Max Upkeep in TC" (daily upkeep × wipe days)
-    const maxUpkeepInTC = {};
+    const SLOTS = 24;
+    const STACK_LIMITS = { wood: 1000, stone: 1000, metal: 1000, hqm: 100 };
+    
+    // Skip if no upkeep
+    const totalDaily = daily.wood + daily.stone + daily.metal + daily.hqm;
+    if (totalDaily === 0) {
+      return { wood: 0, stone: 0, metal: 0, hqm: 0 };
+    }
+    
+    // Initialize slot allocation
+    let slotAllocation = { wood: 0, stone: 0, metal: 0, hqm: 0 };
+    let remainingSlots = SLOTS;
+    
+    // Allocate slots to maximize minimum days
+    while (remainingSlots > 0) {
+      let worstType = null;
+      let worstDays = Infinity;
+      
+      Object.keys(daily).forEach(type => {
+        if (daily[type] > 0) {
+          const currentCapacity = slotAllocation[type] * STACK_LIMITS[type];
+          const days = currentCapacity / daily[type];
+          if (days < worstDays) {
+            worstDays = days;
+            worstType = type;
+          }
+        }
+      });
+      
+      if (worstType) {
+        slotAllocation[worstType]++;
+        remainingSlots--;
+      } else {
+        break;
+      }
+    }
+    
+    // Calculate actual max days
+    let maxDays = Infinity;
     Object.keys(daily).forEach(type => {
       if (daily[type] > 0) {
-        maxUpkeepInTC[type] = Math.floor(daily[type] * wipeCountdown.fractionalDays);
+        const capacity = slotAllocation[type] * STACK_LIMITS[type];
+        const days = capacity / daily[type];
+        maxDays = Math.min(maxDays, days);
+      }
+    });
+    
+    // Cap max days at wipe time
+    const daysUntilWipe = wipeCountdown.fractionalDays;
+    const effectiveMaxDays = Math.min(maxDays, daysUntilWipe);
+    
+    // Calculate total materials (Max Upkeep in TC)
+    const totalMaterials = {};
+    Object.keys(daily).forEach(type => {
+      if (daily[type] > 0) {
+        const totalNeeded = Math.min(
+          slotAllocation[type] * STACK_LIMITS[type],
+          Math.floor(daily[type] * effectiveMaxDays)
+        );
+        totalMaterials[type] = totalNeeded;
       } else {
-        maxUpkeepInTC[type] = 0;
+        totalMaterials[type] = 0;
       }
     });
 
-    // If timer is set, subtract "Currently in TC"
+    // If timer is set, calculate "Max Upkeep in TC" - "Currently in TC"
     if (tcData.trackRemainingTime && (parseInt(tcData.timerDays) > 0 || parseInt(tcData.timerHours) > 0 || parseInt(tcData.timerMinutes) > 0)) {
       const timerDays = parseInt(tcData.timerDays) || 0;
       const timerHours = parseInt(tcData.timerHours) || 0; 
       const timerMinutes = parseInt(tcData.timerMinutes) || 0;
       const currentTimeInDays = timerDays + (timerHours / 24) + (timerMinutes / (24 * 60));
       
-      // Calculate "Currently in TC" (daily upkeep × timer days)
-      const currentlyInTC = {};
+      const result = {};
       Object.keys(daily).forEach(type => {
         if (daily[type] > 0) {
-          currentlyInTC[type] = Math.floor(daily[type] * currentTimeInDays);
+          const currentInTC = Math.floor(daily[type] * currentTimeInDays);
+          const maxInTC = totalMaterials[type] || 0;
+          result[type] = Math.max(0, maxInTC - currentInTC);
         } else {
-          currentlyInTC[type] = 0;
+          result[type] = 0;
         }
       });
       
-      // Return "Max Upkeep in TC" - "Currently in TC"
-      const result = {};
-      Object.keys(daily).forEach(type => {
-        result[type] = Math.max(0, maxUpkeepInTC[type] - currentlyInTC[type]);
-      });
-      
-      console.log('Final result:', result);
       return result;
     }
 
-    // No timer: show "Max Upkeep in TC"
-    console.log('Final maxUpkeepInTC:', maxUpkeepInTC);
-    return maxUpkeepInTC;
+    // No timer: show full "Max Upkeep in TC"
+    return totalMaterials;
   };
 
   // Format resource value with K suffix
@@ -1036,12 +1076,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                             style={resource.style || { textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
                           >
                             <textPath href={`#${resource.key}TextPath`} startOffset="0%" textAnchor="start">
-                              {resource.name}: {(() => {
-                                const value = calculateTCResources()[resource.key];
-                                const formatted = formatResourceValue(value);
-                                console.log(`Resource ${resource.key}: value=${value}, formatted="${formatted}"`);
-                                return formatted;
-                              })()}
+                              {resource.name}: {formatResourceValue(calculateTCResources()[resource.key])}
                             </textPath>
                           </text>
                         ))}
