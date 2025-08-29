@@ -3,29 +3,34 @@ import { useState, useEffect, useMemo } from 'react'
 // Utility function
 const formatNumber = (num) => num.toLocaleString()
 
-// Get countdown to first Thursday (matching your existing logic)
-const getCountdown = () => {
-  const now = new Date()
-  let target = new Date(now.getFullYear(), now.getMonth(), 1)
-  while (target.getDay() !== 4) target.setDate(target.getDate() + 1)
-  target.setHours(14, 0, 0, 0)
-  if (target <= now) {
-    target = new Date(target.setMonth(target.getMonth() + 1))
-    target.setDate(1)
+export default function TCUpkeepModal({ onClose, wipeCountdown = null }) {
+  // Use provided countdown or calculate fallback
+  const countdown = useMemo(() => {
+    if (wipeCountdown) {
+      return {
+        days: wipeCountdown.days,
+        hours: wipeCountdown.hours,
+        fractionalDays: wipeCountdown.days + (wipeCountdown.hours / 24)
+      }
+    }
+    // Fallback calculation if no countdown provided
+    const now = new Date()
+    let target = new Date(now.getFullYear(), now.getMonth(), 1)
     while (target.getDay() !== 4) target.setDate(target.getDate() + 1)
     target.setHours(14, 0, 0, 0)
-  }
-  
-  const diff = target.getTime() - now.getTime()
-  return {
-    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-    fractionalDays: Math.floor(diff / (1000 * 60 * 60 * 24)) + Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) / 24
-  }
-}
-
-export default function TCUpkeepModal({ onClose }) {
-  const [countdown, setCountdown] = useState(getCountdown())
+    if (target <= now) {
+      target = new Date(target.setMonth(target.getMonth() + 1))
+      target.setDate(1)
+      while (target.getDay() !== 4) target.setDate(target.getDate() + 1)
+      target.setHours(14, 0, 0, 0)
+    }
+    const diff = target.getTime() - now.getTime()
+    return {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      fractionalDays: Math.floor(diff / (1000 * 60 * 60 * 24)) + Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) / 24
+    }
+  }, [wipeCountdown])
   const [goodForWipe, setGoodForWipe] = useState(false)
   const [trackForTotal, setTrackForTotal] = useState(true)
   const [trackRemainingTime, setTrackRemainingTime] = useState(true)
@@ -55,13 +60,7 @@ export default function TCUpkeepModal({ onClose }) {
     remainingMinutes: ''
   })
   
-  // Update wipe countdown
-  useEffect(() => {
-    const updateCountdown = () => setCountdown(getCountdown())
-    updateCountdown()
-    const interval = setInterval(updateCountdown, 60000)
-    return () => clearInterval(interval)
-  }, [])
+
   
   // Stop timer when tracking is disabled
   useEffect(() => {
