@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 interface FarmRadialMenuProps {
   onOpenTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string }) => void;
   onCreateExpressTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string; pickupType: string }) => void;
+  onOpenBaseReport?: (location: { id: string; name: string; coordinates: string; type: string }) => void;
   onAddTimer?: (locationId: string, timer: { id: number; type: string; remaining: number }) => void;
   locationId?: string;
   baseId?: string;
@@ -10,7 +11,7 @@ interface FarmRadialMenuProps {
   baseCoords?: string;
 }
 
-const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, locationId, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
+const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseReport, onAddTimer, locationId, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
   const [selectedInner, setSelectedInner] = useState(null);
   const [selectedOuter, setSelectedOuter] = useState(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -239,6 +240,16 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, l
                     id === 5 ? 'Folder 📁' :
                     `${index + 1}A${subSegment ? subSegment + 1 : ''}`;
       console.log(`Inner segment ${label} selected`);
+      
+      // Handle "MAKE REPORT" section click (index 5)
+      if (id === 5 && onOpenBaseReport && baseId && baseName && baseCoords) {
+        onOpenBaseReport({ 
+          id: baseId, 
+          name: baseName, 
+          coordinates: baseCoords, 
+          type: 'friendly-farm' 
+        });
+      }
       
       // Just set selection for NEEDS PICKUP section, don't create report yet
     } else {
@@ -1250,8 +1261,8 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, l
 };
 
 // Create a wrapper function to pass through props
-const FarmRadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onAddTimer, locationId, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
-  return <RadialMenu onOpenTaskReport={onOpenTaskReport} onCreateExpressTaskReport={onCreateExpressTaskReport} onAddTimer={onAddTimer} locationId={locationId} baseId={baseId} baseName={baseName} baseCoords={baseCoords} />;
+const FarmRadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseReport, onAddTimer, locationId, baseId, baseName, baseCoords }: FarmRadialMenuProps) => {
+  return <RadialMenu onOpenTaskReport={onOpenTaskReport} onCreateExpressTaskReport={onCreateExpressTaskReport} onOpenBaseReport={onOpenBaseReport} onAddTimer={onAddTimer} locationId={locationId} baseId={baseId} baseName={baseName} baseCoords={baseCoords} />;
 };
 
 export default FarmRadialMenu;
