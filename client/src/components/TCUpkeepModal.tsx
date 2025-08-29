@@ -760,7 +760,7 @@ export default function TCUpkeepModal({ onClose }) {
                       
                       {Object.values(neededToAdd).some(val => val > 0) && (
                         <div>
-                          <div className="font-semibold text-orange-200 mb-1 font-mono">Need to add for wipe(+{Math.floor(daysUntilWipe - currentTimeInDays)}d {Math.floor(((daysUntilWipe - currentTimeInDays) % 1) * 24)}h to reach wipe):</div>
+                          <div className="font-semibold text-orange-200 mb-1 font-mono">Upkeep that can fit(+{Math.floor(daysUntilWipe - currentTimeInDays)}d {Math.floor(((daysUntilWipe - currentTimeInDays) % 1) * 24)}h to reach wipe):</div>
                           <div className="grid grid-cols-1 gap-1 mb-2">
                             {Object.entries(neededToAdd).map(([type, amount]) => 
                               amount > 0 && (
