@@ -2410,7 +2410,7 @@ export default function InteractiveTacticalMap() {
               onAddTimer={handleAddTimer}
               onOpenReport={onOpenBaseReport}
               onOpenTaskReport={onOpenTaskReport}
-              onCreateExpressTaskReport={onCreateExpressTaskReport}
+              onCreateExpressTaskReport={handleCreateExpressTaskReport}
               players={players}
               locations={locations}
               onOpenBaseReport={(location) => {
