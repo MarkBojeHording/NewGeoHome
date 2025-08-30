@@ -754,12 +754,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
       report.baseTags && report.baseTags.includes(location.id)
     )
     
-    // Debug logging for stock_kits tasks
-    if (pendingTaskReports.some(r => r.taskType === 'stock_kits')) {
-      console.log('Debug - Location ID:', location.id)
-      console.log('Debug - Pending task reports:', pendingTaskReports.filter(r => r.taskType === 'stock_kits'))
-      console.log('Debug - Filtered task reports:', filtered.filter(r => r.taskType === 'stock_kits'))
-    }
+
     
     return filtered
   }, [pendingTaskReports, location.id])
@@ -1045,7 +1040,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                   {report.taskType === 'stock_kits' && 
                     <div 
                       onClick={() => onTaskIconClick(report)}
-                      className="cursor-pointer bg-orange-600 rounded-full p-1 hover:bg-orange-700 transition-colors"
+                      className="cursor-pointer bg-orange-600 rounded-full px-0.5 py-0.5 hover:bg-orange-700 transition-colors"
                     >
                       <KitNeedsDisplay kitResources={report.taskData?.kitResources} size="xs" />
                     </div>}
