@@ -722,9 +722,9 @@ const TimerDisplay = ({ timers, onRemoveTimer }) => {
           key={timer.id}
           className="border rounded-sm px-1 py-0 text-[5px] font-mono whitespace-nowrap shadow-sm cursor-pointer hover:opacity-80 transition-all duration-200"
           style={{
-            backgroundColor: timer.type === 'stone' ? 'rgba(87, 83, 78, 0.95)' : timer.type === 'metal' ? 'rgba(63, 63, 70, 0.95)' : 'rgba(39, 39, 42, 0.95)',
-            borderColor: timer.type === 'stone' ? '#a8a29e' : timer.type === 'metal' ? '#71717a' : '#52525b',
-            color: timer.type === 'stone' ? '#fef3c7' : timer.type === 'metal' ? '#e0e7ff' : '#ddd6fe',
+            backgroundColor: timer.type === 'stone' ? 'rgba(156, 163, 175, 0.95)' : timer.type === 'metal' ? 'rgba(183, 65, 14, 0.95)' : timer.type === 'hqm' ? 'rgba(59, 130, 246, 0.95)' : 'rgba(39, 39, 42, 0.95)',
+            borderColor: timer.type === 'stone' ? '#9ca3af' : timer.type === 'metal' ? '#b7410e' : timer.type === 'hqm' ? '#3b82f6' : '#52525b',
+            color: timer.type === 'stone' ? '#f9fafb' : timer.type === 'metal' ? '#fed7aa' : timer.type === 'hqm' ? '#dbeafe' : '#ddd6fe',
             lineHeight: '1.2',
             borderWidth: '0.5px',
             fontSize: '5px',

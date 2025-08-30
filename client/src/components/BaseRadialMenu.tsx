@@ -233,7 +233,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
         if (timeInSeconds > 0) {
           onAddTimer(locationId, {
             id: Date.now() + Math.random(),
-            type: `${resourceType}_decay`,
+            type: resourceType,
             remaining: timeInSeconds
           });
         }
