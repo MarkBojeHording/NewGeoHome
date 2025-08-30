@@ -302,11 +302,32 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                 <div className="flex items-center gap-2">
                   <span>[{selectedPlayer.toUpperCase()}]</span>
                   <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    players.find(p => p.playerName === selectedPlayer)?.isOnline 
-                      ? 'bg-yellow-600 text-yellow-200' 
-                      : 'bg-gray-600 text-gray-300'
+                    isTeammate(selectedPlayer)
+                      ? (players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'bg-green-600 text-green-200' : 'bg-green-700 text-green-300')
+                      : players.find(p => p.playerName === selectedPlayer)?.isOnline 
+                        ? 'bg-yellow-600 text-yellow-200' 
+                        : 'bg-gray-600 text-gray-300'
                   }`}>
                     {players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'ONLINE' : 'OFFLINE'}
+                  </div>
+                  {isTeammate(selectedPlayer) && (
+                    <span className="text-xs px-1.5 py-0.5 bg-green-600/20 text-green-400 rounded-full border border-green-600/30">
+                      FRIENDLY
+                    </span>
+                  )}
+                  <div className="flex items-center gap-2 ml-2">
+                    <Checkbox
+                      checked={isTeammate(selectedPlayer)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          addTeammate(selectedPlayer);
+                        } else {
+                          removeTeammate(selectedPlayer);
+                        }
+                      }}
+                      className="h-4 w-4 border-2 border-white bg-gray-700 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 hover:border-gray-300"
+                    />
+                    <span className="text-xs text-gray-300">Teammate</span>
                   </div>
                 </div>
               ) : '[PLAYER MANAGEMENT]'}
@@ -603,18 +624,6 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                                       : 'bg-gray-500'
                                 }`}
                                 data-testid={`status-indicator-${index}`}
-                              />
-                              <Checkbox
-                                checked={isTeammate(player.playerName)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    addTeammate(player.playerName);
-                                  } else {
-                                    removeTeammate(player.playerName);
-                                  }
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                                className="h-4 w-4 border-2 border-white bg-gray-700 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 hover:border-gray-300"
                               />
                               <span
                                 className={`font-medium ${
