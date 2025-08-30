@@ -190,18 +190,30 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     }
   };
 
-  // Calculate decay time based on Rust game mechanics
+  // Calculate decay time based on authentic Rust game mechanics
   const calculateDecayTime = (resourceType, currentHealth) => {
     if (currentHealth <= 0) return 0;
     
-    // Decay rates per hour based on Rust game mechanics
+    // Authentic Rust decay rates (percentage per hour)
     const decayRates = {
-      stone: 10,  // Stone loses 10 HP per hour
-      metal: 8,   // Metal loses 8 HP per hour  
-      hqm: 2      // HQM loses 2 HP per hour
+      stone: 20,    // Stone loses 20% health per hour (5 hours total)
+      metal: 12.5,  // Metal loses 12.5% health per hour (8 hours total)
+      hqm: 8.33     // HQM loses 8.33% health per hour (12 hours total)
     };
     
-    const hoursRemaining = currentHealth / decayRates[resourceType];
+    // Calculate max health based on resource type
+    const maxHealth = {
+      stone: 500,
+      metal: 1000,
+      hqm: 2000
+    };
+    
+    // Calculate current health percentage
+    const healthPercentage = (currentHealth / maxHealth[resourceType]) * 100;
+    
+    // Calculate hours remaining based on percentage decay
+    const hoursRemaining = healthPercentage / decayRates[resourceType];
+    
     return Math.round(hoursRemaining * 3600); // Convert to seconds
   };
 
