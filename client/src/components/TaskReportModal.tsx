@@ -4,6 +4,7 @@ import { X, Package, Pickaxe, Upload, ImageIcon, Trash2, Wrench, Construction } 
 import { Button } from './ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Textarea } from './ui/textarea'
+import { Input } from './ui/input'
 import { apiRequest } from '../lib/queryClient'
 import { useToast } from '@/hooks/use-toast'
 
@@ -34,6 +35,12 @@ export default function TaskReportModal({
   const [selectedTaskType, setSelectedTaskType] = useState('needs_pickup')
   const [pickupType, setPickupType] = useState('')
   const [repairUpgradeType, setRepairUpgradeType] = useState('')
+  const [requestedResources, setRequestedResources] = useState({
+    wood: '',
+    stone: '',
+    metal: '',
+    hqm: ''
+  })
   const [screenshots, setScreenshots] = useState<string[]>([])
   const [notes, setNotes] = useState('')
 
@@ -44,6 +51,7 @@ export default function TaskReportModal({
         setSelectedTaskType(editingReport.taskType || 'needs_pickup')
         setPickupType(editingReport.taskData?.pickupType || '')
         setRepairUpgradeType(editingReport.taskData?.repairUpgradeType || '')
+        setRequestedResources(editingReport.taskData?.requestedResources || { wood: '', stone: '', metal: '', hqm: '' })
         setScreenshots(editingReport.screenshots || [])
         setNotes(editingReport.notes || '')
       } else {
@@ -51,6 +59,7 @@ export default function TaskReportModal({
         setSelectedTaskType(taskType || 'needs_pickup')
         setPickupType('')
         setRepairUpgradeType(initialRepairType || '')
+        setRequestedResources({ wood: '', stone: '', metal: '', hqm: '' })
         setScreenshots([])
         setNotes('')
       }
@@ -207,6 +216,13 @@ export default function TaskReportModal({
     } else if (selectedTaskType === 'repair_upgrade') {
       taskDataDetails = { repairUpgradeType }
       defaultNotes = `Task: ${repairUpgradeType.charAt(0).toUpperCase() + repairUpgradeType.slice(1)}`
+    } else if (selectedTaskType === 'request_resources') {
+      taskDataDetails = { requestedResources }
+      const resourcesList = Object.entries(requestedResources)
+        .filter(([_, amount]) => amount && parseInt(amount) > 0)
+        .map(([resource, amount]) => `${resource}: ${amount}`)
+        .join(', ')
+      defaultNotes = `Task: Request Resources - ${resourcesList}`
     }
 
     const taskData = {
@@ -378,6 +394,7 @@ export default function TaskReportModal({
             <SelectContent>
               <SelectItem value="needs_pickup">Needs Pick up</SelectItem>
               <SelectItem value="repair_upgrade">Repair/Upgrade</SelectItem>
+              <SelectItem value="request_resources">Request Resources</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -444,6 +461,54 @@ export default function TaskReportModal({
                 <Construction className="h-4 w-4 mr-2" />
                 Upgrade
               </Button>
+            </div>
+          </div>
+        )}
+
+        {selectedTaskType === 'request_resources' && (
+          <div className="mb-6 p-4 border border-orange-500/40 rounded-lg bg-gray-900/50">
+            <h3 className="text-sm font-medium text-orange-300 mb-3">Resource Amounts</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Wood</label>
+                <Input
+                  type="number"
+                  value={requestedResources.wood}
+                  onChange={(e) => setRequestedResources(prev => ({ ...prev, wood: e.target.value }))}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Stone</label>
+                <Input
+                  type="number"
+                  value={requestedResources.stone}
+                  onChange={(e) => setRequestedResources(prev => ({ ...prev, stone: e.target.value }))}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Metal</label>
+                <Input
+                  type="number"
+                  value={requestedResources.metal}
+                  onChange={(e) => setRequestedResources(prev => ({ ...prev, metal: e.target.value }))}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">HQM</label>
+                <Input
+                  type="number"
+                  value={requestedResources.hqm}
+                  onChange={(e) => setRequestedResources(prev => ({ ...prev, hqm: e.target.value }))}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white"
+                />
+              </div>
             </div>
           </div>
         )}

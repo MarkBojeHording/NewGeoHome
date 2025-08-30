@@ -390,6 +390,12 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
         // Open task report modal with repair_upgrade dropdown pre-selected
         onOpenTaskReport({ baseId, baseName, baseCoords, taskType: 'repair_upgrade' });
       }
+      
+      // Handle "NEEDS RESOURCES" Advanced button click (index 3)
+      if (index === 3 && onOpenTaskReport && baseId && baseName && baseCoords) {
+        // Open task report modal with request_resources dropdown pre-selected
+        onOpenTaskReport({ baseId, baseName, baseCoords, taskType: 'request_resources' });
+      }
     }
   };
   

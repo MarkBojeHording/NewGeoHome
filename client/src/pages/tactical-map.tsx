@@ -652,6 +652,20 @@ const TaskUpgradeIcon = ({ onClick, task }) => (
   </span>
 )
 
+const TaskResourcesIcon = ({ onClick, task }) => (
+  <span 
+    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
+    title="Resource Request - Click for details"
+    onClick={(e) => onClick(e, task)}
+    style={{
+      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite',
+      animationDelay: '0s, 2s'
+    }}
+  >
+    📋
+  </span>
+)
+
 const LocationName = ({ name, className = '' }) => {
   const match = name.match(/^([A-Z]+\d+)(\(\d+\))?/)
   if (match) {
@@ -1015,6 +1029,8 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                     <TaskRepairIcon onClick={onTaskIconClick} task={report} />}
                   {report.taskData && report.taskData.repairUpgradeType === 'upgrade' && 
                     <TaskUpgradeIcon onClick={onTaskIconClick} task={report} />}
+                  {report.taskData && report.taskData.requestedResources && 
+                    <TaskResourcesIcon onClick={onTaskIconClick} task={report} />}
                 </div>
               ))}
             </div>
