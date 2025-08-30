@@ -51,7 +51,14 @@ export default function TaskReportModal({
         setSelectedTaskType(editingReport.taskType || 'needs_pickup')
         setPickupType(editingReport.taskData?.pickupType || '')
         setRepairUpgradeType(editingReport.taskData?.repairUpgradeType || '')
-        setRequestedResources(editingReport.taskData?.requestedResources || { wood: '', stone: '', metal: '', hqm: '' })
+        // Load resource values from either nested requestedResources or direct fields
+        const existingResources = editingReport.taskData?.requestedResources || {
+          wood: editingReport.taskData?.wood || '',
+          stone: editingReport.taskData?.stone || '',
+          metal: editingReport.taskData?.metal || '',
+          hqm: editingReport.taskData?.hqm || ''
+        }
+        setRequestedResources(existingResources)
         setScreenshots(editingReport.screenshots || [])
         setNotes(editingReport.notes || '')
       } else {
