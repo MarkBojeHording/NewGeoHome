@@ -314,7 +314,7 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                   </div>
                   {isTeammate(selectedPlayer) && (
                     <span className="text-xs px-1.5 py-0.5 bg-green-600/20 text-green-400 rounded-full border border-green-600/30">
-                      FRIENDLY
+                      TEAMMATE
                     </span>
                   )}
                   <div className="flex items-center gap-2 ml-2">
@@ -641,7 +641,7 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                               </span>
                               {isTeammate(player.playerName) && (
                                 <span className="text-xs px-1.5 py-0.5 bg-green-600/20 text-green-400 rounded-full border border-green-600/30">
-                                  FRIENDLY
+                                  TEAMMATE
                                 </span>
                               )}
                               <span
