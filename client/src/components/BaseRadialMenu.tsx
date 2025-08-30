@@ -1074,7 +1074,95 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                 Object.values(kitValues).some(value => parseInt(value) > 0),
  
 
-                'REQUEST SUPPLIES'
+                'REQUEST SUPPLIES',
+                selectedInner === 0 && (
+                  <g className="deploy-animation">
+                    <line
+                      x1={centerX + (outerRadius + 5) * Math.cos((startAngle + (0 * segmentAngle) + (segmentAngle / 2)) * Math.PI / 180)}
+                      y1={centerY + (outerRadius + 5) * Math.sin((startAngle + (0 * segmentAngle) + (segmentAngle / 2)) * Math.PI / 180)}
+                      x2={centerX + outerRadius + 10}
+                      y2={centerY - 80}
+                      stroke="rgba(255, 255, 255, 0.3)"
+                      strokeWidth="2"
+                      strokeDasharray="5,5"
+                    />
+                    {[
+                      { name: 'Hazzy', value: kitValues.hazzy, kitType: 'hazzy', fillColor: 'hsl(60, 50%, 45%)', borderColor: 'hsl(60, 60%, 60%)' },
+                      { name: 'FullKit', value: kitValues.fullkit, kitType: 'fullkit', fillColor: 'hsl(120, 50%, 35%)', borderColor: 'hsl(120, 60%, 50%)' },
+                      { name: 'Meds', value: kitValues.meds, kitType: 'meds', fillColor: 'hsl(0, 50%, 45%)', borderColor: 'hsl(0, 60%, 60%)' },
+                      { name: 'Bolty', value: kitValues.bolty, kitType: 'bolty', fillColor: 'hsl(30, 50%, 35%)', borderColor: 'hsl(30, 60%, 50%)' },
+                      { name: 'Teas', value: kitValues.teas, kitType: 'teas', fillColor: 'hsl(180, 50%, 35%)', borderColor: 'hsl(180, 60%, 50%)' }
+                    ].map((kit, idx) => (
+                      <g key={`kit-${idx}`} style={{ 
+                        animation: `deployFromCenter 0.3s ease-out ${0.1 + idx * 0.05}s both`,
+                        transformOrigin: `${centerX + outerRadius + 85}px ${centerY - 100 + (idx * 35) + 15}px`
+                      }}>
+                        <rect
+                          x={centerX + outerRadius + 15}
+                          y={centerY - 100 + (idx * 35)}
+                          width="140"
+                          height="30"
+                          rx="4"
+                          fill={kit.fillColor}
+                          stroke={kit.borderColor}
+                          strokeWidth="2"
+                          className="transition-all duration-200 hover:brightness-110"
+                          opacity="0.95"
+                        />
+                        <text
+                          x={centerX + outerRadius + 25}
+                          y={centerY - 100 + (idx * 35) + 19}
+                          textAnchor="start"
+                          fill="white"
+                          fontSize="13"
+                          fontWeight="bold"
+                          className="pointer-events-none"
+                          style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.9)' }}
+                        >
+                          {kit.name}:
+                        </text>
+                        <foreignObject
+                          x={centerX + outerRadius + 75}
+                          y={centerY - 100 + (idx * 35) + 4}
+                          width="50"
+                          height="22"
+                        >
+                          <input
+                            type="text"
+                            value={kit.value}
+                            onChange={(e) => handleKitChange(kit.kitType, e.target.value)}
+                            onBlur={(e) => handleKitChange(kit.kitType, e.target.value)}
+                            onFocus={(e) => e.target.select()}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              background: 'rgba(0, 0, 0, 0.4)',
+                              border: '1px solid rgba(255, 255, 255, 0.3)',
+                              borderRadius: '4px',
+                              color: 'white',
+                              textAlign: 'center',
+                              fontSize: '12px',
+                              fontWeight: 'bold',
+                              padding: '0',
+                              outline: 'none',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.background = 'rgba(0, 0, 0, 0.6)';
+                              e.target.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+                            }}
+                            onMouseLeave={(e) => {
+                              if (e.target !== document.activeElement) {
+                                e.target.style.background = 'rgba(0, 0, 0, 0.4)';
+                                e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                              }
+                            }}
+                            data-testid={`input-kit-${kit.kitType}`}
+                          />
+                        </foreignObject>
+                      </g>
+                    ))}
+                  </g>
+                )
               )}
               
               {/* NEEDS PICKUP overlay */}
