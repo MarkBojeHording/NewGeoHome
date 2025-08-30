@@ -108,6 +108,7 @@ export const KIT_ICONS = {
   },
   FULLKIT: {
     emoji: '⚔️',
+    png: PNG_ASSETS.METAL_FACEMASK,
     alt: 'Full combat kit'
   },
   MEDS: {
