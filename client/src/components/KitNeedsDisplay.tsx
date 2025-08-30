@@ -18,7 +18,7 @@ export function KitNeedsDisplay({ kitResources, size = 'xs', className = '' }: K
   if (activeKits.length === 0) return null
   
   const sizeClasses = {
-    xs: 'w-4 h-4',
+    xs: 'w-3.5 h-3.5',
     sm: 'w-5 h-5', 
     md: 'w-6 h-6'
   }
@@ -32,7 +32,7 @@ export function KitNeedsDisplay({ kitResources, size = 'xs', className = '' }: K
   return (
     <div className={`flex items-center gap-0 ${className}`}>
       {activeKits.map(({ kitType, amount, iconData }) => (
-        <div key={kitType} className="flex items-center">
+        <div key={kitType} className="flex items-center -space-x-0.5">
           {iconData.png ? (
             <img 
               src={iconData.png} 
