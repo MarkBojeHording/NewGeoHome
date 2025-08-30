@@ -323,7 +323,7 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                   </span>
                   <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                     isTeammate(selectedPlayer)
-                      ? (players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'bg-green-600 text-green-200' : 'bg-green-700 text-green-300')
+                      ? (players.find(p => p.playerName === selectedPlayer)?.isOnline ? 'bg-green-600 text-green-200' : 'bg-gray-700 text-gray-400')
                       : players.find(p => p.playerName === selectedPlayer)?.isOnline 
                         ? 'bg-yellow-600 text-yellow-200' 
                         : 'bg-gray-600 text-gray-300'
@@ -638,7 +638,7 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                               <div
                                 className={`w-2 h-2 rounded-full ${
                                   isTeammate(player.playerName)
-                                    ? (player.isOnline ? 'bg-green-500' : 'bg-green-600/50')
+                                    ? (player.isOnline ? 'bg-green-500' : 'bg-gray-600')
                                     : player.isOnline 
                                       ? (isEnemyPlayer(player.playerName) ? 'bg-red-500' : 'bg-yellow-500')
                                       : 'bg-gray-500'
@@ -648,7 +648,7 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                               <span
                                 className={`font-medium ${
                                   isTeammate(player.playerName)
-                                    ? (player.isOnline ? 'text-green-400' : 'text-green-500/70')
+                                    ? (player.isOnline ? 'text-green-400' : 'text-gray-500')
                                     : player.isOnline 
                                       ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
                                       : 'text-gray-400'
@@ -665,7 +665,7 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                               <span
                                 className={`text-sm ${
                                   isTeammate(player.playerName)
-                                    ? (player.isOnline ? 'text-green-300' : 'text-green-500/50')
+                                    ? (player.isOnline ? 'text-green-300' : 'text-gray-600')
                                     : player.isOnline 
                                       ? (isEnemyPlayer(player.playerName) ? 'text-red-300' : 'text-yellow-300')
                                       : 'text-gray-500'
@@ -680,7 +680,7 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                             <div 
                               className={`text-sm ${
                                 isTeammate(player.playerName)
-                                  ? (player.isOnline ? 'text-green-400' : 'text-green-500/70')
+                                  ? (player.isOnline ? 'text-green-400' : 'text-gray-500')
                                   : player.isOnline 
                                     ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
                                     : 'text-gray-400'
