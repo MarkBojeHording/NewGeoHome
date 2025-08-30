@@ -148,6 +148,13 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     // No timer: show full "Max Upkeep in TC"
     return totalMaterials;
   };
+  // Format resource value with K suffix
+  const formatResourceValue = (value) => {
+    if (!value || value === 0) return '';
+    return value >= 1000 
+      ? `${(value / 1000).toFixed(value % 1000 === 0 ? 0 : 1)}K` 
+      : value.toString();
+  };
   
   // Configuration
   const centerX = 220;
@@ -809,7 +816,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                                 }}
                               >
                                 <textPath href={`#${resource.name.toLowerCase()}TextPath`} startOffset="0%" textAnchor="start">
-                                  {resource.name}:
+                                  {resource.name}:{formatResourceValue(calculateTCResources()[resource.name.toLowerCase()])}
                                 </textPath>
                               </text>
                             ))}
