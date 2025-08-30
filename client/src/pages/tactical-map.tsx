@@ -1023,7 +1023,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
         
         {/* Task Report Icons - positioned above the base */}
         {taskReports.length > 0 && (
-          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2" style={{ zIndex: 10 }}>
+          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2" style={{ zIndex: 10 }}>
             <div className="flex flex-row gap-0.5">
               {taskReports.map((report, index) => (
                 <div key={report.id}>
