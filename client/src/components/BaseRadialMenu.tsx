@@ -710,24 +710,23 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
               // Handle express kit request for segment 0
               if (segmentIndex === 0) {
                 // Only create task report if kit values are greater than 0
-                const hasKitValues = Object.values(kitValues).some(value => parseInt(value) > 0);
+                const hasKitValues = (parseInt(segment1A1Value) > 0 || parseInt(segment1A2Value) > 0 || parseInt(segmentCoreValue) > 0);
                 
                 if (onCreateExpressTaskReport && baseId && baseName && baseCoords && hasKitValues) {
                   console.log('Kits selected');
+                  const kitResources = {
+                    hazzy: segment1A1Value,
+                    fullkit: segment1A2Value,
+                    meds: segmentCoreValue,
+                    bolty: '0',
+                    teas: '0'
+                  };
+                  
                   onCreateExpressTaskReport({
                     baseId,
                     baseName, 
                     baseCoords,
-                    kitResources: kitValues
-                  });
-                  
-                  // Reset kit values after successful request
-                  setKitValues({
-                    hazzy: '0',
-                    fullkit: '0', 
-                    meds: '0',
-                    bolty: '0',
-                    teas: '0'
+                    kitResources
                   });
                 }
               }
