@@ -155,6 +155,85 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
       ? `${(value / 1000).toFixed(value % 1000 === 0 ? 0 : 1)}K` 
       : value.toString();
   };
+
+  // Handle decay resource changes
+  const handleDecayResourceChange = (resourceType, increment) => {
+    const maxValues = {
+      stone: 500,
+      metal: 1000,
+      hqm: 2000
+    };
+    
+    const currentValues = {
+      stone: parseInt(stoneValue) || 0,
+      metal: parseInt(metalValue) || 0,
+      hqm: parseInt(hqmValue) || 0
+    };
+    
+    let newValue;
+    if (increment) {
+      newValue = Math.min(currentValues[resourceType] + 50, maxValues[resourceType]);
+    } else {
+      newValue = Math.max(currentValues[resourceType] - 50, 0);
+    }
+    
+    switch(resourceType) {
+      case 'stone':
+        setStoneValue(newValue.toString());
+        break;
+      case 'metal':
+        setMetalValue(newValue.toString());
+        break;
+      case 'hqm':
+        setHqmValue(newValue.toString());
+        break;
+    }
+  };
+
+  // Calculate decay time based on Rust game mechanics
+  const calculateDecayTime = (resourceType, currentHealth) => {
+    if (currentHealth <= 0) return 0;
+    
+    // Decay rates per hour based on Rust game mechanics
+    const decayRates = {
+      stone: 10,  // Stone loses 10 HP per hour
+      metal: 8,   // Metal loses 8 HP per hour  
+      hqm: 2      // HQM loses 2 HP per hour
+    };
+    
+    const hoursRemaining = currentHealth / decayRates[resourceType];
+    return Math.round(hoursRemaining * 3600); // Convert to seconds
+  };
+
+  // Create decay timers for resources with health > 0
+  const createDecayTimers = () => {
+    if (!onAddTimer || !locationId) return;
+    
+    const decayResources = {
+      stone: { current: parseInt(stoneValue) || 0, max: 500 },
+      metal: { current: parseInt(metalValue) || 0, max: 1000 },
+      hqm: { current: parseInt(hqmValue) || 0, max: 2000 }
+    };
+    
+    Object.entries(decayResources).forEach(([resourceType, resource]) => {
+      if (resource.current > 0) {
+        const timeInSeconds = calculateDecayTime(resourceType, resource.current);
+        if (timeInSeconds > 0) {
+          onAddTimer(locationId, {
+            id: Date.now() + Math.random(),
+            type: `${resourceType}_decay`,
+            remaining: timeInSeconds
+          });
+        }
+      }
+    });
+    
+    // Reset decay resources after creating timers
+    setStoneValue('0');
+    setMetalValue('0');
+    setHqmValue('0');
+    setSelectedInner(null);
+  };
   
   // Configuration
   const centerX = 220;
@@ -570,6 +649,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                 setSegment1A2Value('00');
               }
               if (segmentIndex === 4) {
+                createDecayTimers();
                 setStoneValue('0');
                 setMetalValue('0');
                 setHqmValue('0');
