@@ -1355,7 +1355,18 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
             marginTop: '-250px',
             marginLeft: '-220px'
           }}>
-            <BaseRadialMenu />
+            <BaseRadialMenu 
+              onOpenTaskReport={onOpenTaskReport}
+              onCreateExpressTaskReport={onCreateExpressTaskReport}
+              onOpenBaseReport={onOpenBaseReport}
+              onAddTimer={onAddTimer}
+              locationId={location?.id}
+              baseId={location?.id}
+              baseName={location?.name}
+              baseCoords={location?.name}
+              tcData={location?.tcData}
+              wipeCountdown={wipeCountdown}
+            />
           </div>
         </div>
       )}

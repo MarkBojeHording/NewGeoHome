@@ -1,6 +1,29 @@
 import React, { useState, useEffect } from 'react';
 
-const RadialMenu = () => {
+interface BaseRadialMenuProps {
+  onOpenTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string }) => void;
+  onCreateExpressTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string; requestedResources: any }) => void;
+  onOpenBaseReport?: (location: { id: string; name: string; coordinates: string; type: string }) => void;
+  onAddTimer?: (locationId: string, timer: { id: number; type: string; remaining: number }) => void;
+  locationId?: string;
+  baseId?: string;
+  baseName?: string;
+  baseCoords?: string;
+  tcData?: {
+    mainTC?: { wood?: string; stone?: string; metal?: string; hqm?: string };
+    trackRemainingTime?: boolean;
+    timerDays?: string;
+    timerHours?: string;
+    timerMinutes?: string;
+  };
+  wipeCountdown?: {
+    days: number;
+    hours: number;
+    fractionalDays: number;
+  };
+}
+
+const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseReport, onAddTimer, locationId, baseId, baseName, baseCoords, tcData, wipeCountdown }: BaseRadialMenuProps) => {
   const [selectedInner, setSelectedInner] = useState(null);
   const [selectedOuter, setSelectedOuter] = useState(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -11,6 +34,120 @@ const RadialMenu = () => {
   const [stoneValue, setStoneValue] = useState('0');
   const [metalValue, setMetalValue] = useState('0');
   const [hqmValue, setHqmValue] = useState('0');
+  
+  // Calculate TC resource values using same logic as TC Advanced modal
+  const calculateTCResources = () => {
+    if (!tcData || !tcData.mainTC || !wipeCountdown?.fractionalDays) {
+      return { wood: 0, stone: 0, metal: 0, hqm: 0 };
+    }
+
+    const getNumericValue = (val) => {
+      if (!val || val === "") return 0;
+      const num = parseInt(val);
+      return isNaN(num) ? 0 : num;
+    };
+
+    const daily = {
+      wood: getNumericValue(tcData.mainTC.wood),
+      stone: getNumericValue(tcData.mainTC.stone),
+      metal: getNumericValue(tcData.mainTC.metal),
+      hqm: getNumericValue(tcData.mainTC.hqm)
+    };
+    
+    const SLOTS = 24;
+    const STACK_LIMITS = { wood: 1000, stone: 1000, metal: 1000, hqm: 100 };
+    
+    // Skip if no upkeep
+    const totalDaily = daily.wood + daily.stone + daily.metal + daily.hqm;
+    if (totalDaily === 0) {
+      return { wood: 0, stone: 0, metal: 0, hqm: 0 };
+    }
+    
+    // Initialize slot allocation
+    let slotAllocation = { wood: 0, stone: 0, metal: 0, hqm: 0 };
+    let remainingSlots = SLOTS;
+    
+    // Allocate slots to maximize minimum days
+    while (remainingSlots > 0) {
+      let worstType = null;
+      let worstDays = Infinity;
+      
+      Object.keys(daily).forEach(type => {
+        if (daily[type] > 0) {
+          const currentCapacity = slotAllocation[type] * STACK_LIMITS[type];
+          const days = currentCapacity / daily[type];
+          if (days < worstDays) {
+            worstDays = days;
+            worstType = type;
+          }
+        }
+      });
+      
+      if (worstType) {
+        slotAllocation[worstType]++;
+        remainingSlots--;
+      } else {
+        break;
+      }
+    }
+    
+    // Calculate actual max days
+    let maxDays = Infinity;
+    Object.keys(daily).forEach(type => {
+      if (daily[type] > 0) {
+        const capacity = slotAllocation[type] * STACK_LIMITS[type];
+        const days = capacity / daily[type];
+        maxDays = Math.min(maxDays, days);
+      }
+    });
+    
+    // Cap max days at wipe time
+    const daysUntilWipe = wipeCountdown.fractionalDays;
+    const effectiveMaxDays = Math.min(maxDays, daysUntilWipe);
+    
+    // Calculate total materials (Max Upkeep in TC)
+    const totalMaterials = {};
+    Object.keys(daily).forEach(type => {
+      if (daily[type] > 0) {
+        const totalNeeded = Math.min(
+          slotAllocation[type] * STACK_LIMITS[type],
+          Math.floor(daily[type] * effectiveMaxDays)
+        );
+        totalMaterials[type] = totalNeeded;
+      } else {
+        totalMaterials[type] = 0;
+      }
+    });
+    
+    // If timer is running and we have remaining time data
+    if (tcData.trackRemainingTime && tcData.timerDays && tcData.timerHours && tcData.timerMinutes) {
+      const timerDays = parseInt(tcData.timerDays) || 0;
+      const timerHours = parseInt(tcData.timerHours) || 0;
+      const timerMinutes = parseInt(tcData.timerMinutes) || 0;
+      
+      if (timerDays > 0 || timerHours > 0 || timerMinutes > 0) {
+        const totalMinutesRemaining = (timerDays * 24 * 60) + (timerHours * 60) + timerMinutes;
+        const remainingDays = totalMinutesRemaining / (24 * 60);
+        
+        // Calculate "goodForWipe" - what we need to make it to wipe
+        const result = {};
+        Object.keys(daily).forEach(type => {
+          if (daily[type] > 0) {
+            const currentInTC = daily[type] * remainingDays;
+            const maxInTC = totalMaterials[type];
+            result[type] = Math.max(0, maxInTC - currentInTC);
+          } else {
+            result[type] = 0;
+          }
+        });
+        
+        return result;
+      }
+    }
+
+    // No timer: show full "Max Upkeep in TC"
+    return totalMaterials;
+  };
   
   // Configuration
   const centerX = 220;
@@ -362,6 +499,32 @@ const RadialMenu = () => {
             filter="url(#greenGlow)"
             onClick={(e) => {
               e.stopPropagation();
+              
+              // Handle express resource request for segment 3
+              if (segmentIndex === 3) {
+                // Create express task report with current TC values
+                if (onCreateExpressTaskReport && baseId && baseName && baseCoords) {
+                  console.log('Resources 📋 selected');
+                  const tcResources = calculateTCResources();
+                  // Convert display values to actual numbers
+                  const requestedResources = {};
+                  
+                  // Parse the resource values back to numbers
+                  Object.keys(tcResources).forEach(resource => {
+                    const value = tcResources[resource];
+                    if (value && value > 0) {
+                      requestedResources[resource] = value.toString();
+                    }
+                  });
+                  
+                  onCreateExpressTaskReport({
+                    baseId,
+                    baseName, 
+                    baseCoords,
+                    requestedResources
+                  });
+                }
+              }
               setSelectedInner(null);
               if (segmentIndex === 0) {
                 setSegmentCoreValue('00');
