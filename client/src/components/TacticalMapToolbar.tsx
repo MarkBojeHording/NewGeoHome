@@ -42,10 +42,10 @@ const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay, onWipeCoun
   return (
     <div className="fixed top-0 left-0 right-0 z-50 p-0 m-0" style={{top: 0, left: 0, right: 0, position: 'fixed'}}>
       <div className="max-w-7xl mx-auto">
-        <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50 overflow-visible">
-          <div className="bg-gradient-to-r from-orange-900/30 via-gray-800 to-orange-900/30 p-1 overflow-visible">
-            <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-3 overflow-visible">
-              <div className="flex items-center justify-between overflow-visible">
+        <div className="bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl border-2 border-orange-600/50">
+          <div className="bg-gradient-to-r from-orange-900/30 via-gray-800 to-orange-900/30 p-1">
+            <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-3">
+              <div className="flex items-center justify-between">
                 <div className="flex gap-2">
                   {['Logs', 'Progression', 'Gene Calculator', 'Players'].map((btn) => (
                     btn === 'Progression' ? (
@@ -79,25 +79,9 @@ const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay, onWipeCoun
                     )
                   ))}
                 </div>
-                
-                <div style={{
-                  width: '1px', 
-                  height: '1px',
-                  opacity: 0,
-                  overflow: 'visible',
-                  position: 'relative',
-                  pointerEvents: 'none'
-                }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: '0px',
-                    left: '0px',
-                    pointerEvents: 'auto'
-                  }}>
-                    <WipeCountdownTimer onCountdownChange={onWipeCountdownChange} />
-                  </div>
+                <div className="flex items-center">
+                  <WipeCountdownTimer onCountdownChange={onWipeCountdownChange} />
                 </div>
-
                 <div className="flex gap-2">
                   {['Teams', 'Turret Control'].map((btn) => (
                     <button 

@@ -375,31 +375,6 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
         hqm: acc.hqm + entry.hqmUpkeep
       }), { stone: 0, metal: 0, hqm: 0 })
   , [upkeepEntries])
-
-  // Calculate fractional days for total calculations
-  const fractionalDays = countdown.days + (countdown.hours / 24)
-
-  // Calculate total resources needed including custom items and upkeep
-  const { totalStone, totalMetal, totalHqm } = useMemo(() => {
-    // Base upkeep totals
-    const upkeepStone = totalUpkeep.stone * fractionalDays
-    const upkeepMetal = totalUpkeep.metal * fractionalDays
-    const upkeepHqm = totalUpkeep.hqm * fractionalDays
-
-    // Custom items totals
-    const customStone = customItems.reduce((sum, item) => 
-      sum + item.stoneCost + (item.stoneUpkeep * fractionalDays), 0)
-    const customMetal = customItems.reduce((sum, item) => 
-      sum + item.metalCost + (item.metalUpkeep * fractionalDays), 0)
-    const customHqm = customItems.reduce((sum, item) => 
-      sum + item.hqmCost + (item.hqmUpkeep * fractionalDays), 0)
-
-    return {
-      totalStone: upkeepStone + customStone,
-      totalMetal: upkeepMetal + customMetal,
-      totalHqm: upkeepHqm + customHqm
-    }
-  }, [totalUpkeep, customItems, fractionalDays])
   
   const handleAddUpkeep = useCallback(() => {
     if (!newUpkeepEntry.name.trim()) return
@@ -425,161 +400,33 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
   }, [newItem])
   
   return (
-    <>
+    <div className="relative">
+      {/* Main countdown display */}
       <div 
-        className="cursor-pointer px-4 py-2 text-gray-800 font-bold rounded-lg tracking-wider font-mono text-sm"
+        className="cursor-pointer relative px-8 py-4 bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500 hover:from-gray-200 hover:via-gray-300 hover:to-gray-400 text-gray-800 font-bold rounded-lg shadow-lg border-2 border-gray-500 transition-all duration-200 hover:shadow-xl tracking-wider font-mono text-lg min-w-fit"
         style={{
           background: 'linear-gradient(145deg, #e6e6e6, #b8b8b8)',
           boxShadow: 'inset 8px 8px 16px #a0a0a0, inset -8px -8px 16px #ffffff, 4px 4px 12px rgba(0,0,0,0.3)',
-          border: '2px solid #999',
-          position: 'relative',
-          zIndex: 60,
-          overflow: 'visible'
+          border: '2px solid #999'
         }}
         onClick={() => setShowMainBox(!showMainBox)}
       >
-      {/* Metal studs/rivets in corners */}
-      <div className="absolute top-1 left-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
-      <div className="absolute top-1 right-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
-      <div className="absolute bottom-1 left-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
-      <div className="absolute bottom-1 right-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
+        {/* Metal studs/rivets in corners */}
+        <div className="absolute top-1 left-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
+        <div className="absolute top-1 right-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
+        <div className="absolute bottom-1 left-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
+        <div className="absolute bottom-1 right-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
+        
+        {/* Diamond plate texture pattern */}
+        <div className="absolute inset-0 opacity-10 rounded-lg" style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px),
+                           repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0,0,0,0.1) 4px, rgba(0,0,0,0.1) 8px)`
+        }}></div>
+        
+        [WIPE: {countdown.days}D {countdown.hours}H {countdown.minutes}M]
+      </div>
       
-      {/* Diamond plate texture pattern */}
-      <div className="absolute inset-0 opacity-10 rounded-lg pointer-events-none" style={{
-        backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px),
-                         repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0,0,0,0.1) 4px, rgba(0,0,0,0.1) 8px)`
-      }}></div>
-      
-      <span style={{ position: 'relative', zIndex: 10 }}>[WIPE: {countdown.days}D {countdown.hours}H {countdown.minutes}M]</span>
-      
-      {showMainBox && (
-        <div 
-          className="absolute top-16 left-0 w-80 bg-gray-900/95 border-2 border-orange-600 rounded-lg p-4 backdrop-blur z-50"
-          onClick={e => e.stopPropagation()}
-        >
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-orange-300 font-mono">WIPE COUNTDOWN</h3>
-              <button onClick={() => setShowMainBox(false)} className="text-orange-400 hover:text-orange-300">✕</button>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="text-xs font-mono">
-                <div className="text-orange-300">Days: <span className="text-white">{countdown.days}</span></div>
-                <div className="text-orange-300">Hours: <span className="text-white">{countdown.hours}</span></div>
-                <div className="text-orange-300">Minutes: <span className="text-white">{countdown.minutes}</span></div>
-                <div className="text-orange-300">Seconds: <span className="text-white">{countdown.seconds}</span></div>
-              </div>
-              
-              <div className="border-t border-orange-600/50 pt-2">
-                <div className="text-xs font-mono text-orange-300">Total: {Math.ceil(totalStone) > 0 && `S:${Math.ceil(totalStone)} `}{Math.ceil(totalMetal) > 0 && `M:${Math.ceil(totalMetal)} `}{Math.ceil(totalHqm) > 0 && `H:${Math.ceil(totalHqm)}`}</div>
-              </div>
-              
-              {upkeepEntries.length > 0 && (
-                <div className="border-t border-orange-600/50 pt-2">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-bold text-orange-300 font-mono">UPKEEP ENTRIES</span>
-                    <button
-                      onClick={() => setShowModals(m => ({ ...m, upkeep: true }))}
-                      className="text-xs text-orange-400 hover:text-orange-300"
-                    >
-                      [+]
-                    </button>
-                  </div>
-                  {upkeepEntries.map(entry => {
-                    const stoneTotal = Math.ceil(entry.stoneUpkeep * fractionalDays)
-                    const metalTotal = Math.ceil(entry.metalUpkeep * fractionalDays)
-                    const hqmTotal = Math.ceil(entry.hqmUpkeep * fractionalDays)
-                    
-                    return (
-                      <div key={entry.id} className="border-t border-orange-600/50 pt-1">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-medium text-orange-300 font-mono">{entry.name}</span>
-                          <div className="flex space-x-1">
-                            <button
-                              onClick={() => {
-                                setNewUpkeepEntry(entry)
-                                setEditingUpkeepId(entry.id)
-                                setShowModals(m => ({ ...m, upkeep: true }))
-                              }}
-                              className="text-orange-400 text-xs"
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              onClick={() => setUpkeepEntries(entries => entries.filter(e => e.id !== entry.id))}
-                              className="text-red-400 text-xs"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        </div>
-                        <div className="text-xs text-orange-400 font-mono">
-                          <div>Per Day: {entry.stoneUpkeep > 0 && `S:${entry.stoneUpkeep} `}{entry.metalUpkeep > 0 && `M:${entry.metalUpkeep} `}{entry.hqmUpkeep > 0 && `H:${entry.hqmUpkeep}`}</div>
-                          <div>Total: {stoneTotal > 0 && `S:${stoneTotal} `}{metalTotal > 0 && `M:${metalTotal} `}{hqmTotal > 0 && `H:${hqmTotal}`}</div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-              
-              {upkeepEntries.length === 0 && (
-                <button
-                  onClick={() => setShowModals(m => ({ ...m, upkeep: true }))}
-                  className="text-xs bg-orange-600 text-white rounded px-2 py-1 hover:bg-orange-700 font-mono"
-                >
-                  [ADD UPKEEP]
-                </button>
-              )}
-              
-              {customItems.length > 0 && (
-                <div className="border-t border-orange-600/50 pt-2">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-bold text-orange-300 font-mono">CUSTOM ITEMS</span>
-                    <button
-                      onClick={() => setShowModals(m => ({ ...m, item: true }))}
-                      className="text-xs text-orange-400 hover:text-orange-300"
-                    >
-                      [+]
-                    </button>
-                  </div>
-                  {customItems.map(item => {
-                    return (
-                      <div key={item.id} className="border-t border-orange-600/50 pt-2">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs font-medium text-orange-300 font-mono">{item.name}</span>
-                          <button
-                            onClick={() => setCustomItems(items => items.filter(i => i.id !== item.id))}
-                            className="text-red-400 text-xs"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                        <div className="text-xs text-orange-400 font-mono">
-                          <div>Cost: {item.stoneCost > 0 && `S:${item.stoneCost} `}{item.metalCost > 0 && `M:${item.metalCost} `}{item.hqmCost > 0 && `H:${item.hqmCost}`}</div>
-                          <div>Upkeep: {item.stoneUpkeep > 0 && `S:${item.stoneUpkeep} `}{item.metalUpkeep > 0 && `M:${item.metalUpkeep} `}{item.hqmUpkeep > 0 && `H:${item.hqmUpkeep}`}</div>
-                          <div>Total: {Math.ceil(item.stoneCost + item.stoneUpkeep * fractionalDays) > 0 && `S:${Math.ceil(item.stoneCost + item.stoneUpkeep * fractionalDays)} `}{Math.ceil(item.metalCost + item.metalUpkeep * fractionalDays) > 0 && `M:${Math.ceil(item.metalCost + item.metalUpkeep * fractionalDays)} `}{Math.ceil(item.hqmCost + item.hqmUpkeep * fractionalDays) > 0 && `H:${Math.ceil(item.hqmCost + item.hqmUpkeep * fractionalDays)}`}</div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                  
-                  <button
-                    onClick={() => setShowModals(m => ({ ...m, item: true }))}
-                    className="text-xs bg-orange-600 text-white rounded px-2 py-1 hover:bg-orange-700 font-mono"
-                  >
-                    [ADD CUSTOM ITEM]
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-    
-    {/* Modals */}
+      {/* Modals */}
       <Modal 
         show={showModals.upkeep} 
         onClose={() => setShowModals(m => ({ ...m, upkeep: false }))}
@@ -856,6 +703,6 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }

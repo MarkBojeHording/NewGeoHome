@@ -2404,8 +2404,6 @@ export default function InteractiveTacticalMap() {
         }
       `}</style>
       
-
-      
       {/* Tactical Map Toolbar Component */}
       <TacticalMapToolbar 
         onButtonClick={(buttonType) => {
