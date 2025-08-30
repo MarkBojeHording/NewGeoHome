@@ -222,7 +222,7 @@ export default function TaskReportModal({
         .filter(([_, amount]) => amount && parseInt(amount) > 0)
         .map(([resource, amount]) => `${resource}: ${amount}`)
         .join(', ')
-      defaultNotes = `Task: Request Resources - ${resourcesList}`
+      defaultNotes = `Request Resources - ${resourcesList}`
     }
 
     const taskData = {
