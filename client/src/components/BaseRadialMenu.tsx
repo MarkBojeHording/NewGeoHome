@@ -1168,19 +1168,22 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
               {/* NEEDS PICKUP overlay */}
               {renderPulsatingOverlay(1, 
                 selectedInner === '1-0' || selectedInner === '1-1',
-                'NEEDS PICKUP'
+                'NEEDS PICKUP',
+                null
               )}
               
               {/* REPAIR/UPGRADE overlay */}
               {renderPulsatingOverlay(2, 
                 selectedInner === '2-0' || selectedInner === '2-1',
-                selectedInner === '2-0' ? 'REQUEST REPAIR' : 'REQUEST UPGRADE'
+                selectedInner === '2-0' ? 'REQUEST REPAIR' : 'REQUEST UPGRADE',
+                null
               )}
               
               {/* RESOURCES overlay */}
               {renderPulsatingOverlay(3, 
                 selectedInner === 3,
-                'REQUEST RESOURCES'
+                'REQUEST RESOURCES',
+                null
               )}
               
               {/* DECAY overlay with resource containers */}
