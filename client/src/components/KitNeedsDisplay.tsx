@@ -18,19 +18,19 @@ export function KitNeedsDisplay({ kitResources, size = 'xs', className = '' }: K
   if (activeKits.length === 0) return null
   
   const sizeClasses = {
-    xs: 'w-2.5 h-2.5',
-    sm: 'w-3 h-3', 
-    md: 'w-4 h-4'
+    xs: 'w-2 h-2',
+    sm: 'w-2.5 h-2.5', 
+    md: 'w-3 h-3'
   }
   
   const textSizeClasses = {
-    xs: 'text-[7px]',
-    sm: 'text-sm',
-    md: 'text-base'
+    xs: 'text-[6px]',
+    sm: 'text-xs',
+    md: 'text-sm'
   }
   
   return (
-    <div className={`flex items-center gap-0.5 ${className}`}>
+    <div className={`flex items-center gap-0 ${className}`}>
       {activeKits.map(({ kitType, amount, iconData }) => (
         <div key={kitType} className="flex items-center -space-x-0.5 flex-shrink-0">
           {iconData.png ? (
