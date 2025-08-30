@@ -706,8 +706,10 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
               
               // Handle express kit request for segment 0
               if (segmentIndex === 0) {
-                // Create express task report with current kit values
-                if (onCreateExpressTaskReport && baseId && baseName && baseCoords) {
+                // Only create task report if kit values are greater than 0
+                const hasKitValues = Object.values(kitValues).some(value => parseInt(value) > 0);
+                
+                if (onCreateExpressTaskReport && baseId && baseName && baseCoords && hasKitValues) {
                   console.log('Kits selected');
                   onCreateExpressTaskReport({
                     baseId,
@@ -1069,9 +1071,9 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
               {/* Pulsating overlays */}
               {/* NEEDS KITS overlay */}
               {renderPulsatingOverlay(0, 
-                (segmentCoreValue && segmentCoreValue !== '00') || 
-                (segment1A1Value && segment1A1Value !== '00') || 
-                (segment1A2Value && segment1A2Value !== '00'),
+                Object.values(kitValues).some(value => parseInt(value) > 0),
+ 
+
                 'REQUEST SUPPLIES'
               )}
               
