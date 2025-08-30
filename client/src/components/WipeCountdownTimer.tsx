@@ -358,13 +358,16 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setShowMainBox(false)
-        setShowModals({ item: false, upkeep: false })
+        if (showModals.item || showModals.upkeep) {
+          setShowModals({ item: false, upkeep: false })
+        } else if (showMainBox) {
+          setShowMainBox(false)
+        }
       }
     }
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [])
+  }, [showMainBox, showModals])
   
   const totalUpkeep = useMemo(() => 
     upkeepEntries
@@ -543,7 +546,8 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
 
       {/* Detailed view */}
       {showMainBox && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 mt-2 bg-gray-900 border-2 border-orange-600 rounded-lg shadow-2xl p-4 z-[60]" style={{ width: '870px' }}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center pt-20 z-[60]" onClick={() => setShowMainBox(false)}>
+          <div className="bg-gray-900 border-2 border-orange-600 rounded-lg shadow-2xl p-4 mt-2" style={{ width: '870px' }} onClick={e => e.stopPropagation()}>
           <div className="flex space-x-4">
             {/* Left side */}
             <div className="flex flex-col space-y-1" style={{ width: '490px' }}>
@@ -700,6 +704,7 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
                 [ADD CUSTOM ITEM]
               </button>
             </div>
+          </div>
           </div>
         </div>
       )}
