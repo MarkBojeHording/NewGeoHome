@@ -3,6 +3,13 @@ import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, U
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryClient, apiRequest } from '@/lib/queryClient'
 import { getTaskIcon } from '@/lib/icons'
+import { GRID_CONFIG, ICON_MAP, LABELS } from '@/lib/tactical-map-constants'
+import { getColor, getBorderColor, getGridCoordinate, getBaseGroup, getGridPosition, getGroupColor, openGeneCalculator, formatTime, getIcon, getLargeIcon } from '@/lib/tactical-map-utils'
+import { DecayingIcon, TowerIcon, LocationName } from '@/components/MapIcons'
+import { TaskOreIcon, TaskLootIcon, TaskRepairIcon, TaskUpgradeIcon, TaskResourcesIcon } from '@/components/TaskIcons'
+import { useLocationTimers } from '@/hooks/useTacticalMapTimers'
+import { useBaseReportEvents } from '@/hooks/useBaseReportEvents'
+import { useMapInteraction } from '@/hooks/useMapInteraction'
 import { KitNeedsDisplay } from '../components/KitNeedsDisplay'
 import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
@@ -23,727 +30,37 @@ import TacticalMapBackground from '../components/TacticalMapBackground'
 import TacticalMapLocation from '../components/TacticalMapLocation'
 import type { ExternalPlayer } from '@shared/schema'
 import rustMapImage from '@assets/map_raw_normalized (2)_1755133962532.png'
-// ============= CONSTANTS =============
-const GRID_CONFIG = {
-  COLS: 26,
-  ROWS: 26,
-  CELL_WIDTH_PERCENT: 3.846,
-  CELL_HEIGHT_PERCENT: 3.846
-}
-
-const ICON_MAP = {
-  'friendly-main': Castle,
-  'friendly-flank': Shield,
-  'friendly-farm': Wheat,
-  'enemy-small': Tent,
-  'enemy-medium': Home,
-  'enemy-large': Castle,
-  'enemy-flank': Shield,
-  'enemy-farm': Wheat
-}
-
-const LABELS = {
-  'friendly-main': 'Friendly Main Base',
-  'friendly-flank': 'Friendly Flank Base',
-  'friendly-farm': 'Friendly Farm',
-  'friendly-boat': 'Boat Base',
-  'friendly-garage': 'Garage',
-  'enemy-small': 'Main Small',
-  'enemy-medium': 'Main Medium',
-  'enemy-large': 'Main Large',
-  'enemy-flank': 'Flank Base',
-  'enemy-tower': 'Tower',
-  'enemy-farm': 'Farm',
-  'enemy-decaying': 'Decaying Base',
-  'report-pvp': 'PVP General',
-  'report-spotted': 'Spotted Enemy',
-  'report-bradley': 'Countered/Took Bradley/Heli',
-  'report-oil': 'Countered/Took Oil/Cargo',
-  'report-monument': 'Big Score/Fight at Monument',
-  'report-farming': 'Killed While Farming',
-  'report-loaded': 'Killed Loaded Enemy',
-  'report-raid': 'Countered Raid'
-}
-
-const DECAY_TIMES = {
-  stone: { max: 500, hours: 5 },
-  metal: { max: 1000, hours: 8 },
-  hqm: { max: 2000, hours: 12 }
-}
-
-const GROUP_COLORS = [
-  '#ff6b6b', // Red
-  '#4ecdc4', // Teal  
-  '#45b7d1', // Blue
-  '#96ceb4', // Green
-  '#ffeaa7', // Yellow
-  '#dda0dd', // Plum
-  '#ffa726', // Orange
-  '#ab47bc', // Purple
-  '#26a69a', // Cyan
-  '#ef5350'  // Pink
-]
 
 
-// ============= UTILITY FUNCTIONS =============
-const getColor = (type: string, location = null) => {
-  if (location?.abandoned) return 'text-gray-400'
-  if (type.startsWith('report')) return 'text-purple-600'
-  return type.startsWith('friendly') ? 'text-green-600' : 'text-red-600'
-}
-
-const getBorderColor = (type: string) => {
-  if (type.startsWith('report')) return 'border-purple-500'
-  return type.startsWith('friendly') ? 'border-green-500' : 'border-red-500'
-}
-
-const getGridCoordinate = (x: number, y: number, existingLocations: any[] = [], excludeId: string | null = null) => {
-  const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
-  const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
-  const clampedCol = Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1)
-  const clampedRow = Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
-  const letter = clampedCol < 26 ? String.fromCharCode(65 + clampedCol) : `A${String.fromCharCode(65 + clampedCol - 26)}`
-  const number = clampedRow
-  const baseCoord = `${letter}${number}`
-  
-  const duplicates = existingLocations.filter(loc => {
-    if (excludeId && loc.id === excludeId) return false
-    const locBase = loc.name.split('(')[0]
-    return locBase === baseCoord
-  })
-  
-  return duplicates.length === 0 ? baseCoord : `${baseCoord}(${duplicates.length + 1})`
-}
-
-// Get all bases that belong to the same group (share common players OR are subordinate bases near main bases)
-const getBaseGroup = (baseId: string, locations: any[]) => {
-  const currentBase = locations.find(loc => loc.id === baseId)
-  if (!currentBase) return []
-  
-  // Method 1: Player-based grouping (original logic)
-  if (currentBase.players && currentBase.players.length > 0) {
-    const currentPlayers = currentBase.players.split(",").map(p => p.trim()).filter(p => p)
-    if (currentPlayers.length > 0) {
-      const playerGroupBases = locations.filter(loc => {
-        if (loc.id === baseId) return true
-        if (!loc.players?.length) return false
-        
-        const locPlayers = loc.players.split(",").map(p => p.trim()).filter(p => p)
-        if (locPlayers.length === 0) return false
-        
-        return currentPlayers.some(player => locPlayers.includes(player))
-      })
-      
-      if (playerGroupBases.length > 1) return playerGroupBases
-    }
-  }
-  
-  // Method 2: Proximity-based grouping for subordinate bases ONLY
-  const isMainBase = currentBase.type === "enemy-small" || currentBase.type === "enemy-medium" || currentBase.type === "enemy-large"
-  const isSubordinateBase = currentBase.type === "enemy-flank" || currentBase.type === "enemy-farm" || currentBase.type === "enemy-tower"
-  
-  if (isMainBase) {
-    // Group main bases with subordinate bases that have this main base as owner
-    const currentBaseCoords = currentBase.name.split('(')[0] // Remove (2), (3) etc
-    const linkedBases = locations.filter(loc => {
-      if (loc.id === baseId) return true
-      
-      const isSubordinate = (loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower")
-      if (!isSubordinate) return false
-      
-      // Check if this subordinate is linked to this main base via ownerCoordinates
-      return loc.ownerCoordinates === currentBaseCoords
-    })
-    
-    return linkedBases.length > 1 ? linkedBases : [currentBase]
-  }
-  
-  if (isSubordinateBase) {
-    // Find the main base this subordinate is linked to via ownerCoordinates
-    if (currentBase.ownerCoordinates) {
-      const ownerMainBase = locations.find(loc => {
-        const isMainBase = loc.type === "enemy-small" || loc.type === "enemy-medium" || loc.type === "enemy-large"
-        if (!isMainBase) return false
-        
-        const mainBaseCoords = loc.name.split('(')[0] // Remove (2), (3) etc
-        return mainBaseCoords === currentBase.ownerCoordinates
-      })
-      
-      if (ownerMainBase) {
-        // Include the main base and all subordinates linked to it
-        const groupBases = locations.filter(loc => {
-          if (loc.id === ownerMainBase.id) return true
-          if (loc.id === baseId) return true
-          
-          const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
-          if (!isSubordinate) return false
-          
-          return loc.ownerCoordinates === currentBase.ownerCoordinates
-        })
-        
-        return groupBases
-      }
-    }
-  }
-  
-  return [currentBase]
-}
-
-// Helper function to get grid position
-const getGridPosition = (x: number, y: number) => {
-  const col = Math.floor(x / GRID_CONFIG.CELL_WIDTH_PERCENT)
-  const row = Math.floor(y / GRID_CONFIG.CELL_HEIGHT_PERCENT)
-  return {
-    col: Math.min(Math.max(col, 0), GRID_CONFIG.COLS - 1),
-    row: Math.min(Math.max(row, 0), GRID_CONFIG.ROWS - 1)
-  }
-}
-
-// Get group color for a base - MUCH SIMPLER STABLE APPROACH
-const getGroupColor = (baseId: string, locations: any[]) => {
-  const currentBase = locations.find(loc => loc.id === baseId)
-  if (!currentBase) return null
-  
-  // SIMPLE RULE: Only main bases (small/medium/large) that have subordinates get colors
-  const isMainBase = currentBase.type === "enemy-small" || currentBase.type === "enemy-medium" || currentBase.type === "enemy-large"
-  
-  if (isMainBase) {
-    // Check if this main base has any subordinates linked to it
-    const currentBaseCoords = currentBase.name.split('(')[0] // Remove (2), (3) etc
-    const hasSubordinates = locations.some(loc => {
-      const isSubordinate = loc.type === "enemy-flank" || loc.type === "enemy-farm" || loc.type === "enemy-tower"
-      return isSubordinate && loc.ownerCoordinates === currentBaseCoords
-    })
-    
-    if (hasSubordinates) {
-      // Use simple hash of main base ID (which never changes) for stable color
-      let hash = 0
-      for (let i = 0; i < baseId.length; i++) {
-        const char = baseId.charCodeAt(i)
-        hash = ((hash << 5) - hash) + char
-        hash = hash & hash
-      }
-      return GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
-    }
-  }
-  
-  // SIMPLE RULE: Subordinate bases get the same color as their owner main base
-  const isSubordinateBase = currentBase.type === "enemy-flank" || currentBase.type === "enemy-farm" || currentBase.type === "enemy-tower"
-  
-  if (isSubordinateBase && currentBase.ownerCoordinates) {
-    // Find the main base this subordinate is linked to
-    const ownerMainBase = locations.find(loc => {
-      const isMainBase = loc.type === "enemy-small" || loc.type === "enemy-medium" || loc.type === "enemy-large"
-      if (!isMainBase) return false
-      
-      const mainBaseCoords = loc.name.split('(')[0]
-      return mainBaseCoords === currentBase.ownerCoordinates
-    })
-    
-    if (ownerMainBase) {
-      // Use same color logic as the main base
-      let hash = 0
-      for (let i = 0; i < ownerMainBase.id.length; i++) {
-        const char = ownerMainBase.id.charCodeAt(i)
-        hash = ((hash << 5) - hash) + char
-        hash = hash & hash
-      }
-      return GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length]
-    }
-  }
-  
-  return null // No color for bases without grouping
-}
 
 
-const formatTime = (seconds) => {
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, '0')}`
-  }
-  return `${minutes}:00`
-}
 
-// ============= CUSTOM HOOKS =============
-const useLocationTimers = () => {
-  const [locationTimers, setLocationTimers] = useState({})
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLocationTimers(prev => {
-        const updated = { ...prev }
-        Object.keys(updated).forEach(locationId => {
-          updated[locationId] = updated[locationId]
-            .map(timer => ({
-              ...timer,
-              remaining: Math.max(0, timer.remaining - 1)
-            }))
-            .filter(timer => timer.remaining > 0)
-          
-          if (updated[locationId].length === 0) {
-            delete updated[locationId]
-          }
-        })
-        return updated
-      })
-    }, 1000)
 
-    return () => clearInterval(interval)
-  }, [])
 
-  return [locationTimers, setLocationTimers]
-}
 
-const useBaseReportEvents = (setBaseReportData, setShowBaseReportModal) => {
-  useEffect(() => {
-    const handleOpenBaseReport = (event) => {
-      const { location } = event.detail
-      // Use the same logic as the onOpenBaseReport function
-      setBaseReportData({
-        baseId: location.id,
-        baseName: location.name,
-        baseCoords: location.coordinates,
-        baseType: location.type
-      })
-      setShowBaseReportModal(true)
-    }
-    
-    window.addEventListener('openBaseReport', handleOpenBaseReport)
-    return () => window.removeEventListener('openBaseReport', handleOpenBaseReport)
-  }, [setBaseReportData, setShowBaseReportModal])
-}
 
-const openGeneCalculator = () => {
-  // Read the complete HTML content from the uploaded file
-  fetch('/gene-calculator.html')
-    .then(response => response.text())
-    .then(geneCalculatorHTML => {
-      // Inject data synchronization and persistence script
-      const dataSyncScript = `
-        <script>
-          // Save gene data to localStorage and sync to main window
-          function saveGeneData() {
-            try {
-              const geneData = {
-                plantGenes: plantGenes,
-                currentPlant: currentPlant,
-                genes: genes
-              };
-              localStorage.setItem('rustGeneCalculatorData', JSON.stringify(geneData));
-              
-              // Send data to main window via postMessage
-              if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({
-                  type: 'GENE_DATA_UPDATE',
-                  data: {
-                    geneData: geneData,
-                    timestamp: Date.now()
-                  }
-                }, '*');
-              }
-            } catch (e) {
-              console.error('Failed to save gene data:', e);
-            }
-          }
-          
-          // Load gene data from localStorage
-          function loadGeneData() {
-            try {
-              const saved = localStorage.getItem('rustGeneCalculatorData');
-              if (saved) {
-                const geneData = JSON.parse(saved);
-                
-                // Restore plant genes
-                if (geneData.plantGenes) {
-                  Object.assign(plantGenes, geneData.plantGenes);
-                }
-                
-                // Restore current plant genes
-                if (geneData.genes && Array.isArray(geneData.genes)) {
-                  genes.splice(0, genes.length, ...geneData.genes);
-                }
-                
-                // Restore current plant
-                if (geneData.currentPlant) {
-                  currentPlant = geneData.currentPlant;
-                  document.getElementById('currentPlantDisplay').textContent = plantDisplayNames[currentPlant] || currentPlant;
-                }
-                
-                console.log('Loaded gene data:', geneData);
-                return true;
-              }
-            } catch (e) {
-              console.error('Failed to load gene data:', e);
-            }
-            return false;
-          }
-          
-          // Sync progress to main app
-          function syncProgressToMainApp() {
-            try {
-              const progressData = {
-                hemp: 0,
-                blueberry: 0,
-                yellowberry: 0,
-                redberry: 0,
-                pumpkin: 0
-              };
-              
-              if (typeof plantGenes !== 'undefined' && typeof calculatePlantProgress !== 'undefined') {
-                Object.keys(plantGenes).forEach(plantType => {
-                  const progress = calculatePlantProgress(plantType);
-                  if (progressData.hasOwnProperty(plantType)) {
-                    progressData[plantType] = Math.round(progress);
-                  }
-                });
-              }
-              
-              localStorage.setItem('rustGeneProgress', JSON.stringify(progressData));
-              
-              // Send progress data to main window via postMessage
-              if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({
-                  type: 'GENE_PROGRESS_UPDATE',
-                  data: {
-                    progressData: progressData,
-                    timestamp: Date.now()
-                  }
-                }, '*');
-              }
-              
-              console.log('Synced gene progress to main app:', progressData);
-            } catch (e) {
-              console.error('Failed to sync gene progress:', e);
-            }
-          }
-          
-          // Monitor for any changes and save data
-          function monitorAndSave() {
-            try {
-              saveGeneData();
-              syncProgressToMainApp();
-            } catch (e) {
-              console.error('Error in monitor and save:', e);
-            }
-          }
-          
-          // Initialize persistence when page loads
-          document.addEventListener('DOMContentLoaded', function() {
-            console.log('Gene calculator DOM loaded, setting up persistence...');
-            
-            // Wait for everything to initialize
-            setTimeout(() => {
-              console.log('Initializing gene calculator persistence...');
-              
-              // Load saved data
-              const hasData = loadGeneData();
-              console.log('Has saved data:', hasData);
-              
-              if (hasData) {
-                // Refresh the display with loaded data
-                if (typeof updateGrid === 'function') updateGrid();
-                if (typeof updateBestGeneDisplay === 'function') updateBestGeneDisplay();
-                if (typeof updateAllPlantProgress === 'function') updateAllPlantProgress();
-                if (typeof updatePlantCompletionStatus === 'function') updatePlantCompletionStatus();
-                if (typeof calculate === 'function' && genes.length >= 2) calculate();
-              }
-              
-              // Override the original addGene function to add saving
-              if (typeof window.addGene === 'function') {
-                const originalAddGene = window.addGene;
-                window.addGene = function() {
-                  console.log('addGene called, saving data...');
-                  originalAddGene();
-                  monitorAndSave();
-                };
-              }
-              
-              // Override switchPlant function
-              if (typeof window.switchPlant === 'function') {
-                const originalSwitchPlant = window.switchPlant;
-                window.switchPlant = function(plantType) {
-                  console.log('switchPlant called for:', plantType);
-                  originalSwitchPlant(plantType);
-                  monitorAndSave();
-                };
-              }
-              
-              // Monitor input changes
-              const geneInput = document.getElementById('geneInput');
-              if (geneInput) {
-                geneInput.addEventListener('keypress', function(e) {
-                  if (e.key === 'Enter') {
-                    setTimeout(monitorAndSave, 100);
-                  }
-                });
-              }
-              
-              // Monitor grid clicks
-              document.addEventListener('click', function(e) {
-                if (e.target.closest('.grid-box')) {
-                  setTimeout(monitorAndSave, 100);
-                }
-              });
-              
-              // Continuous monitoring as backup
-              setInterval(monitorAndSave, 2000);
-              
-              // Initial save
-              monitorAndSave();
-            }, 500);
-          });
-          
-          // Listen for requests from main window
-          window.addEventListener('message', function(event) {
-            if (event.data.type === 'REQUEST_GENE_DATA') {
-              console.log('Popup received request for gene data, sending current data...');
-              monitorAndSave(); // This will send the current data via postMessage
-            }
-          });
-        </script>
-      `;
-      
-      // Insert the script before closing body tag
-      const modifiedHTML = geneCalculatorHTML.replace('</body>', dataSyncScript + '</body>');
-      
-      // Open as a standalone popup window
-      const popup = window.open('', 'geneCalculator', 
-        'width=1600,height=900,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no,top=50,left=50'
-      )
-      
-      if (popup) {
-        // Store reference to popup for later communication
-        ;(window as any).geneCalculatorPopup = popup
-        
-        popup.document.write(modifiedHTML)
-        popup.document.close()
-        popup.focus()
-        
-        // Clean up reference when popup is closed
-        const checkClosed = setInterval(() => {
-          if (popup.closed) {
-            ;(window as any).geneCalculatorPopup = null
-            clearInterval(checkClosed)
-          }
-        }, 1000)
-      } else {
-        alert('Popup blocked! Please allow popups for this site to use the Gene Calculator.')
-      }
-    })
-    .catch(error => {
-      console.error('Error loading Gene Calculator:', error)
-      alert('Error loading Gene Calculator. Please try again.')
-    })
-}
 
-const useMapInteraction = () => {
-  const [zoom, setZoom] = useState(1)
-  const [pan, setPan] = useState({ x: 0, y: 0 })
-  const [isDragging, setIsDragging] = useState(false)
-  const isDraggingRef = useRef(false)
-  const dragStartRef = useRef({ x: 0, y: 0 })
-  const hasDraggedRef = useRef(false)
 
-  useEffect(() => {
-    const handleGlobalMouseMove = (e) => {
-      if (isDraggingRef.current) {
-        hasDraggedRef.current = true
-        setPan({
-          x: e.clientX - dragStartRef.current.x,
-          y: e.clientY - dragStartRef.current.y
-        })
-      }
-    }
 
-    const handleGlobalMouseUp = () => {
-      isDraggingRef.current = false
-      setIsDragging(false)
-    }
 
-    window.addEventListener('mousemove', handleGlobalMouseMove)
-    window.addEventListener('mouseup', handleGlobalMouseUp)
-    
-    return () => {
-      window.removeEventListener('mousemove', handleGlobalMouseMove)
-      window.removeEventListener('mouseup', handleGlobalMouseUp)
-    }
-  }, [])
 
-  return {
-    zoom,
-    setZoom,
-    pan,
-    setPan,
-    isDragging,
-    setIsDragging,
-    isDraggingRef,
-    dragStartRef,
-    hasDraggedRef
-  }
-}
 
-// ============= SUB-COMPONENTS =============
-const DecayingIcon = () => (
-  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M3 21h18v-2H3v2zm0-4h2v-4h2v4h2v-4h2v4h2v-4h2v4h2v-4h2v4h2v-4h2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v12zm4-12h2v2H7V5zm4 0h2v2h-2V5zm4 0h2v2h-2V5zM7 9h2v2H7V9zm4 0h2v2h-2V9z" opacity="0.7"/>
-    <path d="M8 17l-2 2v2h3v-4zm8 0v4h3v-2l-2-2zm-4-8l-1 2h2l-1-2z" />
-    <path d="M6 13l-1.5 1.5M18 13l1.5 1.5M9 16l-1 1M15 16l1 1" stroke="currentColor" strokeWidth="1" opacity="0.5"/>
-  </svg>
-)
 
-const TowerIcon = () => (
-  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M8 2v2h1v2H6v2h1v12h10V8h1V6h-3V4h1V2h-8zm7 16H9V8h6v10zm-3-8.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/>
-  </svg>
-)
 
-// Task Report Icons - using emoji style with subtle animations
-const TaskOreIcon = ({ onClick, task }) => (
-  <span 
-    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
-    title="Ore Pickup - Click for details"
-    onClick={(e) => onClick(e, task)}
-    style={{
-      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite'
-    }}
-  >
-    🪨
-  </span>
-)
 
-const TaskLootIcon = ({ onClick, task }) => (
-  <span 
-    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
-    title="Loot Pickup - Click for details"
-    onClick={(e) => onClick(e, task)}
-    style={{
-      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite',
-      animationDelay: '0s, 0.5s'
-    }}
-  >
-    📦
-  </span>
-)
 
-const TaskRepairIcon = ({ onClick, task }) => (
-  <span 
-    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
-    title="Repair Task - Click for details"
-    onClick={(e) => onClick(e, task)}
-    style={{
-      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite',
-      animationDelay: '0s, 1s'
-    }}
-  >
-    🔧
-  </span>
-)
 
-const TaskUpgradeIcon = ({ onClick, task }) => (
-  <span 
-    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
-    title="Upgrade Task - Click for details"
-    onClick={(e) => onClick(e, task)}
-    style={{
-      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite',
-      animationDelay: '0s, 1.5s'
-    }}
-  >
-    🚧
-  </span>
-)
 
-const TaskResourcesIcon = ({ onClick, task }) => (
-  <span 
-    className="text-xs inline-block cursor-pointer hover:scale-110 transition-transform" 
-    title="Resource Request - Click for details"
-    onClick={(e) => onClick(e, task)}
-    style={{
-      animation: 'taskPulse 3.45s ease-in-out infinite, taskBounce 3.45s ease-in-out infinite',
-      animationDelay: '0s, 2s'
-    }}
-  >
-    📋
-  </span>
-)
 
-const LocationName = ({ name, className = '' }) => {
-  const match = name.match(/^([A-Z]+\d+)(\(\d+\))?/)
-  if (match) {
-    const [, base, duplicate] = match
-    return (
-      <>
-        <span className={className}>{base}</span>
-        {duplicate && (
-          <span className="text-white/90 align-super" style={{fontSize: '0.65em', marginLeft: '2px'}}>
-            {duplicate}
-          </span>
-        )}
-      </>
-    )
-  }
-  return <span className={className}>{name}</span>
-}
 
-const getIcon = (type) => {
-  if (type === 'enemy-decaying') return <DecayingIcon />
-  if (type === 'enemy-tower') return <TowerIcon />
-  const Icon = ICON_MAP[type] || MapPin
-  return <Icon className="h-3 w-3" />
-}
 
-const getLargeIcon = (type) => {
-  if (type === 'enemy-decaying') {
-    return (
-      <svg className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M3 21h18v-2H3v2zm0-4h2v-4h2v4h2v-4h2v4h2v-4h2v4h2v-4h2v4h2v-4h2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v12zm4-12h2v2H7V5zm4 0h2v2h-2V5zm4 0h2v2h-2V5zM7 9h2v2H7V9zm4 0h2v2h-2V9z" opacity="0.7"/>
-        <path d="M8 17l-2 2v2h3v-4zm8 0v4h3v-2l-2-2zm-4-8l-1 2h2l-1-2z" />
-        <path d="M6 13l-1.5 1.5M18 13l1.5 1.5M9 16l-1 1M15 16l1 1" stroke="currentColor" strokeWidth="1" opacity="0.5"/>
-      </svg>
-    )
-  }
-  if (type === 'enemy-tower') {
-    return (
-      <svg className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M8 2v2h1v2H6v2h1v12h10V8h1V6h-3V4h1V2h-8zm7 16H9V8h6v10zm-3-8.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/>
-      </svg>
-    )
-  }
-  const Icon = ICON_MAP[type] || MapPin
-  return <Icon className="h-8 w-8" />
-}
 
-const TimerDisplay = ({ timers, onRemoveTimer }) => {
-  if (!timers || timers.length === 0) return null
-  
-  return (
-    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 flex flex-col-reverse" style={{zIndex: 30, marginBottom: '1px', gap: '0'}}>
-      {timers.slice(-3).map((timer) => (
-        <div
-          key={timer.id}
-          className="border rounded-sm px-1 py-0 text-[5px] font-mono whitespace-nowrap shadow-sm cursor-pointer hover:opacity-80 transition-all duration-200"
-          style={{
-            backgroundColor: timer.type === 'stone' ? 'rgba(156, 163, 175, 0.95)' : timer.type === 'metal' ? 'rgba(183, 65, 14, 0.95)' : timer.type === 'hqm' ? 'rgba(59, 130, 246, 0.95)' : 'rgba(39, 39, 42, 0.95)',
-            borderColor: timer.type === 'stone' ? '#9ca3af' : timer.type === 'metal' ? '#b7410e' : timer.type === 'hqm' ? '#3b82f6' : '#52525b',
-            color: timer.type === 'stone' ? '#f9fafb' : timer.type === 'metal' ? '#fed7aa' : timer.type === 'hqm' ? '#dbeafe' : '#ddd6fe',
-            lineHeight: '1.2',
-            borderWidth: '0.5px',
-            fontSize: '5px',
-            padding: '0 3px'
-          }}
-          onClick={(e) => {
-            e.stopPropagation()
-            onRemoveTimer(timer.id)
-          }}
-          title="Click to remove timer"
-        >
-          {formatTime(timer.remaining)}
-        </div>
-      ))}
-    </div>
-  )
-}
+
+
+
+
+
 
 const LocationMarker = ({ location, locations = [], isSelected, onClick, timers, onRemoveTimer, getOwnedBases, players = [], onOpenReport, onOpenBaseReport, pendingTaskReports = [], onTaskIconClick }) => {
   const ownedBases = getOwnedBases(location.name)
@@ -1530,7 +847,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               return
             }
             
-            onAddTimer(location.id, {
+            handleAddTimer(location.id, {
               id: Date.now() + Math.random(),
               type: type,
               remaining: seconds
@@ -2024,7 +1341,12 @@ export default function InteractiveTacticalMap() {
   }, [reports])
 
   const mapRef = useRef(null)
-  const [locationTimers, setLocationTimers] = useLocationTimers()
+  const {
+    timers: locationTimers,
+    addTimer: addLocationTimer,
+    removeTimer: removeLocationTimer,
+    getDecayInfo
+  } = useLocationTimers()
   const { zoom, setZoom, pan, setPan, isDragging, setIsDragging, isDraggingRef, dragStartRef, hasDraggedRef } = useMapInteraction()
   
   // Handle BaseModal report events
@@ -2297,14 +1619,10 @@ export default function InteractiveTacticalMap() {
       
       setLocations(prev => prev.filter(loc => loc.id !== editingLocation.id))
       setSelectedLocation(null)
-      setLocationTimers(prev => {
-        const updated = { ...prev }
-        delete updated[editingLocation.id]
-        return updated
-      })
+      // Timer cleanup is handled by the useLocationTimers hook
       handleCancel()
     }
-  }, [editingLocation, handleCancel, setLocationTimers])
+  }, [editingLocation, handleCancel])
   
   const handleWheel = useCallback((e) => {
     e.preventDefault()
@@ -2353,18 +1671,12 @@ export default function InteractiveTacticalMap() {
   }, [hasDraggedRef])
   
   const handleRemoveTimer = useCallback((locationId, timerId) => {
-    setLocationTimers(prev => ({
-      ...prev,
-      [locationId]: prev[locationId].filter(t => t.id !== timerId)
-    }))
-  }, [setLocationTimers])
+    removeLocationTimer(timerId)
+  }, [removeLocationTimer])
   
   const handleAddTimer = useCallback((locationId, timer) => {
-    setLocationTimers(prev => ({
-      ...prev,
-      [locationId]: [...(prev[locationId] || []), timer]
-    }))
-  }, [setLocationTimers])
+    addLocationTimer(locationId, timer)
+  }, [addLocationTimer])
   
   return (
     <div className="h-screen w-screen bg-gradient-to-b from-gray-900 to-black font-mono overflow-hidden">
