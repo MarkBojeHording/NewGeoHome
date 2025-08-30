@@ -535,10 +535,13 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     let numValue = parseInt(value) || 0;
     numValue = Math.max(0, Math.min(numValue, maxKitValue));
     
-    setKitValues(prev => ({
-      ...prev,
+    const newKitValues = {
+      ...kitValues,
       [kitType]: numValue.toString()
-    }));
+    };
+    
+    setKitValues(newKitValues);
+    console.log('Kit values updated:', newKitValues, 'selectedInner:', selectedInner);
   };
   
   // Handle clicks
@@ -1071,7 +1074,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
               {/* Pulsating overlays */}
               {/* NEEDS KITS overlay */}
               {renderPulsatingOverlay(0, 
-                Object.values(kitValues).some(value => parseInt(value) > 0),
+                Object.values(kitValues).some(value => parseInt(value) > 0) && selectedInner === 0,
  
 
                 'REQUEST SUPPLIES',
