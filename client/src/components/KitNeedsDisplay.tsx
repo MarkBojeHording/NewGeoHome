@@ -37,7 +37,9 @@ export function KitNeedsDisplay({ kitResources, size = 'xs', className = '' }: K
             <img 
               src={iconData.png} 
               alt={iconData.alt}
-              className={`${sizeClasses[size]} object-contain`}
+              className={`${sizeClasses[size]} object-contain ${
+                kitType === 'hazzy' || kitType === 'meds' ? '-translate-x-0.5' : ''
+              }`}
             />
           ) : (
             <span className={`${textSizeClasses[size]}`}>{iconData.emoji}</span>
