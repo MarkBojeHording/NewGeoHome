@@ -41,6 +41,13 @@ export default function TaskReportModal({
     metal: '',
     hqm: ''
   })
+  const [kitResources, setKitResources] = useState({
+    hazzy: '',
+    fullkit: '',
+    meds: '',
+    bolty: '',
+    teas: ''
+  })
   const [screenshots, setScreenshots] = useState<string[]>([])
   const [notes, setNotes] = useState('')
 
@@ -59,6 +66,15 @@ export default function TaskReportModal({
           hqm: editingReport.taskData?.hqm || ''
         }
         setRequestedResources(existingResources)
+        // Load kit resource values if they exist
+        const existingKitResources = editingReport.taskData?.kitResources || {
+          hazzy: '',
+          fullkit: '',
+          meds: '',
+          bolty: '',
+          teas: ''
+        }
+        setKitResources(existingKitResources)
         setScreenshots(editingReport.screenshots || [])
         setNotes(editingReport.notes || '')
       } else {
@@ -67,6 +83,7 @@ export default function TaskReportModal({
         setPickupType('')
         setRepairUpgradeType(initialRepairType || '')
         setRequestedResources({ wood: '', stone: '', metal: '', hqm: '' })
+        setKitResources({ hazzy: '', fullkit: '', meds: '', bolty: '', teas: '' })
         setScreenshots([])
         setNotes('')
       }
@@ -230,6 +247,13 @@ export default function TaskReportModal({
         .map(([resource, amount]) => `${resource}: ${amount}`)
         .join(', ')
       defaultNotes = `Request Resources - ${resourcesList}`
+    } else if (selectedTaskType === 'stock_kits') {
+      taskDataDetails = { kitResources }
+      const kitsList = Object.entries(kitResources)
+        .filter(([_, amount]) => amount && parseInt(amount) > 0)
+        .map(([kit, amount]) => `${kit}: ${amount}`)
+        .join(', ')
+      defaultNotes = `Stock Kits - ${kitsList}`
     }
 
     const taskData = {
@@ -402,6 +426,7 @@ export default function TaskReportModal({
               <SelectItem value="needs_pickup">Needs Pick up</SelectItem>
               <SelectItem value="repair_upgrade">Repair/Upgrade</SelectItem>
               <SelectItem value="request_resources">Request Resources</SelectItem>
+              <SelectItem value="stock_kits">Stock Kits</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -514,6 +539,84 @@ export default function TaskReportModal({
                   onChange={(e) => setRequestedResources(prev => ({ ...prev, hqm: e.target.value }))}
                   placeholder="0"
                   className="bg-gray-700 border-orange-500 text-white"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {selectedTaskType === 'stock_kits' && (
+          <div className="mb-6 p-4 border border-orange-500/40 rounded-lg bg-gray-900/50">
+            <h3 className="text-sm font-medium text-orange-300 mb-3">Kit Amounts</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Hazzy</label>
+                <Input
+                  type="number"
+                  value={kitResources.hazzy}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 2);
+                    setKitResources(prev => ({ ...prev, hazzy: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white"
+                  max="99"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Fullkit</label>
+                <Input
+                  type="number"
+                  value={kitResources.fullkit}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 2);
+                    setKitResources(prev => ({ ...prev, fullkit: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white"
+                  max="99"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Meds</label>
+                <Input
+                  type="number"
+                  value={kitResources.meds}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 3);
+                    setKitResources(prev => ({ ...prev, meds: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white"
+                  max="999"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Bolty</label>
+                <Input
+                  type="number"
+                  value={kitResources.bolty}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 2);
+                    setKitResources(prev => ({ ...prev, bolty: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white"
+                  max="99"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Teas</label>
+                <Input
+                  type="number"
+                  value={kitResources.teas}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 2);
+                    setKitResources(prev => ({ ...prev, teas: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white"
+                  max="99"
                 />
               </div>
             </div>

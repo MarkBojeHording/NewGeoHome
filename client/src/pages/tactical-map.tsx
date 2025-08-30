@@ -1880,6 +1880,25 @@ export default function InteractiveTacticalMap() {
           },
           status: 'pending'
         }
+      } else if (baseData.kitResources) {
+        // Create stock kits task report
+        taskReport = {
+          type: 'task',
+          notes: '',
+          outcome: 'neutral',
+          enemyPlayers: '',
+          friendlyPlayers: '',
+          baseTags: [baseData.baseId],
+          screenshots: [],
+          location: { gridX: 0, gridY: 0 }, // Will be updated by backend if needed
+          taskType: 'stock_kits',
+          taskData: {
+            kitResources: baseData.kitResources,
+            details: `Express kit request for ${baseData.baseName}`,
+            urgency: 'medium'
+          },
+          status: 'pending'
+        }
       }
 
       // Save the task report

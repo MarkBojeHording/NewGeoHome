@@ -33,7 +33,16 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
   const [isExpanded, setIsExpanded] = useState(false);
   const [stoneValue, setStoneValue] = useState('0');
   const [metalValue, setMetalValue] = useState('0');
-  const [hqmValue, setHqmValue] = useState('0');
+  const [hqmValue, setHqmValue] = useState('0')
+  
+  // Kit resources state for NEEDS KITS (segment 0)
+  const [kitValues, setKitValues] = useState({
+    hazzy: '0',
+    fullkit: '0', 
+    meds: '0',
+    bolty: '0',
+    teas: '0'
+  });
   
   // Calculate TC resource values using same logic as TC Advanced modal
   const calculateTCResources = () => {
@@ -537,6 +546,12 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     } else {
       setSelectedOuter(index);
       
+      // Handle "NEEDS KITS" Advanced button click (index 0)
+      if (index === 0 && onOpenTaskReport && baseId && baseName && baseCoords) {
+        // Open task report modal with stock_kits dropdown pre-selected
+        onOpenTaskReport({ baseId, baseName, baseCoords, taskType: 'stock_kits' });
+      }
+      
       // Handle "NEEDS PICKUP" Advanced button click (index 1)
       if (index === 1 && onOpenTaskReport && baseId && baseName && baseCoords) {
         // Open full task report modal (pulsating overlay handles express reports)
@@ -675,6 +690,21 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                   });
                 }
               }
+              
+              // Handle express kit request for segment 0
+              if (segmentIndex === 0) {
+                // Create express task report with current kit values
+                if (onCreateExpressTaskReport && baseId && baseName && baseCoords) {
+                  console.log('Kits selected');
+                  onCreateExpressTaskReport({
+                    baseId,
+                    baseName, 
+                    baseCoords,
+                    kitResources: kitValues
+                  });
+                }
+              }
+              
               setSelectedInner(null);
               if (segmentIndex === 0) {
                 setSegmentCoreValue('00');

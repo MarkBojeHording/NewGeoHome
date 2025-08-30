@@ -1,0 +1,15 @@
+              }
+              
+              setSelectedInner(null);
+              if (segmentIndex === 0) {
+                setSegmentCoreValue('00');
+                setSegment1A1Value('00');
+                setSegment1A2Value('00');
+              }
+              if (segmentIndex === 4) {
+                createDecayTimers();
+                setStoneValue('0');
+                setMetalValue('0');
+                setHqmValue('0');
+              }
+            }}
