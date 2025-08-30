@@ -118,3 +118,14 @@ export const teams = pgTable("teams", {
 export const insertTeamSchema = createInsertSchema(teams).omit({ id: true, createdAt: true });
 export type InsertTeam = z.infer<typeof insertTeamSchema>;
 export type Team = typeof teams.$inferSelect;
+
+// Teammates table for tracking player teammate relationships
+export const teammates = pgTable("teammates", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  playerName: text("player_name").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertTeammateSchema = createInsertSchema(teammates).omit({ id: true, createdAt: true });
+export type InsertTeammate = z.infer<typeof insertTeammateSchema>;
+export type Teammate = typeof teammates.$inferSelect;

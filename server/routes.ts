@@ -503,6 +503,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Teammates API routes
+  
+  // Get all teammates
+  app.get("/api/teammates", async (req, res) => {
+    try {
+      const teammates = await storage.getAllTeammates();
+      res.json(teammates);
+    } catch (error) {
+      console.error("Error getting teammates:", error);
+      res.status(500).json({ error: "Failed to get teammates" });
+    }
+  });
+
+  // Add a teammate
+  app.post("/api/teammates", async (req, res) => {
+    try {
+      const { playerName } = req.body;
+      if (!playerName) {
+        return res.status(400).json({ error: "Player name is required" });
+      }
+      
+      const teammate = await storage.addTeammate(playerName);
+      res.json(teammate);
+    } catch (error) {
+      console.error("Error adding teammate:", error);
+      res.status(500).json({ error: "Failed to add teammate" });
+    }
+  });
+
+  // Remove a teammate
+  app.delete("/api/teammates/:playerName", async (req, res) => {
+    try {
+      const { playerName } = req.params;
+      const success = await storage.removeTeammate(playerName);
+      if (success) {
+        res.json({ success: true });
+      } else {
+        res.status(404).json({ error: "Teammate not found" });
+      }
+    } catch (error) {
+      console.error("Error removing teammate:", error);
+      res.status(500).json({ error: "Failed to remove teammate" });
+    }
+  });
+
   // Note: Individual player routes removed - using external API for regular player data
 
   const httpServer = createServer(app);

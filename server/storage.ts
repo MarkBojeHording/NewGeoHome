@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer, type PlayerBaseTag, type InsertPlayerBaseTag, type PlayerProfile, type InsertPlayerProfile } from "@shared/schema";
+import { type User, type InsertUser, type Report, type InsertReport, type ReportTemplate, type InsertReportTemplate, type PremiumPlayer, type InsertPremiumPlayer, type PlayerBaseTag, type InsertPlayerBaseTag, type PlayerProfile, type InsertPlayerProfile, type Teammate, type InsertTeammate } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 // Utility function to generate consistent alphanumeric report IDs
@@ -56,11 +56,17 @@ export interface IStorage {
   getAllPlayerProfiles(): Promise<PlayerProfile[]>;
   deletePlayerProfile(playerName: string): Promise<boolean>;
   
+  // Teammate methods
+  addTeammate(playerName: string): Promise<Teammate>;
+  removeTeammate(playerName: string): Promise<boolean>;
+  getAllTeammates(): Promise<Teammate[]>;
+  isTeammate(playerName: string): Promise<boolean>;
+  
   // Note: Regular player data comes from external API, no local storage needed
 }
 
 import { db } from "./db";
-import { users, reports, reportTemplates, premiumPlayers, playerBaseTags, playerProfiles } from "@shared/schema";
+import { users, reports, reportTemplates, premiumPlayers, playerBaseTags, playerProfiles, teammates } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
@@ -289,6 +295,32 @@ export class DatabaseStorage implements IStorage {
   async deletePlayerProfile(playerName: string): Promise<boolean> {
     const result = await db.delete(playerProfiles).where(eq(playerProfiles.playerName, playerName));
     return result.rowCount > 0;
+  }
+
+  // Teammate methods
+  async addTeammate(playerName: string): Promise<Teammate> {
+    const [teammate] = await db
+      .insert(teammates)
+      .values({ playerName })
+      .returning();
+    return teammate;
+  }
+
+  async removeTeammate(playerName: string): Promise<boolean> {
+    const result = await db.delete(teammates).where(eq(teammates.playerName, playerName));
+    return result.rowCount > 0;
+  }
+
+  async getAllTeammates(): Promise<Teammate[]> {
+    return await db.select().from(teammates);
+  }
+
+  async isTeammate(playerName: string): Promise<boolean> {
+    const [teammate] = await db
+      .select()
+      .from(teammates)
+      .where(eq(teammates.playerName, playerName));
+    return !!teammate;
   }
 
   // Note: Regular player methods removed - using external API instead

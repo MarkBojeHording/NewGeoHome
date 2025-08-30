@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Search, User, Plus } from 'lucide-react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import type { ExternalPlayer } from '@shared/schema';
 import { ReportPreview } from './ReportPreview';
@@ -50,9 +50,15 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
   const [premiumPlayerName, setPremiumPlayerName] = useState('');
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
-  const [teammates, setTeammates] = useState<Set<string>>(new Set());
-  
   const queryClient = useQueryClient();
+
+  // Fetch teammates from the database
+  const { data: teammatesData = [], isLoading: teammatesLoading } = useQuery<{playerName: string}[]>({
+    queryKey: ['/api/teammates'],
+    enabled: isOpen,
+  });
+
+  const teammates = new Set(teammatesData.map(t => t.playerName));
 
   // Fetch players from the external API via our server
   const { data: players = [], isLoading } = useQuery<ExternalPlayer[]>({
@@ -111,13 +117,10 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
     if (!selectedPlayer) return
     
     try {
-      await apiRequest('/api/player-profiles', {
-        method: 'POST',
-        body: JSON.stringify({
-          playerName: selectedPlayer,
-          aliases: profileData.aliases,
-          notes: profileData.notes
-        })
+      await apiRequest('POST', '/api/player-profiles', {
+        playerName: selectedPlayer,
+        aliases: profileData.aliases,
+        notes: profileData.notes
       })
       
       // Invalidate and refetch the profile
@@ -147,17 +150,32 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
     return teammates.has(playerName);
   };
 
+  // Mutations for teammate management
+  const addTeammateMutation = useMutation({
+    mutationFn: async (playerName: string) => {
+      return apiRequest('POST', '/api/teammates', { playerName });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/teammates'] });
+    }
+  });
+
+  const removeTeammateMutation = useMutation({
+    mutationFn: async (playerName: string) => {
+      return apiRequest('DELETE', `/api/teammates/${playerName}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/teammates'] });
+    }
+  });
+
   // Functions to manage teammates
   const addTeammate = (playerName: string) => {
-    setTeammates(prev => new Set([...prev, playerName]));
+    addTeammateMutation.mutate(playerName);
   };
 
   const removeTeammate = (playerName: string) => {
-    setTeammates(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(playerName);
-      return newSet;
-    });
+    removeTeammateMutation.mutate(playerName);
   };
 
   // Filter players based on search criteria
