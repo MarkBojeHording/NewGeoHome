@@ -614,7 +614,7 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                                   }
                                 }}
                                 onClick={(e) => e.stopPropagation()}
-                                className="h-4 w-4 border-gray-400 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                className="h-4 w-4 border-2 border-white bg-gray-700 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 hover:border-gray-300"
                               />
                               <span
                                 className={`font-medium ${
