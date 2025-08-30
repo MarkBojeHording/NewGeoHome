@@ -445,6 +445,12 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
       }
     } else {
       setSelectedOuter(index);
+      
+      // Handle "REPAIR/UPGRADE" Advanced button click (index 2)
+      if (index === 2 && onOpenTaskReport && baseId && baseName && baseCoords) {
+        // Open task report modal with repair_upgrade dropdown pre-selected
+        onOpenTaskReport({ baseId, baseName, baseCoords, taskType: 'repair_upgrade' });
+      }
     }
   };
   
@@ -516,6 +522,21 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
             filter="url(#greenGlow)"
             onClick={(e) => {
               e.stopPropagation();
+              
+              // Handle express repair/upgrade request for segment 2
+              if (segmentIndex === 2) {
+                // Create express task report for repair/upgrade
+                if (onCreateExpressTaskReport && baseId && baseName && baseCoords) {
+                  const repairType = selectedInner === '2-0' ? 'repair' : 'upgrade';
+                  console.log(`Repair/Upgrade ${repairType} selected`);
+                  onCreateExpressTaskReport({
+                    baseId,
+                    baseName, 
+                    baseCoords,
+                    repairUpgradeType: repairType
+                  });
+                }
+              }
               
               // Handle express resource request for segment 3
               if (segmentIndex === 3) {
