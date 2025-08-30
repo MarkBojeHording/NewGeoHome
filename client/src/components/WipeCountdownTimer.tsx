@@ -375,6 +375,31 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
         hqm: acc.hqm + entry.hqmUpkeep
       }), { stone: 0, metal: 0, hqm: 0 })
   , [upkeepEntries])
+
+  // Calculate fractional days for total calculations
+  const fractionalDays = countdown.days + (countdown.hours / 24)
+
+  // Calculate total resources needed including custom items and upkeep
+  const { totalStone, totalMetal, totalHqm } = useMemo(() => {
+    // Base upkeep totals
+    const upkeepStone = totalUpkeep.stone * fractionalDays
+    const upkeepMetal = totalUpkeep.metal * fractionalDays
+    const upkeepHqm = totalUpkeep.hqm * fractionalDays
+
+    // Custom items totals
+    const customStone = customItems.reduce((sum, item) => 
+      sum + item.stoneCost + (item.stoneUpkeep * fractionalDays), 0)
+    const customMetal = customItems.reduce((sum, item) => 
+      sum + item.metalCost + (item.metalUpkeep * fractionalDays), 0)
+    const customHqm = customItems.reduce((sum, item) => 
+      sum + item.hqmCost + (item.hqmUpkeep * fractionalDays), 0)
+
+    return {
+      totalStone: upkeepStone + customStone,
+      totalMetal: upkeepMetal + customMetal,
+      totalHqm: upkeepHqm + customHqm
+    }
+  }, [totalUpkeep, customItems, fractionalDays])
   
   const handleAddUpkeep = useCallback(() => {
     if (!newUpkeepEntry.name.trim()) return
