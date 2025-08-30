@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, User, Plus } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Search, User, Plus, MoreVertical, UserCheck, UserX } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import type { ExternalPlayer } from '@shared/schema';
@@ -49,6 +50,7 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
   const [premiumPlayerName, setPremiumPlayerName] = useState('');
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+  const [teammates, setTeammates] = useState<Set<string>>(new Set());
   
   const queryClient = useQueryClient();
 
@@ -138,6 +140,24 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
     
     const enemyTags = playerTags.filter((tag: any) => tag.baseType.startsWith('enemy'))
     return enemyTags.length > playerTags.length / 2 // More than half enemy bases
+  };
+
+  // Helper function to check if a player is a teammate
+  const isTeammate = (playerName: string) => {
+    return teammates.has(playerName);
+  };
+
+  // Functions to manage teammates
+  const addTeammate = (playerName: string) => {
+    setTeammates(prev => new Set([...prev, playerName]));
+  };
+
+  const removeTeammate = (playerName: string) => {
+    setTeammates(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(playerName);
+      return newSet;
+    });
   };
 
   // Filter players based on search criteria
@@ -569,35 +589,45 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                       {filteredPlayers.map((player, index) => (
                         <div
                           key={index}
-                          className="p-3 flex items-center justify-between hover:bg-gray-700 transition-colors cursor-pointer"
+                          className="p-3 flex items-center justify-between hover:bg-gray-700 transition-colors"
                           data-testid={`player-item-${index}`}
-                          onClick={() => setSelectedPlayer(player.playerName)}
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 flex-1 cursor-pointer" onClick={() => setSelectedPlayer(player.playerName)}>
                             <div className="flex items-center gap-2">
                               <div
                                 className={`w-2 h-2 rounded-full ${
-                                  player.isOnline 
-                                    ? (isEnemyPlayer(player.playerName) ? 'bg-red-500' : 'bg-yellow-500')
-                                    : 'bg-gray-500'
+                                  isTeammate(player.playerName)
+                                    ? (player.isOnline ? 'bg-green-500' : 'bg-green-600/50')
+                                    : player.isOnline 
+                                      ? (isEnemyPlayer(player.playerName) ? 'bg-red-500' : 'bg-yellow-500')
+                                      : 'bg-gray-500'
                                 }`}
                                 data-testid={`status-indicator-${index}`}
                               />
                               <span
                                 className={`font-medium ${
-                                  player.isOnline 
-                                    ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
-                                    : 'text-gray-400'
+                                  isTeammate(player.playerName)
+                                    ? (player.isOnline ? 'text-green-400' : 'text-green-500/70')
+                                    : player.isOnline 
+                                      ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
+                                      : 'text-gray-400'
                                 }`}
                                 data-testid={`player-name-${index}`}
                               >
                                 {player.playerName}
                               </span>
+                              {isTeammate(player.playerName) && (
+                                <span className="text-xs px-1.5 py-0.5 bg-green-600/20 text-green-400 rounded-full border border-green-600/30">
+                                  FRIENDLY
+                                </span>
+                              )}
                               <span
                                 className={`text-sm ${
-                                  player.isOnline 
-                                    ? (isEnemyPlayer(player.playerName) ? 'text-red-300' : 'text-yellow-300')
-                                    : 'text-gray-500'
+                                  isTeammate(player.playerName)
+                                    ? (player.isOnline ? 'text-green-300' : 'text-green-500/50')
+                                    : player.isOnline 
+                                      ? (isEnemyPlayer(player.playerName) ? 'text-red-300' : 'text-yellow-300')
+                                      : 'text-gray-500'
                                 }`}
                                 data-testid={`player-status-${index}`}
                               >
@@ -605,17 +635,52 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                               </span>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div 
-                              className={`text-sm ${
-                                player.isOnline 
-                                  ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
-                                  : 'text-gray-400'
-                              }`}
-                              data-testid={`online-status-${index}`}
-                            >
-                              {player.isOnline ? 'Currently Online' : 'Offline'}
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <div 
+                                className={`text-sm ${
+                                  isTeammate(player.playerName)
+                                    ? (player.isOnline ? 'text-green-400' : 'text-green-500/70')
+                                    : player.isOnline 
+                                      ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
+                                      : 'text-gray-400'
+                                }`}
+                                data-testid={`online-status-${index}`}
+                              >
+                                {player.isOnline ? 'Currently Online' : 'Offline'}
+                              </div>
                             </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0 hover:bg-gray-600"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreVertical className="h-4 w-4 text-gray-400" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="bg-gray-800 border-gray-600">
+                                {isTeammate(player.playerName) ? (
+                                  <DropdownMenuItem 
+                                    onClick={() => removeTeammate(player.playerName)}
+                                    className="text-red-400 hover:bg-red-900/20 hover:text-red-300"
+                                  >
+                                    <UserX className="mr-2 h-4 w-4" />
+                                    Remove as Teammate
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem 
+                                    onClick={() => addTeammate(player.playerName)}
+                                    className="text-green-400 hover:bg-green-900/20 hover:text-green-300"
+                                  >
+                                    <UserCheck className="mr-2 h-4 w-4" />
+                                    Set as Teammate
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       ))}
