@@ -18,13 +18,13 @@ export function KitNeedsDisplay({ kitResources, size = 'xs', className = '' }: K
   if (activeKits.length === 0) return null
   
   const sizeClasses = {
-    xs: 'w-2 h-2',
+    xs: 'w-2.5 h-2.5',
     sm: 'w-4 h-4', 
     md: 'w-5 h-5'
   }
   
   const textSizeClasses = {
-    xs: 'text-[8px]',
+    xs: 'text-[7px]',
     sm: 'text-sm',
     md: 'text-base'
   }
