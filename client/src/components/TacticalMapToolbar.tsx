@@ -79,7 +79,7 @@ const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay, onWipeCoun
                     )
                   ))}
                 </div>
-                <WipeCountdownTimer onCountdownChange={onWipeCountdownChange} />
+
                 <div className="flex gap-2">
                   {['Teams', 'Turret Control'].map((btn) => (
                     <button 

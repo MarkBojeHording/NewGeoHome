@@ -2404,6 +2404,20 @@ export default function InteractiveTacticalMap() {
         }
       `}</style>
       
+      {/* Countdown Timer - Positioned absolutely to avoid container constraints */}
+      <div 
+        style={{
+          position: 'fixed',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 70,
+          overflow: 'visible'
+        }}
+      >
+        <WipeCountdownTimer onCountdownChange={setWipeCountdown} />
+      </div>
+      
       {/* Tactical Map Toolbar Component */}
       <TacticalMapToolbar 
         onButtonClick={(buttonType) => {
