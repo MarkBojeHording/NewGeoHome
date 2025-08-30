@@ -561,7 +561,7 @@ export default function TaskReportModal({
                       setKitResources(prev => ({ ...prev, hazzy: value }));
                     }}
                     placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-full"
+                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-12 rounded-none"
                     max="99"
                   />
                 </div>
@@ -578,7 +578,7 @@ export default function TaskReportModal({
                       setKitResources(prev => ({ ...prev, fullkit: value }));
                     }}
                     placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-full"
+                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-12 rounded-none"
                     max="99"
                   />
                 </div>
@@ -595,7 +595,7 @@ export default function TaskReportModal({
                       setKitResources(prev => ({ ...prev, meds: value }));
                     }}
                     placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-full"
+                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-14 rounded-none"
                     max="999"
                   />
                 </div>
@@ -612,7 +612,7 @@ export default function TaskReportModal({
                       setKitResources(prev => ({ ...prev, bolty: value }));
                     }}
                     placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-full"
+                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-12 rounded-none"
                     max="99"
                   />
                 </div>
@@ -629,7 +629,7 @@ export default function TaskReportModal({
                       setKitResources(prev => ({ ...prev, teas: value }));
                     }}
                     placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-full"
+                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-12 rounded-none"
                     max="99"
                   />
                 </div>
