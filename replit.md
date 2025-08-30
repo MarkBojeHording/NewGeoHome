@@ -1,88 +1,54 @@
-# Overview
+### Overview
+This project is a Rust-themed tactical map and raid calculator application designed for strategic planning and resource management in the game Rust. It provides players with an interactive map interface, comprehensive raid cost calculations for various material types, and tools for tracking bases, reports, and player activity. The application aims to be a specialized gaming utility to enhance strategic gameplay and resource management, enhancing strategic gameplay and resource management through a specialized gaming utility.
 
-This project is a Rust-themed tactical map and raid calculator application designed for strategic planning and resource management in the game Rust. It provides players with an interactive map interface, comprehensive raid cost calculations for various material types, and tools for tracking bases, reports, and player activity. The application aims to be a specialized gaming utility to enhance strategic gameplay and resource management.
-
-## Recent Changes (January 2025)
-- **Fixed Toolbar Positioning**: Successfully implemented fixed toolbar system with main button toolbar positioned at absolute top of browser viewport (top-0) using CSS fixed positioning with inline style overrides
-- **Removed Duplicate Toolbars**: Eliminated moving duplicate toolbar sections that were interfering with map zoom/pan operations
-- **Simplified Interface**: Removed [TACTICAL OPERATIONS] branding text for cleaner interface focusing on essential functionality
-- **Zoom/Pan Improvements**: Enhanced mouse-cursor-relative zooming with proper pan adjustment and smooth transitions
-- **Fixed Base Reports System**: Resolved enemy base report tab display with simplified report previews list and functional "Create New Report" button
-- **Enhanced Cache Invalidation**: Fixed report creation workflow to properly invalidate base-specific report queries for immediate display
-- **Removed Report Outcomes**: Cleaned up base report previews by removing outcome displays since base reports don't use outcomes
-- **Fixed Player Tagging**: Resolved modalType scoping issue in PlayerSearchSelector component for proper player status indicators
-- **Restored Base Owner Display**: Fixed base modal initialization to properly display existing base owners from database
-- **Implemented Gene Progress System**: Successfully integrated popup-to-main window communication system using postMessage API to sync gene data from calculator popup to progression modal. Features automatic real-time updates and manual sync capability. Displays identical gene information as calculator's "Best 🧬" field with proper gene quality colors and progress percentages.
-- **RESOLVED Report Modal ID System Bug**: Fixed critical report ID display issue where reports were showing database sequence numbers (19, 20, 21) instead of proper alphanumeric report IDs (R12ABC3, ROJH1GT). System now properly links map markers to database reports using dual ID system - database integer IDs for API operations and alphanumeric IDs for user display. Report modals now correctly show "Update Report" for existing reports with proper alphanumeric identifiers.
-- **RESOLVED Report Update Duplication Bug**: Fixed issue where updating existing reports created duplicate map markers instead of updating in-place. System now correctly uses database reportId for API calls while preserving display functionality.
-- **Enhanced Report Player Tagging**: Implemented separate enemy and friendly player storage using comma-separated strings like base owners. Added enemy_players and friendly_players database columns for organized player tracking in reports.
-- **FIXED Report Preview Link Consistency**: Resolved critical user feedback issue where report preview links opened ActionReportModal with confusing "Edit Base Report" title instead of using the same modal system as map markers. Report preview links now trigger identical onOpenReport function as map report markers for consistent user experience throughout the application.
-- **Enhanced BaseModal Heatmap Multi-Player System**: Fixed React Hooks error and implemented multi-player color coding for BaseModal heatmap displaying overlapping player activity hours. Uses light blue (1-2 players), yellow (3 players), orange (4 players), red (5+ players). System properly combines session data from all tagged base owners and calculates accurate overlapping activity based on real session timestamps. Removed legend per user feedback.
-- **COMPLETED Task Report Integration with FarmRadialMenu**: Successfully integrated task reporting system with FarmRadialMenu Advanced "NEEDS PICKUP" button. Added props interface to FarmRadialMenu for task report functionality, created onOpenTaskReport callback function following established patterns, updated SelectedLocationPanel to pass through task report props with proper base data (baseId, baseName, baseCoords). TaskReportModal fully implemented with dropdown for task types, pickup options (Loot/Ore with Package/Pickaxe icons), and complete CRUD operations. System tested and working - task reports successfully created and stored in database with proper API integration.
-- **COMPLETED Task Report Map Icons System**: Fixed task report preview links to open in correct TaskReportModal instead of ActionReportModal based on report type detection. Implemented persistent map icons displaying above bases when task reports are created: Package icon (📦) for loot pickup tasks and Pickaxe icon (⛏️) for ore pickup tasks. Icons match TaskReportModal styling and remain visible until task completion. System properly filters pending task reports and displays appropriate icons based on taskData.pickupType values from database.
-- **COMPLETED FarmRadialMenu Decay Timer System**: Fully implemented decay timer functionality for friendly farm bases. Features editable HTML input fields (using foreignObject in SVG) for stone/metal/HQM health values with proper validation (max values: 500/1000/2000). Timer calculations use authentic Rust game decay mechanics (stone: 10HP/hr, metal: 8HP/hr, HQM: 2HP/hr). Fixed critical prop passing bug in FarmRadialMenu wrapper function that prevented onAddTimer and locationId props from reaching internal RadialMenu component. SCHEDULE button creates countdown timers for resources with health > 0, automatically resets input fields, and integrates with tactical map timer system. Updated timer display format to show only hours and minutes (removed seconds) for cleaner interface. System fully functional and tested.
-- **OPTIMIZED TC Advanced Modal System**: Successfully restored and enhanced TCUpkeepModal with working TC Advanced button functionality. Replaced broken complex color logic with simple blue button design. Updated TC Advanced modal to match exact working version layout with proper 24-slot grid display, material calculations, and user-friendly text formatting. Applied consistent orange/rust theme throughout while preserving functional layout. Fixed calculation logic to properly show "Max Upkeep in TC" vs "Upkeep that can fit" without double-counting wipe time. Optimized performance by eliminating duplicate countdown timers - TC calculator now accepts wipeCountdown prop from primary toolbar timer instead of maintaining separate countdown mechanism, improving efficiency and preventing inconsistencies between timers.
-- **COMPLETED TC Data Persistence Integration**: Fully integrated TC calculator data with BaseModal persistence system. TC upkeep amounts, timers, additional TCs, and all settings now save to database and restore when reopening base modals. Converted TCUpkeepModal from session-only storage to props-based state management connected to BaseModal's formData system. All TC data (mainTC, additionalTCs, trackRemainingTime, timerDays/Hours/Minutes, isTimerActive) persists across sessions like notes and other base information. Eliminated session-only storage issue where TC data was lost between modal sessions.
-- **COMPLETED FarmRadialMenu TC Integration**: Successfully integrated TC calculator data with FarmRadialMenu resources section display. Fixed critical data flow issue by correcting tcData prop from location.formData to location.tcData. Implemented exact "Upkeep that can fit" calculation matching TC Advanced modal: Max Upkeep in TC - Currently in TC. Resources section now displays proper TC values (e.g., Stone: 28.7K representing stones that can still be added). System shows timer-based calculations when active, defaults to Max Upkeep for wipe duration when no timer set. TC data flows correctly from database through tactical-map.tsx to FarmRadialMenu component with proper value formatting using K suffix.
-- **COMPLETED Request Resources Task System**: Implemented comprehensive "Request Resources" task reporting functionality accessible via Advanced button in NEEDS RESOURCES section. Added new task type "request_resources" to TaskReportModal with dedicated input fields for Wood, Stone, Metal, and HQM amounts. System generates persistent 📋 clipboard icons above bases for active resource requests, matching existing task icon behavior with animations and clickable details. Resource requests integrate fully with task report CRUD operations and display formatted resource lists in task notes. FarmRadialMenu Advanced button (index 3) opens TaskReportModal with "Request Resources" pre-selected. Resource text display enhanced with mixed colors - resource names in original colors, numbers in black for improved visibility.
-
-# User Preferences
-
+### User Preferences
 Preferred communication style: Simple, everyday language.
 IMPORTANT: Only implement exactly what is requested. Do not create mock/fake data or add unrequested features. Ask questions if unclear.
 CRITICAL RULE: When user says "do not change" something, that command must be followed exactly - no modifications whatsoever to that code/component/functionality.
+Layout Constraints: Avoid flex containers for modals and containers as they are hard to modify locations of
+Scope Control: Do not make extra changes outside the scope of what is being asked. If an extra task or feature seems like a good idea, ask first
+Targeted Changes: Avoid making changes to other modals or modules other than the ones being targeted for change. If changes affect multiple components, inform user first
+Space Efficiency: Avoid extra containers and dead space when making modals, screens or similar. Minimize margins and unnecessary spacing
+No Wrapper Containers: Never create wrapper containers as they cause confusion in development
 
-## Development Rules (Updated)
-- **Layout Constraints**: Avoid flex containers for modals and containers as they are hard to modify locations of
-- **Scope Control**: Do not make extra changes outside the scope of what is being asked. If an extra task or feature seems like a good idea, ask first
-- **Targeted Changes**: Avoid making changes to other modals or modules other than the ones being targeted for change. If changes affect multiple components, inform user first
-- **Space Efficiency**: Avoid extra containers and dead space when making modals, screens or similar. Minimize margins and unnecessary spacing
-- **No Wrapper Containers**: Never create wrapper containers as they cause confusion in development
-
-# System Architecture
-
-## Frontend Architecture
+### System Architecture
+**Frontend Architecture**
 - **Framework**: React 18 with TypeScript and Vite.
-- **UI Framework**: Shadcn/ui components built on Radix UI for consistent design.
+- **UI Framework**: Shadcn/ui components built on Radix UI.
 - **Styling**: Tailwind CSS with CSS variables and PostCSS.
 - **State Management**: React Query for server state.
 - **Routing**: Wouter for client-side routing.
 - **Form Management**: React Hook Form with Zod validation.
 
-## Backend Architecture
+**Backend Architecture**
 - **Runtime**: Node.js with Express.js.
 - **Language**: TypeScript with ES modules.
 - **Development**: tsx for hot reloading.
 - **Build**: esbuild for production bundling.
 - **Storage Interface**: Abstracted storage layer with in-memory implementation.
 
-## Data Storage Solutions
+**Data Storage Solutions**
 - **Database**: PostgreSQL via Drizzle ORM.
 - **Schema Management**: Drizzle Kit for migrations.
 - **Connection**: Neon Database serverless driver.
 - **Session Management**: connect-pg-simple for PostgreSQL-backed sessions.
 
-## Authentication and Authorization
+**Authentication and Authorization**
 - **User Schema**: Basic username/password authentication.
 - **Session Handling**: Express sessions with PostgreSQL session store.
 - **Validation**: Zod schemas for input validation.
 
-## Core Features
+**Core Features**
 - **Interactive Tactical Map**: Features zoom/pan, base placement (friendly/enemy), rocket calculator, timers, location action menus, and report tracking. Includes a 26x26 grid system (A0-Z25) aligned with an authentic Rust game map.
 - **Base Management**: Comprehensive BaseModal for detailed base information, including rocket and ammo calculations, upkeep tracking, base types, and heat map integration for activity visualization. Supports duplicate base naming (e.g., A1, A1(2)).
-- **Centralized Reporting System**: Unified report architecture supporting 3 types:
-  - **General Reports**: Historical documentation of events using ActionReportModal with enemy/friendly player tagging
-  - **Base Reports**: Base-specific information and status documentation
-  - **Task Reports**: Future-focused planning system for tasks that need to happen, always tagged to bases with interactive map icons, summary popups, and completion tracking
-Reports use proper array-based player and base tagging, with unified ReportPreview component for consistent display.
-- **Player Management System**: A comprehensive modal for tracking players with search, online/offline status, and session history. Includes a premium player system with dual creation methods. Player activity is visualized through a heatmap based on session data. Now features player-specific report filtering using centralized API.
-- **Base Grouping & Visualization**: Implements player-based and proximity-based grouping of bases, displaying colored rings and connection lines between main and subordinate bases.
-- **User Interface Enhancements**: Features a consistent design with Shadcn/ui, optimized layouts, and visual indicators for various functionalities (e.g., player count circles, content indicators).
+- **Centralized Reporting System**: Unified report architecture supporting General, Base, and Task Reports. Task reports are future-focused, linked to bases with interactive map icons, and support CRUD operations for task types like "Request Resources."
+- **Player Management System**: A comprehensive modal for tracking players with search, online/offline status, session history, and a premium player system. Player activity is visualized through a heatmap based on session data, with player-specific report filtering.
+- **Base Grouping & Visualization**: Implements player-based and proximity-based grouping of bases, displaying colored rings and connection lines.
+- **User Interface Enhancements**: Features a consistent design with Shadcn/ui, optimized layouts, and visual indicators for various functionalities. Toolbar positioning is fixed, and interfaces are simplified for a cleaner user experience.
 
-# External Dependencies
-
+### External Dependencies
 - **Database Service**: Neon Database (serverless PostgreSQL)
-- **Player Data API**: superinfotest.replit.app (for real-time player tracking)
+- **Player Data API**: superinfotest.replit.app
 - **Icon System**: Lucide React
 - **Date Handling**: date-fns
 - **Carousel Components**: Embla Carousel
