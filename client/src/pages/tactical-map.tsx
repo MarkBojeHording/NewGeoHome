@@ -1040,7 +1040,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                   {report.taskType === 'stock_kits' && 
                     <div 
                       onClick={(event) => onTaskIconClick(event, report)}
-                      className="cursor-pointer bg-orange-600 rounded-full px-1 py-0.5 hover:bg-orange-700 transition-colors"
+                      className="cursor-pointer"
                     >
                       <KitNeedsDisplay kitResources={report.taskData?.kitResources} size="xs" />
                     </div>}
