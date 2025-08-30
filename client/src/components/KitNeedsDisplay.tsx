@@ -32,7 +32,7 @@ export function KitNeedsDisplay({ kitResources, size = 'xs', className = '' }: K
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       {activeKits.map(({ kitType, amount, iconData }) => (
-        <div key={kitType} className="flex items-center -space-x-0.5">
+        <div key={kitType} className="flex items-center -space-x-0.5 flex-shrink-0">
           {iconData.png ? (
             <img 
               src={iconData.png} 
