@@ -433,6 +433,16 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     if (type === 'inner') {
       const id = subSegment !== null ? `${index}-${subSegment}` : index;
       setSelectedInner(id);
+      
+      // Handle make report functionality for segment 5 (folder icon)
+      if (index === 5 && onOpenBaseReport && baseId && baseName && baseCoords) {
+        onOpenBaseReport({ 
+          id: baseId, 
+          name: baseName, 
+          coordinates: baseCoords, 
+          type: 'friendly' 
+        });
+      }
     } else {
       setSelectedOuter(index);
     }
