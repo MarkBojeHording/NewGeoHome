@@ -916,7 +916,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                               fill={getColor(index, false, subIdx)}
                               stroke={subIdx === 1 ? "rgba(255, 255, 255, 0.7)" : "rgba(255, 255, 255, 0.2)"}
                               strokeWidth={subIdx === 1 ? "2.5" : "2"}
-                              className="transition duration-300"
+                              className="cursor-pointer transition duration-300"
                               onMouseEnter={() => setHoveredSegment(`inner-${index}-${subIdx}`)}
                               onMouseLeave={() => setHoveredSegment(null)}
                               style={{
@@ -1078,7 +1078,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
  
 
                 'REQUEST SUPPLIES',
-                selectedInner === 0 && (
+                (selectedInner === '0-0' || selectedInner === '0-1') && (
                   <g className="deploy-animation">
                     <line
                       x1={centerX + (outerRadius + 5) * Math.cos((startAngle + (0 * segmentAngle) + (segmentAngle / 2)) * Math.PI / 180)}
