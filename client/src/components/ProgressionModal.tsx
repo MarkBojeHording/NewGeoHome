@@ -162,7 +162,7 @@ const getGeneCalculatorData = (): GeneDataResult => {
 }
 
 export function ProgressionModal({ isOpen, onClose, onProgressionDisplayChange }: ProgressionModalProps) {
-  const [inGroupWeapon, setInGroupWeapon] = useState('Spear')
+  const [inGroupWeapon, setInGroupWeapon] = useState('Bow')
   const [aloneWeapon, setAloneWeapon] = useState('Spear')
   const [counteringWeapon, setCounteringWeapon] = useState('Spear')
   const [displayOnMap, setDisplayOnMap] = useState(false)
