@@ -38,7 +38,7 @@ export function KitNeedsDisplay({ kitResources, size = 'xs', className = '' }: K
               src={iconData.png} 
               alt={iconData.alt}
               className={`${sizeClasses[size]} object-contain ${
-                kitType === 'fullkit' ? '-translate-x-px' : kitType === 'meds' ? 'translate-x-px' : ''
+                kitType === 'fullkit' ? '-translate-x-0.5' : kitType === 'meds' ? 'translate-x-0.5' : ''
               }`}
             />
           ) : (
