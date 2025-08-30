@@ -1073,7 +1073,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                             fontSize="14"
                             fontWeight="bold"
                             className="pointer-events-none select-none"
-                            style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.8)' }}
+                            style={{ textShadow: 'none' }}
                           >
                             <textPath href={`#${resource.key}TextPath`} startOffset="0%" textAnchor="start">
                               {resource.name}:{formatResourceValue(calculateTCResources()[resource.key])}
