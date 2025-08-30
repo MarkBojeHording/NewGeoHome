@@ -1,7 +1,15 @@
 /**
  * Centralized icon registry for consistent icon usage across the application
  * This file contains all icons used in the tactical map and reporting system
+ * Supports both emoji icons and PNG image assets for enhanced visual quality
  */
+
+// PNG Asset Imports
+import rifleBoltPng from '@assets/rifle.bolt_1756547259710.png'
+import oreteaPurePng from '@assets/oretea.pure_1756547259710.png'
+import syringeMedicalPng from '@assets/syringe.medical_1756547259710.png'
+import hazmatsuitPng from '@assets/hazmatsuit_1756547259711.png'
+import metalFacemaskPng from '@assets/metal.facemask_512_1756547259711.png'
 
 // Task Report Icons - Used on map overlay for active tasks
 export const TASK_ICONS = {
@@ -75,15 +83,57 @@ export const RESOURCE_ICONS = {
   LEATHER: '🦌',
 } as const
 
-// Weapon/Kit Icons - Used for kit management
+// PNG Asset Registry - Maps asset keys to imported PNG files
+export const PNG_ASSETS = {
+  RIFLE_BOLT: rifleBoltPng,
+  ORETEA_PURE: oreteaPurePng,
+  SYRINGE_MEDICAL: syringeMedicalPng,
+  HAZMATSUIT: hazmatsuitPng,
+  METAL_FACEMASK: metalFacemaskPng,
+} as const
+
+// Icon Definition Structure - supports both emoji and PNG assets
+export interface IconDefinition {
+  emoji: string
+  png?: string
+  alt: string
+}
+
+// Weapon/Kit Icons - Used for kit management (enhanced with PNG support)
 export const KIT_ICONS = {
-  HAZZY: '🦺',           // Hazmat suit
-  FULLKIT: '⚔️',        // Full combat kit
-  MEDS: '💊',            // Medical supplies
-  BOLTY: '🔫',           // Bolt action rifle
-  TEAS: '🍵',            // Teas/consumables
-  ROADSIGN: '🛡️',       // Road sign armor
-  COFFEE: '☕',           // Coffee can helmet
+  HAZZY: {
+    emoji: '🦺',
+    png: PNG_ASSETS.HAZMATSUIT,
+    alt: 'Hazmat suit'
+  },
+  FULLKIT: {
+    emoji: '⚔️',
+    alt: 'Full combat kit'
+  },
+  MEDS: {
+    emoji: '💊',
+    png: PNG_ASSETS.SYRINGE_MEDICAL,
+    alt: 'Medical supplies'
+  },
+  BOLTY: {
+    emoji: '🔫',
+    png: PNG_ASSETS.RIFLE_BOLT,
+    alt: 'Bolt action rifle'
+  },
+  TEAS: {
+    emoji: '🍵',
+    png: PNG_ASSETS.ORETEA_PURE,
+    alt: 'Teas/consumables'
+  },
+  ROADSIGN: {
+    emoji: '🛡️',
+    alt: 'Road sign armor'
+  },
+  COFFEE: {
+    emoji: '☕',
+    png: PNG_ASSETS.METAL_FACEMASK,
+    alt: 'Coffee can helmet'
+  },
 } as const
 
 // Map Icons - Used for tactical map features
@@ -149,10 +199,34 @@ export function getStatusIcon(status: string): string {
   }
 }
 
-// Helper function to get kit icon
+// Helper function to get kit icon (returns emoji by default)
 export function getKitIcon(kitType: string): string {
   const iconKey = kitType.toUpperCase() as keyof typeof KIT_ICONS
-  return KIT_ICONS[iconKey] || ACTION_ICONS.INFO
+  const iconDef = KIT_ICONS[iconKey]
+  if (iconDef && typeof iconDef === 'object') {
+    return iconDef.emoji
+  }
+  return iconDef || ACTION_ICONS.INFO
+}
+
+// Helper function to get kit icon PNG asset
+export function getKitIconPng(kitType: string): string | undefined {
+  const iconKey = kitType.toUpperCase() as keyof typeof KIT_ICONS
+  const iconDef = KIT_ICONS[iconKey]
+  if (iconDef && typeof iconDef === 'object' && 'png' in iconDef) {
+    return iconDef.png
+  }
+  return undefined
+}
+
+// Enhanced icon component helper - returns both emoji and PNG for flexible rendering
+export function getKitIconData(kitType: string): { emoji: string; png?: string; alt: string } {
+  const iconKey = kitType.toUpperCase() as keyof typeof KIT_ICONS
+  const iconDef = KIT_ICONS[iconKey]
+  if (iconDef && typeof iconDef === 'object') {
+    return iconDef
+  }
+  return { emoji: ACTION_ICONS.INFO, alt: 'Unknown kit type' }
 }
 
 export default ICON_REGISTRY

@@ -7,6 +7,7 @@ import { Textarea } from './ui/textarea'
 import { Input } from './ui/input'
 import { apiRequest } from '../lib/queryClient'
 import { useToast } from '@/hooks/use-toast'
+import { KitIcon } from '@/components/ui/icon'
 
 interface TaskReportModalProps {
   isVisible: boolean;
@@ -549,7 +550,10 @@ export default function TaskReportModal({
           <div className="mb-4 p-2 border border-orange-500/40 rounded-lg bg-gray-900/50">
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-xs text-gray-300 mb-1">Hazzy</label>
+                <label className="flex items-center gap-1 text-xs text-gray-300 mb-1">
+                  <KitIcon kitType="hazzy" size="xs" />
+                  Hazzy
+                </label>
                 <Input
                   type="number"
                   value={kitResources.hazzy}
@@ -563,7 +567,10 @@ export default function TaskReportModal({
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-300 mb-1">Fullkit</label>
+                <label className="flex items-center gap-1 text-xs text-gray-300 mb-1">
+                  <KitIcon kitType="fullkit" size="xs" />
+                  Fullkit
+                </label>
                 <Input
                   type="number"
                   value={kitResources.fullkit}
@@ -577,7 +584,10 @@ export default function TaskReportModal({
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-300 mb-1">Meds</label>
+                <label className="flex items-center gap-1 text-xs text-gray-300 mb-1">
+                  <KitIcon kitType="meds" size="xs" />
+                  Meds
+                </label>
                 <Input
                   type="number"
                   value={kitResources.meds}
@@ -591,7 +601,10 @@ export default function TaskReportModal({
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-300 mb-1">Bolty</label>
+                <label className="flex items-center gap-1 text-xs text-gray-300 mb-1">
+                  <KitIcon kitType="bolty" size="xs" />
+                  Bolty
+                </label>
                 <Input
                   type="number"
                   value={kitResources.bolty}
@@ -605,7 +618,10 @@ export default function TaskReportModal({
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-300 mb-1">Teas</label>
+                <label className="flex items-center gap-1 text-xs text-gray-300 mb-1">
+                  <KitIcon kitType="teas" size="xs" />
+                  Teas
+                </label>
                 <Input
                   type="number"
                   value={kitResources.teas}
