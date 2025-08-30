@@ -1377,6 +1377,7 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
               baseId={location?.id}
               baseName={location?.name}
               baseCoords={location?.name}
+              reports={reports}
               tcData={location?.tcData}
               wipeCountdown={wipeCountdown}
             />

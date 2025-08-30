@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { apiRequest } from '@/lib/queryClient';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface BaseRadialMenuProps {
   onOpenTaskReport?: (baseData: { baseId: string; baseName: string; baseCoords: string }) => void;
@@ -9,6 +11,7 @@ interface BaseRadialMenuProps {
   baseId?: string;
   baseName?: string;
   baseCoords?: string;
+  reports?: any[];
   tcData?: {
     mainTC?: { wood?: string; stone?: string; metal?: string; hqm?: string };
     trackRemainingTime?: boolean;
@@ -23,7 +26,8 @@ interface BaseRadialMenuProps {
   };
 }
 
-const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseReport, onAddTimer, locationId, baseId, baseName, baseCoords, tcData, wipeCountdown }: BaseRadialMenuProps) => {
+const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseReport, onAddTimer, locationId, baseId, baseName, baseCoords, reports = [], tcData, wipeCountdown }: BaseRadialMenuProps) => {
+  const queryClient = useQueryClient();
   const [selectedInner, setSelectedInner] = useState(null);
   const [selectedOuter, setSelectedOuter] = useState(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
@@ -712,8 +716,18 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                 // Only create task report if kit values are greater than 0
                 const hasKitValues = (parseInt(segment1A1Value) > 0 || parseInt(segment1A2Value) > 0 || parseInt(segmentCoreValue) > 0);
                 
-                if (onCreateExpressTaskReport && baseId && baseName && baseCoords && hasKitValues) {
+                if (baseId && baseName && baseCoords && hasKitValues) {
                   console.log('Kits selected');
+                  
+                  // Check if a stock_kits task report already exists for this base
+                  const existingStockKitsReport = reports.find(report => 
+                    report.type === 'task' &&
+                    report.taskType === 'stock_kits' &&
+                    report.status === 'pending' &&
+                    report.baseTags && 
+                    report.baseTags.includes(baseId)
+                  );
+
                   const kitResources = {
                     hazzy: segment1A1Value,
                     fullkit: segment1A2Value,
@@ -721,13 +735,64 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                     bolty: '0',
                     teas: '0'
                   };
-                  
-                  onCreateExpressTaskReport({
-                    baseId,
-                    baseName, 
-                    baseCoords,
-                    kitResources
-                  });
+
+                  // Handle the kit request asynchronously
+                  (async () => {
+                    try {
+                      if (existingStockKitsReport) {
+                        // Update existing report by adding new kit values to existing ones
+                        const currentKitResources = existingStockKitsReport.taskData?.kitResources || {};
+                        const updatedKitResources = { ...currentKitResources };
+                        
+                        // Add new values to existing values for each kit type
+                        Object.keys(kitResources).forEach(kitType => {
+                          const newValue = parseInt(kitResources[kitType]) || 0;
+                          const currentValue = parseInt(currentKitResources[kitType]) || 0;
+                          if (newValue > 0) {
+                            updatedKitResources[kitType] = (currentValue + newValue).toString();
+                          }
+                        });
+
+                        // Update the existing report
+                        await apiRequest('PUT', `/api/reports/${existingStockKitsReport.id}`, {
+                          ...existingStockKitsReport,
+                          taskData: {
+                            ...existingStockKitsReport.taskData,
+                            kitResources: updatedKitResources
+                          }
+                        });
+                        
+                        console.log('Updated existing stock kits report');
+                      } else {
+                        // Create new stock kits task report
+                        const taskReport = {
+                          type: 'task',
+                          notes: '',
+                          outcome: 'neutral',
+                          enemyPlayers: '',
+                          friendlyPlayers: '',
+                          baseTags: [baseId],
+                          screenshots: [],
+                          location: { gridX: 0, gridY: 0 },
+                          taskType: 'stock_kits',
+                          taskData: {
+                            kitResources,
+                            details: `Express kit request for ${baseName}`,
+                            urgency: 'medium'
+                          },
+                          status: 'pending'
+                        };
+                        
+                        await apiRequest('POST', '/api/reports', taskReport);
+                        console.log('Created new stock kits report');
+                      }
+
+                      // Invalidate reports query to refresh the list and map icons
+                      queryClient.invalidateQueries({ queryKey: ['/api/reports'] });
+                    } catch (error) {
+                      console.error('Failed to handle kit request:', error);
+                    }
+                  })();
                 }
               }
               
@@ -1319,7 +1384,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
           <g 
             className={`transition-transform duration-200 cursor-pointer ${!isExpanded ? 'hover:scale-110 subtle-pulse' : ''}`}
             style={{ transformOrigin: `${centerX}px ${centerY}px` }}
-            onClick={() => {
+            onClick={async () => {
               if (isExpanded) {
                 setSelectedInner(null);
                 setSelectedOuter(null);
