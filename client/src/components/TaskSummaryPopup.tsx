@@ -65,6 +65,7 @@ export default function TaskSummaryPopup({
 
   const pickupType = task.taskData?.pickupType
   const repairUpgradeType = task.taskData?.repairUpgradeType
+  const requestedResources = task.taskData?.requestedResources
   
   let taskIcon, taskLabel
   
@@ -74,6 +75,13 @@ export default function TaskSummaryPopup({
   } else if (repairUpgradeType) {
     taskIcon = <Wrench className="h-3 w-3 text-orange-400" />
     taskLabel = `${repairUpgradeType.charAt(0).toUpperCase() + repairUpgradeType.slice(1)}`
+  } else if (requestedResources) {
+    taskIcon = <span className="text-xs">📋</span>
+    const resourcesList = Object.entries(requestedResources)
+      .filter(([_, amount]) => amount && parseInt(amount) > 0)
+      .map(([resource, amount]) => `${resource}: ${amount}`)
+      .join(', ')
+    taskLabel = `Request Resources - ${resourcesList}`
   } else {
     taskIcon = <Package className="h-3 w-3" />
     taskLabel = 'Task'
@@ -97,7 +105,7 @@ export default function TaskSummaryPopup({
           <span className="text-sm text-white">{taskLabel}</span>
         </div>
 
-        {task.notes && task.notes.trim() !== '' && !task.notes.includes('Express') && (
+        {task.notes && task.notes.trim() !== '' && !task.notes.includes('Express') && !task.notes.includes('Request Resources') && (
           <div>
             <p className="text-xs font-medium text-orange-300">Notes:</p>
             <p className="text-xs text-gray-300 break-words">{task.notes}</p>
