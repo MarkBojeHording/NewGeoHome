@@ -1075,7 +1075,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
               {/* Pulsating overlays */}
               {/* NEEDS KITS overlay */}
               {renderPulsatingOverlay(0, 
-                Object.values(kitValues).some(value => parseInt(value) > 0),
+                (parseInt(segment1A1Value) > 0 || parseInt(segment1A2Value) > 0 || parseInt(segmentCoreValue) > 0),
  
 
                 'REQUEST SUPPLIES',
