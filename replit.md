@@ -19,6 +19,7 @@ No Wrapper Containers: Never create wrapper containers as they cause confusion i
 - **State Management**: React Query for server state.
 - **Routing**: Wouter for client-side routing.
 - **Form Management**: React Hook Form with Zod validation.
+- **Icon Management**: Centralized icon registry system (`client/src/lib/icons.ts`) for consistent emoji-based task icons and reducing redundancy.
 
 **Backend Architecture**
 - **Runtime**: Node.js with Express.js.
@@ -41,7 +42,7 @@ No Wrapper Containers: Never create wrapper containers as they cause confusion i
 **Core Features**
 - **Interactive Tactical Map**: Features zoom/pan, base placement (friendly/enemy), rocket calculator, timers, location action menus, and report tracking. Includes a 26x26 grid system (A0-Z25) aligned with an authentic Rust game map.
 - **Base Management**: Comprehensive BaseModal for detailed base information, including rocket and ammo calculations, upkeep tracking, base types, and heat map integration for activity visualization. Supports duplicate base naming (e.g., A1, A1(2)).
-- **Centralized Reporting System**: Unified report architecture supporting General, Base, and Task Reports. Task reports are future-focused, linked to bases with interactive map icons, and support CRUD operations for task types like "Request Resources."
+- **Centralized Reporting System**: Unified report architecture supporting General, Base, and Task Reports. Task reports are future-focused, linked to bases with interactive map icons, and support CRUD operations for task types including "Request Resources" and "Stock Kits."
 - **Player Management System**: A comprehensive modal for tracking players with search, online/offline status, session history, and a premium player system. Player activity is visualized through a heatmap based on session data, with player-specific report filtering.
 - **Base Grouping & Visualization**: Implements player-based and proximity-based grouping of bases, displaying colored rings and connection lines.
 - **User Interface Enhancements**: Features a consistent design with Shadcn/ui, optimized layouts, and visual indicators for various functionalities. Toolbar positioning is fixed, and interfaces are simplified for a cleaner user experience.

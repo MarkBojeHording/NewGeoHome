@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Package, Pickaxe, Wrench } from 'lucide-react'
 import { Button } from './ui/button'
 import { apiRequest } from '../lib/queryClient'
 import { useToast } from '@/hooks/use-toast'
+import { getTaskIcon, getStatusIcon } from '@/lib/icons'
 
 interface TaskSummaryPopupProps {
   isVisible: boolean
@@ -66,17 +66,18 @@ export default function TaskSummaryPopup({
   const pickupType = task.taskData?.pickupType
   const repairUpgradeType = task.taskData?.repairUpgradeType
   const requestedResources = task.taskData?.requestedResources
+  const kitResources = task.taskData?.kitResources
   
   let taskIcon, taskLabel
   
+  // Get icon from centralized system
+  taskIcon = getTaskIcon(task.taskType, pickupType || repairUpgradeType)
+  
   if (pickupType) {
-    taskIcon = pickupType === 'ore' ? <Pickaxe className="h-3 w-3" /> : <Package className="h-3 w-3" />
     taskLabel = `${pickupType.charAt(0).toUpperCase() + pickupType.slice(1)} Needs Pickup`
   } else if (repairUpgradeType) {
-    taskIcon = <Wrench className="h-3 w-3 text-orange-400" />
     taskLabel = `${repairUpgradeType.charAt(0).toUpperCase() + repairUpgradeType.slice(1)}`
   } else if (requestedResources || task.taskType === 'request_resources') {
-    taskIcon = <span className="text-xs">📋</span>
     // Handle both nested requestedResources and direct fields
     const resources = requestedResources || {
       wood: task.taskData?.wood || '',
@@ -89,8 +90,15 @@ export default function TaskSummaryPopup({
       .map(([resource, amount]) => `${resource}: ${amount}`)
       .join(', ')
     taskLabel = `Request Resources - ${resourcesList}`
+  } else if (kitResources || task.taskType === 'stock_kits') {
+    // Handle kit resources
+    const kits = kitResources || {}
+    const kitsList = Object.entries(kits)
+      .filter(([_, amount]) => amount && parseInt(amount) > 0)
+      .map(([kit, amount]) => `${kit}: ${amount}`)
+      .join(', ')
+    taskLabel = `Stock Kits - ${kitsList}`
   } else {
-    taskIcon = <Package className="h-3 w-3" />
     taskLabel = 'Task'
   }
 
@@ -107,7 +115,7 @@ export default function TaskSummaryPopup({
       {/* Content */}
       <div className="p-2 space-y-2">
         <div className="flex items-center gap-1">
-          {taskIcon}
+          <span className="text-xs">{taskIcon}</span>
           <span className="text-xs font-medium text-orange-300">Task:</span>
           <span className="text-sm text-white">{taskLabel}</span>
         </div>
