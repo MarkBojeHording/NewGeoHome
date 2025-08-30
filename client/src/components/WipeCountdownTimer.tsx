@@ -432,7 +432,9 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
           background: 'linear-gradient(145deg, #e6e6e6, #b8b8b8)',
           boxShadow: 'inset 8px 8px 16px #a0a0a0, inset -8px -8px 16px #ffffff, 4px 4px 12px rgba(0,0,0,0.3)',
           border: '2px solid #999',
-          position: 'relative'
+          position: 'relative',
+          zIndex: 60,
+          overflow: 'visible'
         }}
         onClick={() => setShowMainBox(!showMainBox)}
       >
