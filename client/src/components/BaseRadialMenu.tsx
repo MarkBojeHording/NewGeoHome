@@ -919,6 +919,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                               className="cursor-pointer transition duration-300"
                               onMouseEnter={() => setHoveredSegment(`inner-${index}-${subIdx}`)}
                               onMouseLeave={() => setHoveredSegment(null)}
+                              onClick={() => handleClick('inner', index, subIdx)}
                               style={{
                                 filter: selectedInner === `${index}-${subIdx}` ? 'brightness(1.3)' : hoveredSegment === `inner-${index}-${subIdx}` ? 'brightness(1.1)' : 'none'
                               }}
