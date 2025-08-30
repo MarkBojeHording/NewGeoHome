@@ -403,9 +403,26 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
     <div className="relative">
       {/* Main countdown display */}
       <div 
-        className="cursor-pointer px-6 py-3 bg-gradient-to-b from-purple-700/90 to-purple-900 hover:from-purple-600 hover:to-purple-800 text-purple-100 font-bold rounded-md shadow-xl border-2 border-purple-400/70 transition-all duration-200 hover:shadow-2xl hover:shadow-purple-900/80 tracking-wider font-mono text-lg min-w-fit"
+        className="cursor-pointer relative px-8 py-4 bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500 hover:from-gray-200 hover:via-gray-300 hover:to-gray-400 text-gray-800 font-bold rounded-lg shadow-lg border-2 border-gray-500 transition-all duration-200 hover:shadow-xl tracking-wider font-mono text-lg min-w-fit"
+        style={{
+          background: 'linear-gradient(145deg, #e6e6e6, #b8b8b8)',
+          boxShadow: 'inset 8px 8px 16px #a0a0a0, inset -8px -8px 16px #ffffff, 4px 4px 12px rgba(0,0,0,0.3)',
+          border: '2px solid #999'
+        }}
         onClick={() => setShowMainBox(!showMainBox)}
       >
+        {/* Metal studs/rivets in corners */}
+        <div className="absolute top-1 left-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
+        <div className="absolute top-1 right-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
+        <div className="absolute bottom-1 left-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
+        <div className="absolute bottom-1 right-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
+        
+        {/* Diamond plate texture pattern */}
+        <div className="absolute inset-0 opacity-10 rounded-lg" style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px),
+                           repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0,0,0,0.1) 4px, rgba(0,0,0,0.1) 8px)`
+        }}></div>
+        
         [WIPE: {countdown.days}D {countdown.hours}H {countdown.minutes}M]
       </div>
       
