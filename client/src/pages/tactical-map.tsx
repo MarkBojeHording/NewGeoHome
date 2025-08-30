@@ -1847,6 +1847,32 @@ export default function InteractiveTacticalMap() {
           },
           status: 'pending'
         }
+      } else if (baseData.requestedResources) {
+        // Create request resources task report
+        const resourcesList = Object.entries(baseData.requestedResources)
+          .map(([resource, amount]) => `${resource}: ${amount}`)
+          .join(', ')
+        
+        taskReport = {
+          type: 'task',
+          notes: `Express resource request - Created via radial menu\nRequested: ${resourcesList}`,
+          outcome: 'neutral',
+          enemyPlayers: '',
+          friendlyPlayers: '',
+          baseTags: [baseData.baseId],
+          screenshots: [],
+          location: { gridX: 0, gridY: 0 }, // Will be updated by backend if needed
+          taskType: 'request_resources',
+          taskData: {
+            wood: baseData.requestedResources.wood || '',
+            stone: baseData.requestedResources.stone || '',
+            metal: baseData.requestedResources.metal || '',
+            hqm: baseData.requestedResources.hqm || '',
+            details: `Express resource request for ${baseData.baseName}: ${resourcesList}`,
+            urgency: 'medium'
+          },
+          status: 'pending'
+        }
       }
 
       // Save the task report

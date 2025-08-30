@@ -358,7 +358,7 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                     id === '1-1' ? 'Package 📦💎' :
                     id === '2-0' ? 'Wrench 🔧' :
                     id === '2-1' ? 'Window/Brick 🪟🧱' :
-                    id === 3 ? 'Resources' :
+                    id === 3 ? 'Resources 📋' :
                     id === 4 ? 'DECAY' :
                     id === 5 ? 'Folder 📁' :
                     `${index + 1}A${subSegment ? subSegment + 1 : ''}`;
@@ -1206,7 +1206,31 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                 3,
                 'REQUEST RESOURCES',
                 '',
-                (e) => { e.stopPropagation(); setSelectedInner(null); },
+                (e) => { 
+                  e.stopPropagation(); 
+                  // Create express task report with current TC values
+                  if (onCreateExpressTaskReport && baseId && baseName && baseCoords) {
+                    const tcResources = calculateTCResources();
+                    // Convert display values to actual numbers
+                    const requestedResources = {};
+                    
+                    // Parse the resource values back to numbers
+                    Object.keys(tcResources).forEach(resource => {
+                      const value = tcResources[resource];
+                      if (value && value > 0) {
+                        requestedResources[resource] = value.toString();
+                      }
+                    });
+                    
+                    onCreateExpressTaskReport({
+                      baseId,
+                      baseName, 
+                      baseCoords,
+                      requestedResources
+                    });
+                  }
+                  setSelectedInner(null);
+                },
                 (e) => { e.stopPropagation(); setSelectedInner(null); },
                 false,  // showTimers
                 false   // isSplit
