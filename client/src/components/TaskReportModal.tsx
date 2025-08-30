@@ -548,91 +548,76 @@ export default function TaskReportModal({
 
         {selectedTaskType === 'stock_kits' && (
           <div className="mb-4 p-2 border border-orange-500/40 rounded-lg bg-gray-900/50">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex items-center justify-between gap-1">
               <div className="flex items-center gap-1">
-                <KitIcon kitType="hazzy" size="sm" />
-                <div>
-                  <label className="text-xs text-gray-300">Hazzy</label>
-                  <Input
-                    type="number"
-                    value={kitResources.hazzy}
-                    onChange={(e) => {
-                      const value = e.target.value.slice(0, 2);
-                      setKitResources(prev => ({ ...prev, hazzy: value }));
-                    }}
-                    placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-12 rounded-none px-1 text-center"
-                    max="99"
-                  />
-                </div>
+                <KitIcon kitType="hazzy" size="xs" />
+                <Input
+                  type="number"
+                  value={kitResources.hazzy}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 2);
+                    setKitResources(prev => ({ ...prev, hazzy: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white h-5 text-xs w-8 rounded-none px-0 text-center"
+                  max="99"
+                />
               </div>
               <div className="flex items-center gap-1">
-                <KitIcon kitType="fullkit" size="sm" />
-                <div>
-                  <label className="text-xs text-gray-300">Fullkit</label>
-                  <Input
-                    type="number"
-                    value={kitResources.fullkit}
-                    onChange={(e) => {
-                      const value = e.target.value.slice(0, 2);
-                      setKitResources(prev => ({ ...prev, fullkit: value }));
-                    }}
-                    placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-12 rounded-none px-1 text-center"
-                    max="99"
-                  />
-                </div>
+                <KitIcon kitType="fullkit" size="xs" />
+                <Input
+                  type="number"
+                  value={kitResources.fullkit}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 2);
+                    setKitResources(prev => ({ ...prev, fullkit: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white h-5 text-xs w-8 rounded-none px-0 text-center"
+                  max="99"
+                />
               </div>
               <div className="flex items-center gap-1">
-                <KitIcon kitType="meds" size="sm" />
-                <div>
-                  <label className="text-xs text-gray-300">Meds</label>
-                  <Input
-                    type="number"
-                    value={kitResources.meds}
-                    onChange={(e) => {
-                      const value = e.target.value.slice(0, 3);
-                      setKitResources(prev => ({ ...prev, meds: value }));
-                    }}
-                    placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-14 rounded-none px-1 text-center"
-                    max="999"
-                  />
-                </div>
+                <KitIcon kitType="meds" size="xs" />
+                <Input
+                  type="number"
+                  value={kitResources.meds}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 3);
+                    setKitResources(prev => ({ ...prev, meds: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white h-5 text-xs w-9 rounded-none px-0 text-center"
+                  max="999"
+                />
               </div>
               <div className="flex items-center gap-1">
-                <KitIcon kitType="bolty" size="sm" />
-                <div>
-                  <label className="text-xs text-gray-300">Bolty</label>
-                  <Input
-                    type="number"
-                    value={kitResources.bolty}
-                    onChange={(e) => {
-                      const value = e.target.value.slice(0, 2);
-                      setKitResources(prev => ({ ...prev, bolty: value }));
-                    }}
-                    placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-12 rounded-none px-1 text-center"
-                    max="99"
-                  />
-                </div>
+                <KitIcon kitType="bolty" size="xs" />
+                <Input
+                  type="number"
+                  value={kitResources.bolty}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 2);
+                    setKitResources(prev => ({ ...prev, bolty: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white h-5 text-xs w-8 rounded-none px-0 text-center"
+                  max="99"
+                />
               </div>
               <div className="flex items-center gap-1">
-                <KitIcon kitType="teas" size="sm" />
-                <div>
-                  <label className="text-xs text-gray-300">Teas</label>
-                  <Input
-                    type="number"
-                    value={kitResources.teas}
-                    onChange={(e) => {
-                      const value = e.target.value.slice(0, 2);
-                      setKitResources(prev => ({ ...prev, teas: value }));
-                    }}
-                    placeholder="0"
-                    className="bg-gray-700 border-orange-500 text-white h-6 text-xs w-12 rounded-none px-1 text-center"
-                    max="99"
-                  />
-                </div>
+                <KitIcon kitType="teas" size="xs" />
+                <Input
+                  type="number"
+                  value={kitResources.teas}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 2);
+                    setKitResources(prev => ({ ...prev, teas: value }));
+                  }}
+                  placeholder="0"
+                  className="bg-gray-700 border-orange-500 text-white h-5 text-xs w-8 rounded-none px-0 text-center"
+                  max="99"
+                />
               </div>
             </div>
           </div>
