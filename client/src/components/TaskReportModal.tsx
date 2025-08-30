@@ -546,11 +546,10 @@ export default function TaskReportModal({
         )}
 
         {selectedTaskType === 'stock_kits' && (
-          <div className="mb-6 p-4 border border-orange-500/40 rounded-lg bg-gray-900/50">
-            <h3 className="text-sm font-medium text-orange-300 mb-3">Kit Amounts</h3>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="mb-4 p-2 border border-orange-500/40 rounded-lg bg-gray-900/50">
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Hazzy</label>
+                <label className="block text-xs text-gray-300 mb-1">Hazzy</label>
                 <Input
                   type="number"
                   value={kitResources.hazzy}
@@ -559,12 +558,12 @@ export default function TaskReportModal({
                     setKitResources(prev => ({ ...prev, hazzy: value }));
                   }}
                   placeholder="0"
-                  className="bg-gray-700 border-orange-500 text-white"
+                  className="bg-gray-700 border-orange-500 text-white h-8 text-sm"
                   max="99"
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Fullkit</label>
+                <label className="block text-xs text-gray-300 mb-1">Fullkit</label>
                 <Input
                   type="number"
                   value={kitResources.fullkit}
@@ -573,12 +572,12 @@ export default function TaskReportModal({
                     setKitResources(prev => ({ ...prev, fullkit: value }));
                   }}
                   placeholder="0"
-                  className="bg-gray-700 border-orange-500 text-white"
+                  className="bg-gray-700 border-orange-500 text-white h-8 text-sm"
                   max="99"
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Meds</label>
+                <label className="block text-xs text-gray-300 mb-1">Meds</label>
                 <Input
                   type="number"
                   value={kitResources.meds}
@@ -587,12 +586,12 @@ export default function TaskReportModal({
                     setKitResources(prev => ({ ...prev, meds: value }));
                   }}
                   placeholder="0"
-                  className="bg-gray-700 border-orange-500 text-white"
+                  className="bg-gray-700 border-orange-500 text-white h-8 text-sm"
                   max="999"
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Bolty</label>
+                <label className="block text-xs text-gray-300 mb-1">Bolty</label>
                 <Input
                   type="number"
                   value={kitResources.bolty}
@@ -601,12 +600,12 @@ export default function TaskReportModal({
                     setKitResources(prev => ({ ...prev, bolty: value }));
                   }}
                   placeholder="0"
-                  className="bg-gray-700 border-orange-500 text-white"
+                  className="bg-gray-700 border-orange-500 text-white h-8 text-sm"
                   max="99"
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Teas</label>
+                <label className="block text-xs text-gray-300 mb-1">Teas</label>
                 <Input
                   type="number"
                   value={kitResources.teas}
@@ -615,7 +614,7 @@ export default function TaskReportModal({
                     setKitResources(prev => ({ ...prev, teas: value }));
                   }}
                   placeholder="0"
-                  className="bg-gray-700 border-orange-500 text-white"
+                  className="bg-gray-700 border-orange-500 text-white h-8 text-sm"
                   max="99"
                 />
               </div>
