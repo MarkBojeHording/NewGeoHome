@@ -35,7 +35,7 @@ const PlayerReportsContent = ({ playerName }: { playerName: string | null }) => 
   }
 
   return (
-    <div className="border">
+    <div className="border max-h-64 overflow-y-auto">
       {reports.map((report: any) => (
         <ReportPreview key={report.id} report={report} />
       ))}
