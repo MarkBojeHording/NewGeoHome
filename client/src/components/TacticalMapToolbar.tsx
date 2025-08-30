@@ -90,8 +90,8 @@ const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay, onWipeCoun
                 }}>
                   <div style={{
                     position: 'absolute',
-                    top: '-20px',
-                    left: '-100px',
+                    top: '0px',
+                    left: '0px',
                     pointerEvents: 'auto'
                   }}>
                     <WipeCountdownTimer onCountdownChange={onWipeCountdownChange} />
