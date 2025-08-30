@@ -548,7 +548,7 @@ export default function TaskReportModal({
 
         {selectedTaskType === 'stock_kits' && (
           <div className="mb-4 p-2 border border-orange-500/40 rounded-lg bg-gray-900/50">
-            <div className="flex items-center justify-between gap-1">
+            <div className="flex items-center justify-between gap-0.5">
               <div className="flex items-center gap-1">
                 <KitIcon kitType="hazzy" size="xs" />
                 <Input
