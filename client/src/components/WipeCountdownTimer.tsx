@@ -403,7 +403,7 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
     <>
       {/* Main countdown display */}
       <div 
-        className="cursor-pointer relative px-8 py-4 bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500 hover:from-gray-200 hover:via-gray-300 hover:to-gray-400 text-gray-800 font-bold rounded-lg shadow-lg border-2 border-gray-500 transition-all duration-200 hover:shadow-xl tracking-wider font-mono text-lg min-w-fit"
+        className="cursor-pointer relative px-8 py-4 text-gray-800 font-bold rounded-lg transition-all duration-200 tracking-wider font-mono text-lg min-w-fit"
         style={{
           background: 'linear-gradient(145deg, #e6e6e6, #b8b8b8)',
           boxShadow: 'inset 8px 8px 16px #a0a0a0, inset -8px -8px 16px #ffffff, 4px 4px 12px rgba(0,0,0,0.3)',
@@ -418,12 +418,12 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
         <div className="absolute bottom-1 right-2 w-2 h-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full shadow-inner"></div>
         
         {/* Diamond plate texture pattern */}
-        <div className="absolute inset-0 opacity-10 rounded-lg" style={{
+        <div className="absolute inset-0 opacity-10 rounded-lg pointer-events-none" style={{
           backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px),
                            repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0,0,0,0.1) 4px, rgba(0,0,0,0.1) 8px)`
         }}></div>
         
-        [WIPE: {countdown.days}D {countdown.hours}H {countdown.minutes}M]
+        <span className="relative z-10">[WIPE: {countdown.days}D {countdown.hours}H {countdown.minutes}M]</span>
       </div>
       
       {/* Modals */}
