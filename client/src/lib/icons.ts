@@ -184,6 +184,19 @@ export function getTaskIcon(taskType: string, subType?: string): string {
   }
 }
 
+// Helper function to get active kit data for dynamic display
+export function getActiveKits(kitResources: any): Array<{ kitType: string; amount: string; iconData: any }> {
+  if (!kitResources) return []
+  
+  return Object.entries(kitResources)
+    .filter(([_, amount]) => amount && parseInt(amount as string) > 0)
+    .map(([kitType, amount]) => ({
+      kitType,
+      amount: amount as string,
+      iconData: getKitIconData(kitType)
+    }))
+}
+
 // Helper function to get status icon
 export function getStatusIcon(status: string): string {
   switch (status) {

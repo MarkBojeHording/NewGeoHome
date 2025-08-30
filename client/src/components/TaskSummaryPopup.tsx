@@ -3,6 +3,7 @@ import { Button } from './ui/button'
 import { apiRequest } from '../lib/queryClient'
 import { useToast } from '@/hooks/use-toast'
 import { getTaskIcon, getStatusIcon } from '@/lib/icons'
+import { KitNeedsDisplay } from './KitNeedsDisplay'
 
 interface TaskSummaryPopupProps {
   isVisible: boolean
@@ -115,7 +116,11 @@ export default function TaskSummaryPopup({
       {/* Content */}
       <div className="p-2 space-y-2">
         <div className="flex items-center gap-1">
-          <span className="text-xs">{taskIcon}</span>
+          {task.taskType === 'stock_kits' && kitResources ? (
+            <KitNeedsDisplay kitResources={kitResources} size="sm" />
+          ) : (
+            <span className="text-xs">{taskIcon}</span>
+          )}
           <span className="text-xs font-medium text-orange-300">Task:</span>
           <span className="text-sm text-white">{taskLabel}</span>
         </div>

@@ -3,6 +3,7 @@ import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, U
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryClient, apiRequest } from '@/lib/queryClient'
 import { getTaskIcon } from '@/lib/icons'
+import { KitNeedsDisplay } from '../components/KitNeedsDisplay'
 import BaseModal from '../components/BaseModal'
 import { PlayerModal } from '../components/PlayerModal'
 import { LogsModal } from '../components/LogsModal'
@@ -1032,6 +1033,13 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                     <TaskUpgradeIcon onClick={onTaskIconClick} task={report} />}
                   {report.taskType === 'request_resources' && 
                     <TaskResourcesIcon onClick={onTaskIconClick} task={report} />}
+                  {report.taskType === 'stock_kits' && 
+                    <div 
+                      onClick={() => onTaskIconClick(report)}
+                      className="cursor-pointer bg-orange-600 rounded-full p-1 hover:bg-orange-700 transition-colors"
+                    >
+                      <KitNeedsDisplay kitResources={report.taskData?.kitResources} size="xs" />
+                    </div>}
                 </div>
               ))}
             </div>
