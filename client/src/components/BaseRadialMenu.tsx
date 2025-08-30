@@ -537,6 +537,12 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
     } else {
       setSelectedOuter(index);
       
+      // Handle "NEEDS PICKUP" Advanced button click (index 1)
+      if (index === 1 && onOpenTaskReport && baseId && baseName && baseCoords) {
+        // Open full task report modal (pulsating overlay handles express reports)
+        onOpenTaskReport({ baseId, baseName, baseCoords });
+      }
+      
       // Handle "REPAIR/UPGRADE" Advanced button click (index 2)
       if (index === 2 && onOpenTaskReport && baseId && baseName && baseCoords) {
         // Open task report modal with repair_upgrade dropdown pre-selected
@@ -613,6 +619,21 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
             filter="url(#greenGlow)"
             onClick={(e) => {
               e.stopPropagation();
+              
+              // Handle express pickup request for segment 1
+              if (segmentIndex === 1) {
+                // Create express task report for pickup
+                if (onCreateExpressTaskReport && baseId && baseName && baseCoords) {
+                  const pickupType = selectedInner === '1-0' ? 'ore' : 'loot';
+                  console.log(`Pickup ${pickupType} selected`);
+                  onCreateExpressTaskReport({
+                    baseId,
+                    baseName, 
+                    baseCoords,
+                    pickupType
+                  });
+                }
+              }
               
               // Handle express repair/upgrade request for segment 2
               if (segmentIndex === 2) {
