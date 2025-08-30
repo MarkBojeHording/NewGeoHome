@@ -75,9 +75,16 @@ export default function TaskSummaryPopup({
   } else if (repairUpgradeType) {
     taskIcon = <Wrench className="h-3 w-3 text-orange-400" />
     taskLabel = `${repairUpgradeType.charAt(0).toUpperCase() + repairUpgradeType.slice(1)}`
-  } else if (requestedResources) {
+  } else if (requestedResources || task.taskType === 'request_resources') {
     taskIcon = <span className="text-xs">📋</span>
-    const resourcesList = Object.entries(requestedResources)
+    // Handle both nested requestedResources and direct fields
+    const resources = requestedResources || {
+      wood: task.taskData?.wood || '',
+      stone: task.taskData?.stone || '',
+      metal: task.taskData?.metal || '',
+      hqm: task.taskData?.hqm || ''
+    }
+    const resourcesList = Object.entries(resources)
       .filter(([_, amount]) => amount && parseInt(amount) > 0)
       .map(([resource, amount]) => `${resource}: ${amount}`)
       .join(', ')
