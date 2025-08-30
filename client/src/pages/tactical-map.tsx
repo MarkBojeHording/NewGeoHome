@@ -2193,11 +2193,14 @@ export default function InteractiveTacticalMap() {
     }
     
     // Regular base/location saving logic below:
+    let currentLocation;
     if (editingLocation) {
+      const updatedLocation = { ...editingLocation, ...baseData };
       setLocations(prev => prev.map(loc => 
-        loc.id === editingLocation.id ? { ...loc, ...baseData } : loc
+        loc.id === editingLocation.id ? updatedLocation : loc
       ))
-      setSelectedLocation({ ...editingLocation, ...baseData })
+      setSelectedLocation(updatedLocation)
+      currentLocation = updatedLocation;
     } else {
       const newLocation = {
         id: Date.now().toString(),
@@ -2208,6 +2211,39 @@ export default function InteractiveTacticalMap() {
       }
       setLocations(prev => [...prev, newLocation])
       setSelectedLocation(newLocation)
+      currentLocation = newLocation;
+    }
+    
+    // Create player base tags if players are assigned to this base
+    if (baseData.players && baseData.players.trim()) {
+      const playerNames = baseData.players.split(',').map(name => name.trim()).filter(name => name);
+      
+      try {
+        // First, delete any existing player base tags for this base
+        if (editingLocation) {
+          await apiRequest('DELETE', `/api/player-base-tags/base/${currentLocation.id}`);
+        }
+        
+        // Create new player base tags for each player
+        for (const playerName of playerNames) {
+          await apiRequest('POST', '/api/player-base-tags', {
+            playerName: playerName,
+            baseId: currentLocation.id,
+            baseName: currentLocation.name,
+            baseCoords: currentLocation.name,
+            baseType: currentLocation.type
+          });
+        }
+        
+        // Invalidate relevant queries to refresh data
+        queryClient.invalidateQueries({ queryKey: ['/api/player-base-tags'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/player-base-tags/player'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/player-base-tags/base', currentLocation.id] });
+        
+        console.log(`Created player base tags for ${playerNames.length} players on base ${currentLocation.name}`);
+      } catch (error) {
+        console.error('Error creating player base tags:', error);
+      }
     }
     
     setNewBaseModal(prev => ({ ...prev, visible: false }))
