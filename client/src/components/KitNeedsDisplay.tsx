@@ -18,9 +18,9 @@ export function KitNeedsDisplay({ kitResources, size = 'xs', className = '' }: K
   if (activeKits.length === 0) return null
   
   const sizeClasses = {
-    xs: 'w-4 h-4',
-    sm: 'w-5 h-5', 
-    md: 'w-6 h-6'
+    xs: 'w-3 h-3',
+    sm: 'w-4 h-4', 
+    md: 'w-5 h-5'
   }
   
   const textSizeClasses = {
