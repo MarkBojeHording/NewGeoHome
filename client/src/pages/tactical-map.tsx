@@ -750,9 +750,18 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
   
   // Find task reports for this base
   const taskReports = useMemo(() => {
-    return pendingTaskReports.filter(report => 
+    const filtered = pendingTaskReports.filter(report => 
       report.baseTags && report.baseTags.includes(location.id)
     )
+    
+    // Debug logging for stock_kits tasks
+    if (pendingTaskReports.some(r => r.taskType === 'stock_kits')) {
+      console.log('Debug - Location ID:', location.id)
+      console.log('Debug - Pending task reports:', pendingTaskReports.filter(r => r.taskType === 'stock_kits'))
+      console.log('Debug - Filtered task reports:', filtered.filter(r => r.taskType === 'stock_kits'))
+    }
+    
+    return filtered
   }, [pendingTaskReports, location.id])
 
   // Calculate online player count for this base (regular players only, premium players are always counted as online)
