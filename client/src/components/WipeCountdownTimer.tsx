@@ -403,7 +403,7 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
     <div className="relative">
       {/* Main countdown display */}
       <div 
-        className="cursor-pointer px-3 py-1 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide font-mono"
+        className="cursor-pointer px-4 py-2 bg-gradient-to-b from-red-600/80 to-red-800 hover:from-red-500 hover:to-red-700 text-red-100 font-bold rounded-lg shadow-xl border-2 border-red-400/60 transition-all duration-200 hover:shadow-2xl hover:shadow-red-900/70 tracking-wider font-mono text-lg"
         onClick={() => setShowMainBox(!showMainBox)}
       >
         [WIPE: {countdown.days}D {countdown.hours}H {countdown.minutes}M]
