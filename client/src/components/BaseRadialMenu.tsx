@@ -527,6 +527,19 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
         break;
     }
   };
+  // Handle kit value changes
+  const handleKitChange = (kitType, value) => {
+    const maxKitValue = 99;
+    
+    // Ensure value is a number and within bounds
+    let numValue = parseInt(value) || 0;
+    numValue = Math.max(0, Math.min(numValue, maxKitValue));
+    
+    setKitValues(prev => ({
+      ...prev,
+      [kitType]: numValue.toString()
+    }));
+  };
   
   // Handle clicks
   const handleClick = (type, index, subSegment = null) => {
@@ -701,6 +714,15 @@ const RadialMenu = ({ onOpenTaskReport, onCreateExpressTaskReport, onOpenBaseRep
                     baseName, 
                     baseCoords,
                     kitResources: kitValues
+                  });
+                  
+                  // Reset kit values after successful request
+                  setKitValues({
+                    hazzy: '0',
+                    fullkit: '0', 
+                    meds: '0',
+                    bolty: '0',
+                    teas: '0'
                   });
                 }
               }

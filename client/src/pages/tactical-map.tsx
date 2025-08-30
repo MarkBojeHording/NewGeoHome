@@ -1894,28 +1894,64 @@ export default function InteractiveTacticalMap() {
           status: 'pending'
         }
       } else if (baseData.kitResources) {
-        // Create stock kits task report
-        taskReport = {
-          type: 'task',
-          notes: '',
-          outcome: 'neutral',
-          enemyPlayers: '',
-          friendlyPlayers: '',
-          baseTags: [baseData.baseId],
-          screenshots: [],
-          location: { gridX: 0, gridY: 0 }, // Will be updated by backend if needed
-          taskType: 'stock_kits',
-          taskData: {
-            kitResources: baseData.kitResources,
-            details: `Express kit request for ${baseData.baseName}`,
-            urgency: 'medium'
-          },
-          status: 'pending'
-        }
-      }
+        // Check if a stock_kits task report already exists for this base
+        const existingStockKitsReport = reports.find(report => 
+          report.type === 'task' &&
+          report.taskType === 'stock_kits' &&
+          report.status === 'pending' &&
+          report.baseTags && 
+          report.baseTags.includes(baseData.baseId)
+        )
 
-      // Save the task report
-      await apiRequest('POST', '/api/reports', taskReport)
+        if (existingStockKitsReport) {
+          // Update existing report by adding new kit values to existing ones
+          const currentKitResources = existingStockKitsReport.taskData?.kitResources || {}
+          const updatedKitResources = { ...currentKitResources }
+          
+          // Add new values to existing values for each kit type
+          Object.keys(baseData.kitResources).forEach(kitType => {
+            const newValue = parseInt(baseData.kitResources[kitType]) || 0
+            const currentValue = parseInt(currentKitResources[kitType]) || 0
+            if (newValue > 0) {
+              updatedKitResources[kitType] = (currentValue + newValue).toString()
+            }
+          })
+
+          // Update the existing report
+          await apiRequest('PUT', `/api/reports/${existingStockKitsReport.id}`, {
+            ...existingStockKitsReport,
+            taskData: {
+              ...existingStockKitsReport.taskData,
+              kitResources: updatedKitResources
+            }
+          })
+        } else {
+          // Create new stock kits task report
+          taskReport = {
+            type: 'task',
+            notes: '',
+            outcome: 'neutral',
+            enemyPlayers: '',
+            friendlyPlayers: '',
+            baseTags: [baseData.baseId],
+            screenshots: [],
+            location: { gridX: 0, gridY: 0 }, // Will be updated by backend if needed
+            taskType: 'stock_kits',
+            taskData: {
+              kitResources: baseData.kitResources,
+              details: `Express kit request for ${baseData.baseName}`,
+              urgency: 'medium'
+            },
+            status: 'pending'
+          }
+          
+          // Save the new task report
+          await apiRequest('POST', '/api/reports', taskReport)
+        }
+      } else {
+        // Save other task report types
+        await apiRequest('POST', '/api/reports', taskReport)
+      }
 
       // Invalidate reports query to refresh the list and map icons
       queryClient.invalidateQueries({ queryKey: ['/api/reports'] })
