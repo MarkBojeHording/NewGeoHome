@@ -1029,7 +1029,7 @@ const LocationMarker = ({ location, locations = [], isSelected, onClick, timers,
                     <TaskRepairIcon onClick={onTaskIconClick} task={report} />}
                   {report.taskData && report.taskData.repairUpgradeType === 'upgrade' && 
                     <TaskUpgradeIcon onClick={onTaskIconClick} task={report} />}
-                  {report.taskData && report.taskData.requestedResources && 
+                  {report.taskType === 'request_resources' && 
                     <TaskResourcesIcon onClick={onTaskIconClick} task={report} />}
                 </div>
               ))}
@@ -1849,13 +1849,9 @@ export default function InteractiveTacticalMap() {
         }
       } else if (baseData.requestedResources) {
         // Create request resources task report
-        const resourcesList = Object.entries(baseData.requestedResources)
-          .map(([resource, amount]) => `${resource}: ${amount}`)
-          .join(', ')
-        
         taskReport = {
           type: 'task',
-          notes: `Express resource request - Created via radial menu\nRequested: ${resourcesList}`,
+          notes: '',
           outcome: 'neutral',
           enemyPlayers: '',
           friendlyPlayers: '',
@@ -1868,7 +1864,7 @@ export default function InteractiveTacticalMap() {
             stone: baseData.requestedResources.stone || '',
             metal: baseData.requestedResources.metal || '',
             hqm: baseData.requestedResources.hqm || '',
-            details: `Express resource request for ${baseData.baseName}: ${resourcesList}`,
+            details: `Express resource request for ${baseData.baseName}`,
             urgency: 'medium'
           },
           status: 'pending'
