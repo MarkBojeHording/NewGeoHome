@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Search, User, Plus, MoreVertical, UserCheck, UserX } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Search, User, Plus } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import type { ExternalPlayer } from '@shared/schema';
@@ -604,6 +604,18 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                                 }`}
                                 data-testid={`status-indicator-${index}`}
                               />
+                              <Checkbox
+                                checked={isTeammate(player.playerName)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    addTeammate(player.playerName);
+                                  } else {
+                                    removeTeammate(player.playerName);
+                                  }
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="h-4 w-4 border-gray-400 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                              />
                               <span
                                 className={`font-medium ${
                                   isTeammate(player.playerName)
@@ -635,52 +647,19 @@ export function PlayerModal({ isOpen, onClose, onOpenBaseModal }: PlayerModalPro
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <div className="text-right">
-                              <div 
-                                className={`text-sm ${
-                                  isTeammate(player.playerName)
-                                    ? (player.isOnline ? 'text-green-400' : 'text-green-500/70')
-                                    : player.isOnline 
-                                      ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
-                                      : 'text-gray-400'
-                                }`}
-                                data-testid={`online-status-${index}`}
-                              >
-                                {player.isOnline ? 'Currently Online' : 'Offline'}
-                              </div>
+                          <div className="text-right">
+                            <div 
+                              className={`text-sm ${
+                                isTeammate(player.playerName)
+                                  ? (player.isOnline ? 'text-green-400' : 'text-green-500/70')
+                                  : player.isOnline 
+                                    ? (isEnemyPlayer(player.playerName) ? 'text-red-400' : 'text-yellow-400')
+                                    : 'text-gray-400'
+                              }`}
+                              data-testid={`online-status-${index}`}
+                            >
+                              {player.isOnline ? 'Currently Online' : 'Offline'}
                             </div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 w-8 p-0 hover:bg-gray-600"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <MoreVertical className="h-4 w-4 text-gray-400" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="bg-gray-800 border-gray-600">
-                                {isTeammate(player.playerName) ? (
-                                  <DropdownMenuItem 
-                                    onClick={() => removeTeammate(player.playerName)}
-                                    className="text-red-400 hover:bg-red-900/20 hover:text-red-300"
-                                  >
-                                    <UserX className="mr-2 h-4 w-4" />
-                                    Remove as Teammate
-                                  </DropdownMenuItem>
-                                ) : (
-                                  <DropdownMenuItem 
-                                    onClick={() => addTeammate(player.playerName)}
-                                    className="text-green-400 hover:bg-green-900/20 hover:text-green-300"
-                                  >
-                                    <UserCheck className="mr-2 h-4 w-4" />
-                                    Set as Teammate
-                                  </DropdownMenuItem>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
                           </div>
                         </div>
                       ))}
