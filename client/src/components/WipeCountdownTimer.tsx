@@ -427,7 +427,7 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
   return (
     <>
       <div 
-        className="cursor-pointer px-8 py-4 text-gray-800 font-bold rounded-lg tracking-wider font-mono text-lg"
+        className="cursor-pointer px-4 py-2 text-gray-800 font-bold rounded-lg tracking-wider font-mono text-sm"
         style={{
           background: 'linear-gradient(145deg, #e6e6e6, #b8b8b8)',
           boxShadow: 'inset 8px 8px 16px #a0a0a0, inset -8px -8px 16px #ffffff, 4px 4px 12px rgba(0,0,0,0.3)',
