@@ -400,7 +400,7 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
   }, [newItem])
   
   return (
-    <div className="relative">
+    <>
       {/* Main countdown display */}
       <div 
         className="cursor-pointer relative px-8 py-4 bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500 hover:from-gray-200 hover:via-gray-300 hover:to-gray-400 text-gray-800 font-bold rounded-lg shadow-lg border-2 border-gray-500 transition-all duration-200 hover:shadow-xl tracking-wider font-mono text-lg min-w-fit"
@@ -703,6 +703,6 @@ export default function WipeCountdownTimer({ onCountdownChange }: WipeCountdownT
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }
