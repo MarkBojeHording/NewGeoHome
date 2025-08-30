@@ -188,13 +188,26 @@ export function getTaskIcon(taskType: string, subType?: string): string {
 export function getActiveKits(kitResources: any): Array<{ kitType: string; amount: string; iconData: any }> {
   if (!kitResources) return []
   
-  return Object.entries(kitResources)
+  // Define the display order: fullkit (metal), hazzy, meds, bolty, teas
+  const displayOrder = ['fullkit', 'hazzy', 'meds', 'bolty', 'teas']
+  
+  const activeKits = Object.entries(kitResources)
     .filter(([_, amount]) => amount && parseInt(amount as string) > 0)
     .map(([kitType, amount]) => ({
       kitType,
       amount: amount as string,
       iconData: getKitIconData(kitType)
     }))
+  
+  // Sort by display order
+  return activeKits.sort((a, b) => {
+    const orderA = displayOrder.indexOf(a.kitType)
+    const orderB = displayOrder.indexOf(b.kitType)
+    // Put unknown types at the end
+    if (orderA === -1) return 1
+    if (orderB === -1) return -1
+    return orderA - orderB
+  })
 }
 
 // Helper function to get status icon
