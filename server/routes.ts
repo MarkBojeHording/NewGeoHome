@@ -147,18 +147,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const baseTags = validatedData.baseTags || [];
         
         for (const baseId of baseTags) {
-          // Check for existing task report of same type and pickup type for this base
-          const existingTask = allReports.find(report => 
-            report.type === 'task' && 
-            report.status === 'pending' && 
-            report.baseTags.includes(baseId) &&
-            report.taskType === validatedData.taskType &&
-            report.taskData?.pickupType === validatedData.taskData?.pickupType
-          );
+          // Check for existing task report based on task type
+          let existingTask = null;
+          
+          if (validatedData.taskType === 'needs_pickup') {
+            // For pickup tasks, check by pickup type
+            existingTask = allReports.find(report => 
+              report.type === 'task' && 
+              report.status === 'pending' && 
+              report.baseTags.includes(baseId) &&
+              report.taskType === 'needs_pickup' &&
+              report.taskData?.pickupType === validatedData.taskData?.pickupType
+            );
+          } else if (validatedData.taskType === 'repair_upgrade') {
+            // For repair/upgrade tasks, check by repair type
+            existingTask = allReports.find(report => 
+              report.type === 'task' && 
+              report.status === 'pending' && 
+              report.baseTags.includes(baseId) &&
+              report.taskType === 'repair_upgrade' &&
+              report.taskData?.repairUpgradeType === validatedData.taskData?.repairUpgradeType
+            );
+          } else if (validatedData.taskType === 'request_resources') {
+            // For resource requests, allow multiple requests (they're different resource amounts)
+            // Don't block duplicate resource requests as they can have different amounts
+            existingTask = null;
+          }
           
           if (existingTask) {
+            const errorMessage = validatedData.taskType === 'needs_pickup' 
+              ? "Task report already exists for this pickup type on this base"
+              : "Task report already exists for this repair/upgrade type on this base";
             return res.status(400).json({ 
-              error: "Task report already exists for this pickup type on this base" 
+              error: errorMessage
             });
           }
           

@@ -1,0 +1,45 @@
+Inner segment Resources 📋 selected
+injected.js:253  POST https://57289c7e-55aa-4549-b6dc-c43bf934d5ed-00-1hgh0in3uhdcg.picard.replit.dev/api/reports 400 (Bad Request)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+apiRequest @ queryClient.ts:15
+(anonymous) @ tactical-map.tsx:1879
+(anonymous) @ FarmRadialMenu.tsx:1225
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=38939a7b:5449Understand this error
+Console.js:61 Failed to create express task report: Error: 400: {"error":"Task report already exists for this pickup type on this base"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+    at async tactical-map.tsx:1879:7
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ tactical-map.tsx:1886
+await in (anonymous)
+(anonymous) @ FarmRadialMenu.tsx:1225
+callCallback2 @ chunk-RPCDYKBN.js?v=38939a7b:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=38939a7b:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=38939a7b:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=38939a7b:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=38939a7b:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=38939a7b:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=38939a7b:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=38939a7b:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=38939a7b:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=38939a7b:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=38939a7b:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=38939a7b:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=38939a7b:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=38939a7b:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=38939a7b:5449Understand this error
