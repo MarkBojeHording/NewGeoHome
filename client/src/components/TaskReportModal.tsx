@@ -233,28 +233,15 @@ export default function TaskReportModal({
     }
 
     let taskDataDetails = {}
-    let defaultNotes = ''
     
     if (selectedTaskType === 'needs_pickup') {
       taskDataDetails = { pickupType }
-      defaultNotes = `Task: Pickup ${pickupType}`
     } else if (selectedTaskType === 'repair_upgrade') {
       taskDataDetails = { repairUpgradeType }
-      defaultNotes = `Task: ${repairUpgradeType.charAt(0).toUpperCase() + repairUpgradeType.slice(1)}`
     } else if (selectedTaskType === 'request_resources') {
       taskDataDetails = { requestedResources }
-      const resourcesList = Object.entries(requestedResources)
-        .filter(([_, amount]) => amount && parseInt(amount) > 0)
-        .map(([resource, amount]) => `${resource}: ${amount}`)
-        .join(', ')
-      defaultNotes = `Request Resources - ${resourcesList}`
     } else if (selectedTaskType === 'stock_kits') {
       taskDataDetails = { kitResources }
-      const kitsList = Object.entries(kitResources)
-        .filter(([_, amount]) => amount && parseInt(amount) > 0)
-        .map(([kit, amount]) => `${kit}: ${amount}`)
-        .join(', ')
-      defaultNotes = `Stock Kits - ${kitsList}`
     }
 
     const taskData = {
@@ -262,7 +249,7 @@ export default function TaskReportModal({
       taskType: selectedTaskType,
       taskData: taskDataDetails,
       baseTags: [baseId],
-      notes: notes || defaultNotes,
+      notes: notes,
       outcome: 'neutral',
       status: 'pending',
       location: { gridX: 0, gridY: 0 }, // Will be set by the location where base is placed
