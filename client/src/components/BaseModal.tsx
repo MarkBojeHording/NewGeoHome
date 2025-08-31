@@ -464,10 +464,7 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight, mod
     if (!searchTerm.trim()) return
     
     try {
-      await apiRequest('/api/premium-players', {
-        method: 'POST',
-        body: { playerName: searchTerm.trim() }
-      })
+      await apiRequest('POST', '/api/premium-players', { playerName: searchTerm.trim() })
       
       // Add the player to the selection
       addPlayer(searchTerm.trim())
@@ -507,9 +504,9 @@ const PlayerSearchSelector = ({ selectedPlayers, onPlayersChange, maxHeight, mod
         {showDropdown && searchTerm.trim() && (
           <div className="absolute top-full left-2 right-2 mt-1 bg-gray-800 border border-gray-600 rounded max-h-32 overflow-y-auto z-50">
             {/* Regular Players */}
-            {filteredPlayers.slice(0, 10).map((player) => (
+            {filteredPlayers.slice(0, 10).map((player, index) => (
               <button
-                key={`regular-${player.id}`}
+                key={`regular-${player.playerName}-${index}`}
                 onClick={() => addPlayer(player.playerName)}
                 className="w-full text-left px-2 py-1 hover:bg-gray-700 flex items-center gap-2 text-sm"
               >
