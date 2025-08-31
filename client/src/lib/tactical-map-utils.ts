@@ -208,3 +208,31 @@ export const getLargeIcon = (type) => {
   const Icon = ICON_MAP[type] || MapPin
   return React.createElement(Icon, { className: 'h-8 w-8' })
 }
+
+export const TimerDisplay = ({ timers, onRemoveTimer }) => {
+  if (!timers || timers.length === 0) return null
+  
+  return React.createElement('div', {
+    className: 'absolute bottom-full left-1/2 transform -translate-x-1/2 flex flex-col-reverse',
+    style: { zIndex: 30, marginBottom: '1px', gap: '0' }
+  }, timers.slice(-3).map((timer) => 
+    React.createElement('div', {
+      key: timer.id,
+      className: 'border rounded-sm px-1 py-0 text-[5px] font-mono whitespace-nowrap shadow-sm cursor-pointer hover:opacity-80 transition-all duration-200',
+      style: {
+        backgroundColor: timer.type === 'stone' ? 'rgba(156, 163, 175, 0.95)' : timer.type === 'metal' ? 'rgba(183, 65, 14, 0.95)' : timer.type === 'hqm' ? 'rgba(59, 130, 246, 0.95)' : 'rgba(39, 39, 42, 0.95)',
+        borderColor: timer.type === 'stone' ? '#9ca3af' : timer.type === 'metal' ? '#b7410e' : timer.type === 'hqm' ? '#3b82f6' : '#52525b',
+        color: timer.type === 'stone' ? '#f9fafb' : timer.type === 'metal' ? '#fed7aa' : timer.type === 'hqm' ? '#dbeafe' : '#ddd6fe',
+        lineHeight: '1.2',
+        borderWidth: '0.5px',
+        fontSize: '5px',
+        padding: '0 3px'
+      },
+      onClick: (e) => {
+        e.stopPropagation()
+        onRemoveTimer(timer.id)
+      },
+      title: 'Click to remove timer'
+    }, formatTime(timer.remaining))
+  ))
+}

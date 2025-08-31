@@ -3,8 +3,8 @@ import { MapPin, Home, Shield, Wheat, Castle, Tent, X, HelpCircle, Calculator, U
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryClient, apiRequest } from '@/lib/queryClient'
 import { getTaskIcon } from '@/lib/icons'
-import { GRID_CONFIG, ICON_MAP, LABELS } from '@/lib/tactical-map-constants'
-import { getColor, getBorderColor, getGridCoordinate, getBaseGroup, getGridPosition, getGroupColor, openGeneCalculator, formatTime, getIcon, getLargeIcon } from '@/lib/tactical-map-utils'
+import { GRID_CONFIG, ICON_MAP, LABELS, DECAY_TIMES } from '@/lib/tactical-map-constants'
+import { getColor, getBorderColor, getGridCoordinate, getBaseGroup, getGridPosition, getGroupColor, openGeneCalculator, formatTime, getIcon, getLargeIcon, TimerDisplay } from '@/lib/tactical-map-utils'
 import { DecayingIcon, TowerIcon, LocationName } from '@/components/MapIcons'
 import { TaskOreIcon, TaskLootIcon, TaskRepairIcon, TaskUpgradeIcon, TaskResourcesIcon } from '@/components/TaskIcons'
 import { useLocationTimers } from '@/hooks/useTacticalMapTimers'
@@ -841,13 +841,13 @@ const SelectedLocationPanel = ({ location, onEdit, getOwnedBases, onSelectLocati
           onStartTimer={(type, seconds) => {
             if (!location || location.type.startsWith('report')) return
             
-            const existing = locationTimers[location.id] || []
+            const existing = timers || []
             if (existing.length >= 3) {
               alert('Maximum 3 timers per base')
               return
             }
             
-            handleAddTimer(location.id, {
+            onAddTimer(location.id, {
               id: Date.now() + Math.random(),
               type: type,
               remaining: seconds
