@@ -1630,7 +1630,12 @@ export default function InteractiveTacticalMap() {
       e.preventDefault()
       isDraggingRef.current = true
       hasDraggedRef.current = false
-      dragStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y }
+      dragStartRef.current = { 
+        x: e.clientX, 
+        y: e.clientY, 
+        panX: pan.x, 
+        panY: pan.y 
+      }
       setIsDragging(true)
     }
   }, [pan, isDraggingRef, hasDraggedRef, dragStartRef, setIsDragging])
