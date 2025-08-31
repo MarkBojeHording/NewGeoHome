@@ -1624,33 +1624,6 @@ export default function InteractiveTacticalMap() {
     }
   }, [editingLocation, handleCancel])
   
-  const handleWheel = useCallback((e) => {
-    e.preventDefault()
-    const delta = e.deltaY > 0 ? -0.3 : 0.3
-    const rect = mapRef.current?.getBoundingClientRect()
-    if (rect) {
-      const mouseX = e.clientX - rect.left
-      const mouseY = e.clientY - rect.top
-      const centerX = rect.width / 2
-      const centerY = rect.height / 2
-      
-      const offsetX = mouseX - centerX
-      const offsetY = mouseY - centerY
-      
-      const newZoom = Math.min(Math.max(zoom + delta, 1), 8)
-      
-      if (newZoom !== zoom) {
-        const zoomRatio = newZoom / zoom
-        const newPanX = pan.x - offsetX * (zoomRatio - 1)
-        const newPanY = pan.y - offsetY * (zoomRatio - 1)
-        
-        setZoom(newZoom)
-        setPan({ x: newPanX, y: newPanY })
-      }
-    } else {
-      setZoom(Math.min(Math.max(zoom + delta, 1), 8))
-    }
-  }, [zoom, setZoom, pan, setPan])
   
   const handleMouseDown = useCallback((e) => {
     if (e.button === 0) {
@@ -1677,6 +1650,46 @@ export default function InteractiveTacticalMap() {
   const handleAddTimer = useCallback((locationId, timer) => {
     addLocationTimer(locationId, timer)
   }, [addLocationTimer])
+  
+  // Fix passive event listener issue for wheel events
+  useEffect(() => {
+    const mapElement = mapRef.current
+    if (!mapElement) return
+    
+    const handleWheelEvent = (e) => {
+      e.preventDefault()
+      const delta = e.deltaY > 0 ? -0.3 : 0.3
+      const rect = mapElement.getBoundingClientRect()
+      if (rect) {
+        const mouseX = e.clientX - rect.left
+        const mouseY = e.clientY - rect.top
+        const centerX = rect.width / 2
+        const centerY = rect.height / 2
+        
+        const offsetX = mouseX - centerX
+        const offsetY = mouseY - centerY
+        
+        const newZoom = Math.min(Math.max(zoom + delta, 1), 8)
+        
+        if (newZoom !== zoom) {
+          const zoomRatio = newZoom / zoom
+          const newPanX = pan.x - offsetX * (zoomRatio - 1)
+          const newPanY = pan.y - offsetY * (zoomRatio - 1)
+          
+          setZoom(newZoom)
+          setPan({ x: newPanX, y: newPanY })
+        }
+      } else {
+        setZoom(Math.min(Math.max(zoom + delta, 1), 8))
+      }
+    }
+    
+    mapElement.addEventListener('wheel', handleWheelEvent, { passive: false })
+    
+    return () => {
+      mapElement.removeEventListener('wheel', handleWheelEvent)
+    }
+  }, [zoom, setZoom, pan, setPan])
   
   return (
     <div className="h-screen w-screen bg-gradient-to-b from-gray-900 to-black font-mono overflow-hidden">
@@ -1773,7 +1786,6 @@ export default function InteractiveTacticalMap() {
             style={{ touchAction: 'none' }}
             onContextMenu={handleContextMenu}
             onClick={handleClick}
-            onWheel={handleWheel}
             onMouseDown={handleMouseDown}
             onMouseUp={() => { isDraggingRef.current = false; setIsDragging(false) }}
             onMouseLeave={() => { isDraggingRef.current = false; setIsDragging(false) }}
