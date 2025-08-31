@@ -7,15 +7,17 @@ export const GRID_CONFIG = {
   CELL_HEIGHT_PERCENT: 3.846
 }
 
+import { MapPin, Home, Shield, Wheat, Castle, Tent } from 'lucide-react'
+
 export const ICON_MAP = {
-  'friendly-main': 'Castle',
-  'friendly-flank': 'Shield',
-  'friendly-farm': 'Wheat',
-  'enemy-small': 'Tent',
-  'enemy-medium': 'Home',
-  'enemy-large': 'Castle',
-  'enemy-flank': 'Shield',
-  'enemy-farm': 'Wheat'
+  'friendly-main': Castle,
+  'friendly-flank': Shield,
+  'friendly-farm': Wheat,
+  'enemy-small': Tent,
+  'enemy-medium': Home,
+  'enemy-large': Castle,
+  'enemy-flank': Shield,
+  'enemy-farm': Wheat
 }
 
 export const LABELS = {
