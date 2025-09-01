@@ -305,3 +305,139 @@ export const teamMembersRelations = relations(teamMembers, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+// ServerBeacon Zod Schemas
+export const mapInfoSchema = z.object({
+  seed: z.number(),
+  size: z.number(),
+  url: z.string().url(),
+  width: z.number(),
+  height: z.number(),
+});
+
+export const serverSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  ip: z.string(),
+  port: z.number(),
+  maxPlayers: z.number(),
+  map: z.string(),
+  seed: z.number(),
+  size: z.number(),
+  url: z.string().url(),
+  lastUpdated: z.string(),
+  isOnline: z.boolean(),
+});
+
+export const playerSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  isOnline: z.boolean(),
+  lastSeen: z.string(),
+});
+
+export const activitySchema = z.object({
+  id: z.string(),
+  playerId: z.string(),
+  action: z.string(),
+  timestamp: z.string(),
+});
+
+export const serverStatsSchema = z.object({
+  playerCount: z.number(),
+  maxPlayers: z.number(),
+  uptime: z.number(),
+  fps: z.number(),
+});
+
+export const addServerSchema = z.object({
+  id: z.string(),
+  name: z.string().optional(),
+});
+
+export const serverListItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  ip: z.string(),
+  port: z.number(),
+  maxPlayers: z.number(),
+  map: z.string(),
+  seed: z.number(),
+  size: z.number(),
+  url: z.string().url(),
+  lastUpdated: z.string(),
+  isOnline: z.boolean(),
+  playerCount: z.number(),
+  uptime: z.number(),
+  fps: z.number(),
+});
+
+export const playerProfileSchema = z.object({
+  id: z.string(),
+  playerName: z.string(),
+  battleMetricsId: z.string().optional(),
+  lastSeen: z.string(),
+  totalPlayTime: z.number(),
+  serverId: z.string(),
+  isOnline: z.boolean(),
+  rank: z.number().optional(),
+  score: z.number().optional(),
+  teamId: z.string().optional(),
+  notes: z.string().optional(),
+  tags: z.array(z.string()).default([]),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const playerActivitySchema = z.object({
+  id: z.string(),
+  playerId: z.string(),
+  serverId: z.string(),
+  action: z.string(),
+  timestamp: z.string(),
+  metadata: z.record(z.any()).optional(),
+});
+
+export const playerSessionSchema = z.object({
+  id: z.string(),
+  playerId: z.string(),
+  serverId: z.string(),
+  joinTime: z.string(),
+  leaveTime: z.string().optional(),
+  duration: z.number(),
+  isActive: z.boolean(),
+});
+
+export const createTeamSchema = z.object({
+  name: z.string(),
+  description: z.string().optional(),
+  createdBy: z.string(),
+});
+
+export const createUserSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+  email: z.string().email().optional(),
+  battleMetricsId: z.string().optional(),
+});
+
+export const addTeamMemberSchema = z.object({
+  userId: z.string(),
+  role: z.string(),
+  squadSlot: z.number().optional(),
+});
+
+// Export types
+export type MapInfo = z.infer<typeof mapInfoSchema>;
+export type Server = z.infer<typeof serverSchema>;
+export type Player = z.infer<typeof playerSchema>;
+export type Activity = z.infer<typeof activitySchema>;
+export type ServerStats = z.infer<typeof serverStatsSchema>;
+export type PlayerProfile = z.infer<typeof playerProfileSchema>;
+export type PlayerActivity = z.infer<typeof playerActivitySchema>;
+export type PlayerSession = z.infer<typeof playerSessionSchema>;
+export type AddServerRequest = z.infer<typeof addServerSchema>;
+export type ServerListItem = z.infer<typeof serverListItemSchema>;
+export type CreateTeamRequest = z.infer<typeof createTeamSchema>;
+export type CreateUserRequest = z.infer<typeof createUserSchema>;
+export type AddTeamMemberRequest = z.infer<typeof addTeamMemberSchema>;

@@ -1,661 +1,441 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
+
+import { BattleMetricsService } from "./services/battlemetrics";
+import { PlayerActivityTracker } from "./services/playerActivityTracker";
+import { mapStorageService } from "./services/mapStorage";
+import { globalWebSocketManager } from "./services/websocketManager";
+import { BackupManager } from "./services/backupManager";
+import {
+  serverSchema,
+  playerSchema,
+  addServerSchema,
+  serverStatsSchema,
+  createTeamSchema,
+  createUserSchema,
+  addTeamMemberSchema,
+} from "@shared/schema";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { storage } from "./storage";
-import { insertReportSchema, insertReportTemplateSchema, insertPremiumPlayerSchema, insertPlayerBaseTagSchema, insertPlayerProfileSchema } from "@shared/schema";
+import { buildMapImage } from "./services/tile";
 import { db } from "./db";
-import { reports, reportTemplates, premiumPlayers, playerBaseTags, playerProfiles, teams, teammates, servers, playerActivities, playerSessions } from "@shared/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { servers, playerActivities, playerSessions, playerProfiles, maps } from "@shared/schema";
+import { eq, sql } from "drizzle-orm";
 
+// Initialize the player activity tracker
+const playerActivityTracker = new PlayerActivityTracker();
 
-// TEMPORARY FAKE DATA FUNCTIONS - TO BE DELETED LATER
-function getTempFakePlayers() {
-  const onlinePlayers = ["timtom", "billybob", "123", "jack56", "deeznutz yomumma", "IaMyOuRdAdDy", "stimsack", "bobthebuilder", "chax"];
-  const offlinePlayers = ["Fanbo", "Rickybobby", "elflord", "i8urmomsbutt", "rockstar", "scubasteffan"];
-
-  const players = [];
-  let id = 1;
-
-  // Add online players
-  onlinePlayers.forEach(name => {
-    players.push({
-      id: id++,
-      playerName: name,
-      isOnline: true,
-      totalSessions: Math.floor(Math.random() * (100 - 30) + 30) // Random 30-100 hours
-    });
-  });
-
-  // Add offline players
-  offlinePlayers.forEach(name => {
-    players.push({
-      id: id++,
-      playerName: name,
-      isOnline: false,
-      totalSessions: Math.floor(Math.random() * (100 - 30) + 30) // Random 30-100 hours
-    });
-  });
-
-  return players;
-}
-
-function generateFakeSessionHistory(playerName: string) {
-  const sessions = [];
-  const now = new Date();
-  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-  // Generate 5-15 random sessions over the last week
-  const sessionCount = Math.floor(Math.random() * 11) + 5;
-
-  for (let i = 0; i < sessionCount; i++) {
-    // Random date within the last week
-    const sessionDate = new Date(oneWeekAgo.getTime() + Math.random() * (now.getTime() - oneWeekAgo.getTime()));
-
-    // Random session duration between 1-8 hours
-    const durationHours = Math.floor(Math.random() * 8) + 1;
-
-    sessions.push({
-      id: i + 1,
-      playerName,
-      startTime: sessionDate.toISOString(),
-      endTime: new Date(sessionDate.getTime() + durationHours * 60 * 60 * 1000).toISOString(),
-      durationHours,
-      server: "US West",
-      status: "completed"
-    });
-  }
-
-  // Sort by most recent first
-  return sessions.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
-}
-// END TEMPORARY FAKE DATA FUNCTIONS
+// Initialize the backup manager with fallback support
+const backupManager = new BackupManager(globalWebSocketManager);
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Reports API routes
+  // Setup authentication middleware
+  try {
+    await setupAuth(app);
+  } catch (error) {
+    console.log('⚠️ Authentication setup failed, continuing without auth:', error.message);
+  }
 
-  // Get all reports
-  app.get("/api/reports", async (req, res) => {
+  // Initialize services with error handling
+  let battleMetricsService: any = null;
+  try {
+    battleMetricsService = new BattleMetricsService();
+  } catch (error) {
+    console.log('⚠️ BattleMetrics service failed to initialize:', error.message);
+  }
+
+  // Initialize backup manager system
+  try {
+    console.log('🚀 [Startup] Starting backup management system...');
+    backupManager.start();
+  } catch (error) {
+    console.log('⚠️ Backup manager failed to start:', error.message);
+  }
+
+  // Authentication routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const reportList = await db
-        .select()
-        .from(reports)
-        .orderBy(desc(reports.createdAt));
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
 
-      res.json({
-        success: true,
-        reports: reportList
+  // Team Management Routes - PROTECTED
+
+  // Get all users
+  app.get('/api/admin/users', isAuthenticated, async (req: any, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Create a new user
+  app.post('/api/admin/users', isAuthenticated, async (req: any, res) => {
+    try {
+      const userData = createUserSchema.parse(req.body);
+      const user = await storage.createUser(userData);
+      res.status(201).json(user);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(400).json({
+        message: error instanceof Error ? error.message : "Failed to create user"
       });
-    } catch (error) {
-      console.error("Error fetching reports:", error);
-      res.status(500).json({ error: "Failed to fetch reports" });
     }
   });
 
-  // Get reports by type
-  app.get("/api/reports/type/:type", async (req, res) => {
+  // Update user
+  app.put('/api/admin/users/:userId', isAuthenticated, async (req: any, res) => {
     try {
-      const { type } = req.params;
-      const reportList = await db
-        .select()
-        .from(reports)
-        .where(eq(reports.type, type))
-        .orderBy(desc(reports.createdAt));
-      res.json(reportList);
+      const { userId } = req.params;
+      const userData = createUserSchema.partial().parse(req.body);
+      const user = await storage.updateUser(userId, userData);
+      res.json(user);
     } catch (error) {
-      console.error("Error fetching reports by type:", error);
-      res.status(500).json({ error: "Failed to fetch reports by type" });
-    }
-  });
-
-  // Get reports by player tag
-  app.get("/api/reports/player/:playerId", async (req, res) => {
-    try {
-      const { playerId } = req.params;
-      const reportList = await db
-        .select()
-        .from(reports)
-        .where(eq(reports.playerId, parseInt(playerId)))
-        .orderBy(desc(reports.createdAt));
-      res.json(reportList);
-    } catch (error) {
-      console.error("Error fetching reports by player:", error);
-      res.status(500).json({ error: "Failed to fetch reports by player" });
-    }
-  });
-
-  // BATTLEMETRICS INTEGRATION ROUTES
-
-  // Get all servers (admin endpoint - no auth required)
-  app.get("/api/battlemetrics/servers", async (req, res) => {
-    try {
-      // In a real implementation, you'd filter servers based on group's selected servers
-      // For now, return all servers
-      const serverList = await db.select().from(servers).orderBy(desc(servers.added_at));
-      res.json({
-        success: true,
-        servers: serverList
+      console.error("Error updating user:", error);
+      res.status(400).json({
+        message: error instanceof Error ? error.message : "Failed to update user"
       });
+    }
+  });
+
+  // Delete user (soft delete)
+  app.delete('/api/admin/users/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      await storage.deleteUser(userId);
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  // Get all teams
+  app.get('/api/admin/teams', isAuthenticated, async (req: any, res) => {
+    try {
+      const teams = await storage.getAllTeams();
+      res.json(teams);
+    } catch (error) {
+      console.error("Error fetching teams:", error);
+      res.status(500).json({ message: "Failed to fetch teams" });
+    }
+  });
+
+  // Create a new team
+  app.post('/api/admin/teams', isAuthenticated, async (req: any, res) => {
+    try {
+      const teamData = createTeamSchema.parse(req.body);
+      const team = await storage.createTeam(teamData);
+      res.status(201).json(team);
+    } catch (error) {
+      console.error("Error creating team:", error);
+      res.status(400).json({
+        message: error instanceof Error ? error.message : "Failed to create team"
+      });
+    }
+  });
+
+  // Update team
+  app.put('/api/admin/teams/:teamId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { teamId } = req.params;
+      const teamData = createTeamSchema.partial().parse(req.body);
+      const team = await storage.updateTeam(teamId, teamData);
+      res.json(team);
+    } catch (error) {
+      console.error("Error updating team:", error);
+      res.status(400).json({
+        message: error instanceof Error ? error.message : "Failed to update team"
+      });
+    }
+  });
+
+  // Delete team
+  app.delete('/api/admin/teams/:teamId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { teamId } = req.params;
+      await storage.deleteTeam(teamId);
+      res.json({ message: "Team deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting team:", error);
+      res.status(500).json({ message: "Failed to delete team" });
+    }
+  });
+
+  // Get team members
+  app.get('/api/admin/teams/:teamId/members', isAuthenticated, async (req: any, res) => {
+    try {
+      const { teamId } = req.params;
+      const members = await storage.getTeamMembers(teamId);
+      res.json(members);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+      res.status(500).json({ message: "Failed to fetch team members" });
+    }
+  });
+
+  // Add team member
+  app.post('/api/admin/teams/:teamId/members', isAuthenticated, async (req: any, res) => {
+    try {
+      const { teamId } = req.params;
+      const memberData = addTeamMemberSchema.parse(req.body);
+      const member = await storage.addTeamMember(teamId, memberData);
+      res.status(201).json(member);
+    } catch (error) {
+      console.error("Error adding team member:", error);
+      res.status(400).json({
+        message: error instanceof Error ? error.message : "Failed to add team member"
+      });
+    }
+  });
+
+  // Update team member role
+  app.put('/api/admin/teams/:teamId/members/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { teamId, userId } = req.params;
+      const { role } = req.body;
+      const member = await storage.updateTeamMemberRole(teamId, userId, role);
+      res.json(member);
+    } catch (error) {
+      console.error("Error updating team member role:", error);
+      res.status(400).json({
+        message: error instanceof Error ? error.message : "Failed to update team member role"
+      });
+    }
+  });
+
+  // Remove team member
+  app.delete('/api/admin/teams/:teamId/members/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { teamId, userId } = req.params;
+      await storage.removeTeamMember(teamId, userId);
+      res.json({ message: "Team member removed successfully" });
+    } catch (error) {
+      console.error("Error removing team member:", error);
+      res.status(500).json({ message: "Failed to remove team member" });
+    }
+  });
+
+  // Server Management Routes
+
+  // Get all servers
+  app.get('/api/servers', async (req, res) => {
+    try {
+      const serverList = await db.select().from(servers);
+      res.json(serverList);
     } catch (error) {
       console.error("Error fetching servers:", error);
-      res.status(500).json({ error: "Failed to fetch servers" });
+      res.status(500).json({ message: "Failed to fetch servers" });
     }
   });
 
-  // Add a new server (admin endpoint - no auth required)
-  app.post("/api/battlemetrics/servers", async (req, res) => {
+  // Add a new server
+  app.post('/api/servers', async (req, res) => {
     try {
-      const { serverId, name, game = "rust" } = req.body;
+      const serverData = addServerSchema.parse(req.body);
 
-      if (!serverId || !name) {
-        return res.status(400).json({ error: "Server ID and name are required" });
+      // Validate server with BattleMetrics
+      const serverInfo = await battleMetricsService.getServer(serverData.id);
+      if (!serverInfo) {
+        return res.status(400).json({ message: "Invalid server ID or server not found" });
       }
 
-      const newServer = await db.insert(servers)
-        .values({
-          id: serverId,
-          name,
-          game,
-          added_at: new Date(),
-          last_checked: new Date(),
-          is_active: true
-        })
-        .returning();
+      // Store server in database
+      const [server] = await db.insert(servers).values({
+        id: serverData.id,
+        name: serverInfo.name || `Server ${serverData.id}`,
+        game: 'rust',
+        status: 'online',
+        players: 0,
+        max_players: serverInfo.maxPlayers || 100,
+        battle_metrics_url: serverInfo.url || '',
+        map_info: {
+          map: serverInfo.map || 'Unknown',
+          seed: serverInfo.seed || 0,
+          size: serverInfo.size || 0
+        },
+        last_checked: new Date(),
+        added_at: new Date(),
+        is_active: true
+      }).returning();
 
-      res.status(201).json({
-        success: true,
-        server: newServer[0],
-        message: "Server added successfully"
-      });
+      // Subscribe to real-time updates
+      globalWebSocketManager.subscribeToServer(server.id);
+
+      res.status(201).json(server);
     } catch (error) {
       console.error("Error adding server:", error);
-      res.status(500).json({ error: "Failed to add server" });
+      res.status(400).json({
+        message: error instanceof Error ? error.message : "Failed to add server"
+      });
+    }
+  });
+
+  // Delete a server
+  app.delete('/api/servers/:serverId', async (req, res) => {
+    try {
+      const { serverId } = req.params;
+
+      // Unsubscribe from real-time updates
+      globalWebSocketManager.unsubscribeFromServer(serverId);
+
+      // Remove from database
+      await db.delete(servers).where(eq(servers.id, serverId));
+
+      res.json({ message: "Server removed successfully" });
+    } catch (error) {
+      console.error("Error removing server:", error);
+      res.status(500).json({ message: "Failed to remove server" });
     }
   });
 
   // Get server players
-  app.get("/api/battlemetrics/servers/:serverId/players", async (req, res) => {
+  app.get('/api/servers/:serverId/players', async (req, res) => {
     try {
       const { serverId } = req.params;
-      const players = await db.select()
-        .from(playerProfiles)
-        .where(eq(playerProfiles.server_id, serverId))
-        .orderBy(desc(playerProfiles.last_seen));
-
-      res.json({
-        success: true,
-        players
-      });
-    } catch (error) {
-      console.error("Error fetching server players:", error);
-      res.status(500).json({ error: "Failed to fetch server players" });
-    }
-  });
-
-  // Get player profile
-  app.get("/api/battlemetrics/players/:playerId/profile", async (req, res) => {
-    try {
-      const { playerId } = req.params;
-      const profile = await db.select()
-        .from(playerProfiles)
-        .where(eq(playerProfiles.id, parseInt(playerId)))
-        .limit(1);
-
-      if (profile.length === 0) {
-        return res.status(404).json({ error: "Player profile not found" });
-      }
-
-      res.json({
-        success: true,
-        profile: profile[0]
-      });
-    } catch (error) {
-      console.error("Error fetching player profile:", error);
-      res.status(500).json({ error: "Failed to fetch player profile" });
-    }
-  });
-
-  // Get player sessions
-  app.get("/api/battlemetrics/players/:playerId/sessions", async (req, res) => {
-    try {
-      const { playerId } = req.params;
-      const sessions = await db.select()
-        .from(playerSessions)
-        .where(eq(playerSessions.profile_id, parseInt(playerId)))
-        .orderBy(desc(playerSessions.join_time))
-        .limit(100);
-
-      res.json({
-        success: true,
-        sessions
-      });
-    } catch (error) {
-      console.error("Error fetching player sessions:", error);
-      res.status(500).json({ error: "Failed to fetch player sessions" });
-    }
-  });
-
-  // Get recent activities (filtered by group)
-  app.get("/api/battlemetrics/activities", async (req, res) => {
-    try {
-      const activities = await db
-        .select()
-        .from(playerActivities)
-        .orderBy(desc(playerActivities.timestamp))
-        .limit(50);
-
-      res.json({
-        success: true,
-        activities: activities
-      });
-    } catch (error) {
-      console.error("Error fetching activities:", error);
-      res.status(500).json({ error: "Failed to fetch activities" });
-    }
-  });
-
-  // Get reports by base tag
-  app.get("/api/reports/base/:baseId", async (req, res) => {
-    try {
-      const { baseId } = req.params;
-      const { baseOwners } = req.query;
-
-      // If baseOwners provided, use enhanced method that includes player-matched reports
-      if (baseOwners && typeof baseOwners === 'string') {
-        const reports = await storage.getReportsForBaseWithPlayers(baseId, baseOwners);
-        res.json(reports);
-      } else {
-        // Fall back to original method
-        const reports = await storage.getReportsByBaseTag(baseId);
-        res.json(reports);
-      }
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch reports by base" });
-    }
-  });
-
-  // Get specific report
-  app.get("/api/reports/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const report = await storage.getReport(id);
-      if (!report) {
-        return res.status(404).json({ error: "Report not found" });
-      }
-      res.json(report);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch report" });
-    }
-  });
-
-  // Create new report (with group context)
-  app.post("/api/reports", async (req, res) => {
-    try {
-      const newReport = await db.insert(reports).values({
-        ...req.body,
-      }).returning();
-
-      res.json({
-        success: true,
-        report: newReport[0]
-      });
-    } catch (error) {
-      console.error("Error creating report:", error);
-      res.status(500).json({ error: "Failed to create report" });
-    }
-  });
-
-  // Update report
-  app.put("/api/reports/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const validatedData = insertReportSchema.partial().parse(req.body);
-      const report = await storage.updateReport(id, validatedData);
-      res.json(report);
-    } catch (error) {
-      res.status(400).json({ error: "Failed to update report" });
-    }
-  });
-
-  // Delete report
-  app.delete("/api/reports/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const success = await storage.deleteReport(id);
-      if (!success) {
-        return res.status(404).json({ error: "Report not found" });
-      }
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ error: "Failed to delete report" });
-    }
-  });
-
-  // Report Templates API routes
-
-  // Get all templates
-  app.get("/api/report-templates", async (req, res) => {
-    try {
-      const templates = await storage.getAllReportTemplates();
-      res.json(templates);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch templates" });
-    }
-  });
-
-  // Get template by type
-  app.get("/api/report-templates/:type", async (req, res) => {
-    try {
-      const { type } = req.params;
-      const template = await storage.getReportTemplateByType(type);
-      if (!template) {
-        return res.status(404).json({ error: "Template not found" });
-      }
-      res.json(template);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch template" });
-    }
-  });
-
-  // Create new template
-  app.post("/api/report-templates", async (req, res) => {
-    try {
-      const validatedData = insertReportTemplateSchema.parse(req.body);
-      const template = await storage.createReportTemplate(validatedData);
-      res.status(201).json(template);
-    } catch (error) {
-      res.status(400).json({ error: "Invalid template data" });
-    }
-  });
-
-  // Players API routes
-
-  // Get all players from external API
-  app.get("/api/players", async (req, res) => {
-    try {
-      // Fetch from your external API
-      const response = await fetch('https://3de60948-f8d7-4a5d-9537-2286d058f7c0-00-2uooy61mnqc4.janeway.replit.dev/api/public/servers/2933470/profiles');
-
-      if (!response.ok) {
-        console.log(`External API temporarily unavailable: ${response.status}`);
-        // TEMPORARY FAKE DATA - TO BE DELETED LATER
-        // Return fake player data while external API is down
-        return res.json(getTempFakePlayers());
-      }
-
-      const externalPlayers = await response.json();
-
-      // Transform external data to match our interface
-      const players = externalPlayers.map((player: any, index: number) => ({
-        id: index + 1, // Generate temporary ID for UI
-        playerName: player.playerName,
-        isOnline: player.isOnline,
-        totalSessions: player.totalSessions,
-        // Add any other fields you want to display
-      }));
-
+      const players = await battleMetricsService.getPlayers(serverId);
       res.json(players);
     } catch (error) {
-      console.log('External API temporarily unavailable, returning fake data');
-      // TEMPORARY FAKE DATA - TO BE DELETED LATER
-      // Return fake player data instead of empty array to keep app functional
-      res.json(getTempFakePlayers());
+      console.error("Error fetching server players:", error);
+      res.status(500).json({ message: "Failed to fetch server players" });
     }
   });
 
-  // TEMPORARY: Get player session history - TO BE DELETED LATER
-  app.get("/api/players/:playerName/sessions", async (req, res) => {
-    const { playerName } = req.params;
-    // Generate fake session history (30-100 hours over last week)
-    const sessions = generateFakeSessionHistory(playerName);
-    res.json(sessions);
-  });
-
-  // Premium Players API routes
-
-  // Get all premium players
-  app.get("/api/premium-players", async (req, res) => {
+  // Get server stats
+  app.get('/api/servers/:serverId/stats', async (req, res) => {
     try {
-      const premiumPlayers = await storage.getAllPremiumPlayers();
-      res.json(premiumPlayers);
+      const { serverId } = req.params;
+      const stats = await battleMetricsService.getServerStats(serverId);
+      res.json(stats);
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch premium players" });
+      console.error("Error fetching server stats:", error);
+      res.status(500).json({ message: "Failed to fetch server stats" });
     }
   });
 
-  // Create premium player
-  app.post("/api/premium-players", async (req, res) => {
+  // Get server map image
+  app.get('/api/servers/:serverId/map', async (req, res) => {
     try {
-      const validatedData = insertPremiumPlayerSchema.parse(req.body);
-      const premiumPlayer = await storage.createPremiumPlayer(validatedData);
-      res.status(201).json(premiumPlayer);
-    } catch (error) {
-      res.status(400).json({ error: "Invalid premium player data" });
-    }
-  });
+      const { serverId } = req.params;
+      const { width = 1024, height = 1024 } = req.query;
 
-  // Get premium player by name
-  app.get("/api/premium-players/:name", async (req, res) => {
-    try {
-      const { name } = req.params;
-      const player = await storage.getPremiumPlayerByName(name);
-      if (!player) {
-        return res.status(404).json({ error: "Premium player not found" });
+      // Check if we have a cached map
+      const existingMap = await mapStorageService.getMapImage(serverId);
+      if (existingMap) {
+        return res.json({
+          image: existingMap.image,
+          width: existingMap.width,
+          height: existingMap.height,
+          cached: true
+        });
       }
-      res.json(player);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch premium player" });
-    }
-  });
 
-  // Delete premium player
-  app.delete("/api/premium-players/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const success = await storage.deletePremiumPlayer(id);
-      if (!success) {
-        return res.status(404).json({ error: "Premium player not found" });
+      // Fetch from RustMaps if not cached
+      const mapImage = await buildMapImage(serverId, parseInt(width as string), parseInt(height as string));
+      if (!mapImage) {
+        return res.status(404).json({ message: "Map not found" });
       }
-      res.json({ success: true });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to delete premium player" });
-    }
-  });
 
-  // Player Base Tags API routes
-
-  // Get all player base tags
-  app.get("/api/player-base-tags", async (req, res) => {
-    try {
-      const tags = await db
-        .select()
-        .from(playerBaseTags)
-        .orderBy(desc(playerBaseTags.taggedAt));
+      // Store in cache - convert buffer to base64 string
+      const base64Image = mapImage.toString('base64');
+      await mapStorageService.storeMapImage({
+        serverId,
+        imageData: base64Image,
+        imageUrl: `https://maps.rustmaps.com/map/${serverId}`,
+        size: parseInt(width as string)
+      });
 
       res.json({
-        success: true,
-        tags: tags
+        image: mapImage,
+        width: parseInt(width as string),
+        height: parseInt(height as string),
+        cached: false
       });
     } catch (error) {
-      console.error("Error fetching player base tags:", error);
-      res.status(500).json({ error: "Failed to fetch player base tags" });
+      console.error("Error fetching server map:", error);
+      res.status(500).json({ message: "Failed to fetch server map" });
     }
   });
 
-  // Get tags for a specific player
-  app.get("/api/player-base-tags/player/:playerName", async (req, res) => {
+  // Database Metrics
+  app.get('/api/database/metrics', async (req, res) => {
     try {
-      const tags = await storage.getPlayerBaseTags(req.params.playerName);
-      res.json(tags);
+      const [serverCount] = await db.select({ count: sql`count(*)` }).from(servers);
+      const [playerCount] = await db.select({ count: sql`count(*)` }).from(playerProfiles);
+      const [sessionCount] = await db.select({ count: sql`count(*)` }).from(playerSessions);
+      const [activityCount] = await db.select({ count: sql`count(*)` }).from(playerActivities);
+      const [mapCount] = await db.select({ count: sql`count(*)` }).from(maps);
+
+      res.json({
+        servers: serverCount.count,
+        players: playerCount.count,
+        sessions: sessionCount.count,
+        activities: activityCount.count,
+        maps: mapCount.count,
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
-      console.error("Error getting player tags:", error);
-      res.status(500).json({ error: "Failed to get player tags" });
+      console.error("Error fetching database metrics:", error);
+      res.status(500).json({ message: "Failed to fetch database metrics" });
     }
   });
 
-  // Get tags for a specific base
-  app.get("/api/player-base-tags/base/:baseId", async (req, res) => {
+  // Admin cleanup route
+  app.delete("/api/admin/delete-all-data", isAuthenticated, async (req, res) => {
     try {
-      const tags = await storage.getBasePlayerTags(req.params.baseId);
-      res.json(tags);
+      // Clear all data (use with caution!)
+      await db.delete(servers);
+      await db.delete(playerProfiles);
+      await db.delete(playerSessions);
+      await db.delete(playerActivities);
+      await db.delete(maps);
+
+      res.json({ message: "All data cleared successfully" });
     } catch (error) {
-      console.error("Error getting base tags:", error);
-      res.status(500).json({ error: "Failed to get base tags" });
+      console.error("Error clearing data:", error);
+      res.status(500).json({ message: "Failed to clear data" });
     }
   });
 
-  // Create player base tag
-  app.post("/api/player-base-tags", async (req, res) => {
-    try {
-      const validatedTag = insertPlayerBaseTagSchema.parse(req.body);
-      const tag = await storage.createPlayerBaseTag(validatedTag);
-      res.status(201).json(tag);
-    } catch (error) {
-      console.error("Error creating player base tag:", error);
-      res.status(400).json({ error: "Failed to create player base tag" });
-    }
+  // WebSocket endpoint
+  app.get('/api/ws', (req, res) => {
+    res.json({ message: "WebSocket endpoint - use ws:// protocol" });
   });
 
-  // Delete player base tag
-  app.delete("/api/player-base-tags/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const success = await storage.deletePlayerBaseTag(id);
-      if (success) {
-        res.json({ success: true });
-      } else {
-        res.status(404).json({ error: "Player base tag not found" });
-      }
-    } catch (error) {
-      console.error("Error deleting player base tag:", error);
-      res.status(500).json({ error: "Failed to delete player base tag" });
-    }
+    // Health check
+  app.get('/health', (req, res) => {
+    res.json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      version: process.version
+    });
   });
 
-  // Delete all tags for a specific base (used when base is deleted)
-  app.delete("/api/player-base-tags/base/:baseId", async (req, res) => {
-    try {
-      const success = await storage.deletePlayerBaseTagsByBaseId(req.params.baseId);
-      res.json({ success });
-    } catch (error) {
-      console.error("Error deleting base tags:", error);
-      res.status(500).json({ error: "Failed to delete base tags" });
-    }
+  // Serve admin interface - serve the built frontend for admin routes
+  app.get('/admin', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'dist/public/index.html'));
   });
 
-  // Player Profile API routes
-
-  // Get player profile
-  app.get("/api/player-profiles/:playerName", async (req, res) => {
-    try {
-      const profile = await storage.getPlayerProfile(req.params.playerName);
-      if (profile) {
-        res.json(profile);
-      } else {
-        res.status(404).json({ error: "Player profile not found" });
-      }
-    } catch (error) {
-      console.error("Error getting player profile:", error);
-      res.status(500).json({ error: "Failed to get player profile" });
-    }
+  app.get('/admin/*', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'dist/public/index.html'));
   });
 
-  // Create or update player profile
-  app.post("/api/player-profiles", async (req, res) => {
-    try {
-      const validatedProfile = insertPlayerProfileSchema.parse(req.body);
+  // Create HTTP server
+  const server = createServer(app);
 
-      // Check if profile exists
-      const existingProfile = await storage.getPlayerProfile(validatedProfile.playerName);
+  // Setup WebSocket handlers
+  globalWebSocketManager.attach(server);
 
-      let profile;
-      if (existingProfile) {
-        // Update existing profile
-        profile = await storage.updatePlayerProfile(validatedProfile.playerName, validatedProfile);
-      } else {
-        // Create new profile
-        profile = await storage.createPlayerProfile(validatedProfile);
-      }
-
-      res.json(profile);
-    } catch (error) {
-      console.error("Error creating/updating player profile:", error);
-      res.status(400).json({ error: "Failed to create/update player profile" });
-    }
-  });
-
-  // Update player profile
-  app.patch("/api/player-profiles/:playerName", async (req, res) => {
-    try {
-      const profile = await storage.updatePlayerProfile(req.params.playerName, req.body);
-      res.json(profile);
-    } catch (error) {
-      console.error("Error updating player profile:", error);
-      res.status(500).json({ error: "Failed to update player profile" });
-    }
-  });
-
-  // Delete player profile
-  app.delete("/api/player-profiles/:playerName", async (req, res) => {
-    try {
-      const success = await storage.deletePlayerProfile(req.params.playerName);
-      if (success) {
-        res.json({ success: true });
-      } else {
-        res.status(404).json({ error: "Player profile not found" });
-      }
-    } catch (error) {
-      console.error("Error deleting player profile:", error);
-      res.status(500).json({ error: "Failed to delete player profile" });
-    }
-  });
-
-  // Teammates API routes
-
-  // Get all teammates
-  app.get("/api/teammates", async (req, res) => {
-    try {
-      const teammates = await storage.getAllTeammates();
-      res.json(teammates);
-    } catch (error) {
-      console.error("Error getting teammates:", error);
-      res.status(500).json({ error: "Failed to get teammates" });
-    }
-  });
-
-  // Add a teammate
-  app.post("/api/teammates", async (req, res) => {
-    try {
-      const { playerName } = req.body;
-      if (!playerName) {
-        return res.status(400).json({ error: "Player name is required" });
-      }
-
-      const teammate = await storage.addTeammate(playerName);
-      res.json(teammate);
-    } catch (error) {
-      console.error("Error adding teammate:", error);
-      res.status(500).json({ error: "Failed to add teammate" });
-    }
-  });
-
-  // Remove a teammate
-  app.delete("/api/teammates/:playerName", async (req, res) => {
-    try {
-      const { playerName } = req.params;
-      const success = await storage.removeTeammate(playerName);
-      if (success) {
-        res.json({ success: true });
-      } else {
-        res.status(404).json({ error: "Teammate not found" });
-      }
-    } catch (error) {
-      console.error("Error removing teammate:", error);
-      res.status(500).json({ error: "Failed to remove teammate" });
-    }
-  });
-
-  // Note: Individual player routes removed - using external API for regular player data
-
-  const httpServer = createServer(app);
-
-  return httpServer;
+  return server;
 }

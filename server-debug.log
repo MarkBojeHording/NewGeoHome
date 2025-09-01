@@ -1,0 +1,29 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development npx tsx server/index.ts
+
+🎯 [ProfileTracker] Initialized with profile-based tracking
+🎯 [ProfileTracker] Initialized with profile-based tracking
+🎯 [ProfileTracker] Initialized with profile-based tracking
+🔧 [BackupManager] Initialized backup management system
+✅ Authentication system configured
+🚀 [Startup] Starting backup management system...
+🚀 [BackupManager] Starting backup management system...
+❤️ [BackupManager] Started health monitoring
+🔄 [BackupManager] Switching to WebSocket mode...
+Connecting to BattleMetrics WebSocket for persistent tracking...
+✅ WebSocket server attached to HTTP server
+✅ [BackupManager] Successfully switched to WebSocket mode
+Template already exists: General Report
+Template already exists: Base Report
+Template already exists: Task Report
+Report templates seeding completed
+Connecting to BattleMetrics WebSocket for persistent tracking...
+11:21:41 PM [express] ✓ BattleMetrics WebSocket manager initialized
+11:21:41 PM [express] Subscribed to 0 server(s) for real-time events
+11:21:41 PM [express] serving on port 3003
+✓ Connected to BattleMetrics WebSocket (persistent)
+✓ Connected to BattleMetrics WebSocket (persistent)
+❤️ [BackupManager] Health check: WebSocket=true, Backup=false, Mode=websocket
+❤️ [BackupManager] Health check: WebSocket=true, Backup=false, Mode=websocket
+❤️ [BackupManager] Health check: WebSocket=true, Backup=false, Mode=websocket

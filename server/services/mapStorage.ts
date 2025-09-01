@@ -204,6 +204,19 @@ export class MapStorageService {
       };
     }
   }
+
+  // Get map image - method that routes.ts expects
+  async getMapImage(serverId: string): Promise<any> {
+    const map = await this.getLatestMapForServer(serverId);
+    if (!map) return null;
+    
+    return {
+      image: map.imageData,
+      width: map.size || 1024,
+      height: map.size || 1024,
+      cached: true
+    };
+  }
 }
 
 export const mapStorageService = new MapStorageService();

@@ -62,11 +62,24 @@ export interface IStorage {
   getAllTeammates(): Promise<Teammate[]>;
   isTeammate(playerName: string): Promise<boolean>;
   
+  // ServerBeacon methods
+  getAllUsers(): Promise<User[]>;
+  updateUser(userId: string, userData: Partial<InsertUser>): Promise<User>;
+  deleteUser(userId: string): Promise<boolean>;
+  getAllTeams(): Promise<any[]>;
+  createTeam(teamData: any): Promise<any>;
+  updateTeam(teamId: string, teamData: any): Promise<any>;
+  deleteTeam(teamId: string): Promise<boolean>;
+  getTeamMembers(teamId: string): Promise<any[]>;
+  addTeamMember(teamId: string, memberData: any): Promise<any>;
+  updateTeamMemberRole(teamId: string, userId: string, role: string): Promise<any>;
+  removeTeamMember(teamId: string, userId: string): Promise<boolean>;
+  
   // Note: Regular player data comes from external API, no local storage needed
 }
 
 import { db } from "./db";
-import { users, reports, reportTemplates, premiumPlayers, playerBaseTags, playerProfiles, teammates } from "@shared/schema";
+import { users, reports, reportTemplates, premiumPlayers, playerBaseTags, playerProfiles, teammates, teams, teamMembers } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
@@ -321,6 +334,88 @@ export class DatabaseStorage implements IStorage {
       .from(teammates)
       .where(eq(teammates.playerName, playerName));
     return !!teammate;
+  }
+
+  // ServerBeacon methods
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async updateUser(userId: string, userData: Partial<InsertUser>): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set(userData)
+      .where(eq(users.id, userId))
+      .returning();
+    if (!user) throw new Error("User not found");
+    return user;
+  }
+
+  async deleteUser(userId: string): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, userId));
+    return true; // Assume success
+  }
+
+  async getAllTeams(): Promise<any[]> {
+    return await db.select().from(teams);
+  }
+
+  async createTeam(teamData: any): Promise<any> {
+    const [team] = await db
+      .insert(teams)
+      .values(teamData)
+      .returning();
+    return team;
+  }
+
+  async updateTeam(teamId: string, teamData: any): Promise<any> {
+    const [team] = await db
+      .update(teams)
+      .set(teamData)
+      .where(eq(teams.id, parseInt(teamId)))
+      .returning();
+    if (!team) throw new Error("Team not found");
+    return team;
+  }
+
+  async deleteTeam(teamId: string): Promise<boolean> {
+    await db.delete(teams).where(eq(teams.id, parseInt(teamId)));
+    return true;
+  }
+
+  async getTeamMembers(teamId: string): Promise<any[]> {
+    return await db.select().from(teamMembers).where(eq(teamMembers.team_id, parseInt(teamId)));
+  }
+
+  async addTeamMember(teamId: string, memberData: any): Promise<any> {
+    const [member] = await db
+      .insert(teamMembers)
+      .values({
+        ...memberData,
+        team_id: parseInt(teamId)
+      })
+      .returning();
+    return member;
+  }
+
+  async updateTeamMemberRole(teamId: string, userId: string, role: string): Promise<any> {
+    const [member] = await db
+      .update(teamMembers)
+      .set({ role })
+      .where(eq(teamMembers.team_id, parseInt(teamId)) && eq(teamMembers.user_id, userId))
+      .returning();
+    if (!member) throw new Error("Team member not found");
+    return member;
+  }
+
+  async removeTeamMember(teamId: string, userId: string): Promise<boolean> {
+    await db.delete(teamMembers)
+      .where(eq(teamMembers.team_id, parseInt(teamId)) && eq(teamMembers.user_id, userId));
+    return true;
+  }
+
+  async getUserTeams(userId: string): Promise<any[]> {
+    return await db.select().from(teamMembers).where(eq(teamMembers.user_id, userId));
   }
 
   // Note: Regular player methods removed - using external API instead
