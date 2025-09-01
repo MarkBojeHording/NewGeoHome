@@ -1,5 +1,6 @@
 import { memo, useState, useEffect } from 'react'
 import WipeCountdownTimer from './WipeCountdownTimer'
+import { ServerStatus } from './ServerMonitor/ServerStatus'
 
 interface TacticalMapToolbarProps {
   onButtonClick: (buttonType: string) => void
@@ -50,7 +51,7 @@ const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay, onWipeCoun
                   {['Logs', 'Progression', 'Gene Calculator', 'Players'].map((btn) => (
                     btn === 'Progression' ? (
                       <div key={btn} className="relative">
-                        <button 
+                        <button
                           onClick={() => handleButtonClick('Progression')}
                           data-testid="button-open-progression-modal"
                           className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
@@ -68,10 +69,10 @@ const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay, onWipeCoun
                         )}
                       </div>
                     ) : (
-                      <button 
-                        key={btn} 
+                      <button
+                        key={btn}
                         onClick={() => handleButtonClick(btn)}
-                        data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined} 
+                        data-testid={btn === 'Players' ? 'button-open-player-modal' : btn === 'Logs' ? 'button-open-logs-modal' : undefined}
                         className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
                       >
                         [{btn.toUpperCase()}]
@@ -79,13 +80,14 @@ const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay, onWipeCoun
                     )
                   ))}
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center gap-4">
+                  <ServerStatus />
                   <WipeCountdownTimer onCountdownChange={onWipeCountdownChange} />
                 </div>
                 <div className="flex gap-2">
                   {['Teams', 'Turret Control'].map((btn) => (
-                    <button 
-                      key={btn} 
+                    <button
+                      key={btn}
                       onClick={() => handleButtonClick(btn)}
                       className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
                     >
@@ -93,7 +95,7 @@ const TacticalMapToolbar = memo(({ onButtonClick, progressionDisplay, onWipeCoun
                     </button>
                   ))}
                   <div className="relative">
-                    <button 
+                    <button
                       onClick={() => setShowMenuDropdown(!showMenuDropdown)}
                       className="px-4 py-2 bg-gradient-to-b from-orange-800/60 to-orange-900 hover:from-orange-700/80 hover:to-orange-800 text-orange-100 font-bold rounded shadow-lg border-2 border-orange-600/50 transition-all duration-200 hover:shadow-xl hover:shadow-orange-900/50 tracking-wide"
                       data-testid="button-menu-dropdown"

@@ -1,0 +1,56 @@
+🎯 [ProfileTracker] Initialized with profile-based tracking
+Failed to seed report templates: ErrorEvent {
+  [Symbol(kTarget)]: WebSocket {
+    _events: [Object: null prototype] {
+      error: [Function],
+      message: [Function],
+      close: [Function],
+      open: [Function]
+    },
+    _eventsCount: 4,
+    _maxListeners: undefined,
+    _binaryType: 'arraybuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: <Buffer >,
+    _closeTimer: null,
+    _errorEmitted: true,
+    _extensions: {},
+    _paused: false,
+    _protocol: '',
+    _readyState: 3,
+    _receiver: null,
+    _sender: null,
+    _socket: null,
+    _bufferedAmount: 0,
+    _isServer: false,
+    _redirects: 0,
+    _autoPong: true,
+    _url: 'wss://localhost/v2',
+    _req: null,
+    [Symbol(shapeMode)]: false,
+    [Symbol(kCapture)]: false
+  },
+  [Symbol(kType)]: 'error',
+  [Symbol(kError)]: AggregateError [ECONNREFUSED]: 
+      at internalConnectMultiple (node:net:1122:18)
+      at afterConnectMultiple (node:net:1689:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  },
+  [Symbol(kMessage)]: ''
+}
+Connecting to BattleMetrics WebSocket for persistent tracking...
+10:56:40 AM [express] ✓ BattleMetrics WebSocket manager initialized
+10:56:40 AM [express] serving on port 3002
+✓ Connected to BattleMetrics WebSocket (persistent)
+Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+10:56:53 AM [express] GET /api/auth/session 200 in 3ms
+10:57:03 AM [express] GET /api/battlemetrics/servers 401 in 1ms :: {"message":"Unauthorized"}
+10:57:31 AM [express] GET /api/auth/user 200 in 7ms
+10:57:48 AM [express] GET /api/login 200 in 6ms
+10:57:48 AM [express] GET /api/auth/user 200 in 3ms
+11:07:52 AM [express] GET /api/auth/user 200 in 2ms

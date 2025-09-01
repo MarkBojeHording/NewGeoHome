@@ -2,15 +2,19 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertReportSchema, insertReportTemplateSchema, insertPremiumPlayerSchema, insertPlayerBaseTagSchema, insertPlayerProfileSchema } from "@shared/schema";
+import { db } from "./db";
+import { reports, reportTemplates, premiumPlayers, playerBaseTags, playerProfiles, teams, teammates, servers, playerActivities, playerSessions } from "@shared/schema";
+import { eq, desc, and } from "drizzle-orm";
+
 
 // TEMPORARY FAKE DATA FUNCTIONS - TO BE DELETED LATER
 function getTempFakePlayers() {
   const onlinePlayers = ["timtom", "billybob", "123", "jack56", "deeznutz yomumma", "IaMyOuRdAdDy", "stimsack", "bobthebuilder", "chax"];
   const offlinePlayers = ["Fanbo", "Rickybobby", "elflord", "i8urmomsbutt", "rockstar", "scubasteffan"];
-  
+
   const players = [];
   let id = 1;
-  
+
   // Add online players
   onlinePlayers.forEach(name => {
     players.push({
@@ -20,7 +24,7 @@ function getTempFakePlayers() {
       totalSessions: Math.floor(Math.random() * (100 - 30) + 30) // Random 30-100 hours
     });
   });
-  
+
   // Add offline players
   offlinePlayers.forEach(name => {
     players.push({
@@ -30,7 +34,7 @@ function getTempFakePlayers() {
       totalSessions: Math.floor(Math.random() * (100 - 30) + 30) // Random 30-100 hours
     });
   });
-  
+
   return players;
 }
 
@@ -38,17 +42,17 @@ function generateFakeSessionHistory(playerName: string) {
   const sessions = [];
   const now = new Date();
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  
+
   // Generate 5-15 random sessions over the last week
   const sessionCount = Math.floor(Math.random() * 11) + 5;
-  
+
   for (let i = 0; i < sessionCount; i++) {
     // Random date within the last week
     const sessionDate = new Date(oneWeekAgo.getTime() + Math.random() * (now.getTime() - oneWeekAgo.getTime()));
-    
+
     // Random session duration between 1-8 hours
     const durationHours = Math.floor(Math.random() * 8) + 1;
-    
+
     sessions.push({
       id: i + 1,
       playerName,
@@ -59,7 +63,7 @@ function generateFakeSessionHistory(playerName: string) {
       status: "completed"
     });
   }
-  
+
   // Sort by most recent first
   return sessions.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
 }
@@ -67,13 +71,21 @@ function generateFakeSessionHistory(playerName: string) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Reports API routes
-  
+
   // Get all reports
   app.get("/api/reports", async (req, res) => {
     try {
-      const reports = await storage.getAllReports();
-      res.json(reports);
+      const reportList = await db
+        .select()
+        .from(reports)
+        .orderBy(desc(reports.createdAt));
+
+      res.json({
+        success: true,
+        reports: reportList
+      });
     } catch (error) {
+      console.error("Error fetching reports:", error);
       res.status(500).json({ error: "Failed to fetch reports" });
     }
   });
@@ -82,9 +94,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/reports/type/:type", async (req, res) => {
     try {
       const { type } = req.params;
-      const reports = await storage.getReportsByType(type);
-      res.json(reports);
+      const reportList = await db
+        .select()
+        .from(reports)
+        .where(eq(reports.type, type))
+        .orderBy(desc(reports.createdAt));
+      res.json(reportList);
     } catch (error) {
+      console.error("Error fetching reports by type:", error);
       res.status(500).json({ error: "Failed to fetch reports by type" });
     }
   });
@@ -93,10 +110,145 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/reports/player/:playerId", async (req, res) => {
     try {
       const { playerId } = req.params;
-      const reports = await storage.getReportsByPlayerTag(playerId);
-      res.json(reports);
+      const reportList = await db
+        .select()
+        .from(reports)
+        .where(eq(reports.playerId, parseInt(playerId)))
+        .orderBy(desc(reports.createdAt));
+      res.json(reportList);
     } catch (error) {
+      console.error("Error fetching reports by player:", error);
       res.status(500).json({ error: "Failed to fetch reports by player" });
+    }
+  });
+
+  // BATTLEMETRICS INTEGRATION ROUTES
+
+  // Get all servers (admin endpoint - no auth required)
+  app.get("/api/battlemetrics/servers", async (req, res) => {
+    try {
+      // In a real implementation, you'd filter servers based on group's selected servers
+      // For now, return all servers
+      const serverList = await db.select().from(servers).orderBy(desc(servers.added_at));
+      res.json({
+        success: true,
+        servers: serverList
+      });
+    } catch (error) {
+      console.error("Error fetching servers:", error);
+      res.status(500).json({ error: "Failed to fetch servers" });
+    }
+  });
+
+  // Add a new server (admin endpoint - no auth required)
+  app.post("/api/battlemetrics/servers", async (req, res) => {
+    try {
+      const { serverId, name, game = "rust" } = req.body;
+
+      if (!serverId || !name) {
+        return res.status(400).json({ error: "Server ID and name are required" });
+      }
+
+      const newServer = await db.insert(servers)
+        .values({
+          id: serverId,
+          name,
+          game,
+          added_at: new Date(),
+          last_checked: new Date(),
+          is_active: true
+        })
+        .returning();
+
+      res.status(201).json({
+        success: true,
+        server: newServer[0],
+        message: "Server added successfully"
+      });
+    } catch (error) {
+      console.error("Error adding server:", error);
+      res.status(500).json({ error: "Failed to add server" });
+    }
+  });
+
+  // Get server players
+  app.get("/api/battlemetrics/servers/:serverId/players", async (req, res) => {
+    try {
+      const { serverId } = req.params;
+      const players = await db.select()
+        .from(playerProfiles)
+        .where(eq(playerProfiles.server_id, serverId))
+        .orderBy(desc(playerProfiles.last_seen));
+
+      res.json({
+        success: true,
+        players
+      });
+    } catch (error) {
+      console.error("Error fetching server players:", error);
+      res.status(500).json({ error: "Failed to fetch server players" });
+    }
+  });
+
+  // Get player profile
+  app.get("/api/battlemetrics/players/:playerId/profile", async (req, res) => {
+    try {
+      const { playerId } = req.params;
+      const profile = await db.select()
+        .from(playerProfiles)
+        .where(eq(playerProfiles.id, parseInt(playerId)))
+        .limit(1);
+
+      if (profile.length === 0) {
+        return res.status(404).json({ error: "Player profile not found" });
+      }
+
+      res.json({
+        success: true,
+        profile: profile[0]
+      });
+    } catch (error) {
+      console.error("Error fetching player profile:", error);
+      res.status(500).json({ error: "Failed to fetch player profile" });
+    }
+  });
+
+  // Get player sessions
+  app.get("/api/battlemetrics/players/:playerId/sessions", async (req, res) => {
+    try {
+      const { playerId } = req.params;
+      const sessions = await db.select()
+        .from(playerSessions)
+        .where(eq(playerSessions.profile_id, parseInt(playerId)))
+        .orderBy(desc(playerSessions.join_time))
+        .limit(100);
+
+      res.json({
+        success: true,
+        sessions
+      });
+    } catch (error) {
+      console.error("Error fetching player sessions:", error);
+      res.status(500).json({ error: "Failed to fetch player sessions" });
+    }
+  });
+
+  // Get recent activities (filtered by group)
+  app.get("/api/battlemetrics/activities", async (req, res) => {
+    try {
+      const activities = await db
+        .select()
+        .from(playerActivities)
+        .orderBy(desc(playerActivities.timestamp))
+        .limit(50);
+
+      res.json({
+        success: true,
+        activities: activities
+      });
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+      res.status(500).json({ error: "Failed to fetch activities" });
     }
   });
 
@@ -105,7 +257,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { baseId } = req.params;
       const { baseOwners } = req.query;
-      
+
       // If baseOwners provided, use enhanced method that includes player-matched reports
       if (baseOwners && typeof baseOwners === 'string') {
         const reports = await storage.getReportsForBaseWithPlayers(baseId, baseOwners);
@@ -134,74 +286,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new report
+  // Create new report (with group context)
   app.post("/api/reports", async (req, res) => {
     try {
-      const validatedData = insertReportSchema.parse(req.body);
-      
-      // If this is a task report, check for duplicates and limits
-      if (validatedData.type === 'task' && validatedData.status === 'pending') {
-        const allReports = await storage.getAllReports();
-        
-        // Get base tags for this report
-        const baseTags = validatedData.baseTags || [];
-        
-        for (const baseId of baseTags) {
-          // Check for existing task report based on task type
-          let existingTask = null;
-          
-          if (validatedData.taskType === 'needs_pickup') {
-            // For pickup tasks, check by pickup type
-            existingTask = allReports.find(report => 
-              report.type === 'task' && 
-              report.status === 'pending' && 
-              report.baseTags.includes(baseId) &&
-              report.taskType === 'needs_pickup' &&
-              report.taskData?.pickupType === validatedData.taskData?.pickupType
-            );
-          } else if (validatedData.taskType === 'repair_upgrade') {
-            // For repair/upgrade tasks, check by repair type
-            existingTask = allReports.find(report => 
-              report.type === 'task' && 
-              report.status === 'pending' && 
-              report.baseTags.includes(baseId) &&
-              report.taskType === 'repair_upgrade' &&
-              report.taskData?.repairUpgradeType === validatedData.taskData?.repairUpgradeType
-            );
-          } else if (validatedData.taskType === 'request_resources') {
-            // For resource requests, allow multiple requests (they're different resource amounts)
-            // Don't block duplicate resource requests as they can have different amounts
-            existingTask = null;
-          }
-          
-          if (existingTask) {
-            const errorMessage = validatedData.taskType === 'needs_pickup' 
-              ? "Task report already exists for this pickup type on this base"
-              : "Task report already exists for this repair/upgrade type on this base";
-            return res.status(400).json({ 
-              error: errorMessage
-            });
-          }
-          
-          // Check total pending task reports for this base (limit to 5)
-          const pendingTasksForBase = allReports.filter(report => 
-            report.type === 'task' && 
-            report.status === 'pending' && 
-            report.baseTags.includes(baseId)
-          );
-          
-          if (pendingTasksForBase.length >= 5) {
-            return res.status(400).json({ 
-              error: "Maximum task reports reached for this base (5)" 
-            });
-          }
-        }
-      }
-      
-      const report = await storage.createReport(validatedData);
-      res.status(201).json(report);
+      const newReport = await db.insert(reports).values({
+        ...req.body,
+      }).returning();
+
+      res.json({
+        success: true,
+        report: newReport[0]
+      });
     } catch (error) {
-      res.status(400).json({ error: "Invalid report data" });
+      console.error("Error creating report:", error);
+      res.status(500).json({ error: "Failed to create report" });
     }
   });
 
@@ -232,7 +330,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Report Templates API routes
-  
+
   // Get all templates
   app.get("/api/report-templates", async (req, res) => {
     try {
@@ -269,22 +367,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Players API routes
-  
+
   // Get all players from external API
   app.get("/api/players", async (req, res) => {
     try {
       // Fetch from your external API
       const response = await fetch('https://3de60948-f8d7-4a5d-9537-2286d058f7c0-00-2uooy61mnqc4.janeway.replit.dev/api/public/servers/2933470/profiles');
-      
+
       if (!response.ok) {
         console.log(`External API temporarily unavailable: ${response.status}`);
         // TEMPORARY FAKE DATA - TO BE DELETED LATER
         // Return fake player data while external API is down
         return res.json(getTempFakePlayers());
       }
-      
+
       const externalPlayers = await response.json();
-      
+
       // Transform external data to match our interface
       const players = externalPlayers.map((player: any, index: number) => ({
         id: index + 1, // Generate temporary ID for UI
@@ -293,7 +391,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalSessions: player.totalSessions,
         // Add any other fields you want to display
       }));
-      
+
       res.json(players);
     } catch (error) {
       console.log('External API temporarily unavailable, returning fake data');
@@ -312,7 +410,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Premium Players API routes
-  
+
   // Get all premium players
   app.get("/api/premium-players", async (req, res) => {
     try {
@@ -363,15 +461,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Player Base Tags API routes
-  
+
   // Get all player base tags
   app.get("/api/player-base-tags", async (req, res) => {
     try {
-      const tags = await storage.getAllPlayerBaseTags();
-      res.json(tags);
+      const tags = await db
+        .select()
+        .from(playerBaseTags)
+        .orderBy(desc(playerBaseTags.taggedAt));
+
+      res.json({
+        success: true,
+        tags: tags
+      });
     } catch (error) {
-      console.error("Error getting player base tags:", error);
-      res.status(500).json({ error: "Failed to get player base tags" });
+      console.error("Error fetching player base tags:", error);
+      res.status(500).json({ error: "Failed to fetch player base tags" });
     }
   });
 
@@ -437,7 +542,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Player Profile API routes
-  
+
   // Get player profile
   app.get("/api/player-profiles/:playerName", async (req, res) => {
     try {
@@ -457,10 +562,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/player-profiles", async (req, res) => {
     try {
       const validatedProfile = insertPlayerProfileSchema.parse(req.body);
-      
+
       // Check if profile exists
       const existingProfile = await storage.getPlayerProfile(validatedProfile.playerName);
-      
+
       let profile;
       if (existingProfile) {
         // Update existing profile
@@ -469,7 +574,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Create new profile
         profile = await storage.createPlayerProfile(validatedProfile);
       }
-      
+
       res.json(profile);
     } catch (error) {
       console.error("Error creating/updating player profile:", error);
@@ -504,7 +609,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Teammates API routes
-  
+
   // Get all teammates
   app.get("/api/teammates", async (req, res) => {
     try {
@@ -523,7 +628,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!playerName) {
         return res.status(400).json({ error: "Player name is required" });
       }
-      
+
       const teammate = await storage.addTeammate(playerName);
       res.json(teammate);
     } catch (error) {

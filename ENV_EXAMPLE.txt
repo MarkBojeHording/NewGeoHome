@@ -1,0 +1,17 @@
+# Server
+PORT=3002
+NODE_ENV=development
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/geohome
+SESSION_SECRET=your-session-secret
+
+# BattleMetrics
+BATTLEMETRICS_API_KEY=your-battlemetrics-token
+
+# Seed (optional overrides)
+SEED_USERNAME=test
+SEED_PASSWORD=test
+SEED_EMAIL=test@example.com
+SEED_GROUP=Demo Group
+

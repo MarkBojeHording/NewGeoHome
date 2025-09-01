@@ -23,16 +23,19 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
   if (!isOpen) return null
 
   // Filter to only enemy main bases (small, medium, large)
-  const enemyMainBases = locations.filter(location => 
-    location.type === 'enemy-small' || 
-    location.type === 'enemy-medium' || 
+  const enemyMainBases = locations.filter(location =>
+    location.type === 'enemy-small' ||
+    location.type === 'enemy-medium' ||
     location.type === 'enemy-large'
   )
 
   // Fetch reports data
-  const { data: reports = [] } = useQuery({
+  const { data: reportsResponse = { reports: [] } } = useQuery({
     queryKey: ['/api/reports'],
-  }) as { data: any[] }
+  })
+
+  // Extract reports array from response
+  const reports = reportsResponse?.reports || []
 
   const getBaseIcon = (type: string) => {
     const IconComponent = ICON_MAP[type as keyof typeof ICON_MAP] || Tent
@@ -42,7 +45,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
   const getOnlinePlayerCount = (baseLocation: any) => {
     if (!baseLocation.players) return 0
     const basePlayerNames = baseLocation.players.split(",").map((p: string) => p.trim()).filter((p: string) => p)
-    return basePlayerNames.filter((playerName: string) => 
+    return basePlayerNames.filter((playerName: string) =>
       players.some(player => player.playerName === playerName && player.isOnline)
     ).length
   }
@@ -53,25 +56,25 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
   }
 
   const getReportCount = (baseLocation: any) => {
-    return reports.filter((report: any) => 
+    return reports.filter((report: any) =>
       report.baseTags && report.baseTags.includes(baseLocation.id)
     ).length
   }
 
   const getLastActivityTime = (baseLocation: any) => {
-    const baseReports = reports.filter((report: any) => 
+    const baseReports = reports.filter((report: any) =>
       report.baseTags && report.baseTags.includes(baseLocation.id)
     )
     if (baseReports.length === 0) return null
-    
-    const latestReport = baseReports.sort((a: any, b: any) => 
+
+    const latestReport = baseReports.sort((a: any, b: any) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )[0]
-    
+
     const timeDiff = Date.now() - new Date(latestReport.createdAt).getTime()
     const hours = Math.floor(timeDiff / (1000 * 60 * 60))
     const days = Math.floor(hours / 24)
-    
+
     if (days > 0) return `${days}d ago`
     if (hours > 0) return `${hours}h ago`
     return 'Recent'
@@ -92,10 +95,10 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
   }
 
   const getSubordinateBases = (mainBase: any) => {
-    return locations.filter(location => 
-      location.groupId === mainBase.id && 
+    return locations.filter(location =>
+      location.groupId === mainBase.id &&
       location.id !== mainBase.id &&
-      (location.type === 'enemy-small' || location.type === 'enemy-medium' || location.type === 'enemy-large' || 
+      (location.type === 'enemy-small' || location.type === 'enemy-medium' || location.type === 'enemy-large' ||
        location.type === 'enemy-outpost' || location.type === 'enemy-flank' || location.type === 'enemy-farm')
     )
   }
@@ -108,7 +111,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div 
+      <div
         className="bg-gray-900 border border-orange-600/50 shadow-2xl rounded-lg"
         style={{ width: '1000px', height: '800px' }}
       >
@@ -136,9 +139,9 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                 const IconComponent = getBaseIcon(base.type)
                 const onlineCount = getOnlinePlayerCount(base)
                 const totalCount = getTotalPlayerCount(base)
-                
+
                 return (
-                  <div 
+                  <div
                     key={base.id}
                     className="bg-gray-800 border border-gray-700 p-2 flex items-start gap-2 hover:bg-gray-750 transition-colors cursor-pointer"
                     data-testid={`team-entry-${base.name}`}
@@ -172,7 +175,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                             {onlineCount} ONLINE
                           </span>
                         </div>
-                        
+
                         {/* Total Players */}
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 bg-gray-500 border border-gray-400"></div>
@@ -214,7 +217,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                         </div>
                         <div className="flex flex-wrap gap-1">
                           {getTeamMembers(base).slice(0, 6).map((member: string, index: number) => (
-                            <span 
+                            <span
                               key={index}
                               className="text-xs bg-green-900/20 text-green-300 px-1 py-0.5 border border-green-600/30 font-mono"
                             >
@@ -263,7 +266,7 @@ export function TeamsModal({ isOpen, onClose, locations, players, onOpenBaseModa
                       {base.notes && (
                         <div>
                           <div className="text-xs text-gray-500 font-mono mb-1">NOTES:</div>
-                          <div 
+                          <div
                             className="text-xs text-gray-400 font-mono bg-gray-800/50 p-1 border-l-2 border-orange-600/30 max-h-12 overflow-hidden"
                             style={{ lineHeight: '1.3' }}
                           >

@@ -1,7 +1,11 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { seedReportTemplates } from "./seed-templates";
+import { globalWebSocketManager } from "./services/websocketManager";
+import { db } from "./db";
+import { servers as serversTable } from "@shared/schema";
 
 const app = express();
 app.use(express.json());
@@ -38,10 +42,32 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+
+
   const server = await registerRoutes(app);
-  
+
   // Seed report templates on startup
   await seedReportTemplates();
+
+  // Initialize BattleMetrics WebSocket manager
+  try {
+    await globalWebSocketManager.connect();
+    log("✓ BattleMetrics WebSocket manager initialized");
+    // Auto-subscribe to all stored servers for real-time events
+    try {
+      const allServers = await db.select().from(serversTable);
+      for (const s of allServers) {
+        if (s.id) {
+          globalWebSocketManager.subscribeToServer(s.id);
+        }
+      }
+      log(`Subscribed to ${allServers.length} server(s) for real-time events`);
+    } catch (e) {
+      log("⚠️ Failed to subscribe servers:", e);
+    }
+  } catch (error) {
+    log("⚠️ Failed to initialize BattleMetrics WebSocket manager:", error);
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -61,10 +87,10 @@ app.use((req, res, next) => {
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
+  // Use PORT environment variable or default to 3002 for development
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
+  const port = parseInt(process.env.PORT || '3002', 10);
   server.listen({
     port,
     host: "0.0.0.0",

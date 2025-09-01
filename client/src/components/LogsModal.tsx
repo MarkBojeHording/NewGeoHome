@@ -18,25 +18,28 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [outcomeFilter, setOutcomeFilter] = useState<string>('all')
 
-  const { data: reports = [], isLoading } = useQuery<Report[]>({
+  const { data: reportsResponse = { reports: [] }, isLoading } = useQuery<{ success: boolean, reports: Report[] }>({
     queryKey: ['/api/reports'],
     enabled: isOpen
   })
+
+  // Extract reports array from response
+  const reports = reportsResponse?.reports || []
 
   // Filter and search reports
   const filteredReports = reports.filter(report => {
     // Type filter
     if (typeFilter !== 'all' && report.type !== typeFilter) return false
-    
+
     // Outcome filter
     if (outcomeFilter !== 'all' && report.outcome !== outcomeFilter) return false
-    
+
     // Search term filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase()
       const location = report.location as { gridX: number, gridY: number }
       const gridRef = location ? `${String.fromCharCode(65 + location.gridX)}${location.gridY}` : ''
-      
+
       return (
         report.notes.toLowerCase().includes(searchLower) ||
         report.type.toLowerCase().includes(searchLower) ||
@@ -45,12 +48,12 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
         report.playerTags.some(tag => tag.toLowerCase().includes(searchLower))
       )
     }
-    
+
     return true
   })
 
   // Sort by most recent first
-  const sortedReports = filteredReports.sort((a, b) => 
+  const sortedReports = filteredReports.sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   )
 
@@ -120,8 +123,8 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
 
           {/* Clear Filters */}
           {(searchTerm || typeFilter !== 'all' || outcomeFilter !== 'all') && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => {
                 setSearchTerm('')
@@ -146,7 +149,7 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
               <Calendar className="w-12 h-12 text-orange-600 mb-4" />
               <div className="text-lg font-medium mb-2 text-orange-300 font-mono">[NO DATA FOUND]</div>
               <div className="text-orange-600/80 font-mono text-sm">
-                {searchTerm || typeFilter !== 'all' || outcomeFilter !== 'all' 
+                {searchTerm || typeFilter !== 'all' || outcomeFilter !== 'all'
                   ? '[ADJUST SEARCH PARAMETERS]'
                   : '[AWAITING SYSTEM ENTRIES]'
                 }
@@ -155,8 +158,8 @@ export function LogsModal({ isOpen, onClose }: LogsModalProps) {
           ) : (
             <div className="space-y-0 border-2 border-orange-500/60 m-2 bg-gray-800/90">
               {sortedReports.map((report) => (
-                <ReportPreview 
-                  key={report.id} 
+                <ReportPreview
+                  key={report.id}
                   report={report}
                   onViewReport={(report) => {
                     // For now, LogsModal doesn't have edit functionality
