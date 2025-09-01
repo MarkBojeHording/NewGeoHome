@@ -1,6 +1,10 @@
 # GeoHome + ServerBeacon Integration
 
+**PROPRIETARY SOFTWARE - ALL RIGHTS RESERVED**
+
 A comprehensive tactical mapping and server monitoring system for Rust game servers, combining GeoHome's tactical map interface with ServerBeacon's server management capabilities.
+
+**⚠️ PROPRIETARY CODE - UNAUTHORIZED USE PROHIBITED**
 
 ## 🎯 Project Overview
 
@@ -167,17 +171,33 @@ npm start
 - **Lazy Loading**: Component-based code splitting
 - **Optimized Builds**: Vite-based fast development and production builds
 
-## 🤝 Contributing
+## 🤝 Development
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+This is a proprietary software project. Development is restricted to authorized personnel only.
+
+**NO PUBLIC CONTRIBUTIONS ACCEPTED**
+
+This repository is for authorized development and deployment purposes only. Public contributions, forks, or modifications are not permitted.
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+**PROPRIETARY SOFTWARE - ALL RIGHTS RESERVED**
+
+This software is proprietary and confidential. All rights are reserved by the copyright holder.
+
+**NO PERMISSION TO COPY, DISTRIBUTE, OR USE**
+
+This code and all associated materials are protected by copyright law. No part of this software may be:
+- Copied, reproduced, or distributed in any form
+- Used, modified, or adapted without explicit written permission
+- Reverse engineered, decompiled, or disassembled
+- Licensed, sublicensed, or transferred to third parties
+
+**UNAUTHORIZED USE PROHIBITED**
+
+Any unauthorized use, copying, distribution, or modification of this software is strictly prohibited and may result in legal action.
+
+For licensing inquiries, contact the copyright holder directly.
 
 ## 🆘 Support
 
